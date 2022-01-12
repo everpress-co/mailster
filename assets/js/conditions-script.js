@@ -28,9 +28,13 @@ mailster = (function (mailster, $, window, document) {
 				$.each(clone.find('input, select'), function () {
 					var _this = $(this),
 						name = _this.attr('name');
-					_this
-						.attr('name', name.replace(/\[\d+\]/, '[' + id + ']'))
-						.prop('disabled', false);
+					name &&
+						_this
+							.attr(
+								'name',
+								name.replace(/\[\d+\]/, '[' + id + ']')
+							)
+							.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
 				datepicker();
@@ -49,15 +53,16 @@ mailster = (function (mailster, $, window, document) {
 				$.each(clone.find('input, select'), function () {
 					var _this = $(this),
 						name = _this.attr('name');
-					_this
-						.attr(
-							'name',
-							name.replace(
-								/\[\d+\]\[\d+\]/,
-								'[' + cont.data('id') + '][' + id + ']'
+					name &&
+						_this
+							.attr(
+								'name',
+								name.replace(
+									/\[\d+\]\[\d+\]/,
+									'[' + cont.data('id') + '][' + id + ']'
+								)
 							)
-						)
-						.prop('disabled', false);
+							.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
 				datepicker();
@@ -134,8 +139,38 @@ mailster = (function (mailster, $, window, document) {
 
 				mailster.trigger('updateCount');
 			})
+			.on('change', '.relative-datepicker', function () {
+				var field = $(this).closest('.mailster-conditions-value-field');
+				var count = field.find('input.relative-datepicker').val() * -1;
+				var multi = field.find('select.relative-datepicker').val();
+				field.find('input.datepicker').val(count + ' ' + multi);
+				mailster.trigger('updateCount');
+			})
 			.on('change', '.condition-operator', function () {
 				mailster.trigger('updateCount');
+			})
+			.on('change', '.condition-operator-time', function () {
+				var operator = $(this).val(),
+					is_relative = /(is_older|is_younger)/.test(operator),
+					input = $(this)
+						.closest('.mailster-condition')
+						.toggleClass('is-relative', is_relative)
+						.find('.mailster-conditions-value-field.active')
+						.find('.condition-value'),
+					val = input.val();
+
+				if (is_relative) {
+					var values = get_relative_values(val);
+					input
+						.next('input.relative-datepicker')
+						.val(values[0])
+						.next('select.relative-datepicker')
+						.val(values[1])
+						.trigger('change');
+				} else {
+					if (!val.match(/^(\d{4})-(\d{2})-(\d{2})$/))
+						input.val(new Date().toISOString().slice(0, 10));
+				}
 			})
 			.on('change', '.condition-value', function () {
 				mailster.trigger('updateCount');
@@ -189,6 +224,21 @@ mailster = (function (mailster, $, window, document) {
 
 		mailster.trigger('updateCount');
 
+		conditions.find('.is-relative').each(function () {
+			var values = get_relative_values(
+				$(this)
+					.find(
+						'.mailster-conditions-value-field.active .condition-value'
+					)
+					.val()
+			);
+			$(this)
+				.find('input.relative-datepicker')
+				.val(values[0])
+				.next('select.relative-datepicker')
+				.val(values[1]);
+		});
+
 		function datepicker() {
 			conditions.find('.datepicker').datepicker({
 				dateFormat: 'yy-mm-dd',
@@ -202,7 +252,200 @@ mailster = (function (mailster, $, window, document) {
 				showAnim: 'fadeIn',
 			});
 		}
+
+		function get_conditions(args) {
+			var lists = [],
+				conditions = [],
+				inputs = $('#list-checkboxes').find('input, select'),
+				listinputs = $('#list-checkboxes').find('input.list'),
+				extra = $('#list_extra'),
+				data = {},
+				groups = $(
+					'.mailster-conditions-wrap > .mailster-condition-group'
+				),
+				i = 0;
+
+			$.each(listinputs, function () {
+				var id = $(this).val();
+				if ($(this).is(':checked')) lists.push(id);
+			});
+
+			data.id = mailster.campaign_id;
+			data.lists = lists;
+			data.ignore_lists = $('#ignore_lists').is(':checked');
+
+			$.each(groups, function () {
+				var c = $(this).find('.mailster-condition');
+				$.each(c, function () {
+					var _this = $(this),
+						value,
+						field = _this.find('.condition-field').val(),
+						operator = _this
+							.find('.mailster-conditions-operator-field.active')
+							.find('.condition-operator')
+							.val();
+
+					if (!operator || !field) return;
+
+					value = _this
+						.find('.mailster-conditions-value-field.active')
+						.find('.condition-value')
+						.map(function () {
+							return $(this).val();
+						})
+						.toArray();
+					if (value.length == 1) {
+						value = value[0];
+					}
+					if (!conditions[i]) {
+						conditions[i] = [];
+					}
+
+					conditions[i].push({
+						field: field,
+						operator: operator,
+						value: value,
+					});
+				});
+				i++;
+			});
+
+			data.operator = $('select.mailster-list-operator').val();
+			data.conditions = conditions;
+
+			if (args) {
+				data = $.extend(args, data);
+			}
+
+			return data;
+		}
 	});
+
+	function get_conditions(args) {
+		var lists = [],
+			conditions = [],
+			inputs = $('#list-checkboxes').find('input, select'),
+			listinputs = $('#list-checkboxes').find('input.list'),
+			extra = $('#list_extra'),
+			data = {},
+			groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
+			i = 0;
+
+		$.each(listinputs, function () {
+			var id = $(this).val();
+			if ($(this).is(':checked')) lists.push(id);
+		});
+
+		data.id = mailster.campaign_id;
+		data.lists = lists;
+		data.ignore_lists = $('#ignore_lists').is(':checked');
+
+		$.each(groups, function () {
+			var c = $(this).find('.mailster-condition');
+			$.each(c, function () {
+				var _this = $(this),
+					value,
+					field = _this.find('.condition-field').val(),
+					operator = _this
+						.find('.mailster-conditions-operator-field.active')
+						.find('.condition-operator')
+						.val();
+
+				if (!operator || !field) return;
+
+				value = _this
+					.find('.mailster-conditions-value-field.active')
+					.find('.condition-value')
+					.map(function () {
+						return $(this).val();
+					})
+					.toArray();
+				if (value.length == 1) {
+					value = value[0];
+				}
+				if (!conditions[i]) {
+					conditions[i] = [];
+				}
+
+				conditions[i].push({
+					field: field,
+					operator: operator,
+					value: value,
+				});
+			});
+			i++;
+		});
+
+		data.operator = $('select.mailster-list-operator').val();
+		data.conditions = conditions;
+
+		if (args) {
+			data = $.extend(args, data);
+		}
+
+		return data;
+	}
+
+	function serialize(prefix) {
+		var params = get_conditions();
+
+		return _map_object(params.conditions, prefix || 'conditions');
+	}
+
+	function _map_object(obj, prefix) {
+		var str = [],
+			p;
+		for (p in obj) {
+			if (obj.hasOwnProperty(p)) {
+				var k = prefix ? prefix + '[' + p + ']' : p,
+					v = obj[p];
+				str.push(
+					v !== null && typeof v === 'object'
+						? _map_object(v, k)
+						: encodeURIComponent(k) + '=' + encodeURIComponent(v)
+				);
+			}
+		}
+		return str.join('&');
+	}
+
+	function get_relative_values(val) {
+		if (!isNaN(parseFloat(val)) && isFinite(val)) {
+			return val;
+		}
+		var m;
+
+		if ((m = val.match(/^(\d{4})-(\d{2})-(\d{2})$/))) {
+			var midnight = new Date();
+			midnight.setHours(0, 0, 0, 0);
+			val = midnight.getTime() - new Date(m[1], m[2] - 1, m[3]).getTime();
+			val = Math.abs(val) / 1000;
+			val = Math.round(val);
+			if (!val) {
+				return [1, 'days'];
+			}
+
+			if (!((val / 2628000) % 1)) {
+				val = [val / 2628000, 'months'];
+			} else if (!((val / 604800) % 1)) {
+				val = [val / 604800, 'weeks'];
+			} else if (!((val / 86400) % 1)) {
+				val = [val / 86400, 'days'];
+			} else if (!((val / 3600) % 1)) {
+				val = [val / 3600, 'hours'];
+			} else if (!((val / 60) % 1)) {
+				val = [Math.ceil(val / 60), 'minutes'];
+			}
+		} else {
+			val = val.split(' ');
+		}
+		val[0] = Math.abs(val[0]);
+
+		return val;
+	}
+
+	mailster.conditions.get = get_conditions;
+	mailster.conditions.serialize = serialize;
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);

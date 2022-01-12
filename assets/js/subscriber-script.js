@@ -102,15 +102,15 @@ mailster = (function (mailster, $, window, document) {
 
 			if (userimage.data('email') != email) {
 				userimage.addClass('avatar-loading');
-				getGravatar(email, function (data) {
-					if (data.success)
+				getGravatar(email, function (response) {
+					if (response.success)
 						userimage
 							.data('email', email)
 							.removeClass('avatar-loading')
 							.css({
 								'background-image':
 									'url(' +
-									data.url.replace(/&amp;/, '&') +
+									response.data.url.replace(/&amp;/, '&') +
 									')',
 							});
 				});

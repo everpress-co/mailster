@@ -1086,7 +1086,7 @@ class MailsterPlaceholder {
 
 					// using preview text fix from https://www.litmus.com/blog?p=4367
 					if ( $replace && '{preheader}' == $search && apply_filters( 'mailster_preview_text_fix', true ) ) {
-						$replace .= str_repeat( '&nbsp;&zwnj;', 220 - strlen( $replace ) );
+						$replace .= ' ' . str_repeat( '&nbsp;&zwnj;', 220 - strlen( $replace ) );
 					}
 
 					// tag is a custom tag

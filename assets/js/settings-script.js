@@ -774,13 +774,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function sanitize(string) {
-		var tag = mailster.util
-			.trim(string)
-			.toLowerCase()
-			.replace(/ /g, '-')
-			.replace(/[^a-z0-9_-]*/g, '')
-			.replace(/^[_]*/, '')
-			.replace(/[_]*$/, '');
+		var tag = mailster.util.sanitizeTag(string);
 		if ($.inArray(tag, reservedtags) != -1) {
 			alert(
 				mailster.util.sprintf(
