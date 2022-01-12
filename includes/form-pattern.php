@@ -114,6 +114,31 @@ $patterns = apply_filters(
 <!-- /wp:mailster/form-wrapper -->',
 
 		),
+		'simple'     => array(
+			'title'         => __( 'Simple', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"backgroundColor":"#d8d9d7","padding":33} -->
+<form method="post" action="" novalidate style="background-color:#d8d9d7" class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner">
+
+<!-- wp:heading {"level":4} -->
+<h4>Subscribe to ' . get_option( 'blogname' ) . '</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Stay up to date with the latest news and relevant updates from us.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/field-email {"inline":true} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline"><input name="email" type="email" aria-required="true" aria-label="Enter your email address" spellcheck="false" required class="input" placeholder=" "/><label class="mailster-label">Enter your email address</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit {"style":{"width":33}} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button" style="width:33%"><input name="submit" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
 	)
 );
  // $patterns = array();
