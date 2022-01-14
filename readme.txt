@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 4.6
 Tested up to: 5.8
-Stable tag: 3.1
+Stable tag: 3.1.1
 Author: EverPress
 Author URI: https://everpress.co
 License: GPLv2 or later
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner *Codeable* for
 == Changelog ==
 
 == Changelog ==
+
+= 3.1.1 =
+
+* fixed: typo in subscriber query causes database error
+* fixed: PHP warning of undefined variable in option bar
+* added: filter `mailster_campaign_meta_defaults` to filter default meta values
+* added: defined `wp_mail` filters are now applied if used with Mailster
 
 = 3.1 =
 

@@ -2564,7 +2564,7 @@ class Mailster {
 
 		$current_filter = current_filter();
 
-		$atts = apply_filters( 'wp_mail', compact( 'to', 'subject', 'message', 'headers', 'attachments' ) );
+		$this->atts = apply_filters( 'wp_mail', compact( 'to', 'subject', 'message', 'headers', 'attachments' ) );
 
 		if ( isset( $this->atts['to'] ) ) {
 			$to = $this->atts['to'];
