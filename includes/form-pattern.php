@@ -137,6 +137,30 @@ $patterns = apply_filters(
 <div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button" style="width:33%"><input name="submit" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
+		),
+		'with_logo'  => array(
+			'title'         => __( 'with Logo', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"color":"#FFFFFF","backgroundColor":"#e78b0b","padding":44} -->
+<form method="post" action="" novalidate style="color:#FFFFFF;background-color:#e78b0b" class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner"><!-- wp:site-logo {"align":"center"} /-->
+
+<!-- wp:heading {"textAlign":"center"} -->
+<h2 class="has-text-align-center">Want to learn how to get subscribers?</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center"} -->
+<p class="has-text-align-center">Get Your now</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/field-email {"inline":true,"style":{"labelColor":"#000000"}} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline"><input name="email" type="email" aria-required="true" aria-label="Email" spellcheck="false" required class="input" placeholder=" "/><label style="color:#000000" class="mailster-label">Email</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button"><input name="submit" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
 
 		),
 	)

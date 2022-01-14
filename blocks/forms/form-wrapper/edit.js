@@ -121,9 +121,16 @@ const prefixCss = (css, className, type) => {
 };
 
 export default function Edit(props) {
-	const { attributes, setAttributes, toggleSelection, isSelected, clientId } =
-		props;
+	const {
+		attributes,
+		setAttributes,
+		toggleSelection,
+		isSelected,
+		clientId,
+	} = props;
 	const { css, style, background, inputs } = attributes;
+
+	console.warn('ORIGINAL', props);
 
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
 

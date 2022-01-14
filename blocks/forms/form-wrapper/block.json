@@ -21,6 +21,9 @@
 				"move": true
 			}
 		},
+		"paddingSize": {
+			"type": "string"
+		},
 		"action": {
 			"type": "string",
 			"source": "attribute",

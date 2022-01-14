@@ -23,13 +23,19 @@ import {
 	subscribe,
 } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
-import { registerBlockVariation } from '@wordpress/blocks';
+import {
+	registerBlockVariation,
+	getBlockType,
+	createBlock,
+	rawHandler,
+} from '@wordpress/blocks';
 
 /**
  * Internal dependencies
  */
 
 import InputStyles from './InputStyles';
+import Dimensions from './Dimensions';
 import FormStyles from './FormStyles';
 import Css from './Css';
 import Options from './Options';
@@ -55,8 +61,7 @@ function SettingsPanelPlugin() {
 		[]
 	);
 
-	const [attributes, setInitialAttributes] = useState(false);
-	const [root, setRoot] = useState(false);
+	const [blockProps, setBlockProps] = useState(false);
 
 	useEffect(() => {
 		const root = blocks.find((block) => {
@@ -64,19 +69,24 @@ function SettingsPanelPlugin() {
 		});
 
 		if (root) {
-			setRoot(root);
-			setInitialAttributes(
-				select('core/block-editor').getBlockAttributes(root.clientId)
-			);
+			const blockProps =
+				select('core/block-editor').getBlock(root.clientId) || {};
+
+			blockProps.setAttributes = (attributes = {}) => {
+				dispatch('core/block-editor').updateBlockAttributes(
+					root.clientId,
+					{
+						...select('core/block-editor').getBlockAttributes(
+							root.clientId
+						),
+						...attributes,
+					}
+				);
+			};
+
+			setBlockProps(blockProps);
 		}
 	}, [blocks]);
-
-	const setAttributes = (attributes = {}) => {
-		dispatch('core/block-editor').updateBlockAttributes(root.clientId, {
-			...select('core/block-editor').getBlockAttributes(root.clientId),
-			...attributes,
-		});
-	};
 
 	return (
 		<>
@@ -102,12 +112,10 @@ function SettingsPanelPlugin() {
 			<Options meta={meta} setMeta={setMeta} />
 			<Doubleoptin meta={meta} setMeta={setMeta} />
 			<Lists meta={meta} setMeta={setMeta} />
-			<FormStyles attributes={attributes} setAttributes={setAttributes} />
-			<InputStyles
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
-			<Css attributes={attributes} setAttributes={setAttributes} />
+			<FormStyles {...blockProps} />
+			<InputStyles {...blockProps} />
+			<Dimensions {...blockProps} />
+			<Css {...blockProps} />
 			<Placement meta={meta} setMeta={setMeta} />
 		</>
 	);
