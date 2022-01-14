@@ -2262,7 +2262,7 @@ class MailsterCampaigns {
 			return isset( $defaults[ $key ] ) ? $defaults[ $key ] : null;
 		}
 
-		return $defaults;
+		return apply_filters( 'mailster_campaign_meta_defaults', $defaults );
 
 	}
 
