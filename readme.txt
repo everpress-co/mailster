@@ -190,6 +190,7 @@ Get professional development help from our expert support partner *Codeable* for
 = 3.1.1 =
 
 * fixed: typo in subscriber query causes database error
+* fixed: PHP warning of undefined variable in option bar
 
 = 3.1 =
 
