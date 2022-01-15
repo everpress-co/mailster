@@ -229,15 +229,21 @@ export const FormStylesPanel = (props) => {
 			/>
 
 			<PanelRow>
-				<RangeControl
-					className="widefat"
-					label="Padding"
-					value={padding}
-					allowReset={true}
-					initialPosition={0}
-					onChange={(value) => setAttributes({ padding: value })}
-					min={0}
-					max={100}
+				<BoxControl
+					label={__('Form Padding', 'mailster')}
+					values={padding}
+					help={__('Set the padding of your form in %', 'mailster')}
+					resetValues={{
+						top: undefined,
+						left: undefined,
+						right: undefined,
+						bottom: undefined,
+					}}
+					onChange={(val) =>
+						setAttributes({
+							padding: val,
+						})
+					}
 				/>
 			</PanelRow>
 			<PanelRow>

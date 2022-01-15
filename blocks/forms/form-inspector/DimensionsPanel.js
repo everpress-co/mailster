@@ -15,29 +15,8 @@ import { useEffect } from '@wordpress/element';
 import {
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
+	__experimentalBoxControl as BoxControl,
 } from '@wordpress/components';
-
-import {
-	GapEdit,
-	hasGapSupport,
-	hasGapValue,
-	resetGap,
-	useIsGapDisabled,
-} from '@wordpress/block-editor/gap';
-import {
-	MarginEdit,
-	hasMarginSupport,
-	hasMarginValue,
-	resetMargin,
-	useIsMarginDisabled,
-} from '@wordpress/block-editor/margin';
-import {
-	PaddingEdit,
-	hasPaddingSupport,
-	hasPaddingValue,
-	resetPadding,
-	useIsPaddingDisabled,
-} from '@wordpress/block-editor/padding';
 
 /**
  * Internal dependencies
@@ -46,26 +25,61 @@ import {
 export const DimensionsPanel = (props) => {
 	const { attributes, setAttributes } = props;
 
-	function hasPaddingValue() {}
+	function hasPaddingValue() {
+		return true;
+	}
 	function resetPadding() {}
 	function resetAll() {}
 
-	return (
-		<ToolsPanel label={__('Dimensions')} resetAll={resetAll}>
-			<p>
-				Select dimensions or spacing related settings from the menu for
-				additional controls.
-			</p>
+	console.warn(props);
 
+	return (
+		<ToolsPanel
+			label={__('Dimensions')}
+			resetAll={resetAll}
+			hasInnerWrapper
+			shouldRenderPlaceholderItems
+		>
+			<BoxControl
+				label={__('Form Padding', 'mailster')}
+				values={attributes.padding}
+				help={__('Set the padding of your form in %', 'mailster')}
+				resetValues={{
+					top: undefined,
+					left: undefined,
+					right: undefined,
+					bottom: undefined,
+				}}
+				onChange={(val) =>
+					setAttributes({
+						padding: val,
+					})
+				}
+			/>
 			<ToolsPanelItem
 				hasValue={() => hasPaddingValue(props)}
 				label={__('Padding')}
 				onDeselect={() => resetPadding(props)}
 				//resetAllFilter={createResetAllFilter('padding')}
-				//isShownByDefault={defaultSpacingControls?.padding}
+				isShownByDefault
 				panelId={props.clientId}
 			>
-				<PaddingEdit {...props} />
+				<BoxControl
+					label={__('Form Padding', 'mailster')}
+					values={attributes.padding}
+					help={__('Set the padding of your form in %', 'mailster')}
+					resetValues={{
+						top: undefined,
+						left: undefined,
+						right: undefined,
+						bottom: undefined,
+					}}
+					onChange={(val) =>
+						setAttributes({
+							padding: val,
+						})
+					}
+				/>
 			</ToolsPanelItem>
 		</ToolsPanel>
 	);

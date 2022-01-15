@@ -35,7 +35,6 @@ import {
  */
 
 import InputStyles from './InputStyles';
-import Dimensions from './Dimensions';
 import FormStyles from './FormStyles';
 import Css from './Css';
 import Options from './Options';
@@ -114,7 +113,6 @@ function SettingsPanelPlugin() {
 			<Lists meta={meta} setMeta={setMeta} />
 			<FormStyles {...blockProps} />
 			<InputStyles {...blockProps} />
-			<Dimensions {...blockProps} />
 			<Css {...blockProps} />
 			<Placement meta={meta} setMeta={setMeta} />
 		</>

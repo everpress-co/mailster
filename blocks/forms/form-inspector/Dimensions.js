@@ -13,16 +13,16 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect, select, dispatch } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 
-import { __experimentalDimensionControl as DimensionControl } from '@wordpress/components';
+//import { __experimentalDimensionControl as DimensionControl } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
 
+import { DimensionsPanel } from './DimensionsPanel';
+
 export default function Dimensions(props) {
 	const { attributes, setAttributes } = props;
-
-	console.warn('attributes', attributes);
 
 	const isInputPanelOpened = useSelect((select) => {
 		return select('core/edit-post').isEditorPanelOpened(
@@ -37,22 +37,13 @@ export default function Dimensions(props) {
 			);
 	}, [isInputPanelOpened]);
 
-	const updateSpacing = (dimension, size, device = '') => {
-		setAttributes({
-			[`${dimension}${device}`]: size,
-		});
-	};
-
 	return (
-		<PluginDocumentSettingPanel className="with-panel" name="dimensions">
-			{attributes && (
-				<DimensionControl
-					label={__('Padding')}
-					icon={'desktop'}
-					onChange={() => {}}
-					value={attributes.paddingSize}
-				/>
-			)}
+		<PluginDocumentSettingPanel
+			className="with-panel"
+			name="dimensions"
+			title="dimensions"
+		>
+			{attributes && <DimensionsPanel {...props} />}
 		</PluginDocumentSettingPanel>
 	);
 }
