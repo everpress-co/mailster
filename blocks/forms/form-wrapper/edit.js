@@ -3,6 +3,7 @@
  */
 
 const { kebabCase } = lodash;
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -20,7 +21,7 @@ import {
 	BlockControls,
 	__experimentalUseBorderProps as useBorderProps,
 	__experimentalUseColorProps as useColorProps,
-	//__experimentalGetSpacingClassesAndStyles as useSpacingProps,
+	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
 import {
 	Button,
@@ -130,8 +131,6 @@ export default function Edit(props) {
 	} = props;
 	const { css, style, background, inputs } = attributes;
 
-	console.warn('ORIGINAL', props);
-
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
 
 	const [meta, setMeta] = useEntityProp(
@@ -142,65 +141,87 @@ export default function Edit(props) {
 
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
-	//const spacingProps = useSpacingProps(attributes);
+	const spacingProps = useSpacingProps(attributes);
 
-	let className = ['mailster-block-form', 'mailster-block-form-' + clientId];
+	const formClasses = classnames(
+		'mailster-block-form',
+		'mailster-block-form-' + clientId,
+		colorProps.className,
+		borderProps.className
+	);
+
+	const formStyle = {
+		...borderProps.style,
+		...colorProps.style,
+		...spacingProps.style,
+		...{
+			//color: attributes.color,
+			//backgroundColor: attributes.backgroundColor,
+			fontSize: attributes.fontSize,
+			borderRadius: attributes.borderRadius,
+		},
+	};
+
+	const cleanedFormStyle = Object.fromEntries(
+		Object.entries(formStyle).filter(([_, v]) => v != null)
+	);
 
 	const mediaPosition = ({ x, y }) => {
 		return `${Math.round(x * 200) - 50}% ${Math.round(y * 100)}%`;
 	};
 
 	const backgroundStyles = useMemo(() => {
-		let style = '';
+		let s = '';
 		if (background.image) {
-			style +=
+			s +=
 				'.wp-block-mailster-form-wrapper.mailster-block-form-' +
 				clientId +
 				'::before{';
-			style += "content:'';";
-			style += 'background-image: url(' + background.image + ');';
-			if (background.fixed) style += 'background-attachment:fixed;';
-			if (background.repeat) style += 'background-repeat:repeat;';
-			style +=
+			s += "content:'';";
+			s += 'background-image: url(' + background.image + ');';
+			if (background.fixed) s += 'background-attachment:fixed;';
+			if (background.repeat) s += 'background-repeat:repeat;';
+			s +=
 				'background-size:' +
 				(isNaN(background.size)
 					? background.size
 					: background.size + '%') +
 				';';
 			if (background.position)
-				style +=
+				s +=
 					'background-position:' +
 					mediaPosition(background.position) +
 					';';
-			style += 'opacity:' + background.opacity + '%;';
+			s += 'opacity:' + background.opacity + '%;';
 			if (attributes.borderRadius) {
-				style += 'border-radius:' + attributes.borderRadius + ';';
+				s += 'border-radius:' + attributes.borderRadius + ';';
 			}
-			style += '}';
+			s += '}';
 		}
-		return style;
+		return s;
 	}, [background, attributes.borderRadius]);
 
 	const inputStyle = useMemo(() => {
 		let s = '';
-		Object.entries(style).map(([k, v]) => {
-			if (!v) return;
-			s +=
-				'.wp-block-mailster-form-wrapper.mailster-block-form-' +
-				clientId;
+		style &&
+			Object.entries(style).map(([k, v]) => {
+				if (!v) return;
+				s +=
+					'.wp-block-mailster-form-wrapper.mailster-block-form-' +
+					clientId;
 
-			switch (k) {
-				case 'labelColor':
-					s += ' .mailster-label{';
-					s += 'color:' + v + ';';
-					break;
-				default:
-					s += ' .input{';
-					s += kebabCase(k) + ':' + v + ';';
-			}
+				switch (k) {
+					case 'labelColor':
+						s += ' .mailster-label{';
+						s += 'color:' + v + ';';
+						break;
+					default:
+						s += ' .input{';
+						s += kebabCase(k) + ':' + v + ';';
+				}
 
-			s += '}';
-		});
+				s += '}';
+			});
 		return s;
 	}, [style]);
 
@@ -272,6 +293,7 @@ export default function Edit(props) {
 		}
 	}, [meta.gdpr]);
 
+	// add message block if missing
 	useEffect(() => {
 		const all = select('core/block-editor').getBlocks(clientId);
 		const messagesBlock = all.find((block) => {
@@ -292,7 +314,7 @@ export default function Edit(props) {
 				: 0;
 
 			dispatch('core/block-editor').insertBlock(block, pos, clientId);
-			//clear any selected block
+			// clear any selected block
 			dispatch('core/block-editor').clearSelectedBlock();
 			// select "Form" in side panel
 			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
@@ -327,20 +349,9 @@ export default function Edit(props) {
 	return (
 		<div
 			{...useBlockProps({
-				className: className.join(' '),
+				className: formClasses,
 			})}
-			style={{
-				...borderProps.style,
-				...colorProps.style,
-				//...spacingProps.style,
-				...{
-					color: attributes.color,
-					backgroundColor: attributes.backgroundColor,
-					fontSize: attributes.fontSize,
-					padding: attributes.padding / 10 + 'rem',
-					borderRadius: attributes.borderRadius,
-				},
-			}}
+			style={cleanedFormStyle}
 		>
 			{window.mailster_inline_styles && (
 				<style className="mailster-custom-styles">

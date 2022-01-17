@@ -55,9 +55,8 @@ function SettingsPanelPlugin() {
 		'meta'
 	);
 
-	const blocks = useSelect(
-		(select) => select('core/block-editor').getBlocks(),
-		[]
+	const blocks = useSelect((select) =>
+		select('core/block-editor').getBlocks()
 	);
 
 	const [blockProps, setBlockProps] = useState(false);
@@ -67,23 +66,27 @@ function SettingsPanelPlugin() {
 			return block.name == 'mailster/form-wrapper';
 		});
 
-		if (root) {
-			const blockProps =
+		if (root && !blockProps) {
+			const tempBlockProps =
 				select('core/block-editor').getBlock(root.clientId) || {};
 
-			blockProps.setAttributes = (attributes = {}) => {
+			tempBlockProps.setAttributes = (attributes = {}) => {
+				const newBlockProps = { ...tempBlockProps };
+				const current = select('core/block-editor').getBlockAttributes(
+					root.clientId
+				);
+				const merged = { ...current, ...attributes };
+
+				newBlockProps.attributes = merged;
+				setBlockProps(newBlockProps);
+
 				dispatch('core/block-editor').updateBlockAttributes(
 					root.clientId,
-					{
-						...select('core/block-editor').getBlockAttributes(
-							root.clientId
-						),
-						...attributes,
-					}
+					merged
 				);
 			};
 
-			setBlockProps(blockProps);
+			setBlockProps(tempBlockProps);
 		}
 	}, [blocks]);
 

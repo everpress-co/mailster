@@ -20,8 +20,6 @@ import { useEffect } from '@wordpress/element';
 import { InputStylesPanel, colorSettings } from './InputStylesPanel';
 
 export default function InputStyles(props) {
-	const { attributes, setAttributes } = props;
-
 	const isInputPanelOpened = useSelect((select) => {
 		return select('core/edit-post').isEditorPanelOpened(
 			'mailster-block-form-settings-panel/input-styles'
@@ -37,10 +35,7 @@ export default function InputStyles(props) {
 
 	return (
 		<PluginDocumentSettingPanel className="with-panel" name="input-styles">
-			<InputStylesPanel
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
+			<InputStylesPanel {...props} />
 		</PluginDocumentSettingPanel>
 	);
 }

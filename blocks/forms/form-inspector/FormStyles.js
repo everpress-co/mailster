@@ -20,8 +20,6 @@ import { useEffect } from '@wordpress/element';
 import { FormStylesPanel } from './FormStylesPanel';
 
 export default function Styles(props) {
-	const { attributes, setAttributes } = props;
-
 	const isFormPanelOpened = useSelect((select) => {
 		return select('core/edit-post').isEditorPanelOpened(
 			'mailster-block-form-settings-panel/form-styles'
@@ -37,10 +35,7 @@ export default function Styles(props) {
 
 	return (
 		<PluginDocumentSettingPanel className="with-panel" name="form-styles">
-			<FormStylesPanel
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
+			<FormStylesPanel {...props} />
 		</PluginDocumentSettingPanel>
 	);
 }

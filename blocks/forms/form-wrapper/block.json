@@ -11,7 +11,20 @@
 		"html": false,
 		"inserter": false,
 		"reusable": false,
-		"multiple": false
+		"multiple": false,
+		"color": {
+			"gradients": true,
+			"background": true,
+			"text": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		}
 	},
 	"attributes": {
 		"lock": {
@@ -21,29 +34,11 @@
 				"move": true
 			}
 		},
-		"paddingSize": {
-			"type": "string"
-		},
 		"action": {
 			"type": "string",
 			"source": "attribute",
 			"selector": "form",
 			"attribute": "action"
-		},
-		"color": {
-			"type": "string"
-		},
-		"backgroundColor": {
-			"type": "string"
-		},
-		"fontSize": {
-			"type": "integer"
-		},
-		"padding": {
-			"type": "integer"
-		},
-		"borderRadius": {
-			"type": "string"
 		},
 		"background": {
 			"type": "object",

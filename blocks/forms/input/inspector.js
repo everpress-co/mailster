@@ -37,9 +37,15 @@ import {
 } from '@wordpress/components';
 
 import { Fragment, Component, useState } from '@wordpress/element';
-import apiFetch from '@wordpress/api-fetch';
+import { select, dispatch } from '@wordpress/data';
 
-import { Icon, chevronUp, chevronDown, trash } from '@wordpress/icons';
+import {
+	Icon,
+	chevronUp,
+	chevronDown,
+	trash,
+	external,
+} from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -50,8 +56,10 @@ import {
 	colorSettings,
 } from '../form-inspector/InputStylesPanel';
 
+import Values from './Values';
+
 export default function InputFieldInspectorControls(props) {
-	const { attributes, setAttributes, isSelected } = props;
+	const { attributes, setAttributes, isSelected, clientId } = props;
 	const {
 		label,
 		inline,
@@ -66,7 +74,6 @@ export default function InputFieldInspectorControls(props) {
 	} = attributes;
 
 	const [width, setWidth] = useState(100);
-	const hasValues = ['radio', 'dropdown'].includes(type);
 
 	function setStyle(prop, data) {
 		var newStyle = { ...style };
@@ -74,32 +81,46 @@ export default function InputFieldInspectorControls(props) {
 		setAttributes({ style: newStyle });
 	}
 
-	function updateValue(i, val) {
-		var newvalues = [...values];
-		newvalues[i] = val;
-		setAttributes({ values: newvalues });
-	}
-	function moveValue(i, delta) {
-		var newvalues = [...values];
-		var element = newvalues[i];
-		newvalues.splice(i, 1);
-		newvalues.splice(i + delta, 0, element);
-		setAttributes({ values: newvalues });
-	}
-	function removeValue(i) {
-		var newvalues = [...values];
-		newvalues.splice(i, 1);
-		setAttributes({ values: newvalues });
-	}
-	function addValue() {
-		var newvalues = [...values];
-		newvalues.push(__('Value', 'mailster'));
-		setAttributes({ values: newvalues });
-	}
+	function applyStyle() {
+		const root = select('core/block-editor').getBlocks();
+		const { width, ...newStyle } = style;
+		root.map((block) => {
+			var style = {
+				...select('core/block-editor').getBlockAttributes(
+					block.clientId
+				).style,
+			};
 
+			dispatch('core/block-editor').updateBlockAttributes(
+				block.clientId,
+				{ style: { ...style, ...newStyle } }
+			);
+
+			dispatch('core/block-editor').clearSelectedBlock(block.clientId);
+			dispatch('core/block-editor').selectBlock(block.clientId);
+		});
+
+		dispatch('core/block-editor').updateBlockAttributes(clientId, {
+			style: {
+				width,
+			},
+		});
+	}
 	return (
 		<InspectorControls>
-			<InputStylesPanel {...props} />
+			<InputStylesPanel {...props}>
+				{type !== 'submit' && (
+					<PanelRow>
+						<Button
+							onClick={applyStyle}
+							variant="primary"
+							icon={external}
+						>
+							{__('Apply to all input fields', 'mailster')}
+						</Button>
+					</PanelRow>
+				)}
+			</InputStylesPanel>
 			<Panel>
 				<PanelBody
 					title={__('Field Settings', 'mailster')}
@@ -166,111 +187,7 @@ export default function InputFieldInspectorControls(props) {
 							max={100}
 						/>
 					</PanelRow>
-					{hasValues && (
-						<>
-							<PanelRow>
-								<BaseControl
-									id="mailster-values"
-									label={__('Values', 'mailster')}
-									help={__(
-										'Define options for this input field',
-										'mailster'
-									)}
-								>
-									<Flex
-										className="mailster-value-options"
-										justify="flex-end"
-										id="mailster-values"
-										style={{ flexWrap: 'wrap' }}
-									>
-										{values.map((value, i) => {
-											return (
-												<Flex
-													key={i}
-													style={{ flexShrink: 0 }}
-												>
-													<FlexItem>
-														<RadioControl
-															selected={selected}
-															options={[
-																{
-																	value: value,
-																},
-															]}
-															onChange={() => {
-																setAttributes({
-																	selected:
-																		value,
-																});
-															}}
-														/>
-													</FlexItem>
-													<FlexBlock>
-														<TextControl
-															autoFocus
-															value={value}
-															onChange={(val) => {
-																updateValue(
-																	i,
-																	val
-																);
-															}}
-														/>
-													</FlexBlock>
-													<FlexItem>
-														<Button
-															disabled={!i}
-															icon={chevronUp}
-															isSmall={true}
-															label={__(
-																'move up',
-																'mailster'
-															)}
-															onClick={(val) => {
-																moveValue(
-																	i,
-																	-1
-																);
-															}}
-														/>
-														<Button
-															disabled={
-																i + 1 ==
-																values.length
-															}
-															icon={chevronDown}
-															isSmall={true}
-															label={__(
-																'move down',
-																'mailster'
-															)}
-															onClick={(val) => {
-																moveValue(i, 1);
-															}}
-														/>
-														<Button
-															icon={trash}
-															isSmall={true}
-															label={__(
-																'Trash',
-																'mailster'
-															)}
-															onClick={(val) => {
-																removeValue(i);
-															}}
-														/>
-													</FlexItem>
-												</Flex>
-											);
-										})}
-									</Flex>
-									<Button variant="link" onClick={addValue}>
-										{__('Add new Value', 'mailster')}
-									</Button>
-								</BaseControl>
-							</PanelRow>
-						</>
-					)}
+					<Values {...props} />
 				</PanelBody>
 			</Panel>
 		</InspectorControls>

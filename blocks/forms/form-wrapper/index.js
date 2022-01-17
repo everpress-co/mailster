@@ -26,7 +26,7 @@ registerBlockType(name, {
 			type: 'object',
 			default: {
 				width: undefined,
-				color: undefined,
+				inputColor: undefined,
 				backgroundColor: undefined,
 				labelColor: undefined,
 				borderColor: undefined,

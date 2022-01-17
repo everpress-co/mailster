@@ -44,7 +44,7 @@ export const colorSettings = [
 		label: __('Label Color', 'mailster'),
 	},
 	{
-		id: 'color',
+		id: 'inputColor',
 		label: __('Input Font Color', 'mailster'),
 	},
 	{
@@ -66,9 +66,9 @@ export const InputStylesPanel = (props) => {
 
 	const { style } = attributes;
 
-	function setStyle(prop, data) {
+	function setStyle(prop, value) {
 		var newStyle = { ...style };
-		newStyle[prop] = data;
+		newStyle[prop] = value;
 		setAttributes({ style: newStyle });
 	}
 
@@ -79,7 +79,7 @@ export const InputStylesPanel = (props) => {
 			initialOpen={false}
 			settings={colorSettings.flatMap((color, i) => {
 				return {
-					colorValue: style[color.id],
+					colorValue: style?.[color.id],
 					disableCustomGradients: true,
 					label: color.label,
 					onColorChange: (value) => setStyle(color.id, value),

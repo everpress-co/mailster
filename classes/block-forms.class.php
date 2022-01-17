@@ -885,7 +885,7 @@ class MailsterBlockForms {
 
 			$args['categories'] = array( 'featured', 'mailster-forms' );
 
-			register_block_pattern( 'mailster/' . $key, $args );
+			register_block_pattern( 'mailster/pattern_' . $key, $args );
 		}
 
 	}
@@ -1065,6 +1065,7 @@ class MailsterBlockForms {
 			$custom_styles[''][]         = 'border-radius:' . $form_block['attrs']['borderRadius'];
 			$custom_styles['::before'][] = 'border-radius:' . $form_block['attrs']['borderRadius'];
 		}
+
 		if ( isset( $form_block['attrs']['style'] ) ) {
 			$custom_styles[' .mailster-label'] = array();
 			$custom_styles[' .input']          = array();
@@ -1076,8 +1077,10 @@ class MailsterBlockForms {
 						case 'labelColor':
 							$custom_styles[' .mailster-label'][] = 'color:' . $value;
 							break;
-
-						default:
+						case 'borderWidth':
+						case 'inputColor':
+						case 'backgroundColor':
+						case 'borderColor':
 							$custom_styles[' .input'][] = strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ':' . $value;
 							break;
 					}

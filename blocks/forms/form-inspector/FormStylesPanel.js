@@ -68,9 +68,9 @@ export const FormStylesPanel = (props) => {
 		color,
 		backgroundColor,
 		fontSize,
-		padding,
 		borderRadius,
 		background,
+		style,
 	} = attributes;
 	const { image, position, opacity, scale, size, fixed, repeat } = background;
 
@@ -80,24 +80,56 @@ export const FormStylesPanel = (props) => {
 		setAttributes({ background: newBackground });
 	}
 
+	function setStyle(prop, value) {
+		var newStyle = { ...style };
+		newStyle[prop] = {
+			...newStyle[prop],
+			...value,
+		};
+
+		setAttributes({ style: newStyle });
+	}
+
+	function setColor(value) {
+		setStyle('color', {
+			text: value,
+		});
+	}
+	function setBackground(value) {
+		if (!value) return;
+		setStyle('color', {
+			background: value,
+			gradient: undefined,
+		});
+	}
+	function setGradient(value) {
+		if (!value) return;
+		setStyle('color', {
+			background: undefined,
+			gradient: value,
+		});
+	}
+
 	return (
 		<PanelColorGradientSettings
+			__experimentalHasMultipleOrigins
+			__experimentalIsRenderedInSidebar
 			title={__('Form Styles', 'mailster')}
 			name="form-styles-panel"
 			initialOpen={false}
 			settings={[
 				{
-					colorValue: color,
+					colorValue: style?.color?.text,
 					disableCustomGradients: true,
 					label: __('Color', 'mailster'),
-					onColorChange: (value) => setAttributes({ color: value }),
+					onColorChange: setColor,
 				},
 				{
-					colorValue: backgroundColor,
-					disableCustomGradients: true,
+					colorValue: style?.color?.background,
 					label: __('Background Color', 'mailster'),
-					onColorChange: (value) =>
-						setAttributes({ backgroundColor: value }),
+					gradientValue: style?.color?.gradient,
+					onColorChange: setBackground,
+					onGradientChange: setGradient,
 				},
 			]}
 		>
@@ -231,7 +263,7 @@ export const FormStylesPanel = (props) => {
 			<PanelRow>
 				<BoxControl
 					label={__('Form Padding', 'mailster')}
-					values={padding}
+					values={style?.spacing?.padding}
 					help={__('Set the padding of your form in %', 'mailster')}
 					resetValues={{
 						top: undefined,
@@ -244,6 +276,9 @@ export const FormStylesPanel = (props) => {
 							padding: val,
 						})
 					}
+					onChange={(value) => {
+						setStyle('spacing', { padding: value });
+					}}
 				/>
 			</PanelRow>
 			<PanelRow>
