@@ -62,15 +62,26 @@ export default function Triggers(props) {
 		setOptions({ triggers: newTriggers });
 	}
 
+	function Title() {
+		return (
+			<>
+				{__('Triggers', 'mailster')}
+				{triggers.length > 0 && (
+					<span className="component-count-indicator">
+						{triggers.length}
+					</span>
+				)}
+			</>
+		);
+	}
+
 	return (
-		<PanelBody title={__('Triggers', 'mailster')} initialOpen={false}>
+		<PanelBody title={<Title />} initialOpen={false}>
 			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after delay', 'mailster')}
 					checked={triggers.includes('delay')}
-					onChange={(val) => {
-						setTriggers('delay', val);
-					}}
+					onChange={(val) => setTriggers('delay', val)}
 				/>
 				<Tooltip
 					text={__(
@@ -85,11 +96,7 @@ export default function Triggers(props) {
 				<PanelRow>
 					<NumberControl
 						className="small-text"
-						onChange={(val) => {
-							setOptions({
-								trigger_delay: val,
-							});
-						}}
+						onChange={(val) => setOptions({ trigger_delay: val })}
 						isDragEnabled
 						isShiftStepEnabled
 						step={1}
@@ -104,9 +111,7 @@ export default function Triggers(props) {
 				<CheckboxControl
 					label={__('Trigger after inactive', 'mailster')}
 					checked={triggers.includes('inactive')}
-					onChange={(val) => {
-						setTriggers('inactive', val);
-					}}
+					onChange={(val) => setTriggers('inactive', val)}
 				/>
 				<Tooltip
 					text={__(
@@ -122,9 +127,7 @@ export default function Triggers(props) {
 					<NumberControl
 						className="small-text"
 						onChange={(val) =>
-							setOptions({
-								trigger_inactive: val,
-							})
+							setOptions({ trigger_inactive: val })
 						}
 						isDragEnabled
 						isShiftStepEnabled
@@ -140,9 +143,7 @@ export default function Triggers(props) {
 				<CheckboxControl
 					label={__('Trigger after scroll', 'mailster')}
 					checked={triggers.includes('scroll')}
-					onChange={(val) => {
-						setTriggers('scroll', val);
-					}}
+					onChange={(val) => setTriggers('scroll', val)}
 				/>
 				<Tooltip
 					text={__(
@@ -157,11 +158,7 @@ export default function Triggers(props) {
 				<PanelRow>
 					<NumberControl
 						className="small-text"
-						onChange={(val) =>
-							setOptions({
-								trigger_scroll: val,
-							})
-						}
+						onChange={(val) => setOptions({ trigger_scroll: val })}
 						isDragEnabled
 						isShiftStepEnabled
 						step={1}
@@ -177,9 +174,7 @@ export default function Triggers(props) {
 				<CheckboxControl
 					label={__('Trigger after click', 'mailster')}
 					checked={triggers.includes('click')}
-					onChange={(val) => {
-						setTriggers('click', val);
-					}}
+					onChange={(val) => setTriggers('click', val)}
 				/>
 				<Tooltip
 					text={__(
@@ -194,11 +189,7 @@ export default function Triggers(props) {
 				<PanelRow>
 					<TextControl
 						className="small-text"
-						onChange={(val) =>
-							setOptions({
-								trigger_click: val,
-							})
-						}
+						onChange={(val) => setOptions({ trigger_click: val })}
 						value={options.trigger_click}
 						label={__('Selector', 'mailster')}
 					/>
@@ -208,9 +199,7 @@ export default function Triggers(props) {
 				<CheckboxControl
 					label={__('Trigger after exit intent', 'mailster')}
 					checked={triggers.includes('exit')}
-					onChange={(val) => {
-						setTriggers('exit', val);
-					}}
+					onChange={(val) => setTriggers('exit', val)}
 				/>
 				<Tooltip
 					text={__(

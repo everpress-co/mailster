@@ -628,7 +628,7 @@ class MailsterBlockForms {
 								'triggers'         => array(
 									'type' => 'array',
 								),
-								'post_types'       => array(
+								'schedule'         => array(
 									'type' => 'array',
 								),
 								'posts'            => array(

@@ -15,12 +15,12 @@
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^5.2.6",
-		"@wordpress/block-editor": "^8.0.13",
 		"@wordpress/blocks": "^11.1.5",
 		"@wordpress/components": "^19.2.0",
 		"@wordpress/compose": "^5.0.7",
 		"@wordpress/core-data": "^4.0.9",
 		"@wordpress/data": "^6.1.5",
+		"@wordpress/date": "^4.2.3",
 		"@wordpress/edit-post": "^5.0.13",
 		"@wordpress/element": "^4.0.4",
 		"@wordpress/i18n": "^4.2.4",

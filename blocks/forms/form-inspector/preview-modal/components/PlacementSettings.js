@@ -47,6 +47,8 @@ import {
 	__experimentalNumberControl as NumberControl,
 	__experimentalBoxControl as BoxControl,
 	__experimentalFormGroup as FormGroup,
+	__experimentalItemGroup as ItemGroup,
+	__experimentalItem as Item,
 } from '@wordpress/components';
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
@@ -56,17 +58,13 @@ import { useDebounce } from '@wordpress/compose';
 import { useEntityProp } from '@wordpress/core-data';
 import { select, useSelect, dispatch, subscribe } from '@wordpress/data';
 
-import {
-	__experimentalItemGroup as ItemGroup,
-	__experimentalItem as Item,
-} from '@wordpress/components';
-
 /**
  * Internal dependencies
  */
 import DisplayOptions from './DisplayOptions';
 import Triggers from './Triggers';
 import Schedule from './Schedule';
+import Appearance from './Appearance';
 
 export default function PlacementSettings(props) {
 	const {
@@ -156,9 +154,9 @@ export default function PlacementSettings(props) {
 							<CheckboxControl
 								label={__('useThemeStyle', 'mailster')}
 								checked={useThemeStyle}
-								onChange={(val) => {
-									setUseThemeStyle(!useThemeStyle);
-								}}
+								onChange={(val) =>
+									setUseThemeStyle(!useThemeStyle)
+								}
 							/>
 						</Item>
 					</ItemGroup>
@@ -174,9 +172,7 @@ export default function PlacementSettings(props) {
 								)}
 								value={type}
 								checked={isEnabled}
-								onChange={(val) => {
-									setPlacements(type, val);
-								}}
+								onChange={(val) => setPlacements(type, val)}
 							/>
 						</PanelRow>
 					</PanelBody>
@@ -186,95 +182,7 @@ export default function PlacementSettings(props) {
 							<DisplayOptions {...props} />
 							<Triggers {...props} />
 							<Schedule {...props} />
-							<PanelBody title="Appearance" initialOpen={false}>
-								<PanelRow>
-									<RangeControl
-										className="widefat"
-										label={__('Form Width', 'mailster')}
-										help={__(
-											'Set the with of your form in %',
-											'mailster'
-										)}
-										value={options.width}
-										allowReset={true}
-										onChange={(val) =>
-											setOptions({
-												width: val,
-											})
-										}
-										min={10}
-										max={100}
-										initialPosition={100}
-									/>
-								</PanelRow>
-								<PanelRow>
-									<BoxControl
-										label={__('Form Padding', 'mailster')}
-										values={options.padding}
-										help={__(
-											'Set the padding of your form in %',
-											'mailster'
-										)}
-										resetValues={{
-											top: undefined,
-											left: undefined,
-											right: undefined,
-											bottom: undefined,
-										}}
-										onChange={(val) =>
-											setOptions({
-												padding: val,
-											})
-										}
-									/>
-								</PanelRow>
-								{'content' != type && (
-									<PanelRow>
-										<ItemGroup
-											isBordered={false}
-											size="small"
-										>
-											<SelectControl
-												label={__(
-													'Animation',
-													'mailster'
-												)}
-												value={options.animation}
-												onChange={(val) => {
-													setOptions({
-														animation: val,
-													});
-												}}
-											>
-												<option value="">
-													{__('None', 'mailster')}
-												</option>
-												<option value="fadein">
-													{__('FadeIn', 'mailster')}
-												</option>
-												<option value="shake">
-													{__('Shake', 'mailster')}
-												</option>
-												<option value="swing">
-													{__('Swing', 'mailster')}
-												</option>
-												<option value="heartbeat">
-													{__(
-														'Heart Beat',
-														'mailster'
-													)}
-												</option>
-												<option value="tada">
-													{__('Tada', 'mailster')}
-												</option>
-												<option value="wobble">
-													{__('Wobble', 'mailster')}
-												</option>
-											</SelectControl>
-										</ItemGroup>
-									</PanelRow>
-								)}
-							</PanelBody>
+							<Appearance {...props} />
 						</>
 					)}
 				</>

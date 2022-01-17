@@ -96,6 +96,7 @@ const ModalContent = (props) => {
 	const [currentPage, setCurrentPage] = useState(false);
 
 	const options = meta['placement_' + type] || {};
+
 	const isOther = type == 'other';
 
 	const iframeRef = useRef(null);
@@ -372,6 +373,7 @@ const ModalContent = (props) => {
 						{(placement) => (
 							<PlacementSettings
 								{...props}
+								isDisplayed={isDisplayed}
 								placement={placement}
 								useThemeStyle={useThemeStyle}
 								setUseThemeStyle={setUseThemeStyle}

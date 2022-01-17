@@ -20,11 +20,12 @@ export default function DisplayOptions(props) {
 	const { options, setOptions, placement } = props;
 	const { type } = placement;
 
+	function Title() {
+		return <>{__('Display Options', 'mailster')}</>;
+	}
+
 	return (
-		<PanelBody
-			title={__('Display Options', 'mailster')}
-			initialOpen={false}
-		>
+		<PanelBody title={<Title />} initialOpen={false}>
 			<PostTypeFields options={options} setOptions={setOptions} />
 			{'content' == type && <DisplayOptionsContent {...props} />}
 		</PanelBody>

@@ -49,11 +49,16 @@ import InlineStyles from './InlineStyles';
 import '../store';
 
 function SettingsPanelPlugin() {
-	const [meta, setMeta] = useEntityProp(
+	const [meta, setMyMeta] = useEntityProp(
 		'postType',
 		'newsletter_form',
 		'meta'
 	);
+
+	function setMeta(v) {
+		console.warn('setMeta', v);
+		setMyMeta(v);
+	}
 
 	const blocks = useSelect((select) =>
 		select('core/block-editor').getBlocks()

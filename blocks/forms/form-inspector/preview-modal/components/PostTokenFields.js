@@ -71,13 +71,6 @@ export default function PostTokenFields(props) {
 		return select('core').getEntityRecords('root', 'taxonomy');
 	});
 
-	// const specifcTax = useSelect((select) => {
-	// 	return select('core').getEntityRecords('taxonomy', taxonomy);
-	// });
-
-	// const tax = useSelect((select) => {
-	// 	return select('core').getEntityRecords('root', 'taxonomy');
-	// });
 	return (
 		<>
 			<PostTokenField

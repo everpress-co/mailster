@@ -59,9 +59,7 @@ export default function DisplayOptionsContent(props) {
 								<FlexItem>
 									<NumberControl
 										onChange={(val) =>
-											setOptions({
-												pos: val,
-											})
+											setOptions({ pos: val })
 										}
 										step={1}
 										disabled={options.tag == 'more'}
@@ -73,9 +71,7 @@ export default function DisplayOptionsContent(props) {
 									<SelectControl
 										value={options.tag || 'p'}
 										onChange={(val) =>
-											setOptions({
-												tag: val,
-											})
+											setOptions({ tag: val })
 										}
 										options={[
 											{
