@@ -64,9 +64,9 @@ import {
 /**
  * Internal dependencies
  */
-import PlacementSettingsContent from './PlacementSettingsContent';
-import PlacementSettingsTriggers from './PlacementSettingsTriggers';
-import PostTypeFields from './PostTypeFields';
+import DisplayOptions from './DisplayOptions';
+import Triggers from './Triggers';
+import Schedule from './Schedule';
 
 export default function PlacementSettings(props) {
 	const {
@@ -76,16 +76,10 @@ export default function PlacementSettings(props) {
 		setPlacements,
 		useThemeStyle,
 		setUseThemeStyle,
+		options,
+		setOptions,
 	} = props;
 	const { type, title } = placement;
-
-	const options = meta['placement_' + type] || {};
-
-	function setOptions(options) {
-		var newOptions = { ...meta['placement_' + type] };
-		newOptions = { ...newOptions, ...options };
-		setMeta({ ['placement_' + type]: newOptions });
-	}
 
 	const currentPostId = useSelect(
 		(select) => select('core/editor').getCurrentPostId(),
@@ -189,33 +183,9 @@ export default function PlacementSettings(props) {
 
 					{isEnabled && (
 						<>
-							<PanelBody
-								title="Display Options"
-								initialOpen={true}
-							>
-								<PostTypeFields
-									options={options}
-									setOptions={setOptions}
-								/>
-								{'content' == type && (
-									<PlacementSettingsContent
-										{...props}
-										setOptions={setOptions}
-										options={options}
-										setTriggers={setTriggers}
-										triggers={triggers}
-									/>
-								)}
-							</PanelBody>
-							{'content' != type && (
-								<PlacementSettingsTriggers
-									{...props}
-									setOptions={setOptions}
-									options={options}
-									setTriggers={setTriggers}
-									triggers={triggers}
-								/>
-							)}
+							<DisplayOptions {...props} />
+							<Triggers {...props} />
+							<Schedule {...props} />
 							<PanelBody title="Appearance" initialOpen={false}>
 								<PanelRow>
 									<RangeControl

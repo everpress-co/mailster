@@ -37,20 +37,33 @@ import {
 } from '@wordpress/components';
 import { undo, chevronRight, chevronLeft, helpFilled } from '@wordpress/icons';
 
-import {
-	__experimentalItemGroup as ItemGroup,
-	__experimentalItem as Item,
-} from '@wordpress/components';
-
 /**
  * Internal dependencies
  */
 
-export default function PlacementSettingsTriggers(props) {
-	const { options, setOptions, triggers, setTriggers } = props;
+export default function Triggers(props) {
+	const { options, setOptions, placement } = props;
+	const { type } = placement;
+
+	// no trigger on content
+	if ('content' == type) return null;
+
+	const triggers = options.triggers || [];
+
+	function setTriggers(trigger, add) {
+		var newTriggers = [...triggers];
+		if (add) {
+			newTriggers.push(trigger);
+		} else {
+			newTriggers = newTriggers.filter((el) => {
+				return el != trigger;
+			});
+		}
+		setOptions({ triggers: newTriggers });
+	}
 
 	return (
-		<PanelBody title="Triggers">
+		<PanelBody title={__('Triggers', 'mailster')} initialOpen={false}>
 			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after delay', 'mailster')}

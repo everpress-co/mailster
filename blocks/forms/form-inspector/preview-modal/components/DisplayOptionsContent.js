@@ -8,53 +8,15 @@
 
 import { __ } from '@wordpress/i18n';
 
+import { BlockAlignmentToolbar } from '@wordpress/block-editor';
 import {
-	useBlockProps,
-	InspectorControls,
-	RichText,
-	MediaPlaceholder,
-	MediaUpload,
-	MediaUploadCheck,
-	MediaReplaceFlow,
-	ColorPaletteControl,
-	BlockAlignmentToolbar,
-} from '@wordpress/block-editor';
-import {
-	Panel,
-	PanelBody,
 	PanelRow,
-	CheckboxControl,
 	RadioControl,
-	TextControl,
-	CardMedia,
-	Card,
-	CardHeader,
-	CardBody,
-	CardDivider,
-	CardFooter,
-	Button,
-	Modal,
-	Icon,
-	RangeControl,
-	FormTokenField,
+	SelectControl,
 	Flex,
 	FlexItem,
 	FlexBlock,
-	BaseControl,
-	SelectControl,
-	useCopyToClipboard,
 	__experimentalNumberControl as NumberControl,
-} from '@wordpress/components';
-
-import { Fragment, Component, useState, useEffect } from '@wordpress/element';
-
-import { undo, chevronRight, chevronLeft } from '@wordpress/icons';
-import apiFetch from '@wordpress/api-fetch';
-import { useDebounce } from '@wordpress/compose';
-import { useEntityProp } from '@wordpress/core-data';
-import { select, dispatch, subscribe } from '@wordpress/data';
-
-import {
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 } from '@wordpress/components';
@@ -63,8 +25,8 @@ import {
  * Internal dependencies
  */
 
-export default function PlacementSettingsContent(props) {
-	const { options, setOptions, triggers, setTriggers } = props;
+export default function DisplayOptionsContent(props) {
+	const { options, setOptions } = props;
 
 	return (
 		<>

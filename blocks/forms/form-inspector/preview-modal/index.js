@@ -81,11 +81,9 @@ import { useEntityProp } from '@wordpress/core-data';
 import { useEventListener } from '../../util';
 
 import PlacementSettings from './components/PlacementSettings';
-import PlacementSettingsContent from './components/PlacementSettingsContent';
-import PlacementSettingsTriggers from './components/PlacementSettingsTriggers';
 
 const ModalContent = (props) => {
-	const { placements, meta, initialType } = props;
+	const { placements, meta, setMeta, initialType } = props;
 
 	const [type, setType] = useState(initialType);
 	const [url, setUrl] = useState('');
@@ -377,6 +375,8 @@ const ModalContent = (props) => {
 								placement={placement}
 								useThemeStyle={useThemeStyle}
 								setUseThemeStyle={setUseThemeStyle}
+								options={meta['placement_' + placement.type]}
+								setOptions={setOptions}
 							/>
 						)}
 					</TabPanel>

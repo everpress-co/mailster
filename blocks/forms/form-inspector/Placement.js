@@ -72,7 +72,7 @@ const placements = [
 export default function Placement(props) {
 	const { meta, setMeta } = props;
 
-	const [isOpen, setOpen] = useState(false);
+	const [isOpen, setOpen] = useState('content');
 
 	function setPlacements(placement, add) {
 		var newPlacements = [...meta.placements];
