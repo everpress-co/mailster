@@ -794,6 +794,12 @@ class MailsterQueue {
 
 				do_action( 'mailster_autoresponder_timebased', $campaign->ID, $new_id );
 
+				// fix since 3.1.1 where Sunday was stored as "7" (should be "0")
+				if ( isset( $autoresponder_meta['weekdays'] ) && ( $key = array_search( 7, $autoresponder_meta['weekdays'] ) ) !== false ) {
+					unset( $autoresponder_meta['weekdays'][ $key ] );
+					$autoresponder_meta['weekdays'][] = 0;
+				}
+
 				mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
 
 			}

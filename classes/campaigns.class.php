@@ -2262,7 +2262,7 @@ class MailsterCampaigns {
 			return isset( $defaults[ $key ] ) ? $defaults[ $key ] : null;
 		}
 
-		return $defaults;
+		return apply_filters( 'mailster_campaign_meta_defaults', $defaults );
 
 	}
 
@@ -4538,8 +4538,9 @@ class MailsterCampaigns {
 		$listunsubscribe = array();
 		if ( mailster_option( 'mail_opt_out' ) ) {
 			$listunsubscribe_mail    = $mail->bouncemail ? $mail->bouncemail : $mail->from;
-			$listunsubscribe_subject = 'Please remove me from the list';
-			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign_string} X-Mailster-ID: {$MID}" );
+			$listunsubscribe_subject = rawurlencode( 'Please remove me from the list' );
+			$listunsubscribe_link    = mailster()->get_unsubscribe_link( $campaign->ID, $subscriber->hash, $campaignindex );
+			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign_string} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
 
 			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 		}
