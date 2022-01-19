@@ -95,7 +95,7 @@ export const FormStylesPanel = (props) => {
 			text: value,
 		});
 	}
-	function setBackground(value) {
+	function setBackgroundColor(value) {
 		if (!value) return;
 		setStyle('color', {
 			background: value,
@@ -128,7 +128,7 @@ export const FormStylesPanel = (props) => {
 					colorValue: style?.color?.background,
 					label: __('Background Color', 'mailster'),
 					gradientValue: style?.color?.gradient,
-					onColorChange: setBackground,
+					onColorChange: setBackgroundColor,
 					onGradientChange: setGradient,
 				},
 			]}
@@ -232,7 +232,11 @@ export const FormStylesPanel = (props) => {
 				<PanelRow>
 					<MediaPlaceholder
 						onSelect={(el) => {
-							setBackground('image', el.url);
+							// prefer first image between a threshold and fallback to the original
+							const image = Object.values(el.sizes).filter(
+								(size) => size.width > 300 && size.width < 1200
+							)[0];
+							setBackground('image', image?.url || el.url);
 						}}
 						allowedTypes={['image']}
 						multiple={false}

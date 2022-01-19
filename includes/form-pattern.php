@@ -111,7 +111,7 @@ $patterns = apply_filters(
 			'title'         => __( 'Simple', 'mailster' ),
 			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
 			'viewportWidth' => 880,
-			'content'       => '<!-- wp:mailster/form-wrapper {"style":{"spacing":{"padding":{"top":"2em","right":"2em","bottom":"2em","left":"2em"}},"color":{"gradient":"radial-gradient( circle farthest-corner at 10% 20%,  rgba(255,94,247,1) 17.8%, rgba(2,245,255,1) 100.2% )"}},"textColor":"white"} -->
+			'content'       => '<!-- wp:mailster/form-wrapper {"background":{"opacity":20,"fixed":false,"repeat":false,"size":"cover","image":"https://user-images.githubusercontent.com/881729/150156830-af1843d1-d76e-408d-bce1-58e1f303ff15.jpg","position":{"x":0.5,"y":0.5}},"style":{"spacing":{"padding":{"top":"2em","right":"2em","bottom":"2em","left":"2em"}},"color":{"gradient":"radial-gradient( circle farthest-corner at 10% 20%,  rgba(255,94,247,1) 17.8%, rgba(2,245,255,1) 100.2% )"},"labelColor":"#000000"},"textColor":"white"} -->
 <form method="post" action="" novalidate style="background:radial-gradient( circle farthest-corner at 10% 20%,  rgba(255,94,247,1) 17.8%, rgba(2,245,255,1) 100.2% );padding-top:2em;padding-right:2em;padding-bottom:2em;padding-left:2em" class="wp-block-mailster-form-wrapper mailster-block-form has-white-color has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:heading {"level":4} -->
 <h4>Subscribe to ' . get_option( 'blogname' ) . '</h4>
 <!-- /wp:heading -->
@@ -151,6 +151,64 @@ $patterns = apply_filters(
 <!-- wp:mailster/field-submit -->
 <div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button"><input name="submit" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
+		array(
+			'title'         => __( 'Coffee maker', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"background":{"opacity":100,"fixed":false,"repeat":false,"size":71,"image":"https://opendoodles.s3-us-west-1.amazonaws.com/coffee.svg","position":{"x":"1.00","y":"0.60"}},"css":{"general":"","tablet":"","mobile":""},"style":{"borderRadius":"0px","spacing":{"padding":{"top":"4em","right":"4em","bottom":"4em","left":"4em"}},"color":{"text":"#ffffff","gradient":"linear-gradient(135deg,rgb(148,74,9) 0%,rgb(54,45,38) 100%)"}},"backgroundColor":"#FFFFFF"} -->
+<form method="post" action="" novalidate style="background:linear-gradient(135deg,rgb(148,74,9) 0%,rgb(54,45,38) 100%);color:#ffffff;padding-top:4em;padding-right:4em;padding-bottom:4em;padding-left:4em" class="wp-block-mailster-form-wrapper mailster-block-form has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:heading {"style":{"typography":{"letterSpacing":"-0.1rem"}},"textColor":"quaternary"} -->
+<h2 class="has-quaternary-color has-text-color" id="here-is-your-20-discount" style="letter-spacing:-0.1rem">Here is your 20% discount.</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Join our email list and get a special 20% discount!</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/field-email {"inline":true,"style":{"width":57}} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline" style="width:57%"><input name="email" type="email" aria-required="true" aria-label="Your Email address" spellcheck="false" required class="input" placeholder=" "/><label class="mailster-label">Your Email address</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-firstname {"inline":true,"style":{"width":57}} -->
+<div class="wp-block-mailster-field-firstname mailster-wrapper mailster-wrapper-inline" style="width:57%"><input name="firstname" type="text" aria-required="false" aria-label="First Name" spellcheck="false" class="input" placeholder=" "/><label class="mailster-label">First Name</label></div>
+<!-- /wp:mailster/field-firstname -->
+
+<!-- wp:mailster/field-lastname {"inline":true,"style":{"width":57}} -->
+<div class="wp-block-mailster-field-lastname mailster-wrapper mailster-wrapper-inline" style="width:57%"><input name="lastname" type="text" aria-required="false" aria-label="Last Name" spellcheck="false" class="input" placeholder=" "/><label class="mailster-label">Last Name</label></div>
+<!-- /wp:mailster/field-lastname -->
+
+<!-- wp:mailster/field-submit {"style":{"width":57,"borderWidth":"3px","color":"#1A1B1F"}} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button" style="width:57%"><input name="submit" type="submit" style="color:#1A1B1F;border-width:3px" value="Get 20% now" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
+		array(
+			'title'         => __( 'Welcome', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"style":{"color":{"background":"#fe5412","text":"#ffffff"},"spacing":{"padding":{"top":"4em","left":"3em","right":"3em","bottom":"4em"}}}} -->
+<form method="post" action="" novalidate style="background-color:#fe5412;color:#ffffff;padding-top:4em;padding-right:3em;padding-bottom:4em;padding-left:3em" class="wp-block-mailster-form-wrapper mailster-block-form has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:heading {"textAlign":"center","style":{"typography":{"fontStyle":"normal","fontWeight":"700"}},"fontSize":"gigantic"} -->
+<h2 class="has-text-align-center has-gigantic-font-size" id="welcome" style="font-style:normal;font-weight:700">Welcome!</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","fontSize":"extra-large"} -->
+<p class="has-text-align-center has-extra-large-font-size">Enjoy 10% off your first order *</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/field-email {"inline":true} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline"><input name="email" type="email" aria-required="true" aria-label="Your Email address" spellcheck="false" required class="input" placeholder=" "/><label class="mailster-label">Your Email address</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button"><input name="submit" type="submit" value="Get your Coupon Code now!" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit -->
+
+<!-- wp:paragraph {"align":"center","fontSize":"extra-small"} -->
+<p class="has-text-align-center has-extra-small-font-size">* terms may apply</p>
+<!-- /wp:paragraph --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 
 		),
