@@ -707,7 +707,8 @@ class MailsterAjax {
 				if ( mailster_option( 'mail_opt_out' ) ) {
 					$listunsubscribe_mail    = $bouncemail ? $bouncemail : $from;
 					$listunsubscribe_subject = 'Please remove me from the list';
-					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID}" );
+					$listunsubscribe_link    = mailster()->get_unsubscribe_link( $ID, $mail->hash );
+					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
 
 					$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 				}
@@ -1927,7 +1928,7 @@ class MailsterAjax {
 			mailster_update_option( $formdata['mailster_options'], true );
 		}
 
-		$identifier = 'mailster_bonuce_test_' . md5( uniqid() );
+		$identifier = 'mailster_bounce_test_' . md5( uniqid() );
 
 		$return['identifier'] = $identifier;
 
