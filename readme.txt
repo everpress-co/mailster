@@ -193,6 +193,7 @@ Get professional development help from our expert support partner *Codeable* for
 * fixed: type in test bounce message
 * fixed: typo in subscriber query causes database error
 * fixed: PHP warning of undefined variable in option bar
+* added: unsubscribe link to in mail app unsubscribe message
 * added: filter `mailster_campaign_meta_defaults` to filter default meta values
 * added: defined `wp_mail` filters are now applied if used with Mailster
 
