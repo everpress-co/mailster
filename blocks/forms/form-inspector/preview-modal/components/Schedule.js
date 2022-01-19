@@ -44,7 +44,7 @@ function DatePicker(props) {
 function ScheduleEntry(props) {
 	const { index, setDate, schedule } = props;
 
-	const [isValid, setIsValid] = useState(false);
+	const [isValid, setIsValid] = useState(true);
 
 	function setStartDate(date) {
 		setDate(index, 'start', date);
@@ -68,8 +68,6 @@ function ScheduleEntry(props) {
 			(!schedule.start && !schedule.end);
 		setIsValid(isValid);
 	}, [schedule]);
-	console.warn(new Date(schedule.end));
-	console.warn(new Date(schedule.start));
 
 	return (
 		<ItemGroup className="widefat" isBordered size="medium">
