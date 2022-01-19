@@ -484,7 +484,7 @@ class MailsterManage {
 				'imported'    => 0,
 				'encoding'    => null,
 				'performance' => ! ! ( $_POST['options']['performance'] === 'true' ),
-			),
+			)
 		);
 
 		$memory_limit       = ini_get( 'memory_limit' );
