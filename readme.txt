@@ -189,6 +189,8 @@ Get professional development help from our expert support partner *Codeable* for
 
 = 3.1.1 =
 
+* fixed: time specific auto responders sent only on Sundays causes sending the following to be way in the future
+* fixed: type in test bounce message
 * fixed: typo in subscriber query causes database error
 * fixed: PHP warning of undefined variable in option bar
 * added: filter `mailster_campaign_meta_defaults` to filter default meta values

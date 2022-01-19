@@ -1927,7 +1927,7 @@ class MailsterAjax {
 			mailster_update_option( $formdata['mailster_options'], true );
 		}
 
-		$identifier = 'mailster_bonuce_test_' . md5( uniqid() );
+		$identifier = 'mailster_bounce_test_' . md5( uniqid() );
 
 		$return['identifier'] = $identifier;
 
