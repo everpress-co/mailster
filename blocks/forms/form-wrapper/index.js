@@ -7,7 +7,8 @@
  */
 
 import { registerBlockType } from '@wordpress/blocks';
-
+import { addFilter } from '@wordpress/hooks';
+import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
@@ -47,3 +48,29 @@ registerBlockType(name, {
 	 */
 	save,
 });
+
+function setParentToBlocks(settings, name) {
+	if ('core/column' == name) {
+		console.warn(settings);
+	}
+	if (!/^mailster\//.test(name)) {
+		if (!settings['parent']) {
+			settings['parent'] = ['mailster/form-wrapper'];
+		} else if (!settings['parent'].includes('mailster/form-wrapper')) {
+			settings['parent'].push('mailster/form-wrapper');
+			settings['parent'] = settings['parent'].filter(
+				(item) => item !== 'core/post-content'
+			);
+		}
+	}
+
+	return settings;
+}
+
+console.warn('AAA');
+
+wp.hooks.addFilter(
+	'blocks.registerBlockType',
+	'mailster/forms/set-parent-to-blocks',
+	setParentToBlocks
+);

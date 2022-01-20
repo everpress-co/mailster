@@ -49,6 +49,8 @@ import { getBlockType, createBlock, rawHandler } from '@wordpress/blocks';
  * Internal dependencies
  */
 
+import { useUpdateEffect } from '../util';
+
 export default function BlockRecovery(props) {
 	const { attributes, setAttributes, clientId } = props;
 
@@ -73,15 +75,8 @@ export default function BlockRecovery(props) {
 			dispatch('core/block-editor').replaceBlock(block.clientId, b);
 		});
 		setHasBrokenBlocks(0);
-	};
-	const removeBlock = () => {
-		const broken = getBrokenBlocks();
 
-		broken.map((block) => {
-			dispatch('core/block-editor').removeBlock(block.clientId);
-		});
-
-		setHasBrokenBlocks(0);
+		return true;
 	};
 
 	useEffect(() => {
@@ -89,31 +84,18 @@ export default function BlockRecovery(props) {
 		setHasBrokenBlocks(broken.length);
 	}, [hasBrokenBlocks]);
 
-	return (
-		<>
-			{hasBrokenBlocks > 1 && (
-				<Warning
-					actions={[
-						<Button onClick={recoverAllBlocks} isPrimary>
-							{__(
-								'Attempt Block Recovery for all blocks',
-								'mailster'
-							)}
-						</Button>,
-					]}
-					secondaryActions={[
-						{
-							title: __('Remove broken blocks', 'mailster'),
-							onClick: removeBlock,
-						},
-					]}
-				>
-					{__(
-						'Some Blocks contain unexpected or invalid content.',
-						'mailster'
-					)}
-				</Warning>
-			)}
-		</>
-	);
+	useUpdateEffect(() => {
+		hasBrokenBlocks &&
+			recoverAllBlocks() &&
+			dispatch('core/notices').createNotice(
+				'success',
+				__('Automatically fixed broken Blocks.', 'mailster'),
+				{
+					type: 'snackbar',
+					isDismissible: true,
+				}
+			);
+	}, [hasBrokenBlocks]);
+
+	return null;
 }

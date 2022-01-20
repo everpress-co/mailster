@@ -5,8 +5,9 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 
-import { BlockControls, BlockAlignmentToolbar } from '@wordpress/block-editor';
+import { BlockControls, AlignmentToolbar } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -14,15 +15,31 @@ import { BlockControls, BlockAlignmentToolbar } from '@wordpress/block-editor';
 
 export default function InputBlockControls(props) {
 	const { attributes, setAttributes } = props;
-	const { align } = attributes;
+	const { align, labelAlign, hasLabel } = attributes;
 
 	function updateAlignment(alignment) {
 		setAttributes({ align: alignment });
 	}
+	function updateLabelAlignment(alignment) {
+		setAttributes({ labelAlign: alignment });
+	}
 
 	return (
 		<BlockControls>
-			<BlockAlignmentToolbar value={align} onChange={updateAlignment} />
+			{hasLabel && (
+				<AlignmentToolbar
+					value={labelAlign}
+					onChange={updateLabelAlignment}
+					describedBy={__('Change label alignment', 'mailster')}
+					label={__('Label Align', 'mailster')}
+				/>
+			)}
+			<AlignmentToolbar
+				value={align}
+				onChange={updateAlignment}
+				describedBy={__('Change text alignment', 'mailster')}
+				label={__('Align', 'mailster')}
+			/>
 		</BlockControls>
 	);
 }

@@ -85,7 +85,9 @@ window.mailster_fields &&
 				},
 				align: {
 					type: 'string',
-					default: '',
+				},
+				labelAlign: {
+					type: 'string',
 				},
 				id: {
 					type: 'string',
@@ -105,6 +107,10 @@ window.mailster_fields &&
 					source: 'attribute',
 					selector: '.input',
 					attribute: 'required',
+				},
+				asterisk: {
+					type: 'boolean',
+					default: true,
 				},
 				inline: {
 					type: 'boolean',

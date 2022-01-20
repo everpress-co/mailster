@@ -165,8 +165,11 @@ body::before {
 	> div {
 		position: relative;
 	}
-	.wp-block {
-		margin: 0 0 0.5rem !important;
+	.wp-block:not(.mailster-wrapper) {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 0.5rem;
 		width: 100%;
 		max-width: 100%;
 	}
@@ -183,7 +186,7 @@ body::before {
 		margin-top: 0;
 		margin-left: 0;
 		margin-right: 0;
-		margin-bottom: 0.5rem;
+		margin-bottom: 1rem;
 		max-width: 100%;
 		width: 100%;
 
@@ -212,7 +215,11 @@ body::before {
 			margin-top: 0;
 			margin-left: 0;
 			margin-right: 0;
-			margin-bottom: 0.5rem;
+			margin-bottom: 1rem;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
 		}
 	}
 }
@@ -282,7 +289,7 @@ body::before {
 		}
 	}
 
-	.mailster-wrapper-required {
+	.mailster-wrapper-required.mailster-wrapper-asterisk {
 		label.mailster-label::after {
 			content: '*';
 			display: inline-block;
@@ -291,6 +298,9 @@ body::before {
 			color: #bf4d4d;
 			color: var(--wp--preset--color--vivid-red, #bf4d4d);
 		}
+	}
+	label.mailster-label {
+		display: flex;
 	}
 	.mailster-wrapper-inline {
 		label.mailster-label {
@@ -302,7 +312,6 @@ body::before {
 			padding-left: 1rem;
 			padding-right: 1rem;
 			pointer-events: none;
-			display: flex;
 			align-items: center;
 			margin: 0;
 			white-space: nowrap;
@@ -337,6 +346,68 @@ body::before {
 			display: none;
 		}
 	}
+	.mailster-group {
+		display: flex;
+	}
+	.mailster-wrapper-label-align-left {
+		label.mailster-label {
+			justify-content: flex-start;
+		}
+		.submit-button {
+			text-align: left;
+		}
+	}
+	.mailster-wrapper-label-align-center {
+		label.mailster-label {
+			justify-content: center;
+		}
+		.submit-button {
+			text-align: center;
+		}
+	}
+	.mailster-wrapper-label-align-right {
+		label.mailster-label {
+			justify-content: flex-end;
+		}
+		.submit-button {
+			text-align: right;
+		}
+	}
+	.mailster-wrapper-align-left {
+		.input {
+			text-align: left;
+		}
+		.mailster-group {
+			justify-content: flex-start;
+		}
+		.submit-button {
+			text-align: left;
+		}
+	}
+	.mailster-wrapper-align-center {
+		.input {
+			text-align: center;
+		}
+		.mailster-group {
+			justify-content: center;
+		}
+		.submit-button {
+			text-align: center;
+		}
+	}
+	.mailster-wrapper-align-right {
+		.input {
+			text-align: right;
+		}
+		.mailster-group {
+			justify-content: flex-end;
+		}
+
+		.submit-button {
+			text-align: right;
+		}
+	}
+
 	.mailster-wrapper {
 		input[type='checkbox'],
 		input[type='radio'] {
@@ -490,24 +561,15 @@ body::before {
 	}
 }
 @keyframes mailster-heartbeat {
-	0% {
-		transform: scale(1);
-	}
-
-	14% {
-		transform: scale(1.1);
-	}
-
-	28% {
-		transform: scale(1);
-	}
-
-	42% {
-		transform: scale(1.1);
-	}
-
+	0%,
+	28%,
 	70% {
 		transform: scale(1);
+	}
+
+	14%,
+	42% {
+		transform: scale(1.1);
 	}
 }
 @keyframes mailster-tada {

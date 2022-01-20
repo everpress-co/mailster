@@ -30,7 +30,9 @@ _body::before {
 		position: relative;
 	}
 }
-
+.editor-styles-wrapper.block-editor-writing-flow {
+	padding-bottom: 0 !important;
+}
 .rtl .block-editor-block-list__layout {
 	flex-direction: row-reverse;
 }

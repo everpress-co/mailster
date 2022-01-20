@@ -836,7 +836,7 @@ class MailsterBlockForms {
 			$types[] = 'mailster/field-' . $block;
 		}
 
-		return $types;
+		return apply_filters( 'mailster_forms_allowed_block_types', $types );
 
 	}
 

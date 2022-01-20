@@ -64,6 +64,7 @@ export default function InputFieldInspectorControls(props) {
 		label,
 		inline,
 		required,
+		asterisk,
 		native,
 		name,
 		type,
@@ -156,6 +157,17 @@ export default function InputFieldInspectorControls(props) {
 								disabled={name == 'email'}
 								onChange={() =>
 									setAttributes({ required: !required })
+								}
+							/>
+						</PanelRow>
+					)}
+					{required && (
+						<PanelRow>
+							<CheckboxControl
+								label={__('Show asterisk', 'mailster')}
+								checked={asterisk}
+								onChange={() =>
+									setAttributes({ asterisk: !asterisk })
 								}
 							/>
 						</PanelRow>

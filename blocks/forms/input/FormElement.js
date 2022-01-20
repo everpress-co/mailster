@@ -6,7 +6,7 @@
  * WordPress dependencies
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 import {
 	useBlockProps,
@@ -37,6 +37,8 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
 
+import { format } from '@wordpress/date';
+
 /**
  * Internal dependencies
  */
@@ -57,7 +59,7 @@ export default function FormElement(props) {
 	} = attributes;
 
 	const inputStyle = {
-		color: style.color,
+		color: style.inputColor,
 		fontSize: style.fontSize,
 		backgroundColor: style.backgroundColor,
 		borderColor: style.borderColor,
@@ -149,6 +151,11 @@ export default function FormElement(props) {
 				/>
 			);
 		default:
+			const sample =
+				'date' == type
+					? format('Y-m-d', new Date())
+					: sprintf(__('Sample text for %s'), label);
+
 			return (
 				<input
 					name={name}
@@ -157,6 +164,8 @@ export default function FormElement(props) {
 					aria-label={label}
 					spellCheck={false}
 					required={required}
+					value={isSelected && !inline ? sample : ''}
+					onChange={() => {}}
 					className="input"
 					style={inputStyle}
 					placeholder=" "

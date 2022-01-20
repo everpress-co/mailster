@@ -38,18 +38,23 @@ export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const {
 		label,
-		name,
 		type,
-		values,
 		inline,
 		required,
+		asterisk,
 		style,
 		hasLabel,
+		align,
+		labelAlign,
 	} = attributes;
 	const className = ['mailster-wrapper'];
 
 	if (required) className.push('mailster-wrapper-required');
+	if (align) className.push('mailster-wrapper-align-' + align);
+	if (labelAlign)
+		className.push('mailster-wrapper-label-align-' + labelAlign);
 	if (inline) className.push('mailster-wrapper-inline');
+	if (required && asterisk) className.push('mailster-wrapper-asterisk');
 	if ('submit' == type) className.push('wp-block-button');
 
 	const styleSheets = {
