@@ -50,9 +50,6 @@ registerBlockType(name, {
 });
 
 function setParentToBlocks(settings, name) {
-	if ('core/column' == name) {
-		console.warn(settings);
-	}
 	if (!/^mailster\//.test(name)) {
 		if (!settings['parent']) {
 			settings['parent'] = ['mailster/form-wrapper'];
@@ -66,8 +63,6 @@ function setParentToBlocks(settings, name) {
 
 	return settings;
 }
-
-console.warn('AAA');
 
 wp.hooks.addFilter(
 	'blocks.registerBlockType',

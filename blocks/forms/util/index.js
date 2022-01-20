@@ -39,3 +39,27 @@ export function useEventListener(eventType, callback, element = window) {
 		return () => element.removeEventListener(eventType, handler);
 	}, [eventType, element]);
 }
+
+export function useBlockAttributes() {
+	const { clientId } = useBlockEditContext();
+	const { updateBlockAttributes } = useDispatch('core/block-editor');
+
+	const attributes = useSelect(
+		(select) => {
+			const { getBlockAttributes } = select('core/block-editor');
+			const _attributes = getBlockAttributes(clientId) || {};
+
+			return _attributes;
+		},
+		[clientId]
+	);
+
+	const setAttributes = useCallback(
+		(newAttributes) => {
+			updateBlockAttributes(clientId, newAttributes);
+		},
+		[clientId]
+	);
+
+	return [attributes, setAttributes];
+}
