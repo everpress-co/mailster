@@ -20,14 +20,7 @@ const { name, ...settings } = json;
 
 registerBlockType(name, {
 	...settings,
-	/**
-	 * @see ./edit.js
-	 */
 	edit,
-
-	/**
-	 * @see ./save.js
-	 */
 	save: () => {
 		return null;
 	},

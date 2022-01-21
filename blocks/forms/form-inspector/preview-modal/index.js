@@ -78,7 +78,7 @@ import { useEntityProp } from '@wordpress/core-data';
  * Internal dependencies
  */
 
-import { useEventListener } from '../../util';
+import { useEventListener } from '../../../util';
 
 import PlacementSettings from './components/PlacementSettings';
 
@@ -236,7 +236,7 @@ const ModalContent = (props) => {
 				all: true,
 				trigger_delay: 2,
 				trigger_inactive: 4,
-			}, //all => display always as its a preview
+			},
 			form_id: formId,
 			post_content: postContent,
 		};

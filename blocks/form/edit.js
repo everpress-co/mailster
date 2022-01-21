@@ -59,6 +59,8 @@ import {
  * Internal dependencies
  */
 
+import { useUpdateEffect } from '../util';
+
 function MailsterFormSelector(props) {
 	const { attributes, setAttributes, isSelected } = props;
 	const { id } = attributes;
@@ -105,20 +107,29 @@ export default function Edit(props) {
 
 	const blockRef = useRef();
 
-	const EmptyPlaceholder = () => {
+	function EmptyPlaceholder({ children }) {
 		return (
-			<Flex
-				justify="center"
+			<div
 				style={{
-					backgroundColor: '#fafafa',
 					minHeight: height + 'px',
 					zIndex: 10,
 				}}
 			>
-				<Spinner />
-			</Flex>
+				{(!children || !displayForm) && (
+					<Flex
+						justify="center"
+						style={{
+							minHeight: height + 'px',
+							backgroundColor: '#fafafa44',
+						}}
+					>
+						<Spinner />
+					</Flex>
+				)}
+				{displayForm && children}
+			</div>
 		);
-	};
+	}
 
 	useEffect(() => {
 		if (!blockRef.current) return;
@@ -161,7 +172,7 @@ export default function Edit(props) {
 	return (
 		<>
 			<div {...useBlockProps()}>
-				{id && (
+				{id ? (
 					<div
 						className="mailster-block-form-editor-wrap"
 						ref={blockRef}
@@ -177,16 +188,15 @@ export default function Edit(props) {
 								)}
 							</strong>
 						</Flex>
-
 						<ServerSideRender
 							className="mailster-block-form-editor-wrap-inner"
 							block="mailster/form"
 							attributes={attributes}
 							EmptyResponsePlaceholder={EmptyPlaceholder}
+							LoadingResponsePlaceholder={EmptyPlaceholder}
 						/>
 					</div>
-				)}
-				{!id && (
+				) : (
 					<Placeholder
 						icon={email}
 						label={__('Mailster Subscription Form', 'mailster')}
@@ -194,7 +204,7 @@ export default function Edit(props) {
 						<MailsterFormSelector {...props} />
 						<div className="placeholder-buttons-wrap">
 							<Button
-								variant="link"
+								variant="tertiary"
 								href={'post-new.php?post_type=newsletter_form'}
 								target={'edit_form_new'}
 								text={__('create new form', 'mailster')}
@@ -227,17 +237,11 @@ export default function Edit(props) {
 			<InspectorControls>
 				<Panel>
 					<PanelBody
-						title={__('General Settings', 'mailster')}
+						title={__('Settings', 'mailster')}
 						initialOpen={true}
 					>
 						<MailsterFormSelector {...props} />
 					</PanelBody>
-				</Panel>
-				<Panel>
-					<PanelBody
-						title={__('Field Settings', 'mailster')}
-						initialOpen={true}
-					></PanelBody>
 				</Panel>
 			</InspectorControls>
 		</>

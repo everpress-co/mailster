@@ -49,7 +49,7 @@ import { getBlockType, createBlock, rawHandler } from '@wordpress/blocks';
  * Internal dependencies
  */
 
-import { useUpdateEffect } from '../util';
+import { useUpdateEffect } from '../../util';
 
 export default function BlockRecovery(props) {
 	const { attributes, setAttributes, clientId } = props;
