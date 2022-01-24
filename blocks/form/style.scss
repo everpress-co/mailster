@@ -449,6 +449,11 @@ body::before {
 		}
 	}
 }
+.mailster-block-form.completed .mailster-block-form-inner {
+	.mailster-wrapper {
+		display: none;
+	}
+}
 .mailster-block-form.wp-block-mailster-form-wrapper.loading
 	.wp-block-mailster-field-submit::before {
 	content: '';

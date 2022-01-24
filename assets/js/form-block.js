@@ -2,7 +2,7 @@
 	'use strict';
 
 	var forms = document.querySelectorAll('.mailster-block-form');
-	var cookieTime = 10;
+	var cookieTime = 60;
 	var timeouts = [];
 
 	var triggerMethods = {
@@ -126,6 +126,7 @@
 				);
 
 			form.classList.remove('has-errors');
+			form.classList.remove('completed');
 			[].forEach.call(
 				document.querySelectorAll('div.mailster-wrapper.error'),
 				function (wrapper) {
@@ -138,10 +139,7 @@
 
 			fetch(form.getAttribute('action'), {
 				method: 'POST',
-				headers: {
-					// 'Content-Type': 'application/json',
-					// 'X-WP-Nonce': data.get('_nonce'), // <- here, send the nonce via the header
-				},
+				headers: {},
 				body: data,
 			})
 				.then(function (response) {
@@ -190,14 +188,18 @@
 					info.classList.remove('success');
 					info.classList.add('error');
 				} else {
-					infoError.innerHTML = message.join('<br>');
+					set(placement.identifier, 'show');
+					set(placement.identifier, 'submit');
+
 					info.classList.remove('error');
-					info.classList.add('success');
 
 					if (response.data.redirect) {
 						window.location.href = response.data.redirect;
 						return;
 					}
+
+					info.classList.add('success');
+					infoError.innerHTML = message.join('<br>');
 
 					if (!form.classList.contains('is-profile')) {
 						form.classList.add('completed');
@@ -221,7 +223,11 @@
 		if (placement.isPreview) {
 			return false;
 		}
-		return inTimeFrame(placement.identifier, 'shown');
+
+		if (get(placement.identifier, 'submit')) {
+			return true;
+		}
+		return inTimeFrame(placement.identifier, 'show');
 	}
 
 	function inTimeFrame(identifier, key, delay) {
@@ -281,7 +287,7 @@
 		var wrap = form.closest('.wp-block-mailster-form-outside-wrapper');
 		wrap.classList.remove('active');
 		if (!explicit) {
-			set(placement.identifier, 'shown');
+			set(placement.identifier, 'show');
 		}
 		timeouts[placement.identifier].forEach(function (timeout) {
 			clearTimeout(timeout);
@@ -342,10 +348,7 @@
 
 			fetch(url, {
 				method: 'POST',
-				headers: {
-					// 'Content-Type': 'application/json',
-					// 'X-WP-Nonce': data.get('_nonce'), // <- here, send the nonce via the header
-				},
+				headers: {},
 				body: JSON.stringify(placement),
 			})
 				.then(function (response) {
