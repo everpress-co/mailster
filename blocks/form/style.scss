@@ -189,6 +189,8 @@ body::before {
 		margin-bottom: 1rem;
 		max-width: 100%;
 		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
 
 		input.input,
 		textarea.input,
@@ -301,6 +303,7 @@ body::before {
 	}
 	label.mailster-label {
 		display: flex;
+		align-items: baseline;
 	}
 	.mailster-wrapper-inline {
 		label.mailster-label {

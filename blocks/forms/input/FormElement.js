@@ -2,6 +2,8 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -44,7 +46,16 @@ import { format } from '@wordpress/date';
  */
 
 export default function FormElement(props) {
-	const { attributes, setAttributes, isSelected, clientId } = props;
+	const {
+		attributes,
+		setAttributes,
+		isSelected,
+		clientId,
+		borderProps,
+		colorProps,
+		spacingProps,
+		innerStyle,
+	} = props;
 	const {
 		label,
 		name,
@@ -53,25 +64,35 @@ export default function FormElement(props) {
 		inline,
 		required,
 		native,
-		style,
+		style = {},
 		values,
 		pattern,
 	} = attributes;
 
+	const elem = classnames(colorProps.className, borderProps.className);
+
 	const inputStyle = {
-		color: style.inputColor,
-		fontSize: style.fontSize,
-		backgroundColor: style.backgroundColor,
-		borderColor: style.borderColor,
-		borderWidth: style.borderWidth,
-		borderStyle: style.borderStyle,
-		borderRadius: style.borderRadius,
+		...borderProps.style,
+		...colorProps.style,
+		...spacingProps.style,
+		...innerStyle,
+		...{
+			color: style.inputColor,
+			backgroundColor: style.backgroundColor,
+			borderColor: style.borderColor,
+			borderWidth: style.borderWidth,
+			borderStyle: style.borderStyle,
+			borderRadius: style.borderRadius,
+		},
 	};
 
 	switch (type) {
 		case 'radio':
 			return (
-				<div className="mailster-group mailster-group-radio">
+				<div
+					className="mailster-group mailster-group-radio"
+					style={inputStyle}
+				>
 					{values.map((value, i) => {
 						return (
 							<label key={i} className="mailster-wrapper-options">
@@ -82,13 +103,12 @@ export default function FormElement(props) {
 									required={required}
 									type="radio"
 									checked={selected == value}
-									style={inputStyle}
 									value={value}
-									onChange={(event) => {
+									onChange={(event) =>
 										setAttributes({
 											selected: event.target.value,
-										});
-									}}
+										})
+									}
 								/>
 								<span>{value}</span>
 							</label>
@@ -98,7 +118,10 @@ export default function FormElement(props) {
 			);
 		case 'checkbox':
 			return (
-				<div className="mailster-group mailster-group-checkbox">
+				<div
+					className="mailster-group mailster-group-checkbox"
+					style={inputStyle}
+				>
 					<label className="mailster-wrapper-options">
 						<input
 							name={name}
@@ -107,7 +130,6 @@ export default function FormElement(props) {
 							spellCheck={false}
 							required={required}
 							type="checkbox"
-							style={inputStyle}
 							defaultChecked={true}
 						/>
 						<span className="mailster-label">{label}</span>
@@ -124,11 +146,11 @@ export default function FormElement(props) {
 					required={required}
 					value={selected}
 					style={inputStyle}
-					onChange={(event) => {
+					onChange={(event) =>
 						setAttributes({
 							selected: event.target.value,
-						});
-					}}
+						})
+					}
 				>
 					{values.map((value, i) => {
 						return (

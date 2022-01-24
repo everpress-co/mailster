@@ -2,6 +2,8 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -13,6 +15,9 @@ import {
 	InspectorControls,
 	RichText,
 	PlainText,
+	__experimentalUseBorderProps as useBorderProps,
+	__experimentalUseColorProps as useColorProps,
+	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
 import {
 	Panel,
@@ -42,7 +47,7 @@ export default function Edit(props) {
 		inline,
 		required,
 		asterisk,
-		style,
+		style = {},
 		hasLabel,
 		align,
 		labelAlign,
@@ -57,30 +62,41 @@ export default function Edit(props) {
 	if (required && asterisk) className.push('mailster-wrapper-asterisk');
 	if ('submit' == type) className.push('wp-block-button');
 
+	const borderProps = useBorderProps(attributes);
+	const colorProps = useColorProps(attributes);
+	const spacingProps = useSpacingProps(attributes);
+
 	const styleSheets = {
 		width: style.width ? style.width + '%' : undefined,
 	};
 
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
+
+	const innerStyle = blockProps.style;
+	blockProps.style = undefined;
+
 	return (
 		<>
-			<div
-				{...useBlockProps({
-					className: className.join(' '),
-				})}
-				style={styleSheets}
-			>
+			<div {...blockProps} style={styleSheets}>
 				{hasLabel && (
 					<RichText
 						tagName="label"
 						value={label}
 						onChange={(val) => setAttributes({ label: val })}
-						//allowedFormats={[]}
 						style={{ color: style.labelColor }}
 						className="mailster-label"
 						placeholder={__('Enter Label', 'mailster')}
 					/>
 				)}
-				<FormElement {...props} />
+				<FormElement
+					{...props}
+					borderProps={borderProps}
+					colorProps={colorProps}
+					spacingProps={spacingProps}
+					innerStyle={innerStyle}
+				/>
 			</div>
 			<InputBlockControls {...props} />
 			<InputFieldInspectorControls {...props} />

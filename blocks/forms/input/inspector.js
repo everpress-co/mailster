@@ -191,7 +191,7 @@ export default function InputFieldInspectorControls(props) {
 						<RangeControl
 							className="widefat"
 							label="Width"
-							value={style.width}
+							value={style?.width}
 							allowReset={true}
 							initialPosition={100}
 							onChange={(value) => setStyle('width', value)}

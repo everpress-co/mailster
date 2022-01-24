@@ -2,11 +2,19 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	RichText,
+	__experimentalGetBorderClassesAndStyles as getBorderClassesAndStyles,
+	__experimentalGetColorClassesAndStyles as getColorClassesAndStyles,
+	__experimentalGetSpacingClassesAndStyles as getSpacingClassesAndStyles,
+} from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -22,7 +30,7 @@ export default function save(props) {
 		inline,
 		required,
 		asterisk,
-		style,
+		style = {},
 		hasLabel,
 		align,
 		labelAlign,
@@ -41,6 +49,17 @@ export default function save(props) {
 		width: style.width ? style.width + '%' : undefined,
 	};
 
+	const borderProps = getBorderClassesAndStyles(attributes);
+	const colorProps = getColorClassesAndStyles(attributes);
+	const spacingProps = getSpacingClassesAndStyles(attributes);
+
+	const blockProps = useBlockProps.save({
+		className: classnames({}, className),
+	});
+
+	const innerStyle = blockProps.style;
+	blockProps.style = undefined;
+
 	const labelElement = (
 		<RichText.Content
 			tagName="label"
@@ -52,15 +71,15 @@ export default function save(props) {
 	);
 
 	return (
-		<div
-			{...useBlockProps.save({
-				className: className.join(' '),
-			})}
-			//data-label={label}
-			style={styleSheets}
-		>
+		<div {...blockProps} style={styleSheets}>
 			{hasLabel && label && !inline && labelElement}
-			<FormElement {...props} />
+			<FormElement
+				{...props}
+				borderProps={borderProps}
+				colorProps={colorProps}
+				spacingProps={spacingProps}
+				innerStyle={innerStyle}
+			/>
 			{hasLabel && label && inline && labelElement}
 		</div>
 	);

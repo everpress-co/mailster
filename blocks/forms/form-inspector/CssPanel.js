@@ -44,7 +44,13 @@ import {
 
 import { useDebounce } from '@wordpress/compose';
 
-import { Fragment, Component, useState, useEffect } from '@wordpress/element';
+import {
+	Fragment,
+	Component,
+	useState,
+	useEffect,
+	useMemo,
+} from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more, external } from '@wordpress/icons';
@@ -53,10 +59,77 @@ import { more, external } from '@wordpress/icons';
  * Internal dependencies
  */
 
+function getSelectors() {
+	const custom = window.mailster_fields.filter((el) => el.id != 'submit');
+	return [
+		{
+			label: __('General', 'mailster'),
+			items: [
+				{
+					selector: '.mailster-block-form',
+					title: __('Form selector', 'mailster'),
+				},
+				{
+					selector: '.mailster-block-form',
+					title: __('Form selector', 'mailster'),
+				},
+				{
+					selector: '.mailster-wrapper',
+					title: __('Field wrapper', 'mailster'),
+				},
+				{
+					selector: '.mailster-wrapper .input',
+					title: __('Input fields', 'mailster'),
+				},
+				{
+					selector: '.mailster-wrapper label.mailster-label',
+					title: __('Labels', 'mailster'),
+				},
+				{
+					selector: '.wp-block-mailster-form-outside-wrapper',
+					title: __('Outside Wrapper', 'mailster'),
+				},
+			],
+		},
+		{
+			label: __('Custom Field Wrapper divs', 'mailster'),
+			items: custom.map((el) => {
+				return {
+					selector: '.wp-block-mailster-field-' + el.id,
+					title: el.name,
+				};
+			}),
+		},
+		{
+			label: __('Custom Field Inputs', 'mailster'),
+			items: custom.map((el) => {
+				return {
+					selector: '.wp-block-mailster-field-' + el.id + ' .input',
+					title: el.name,
+				};
+			}),
+		},
+		{
+			label: __('Other', 'mailster'),
+			items: [
+				{
+					selector:
+						'.mailster-wrapper-required label.mailster-label::after',
+					title: __('Required Asterisk', 'mailster'),
+				},
+				{
+					selector: '.mailster-submit-wrapper .wp-block-button__link',
+					title: __('Submit Button', 'mailster'),
+				},
+			],
+		},
+	];
+}
+
 const Wrapper = ({ children, isCSSModal, setCSSModal }) => {
 	return isCSSModal ? (
 		<Modal
-			title="Please select a form to start with"
+			title={__('Enter your custom CSS', 'mailster')}
 			className="css-modal"
 			onRequestClose={() => setCSSModal(false)}
 			style={{
@@ -96,6 +169,10 @@ export const CssPanel = (props) => {
 
 	const setCssDebounce = useDebounce(setCss, 500);
 
+	const selectors = useMemo(() => {
+		return getSelectors();
+	}, [window.mailster_fields]);
+
 	const initCodeMirror = (isOpened, name) => {
 		const placeholder = '/* Style for ' + tabs[name] + ' /*';
 		if (!isOpened || !wp.CodeMirror) return;
@@ -129,8 +206,10 @@ export const CssPanel = (props) => {
 				.querySelector('.custom-css-tabs')
 				.querySelector('.CodeMirror').CodeMirror,
 			placeholder = '/*' + __('Your CSS Rules', 'mailster') + '*/',
+			editorValue = editor.getValue(),
 			value =
-				editor.getValue() +
+				editorValue +
+				(editorValue ? '\n' : '') +
 				selector +
 				'{\n    ' +
 				placeholder +
@@ -183,75 +262,40 @@ export const CssPanel = (props) => {
 						})}
 					>
 						{(tab) => (
-							<>
-								<TextareaControl
-									id="custom-css-textarea"
-									help="Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form."
-									value={css[tab.name]}
-									onChange={(value) =>
-										wp.CodeMirror &&
-										setCssDebounce(tab.name, name)
-									}
-								/>
-							</>
+							<TextareaControl
+								id="custom-css-textarea"
+								help="Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form."
+								value={css[tab.name]}
+								onChange={(value) =>
+									wp.CodeMirror &&
+									setCssDebounce(tab.name, name)
+								}
+							/>
 						)}
 					</TabPanel>
 				</PanelRow>
 				<PanelRow>
 					<SelectControl
-						label={__('Choose a Selector:', 'mailster')}
-						help="Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form."
+						label={__('Selectors', 'mailster')}
+						help="Helps you find the right selector for form elements"
 						onChange={addSelector}
 					>
-						<option value="">{__('Choose', 'mailster')}</option>
-						<option value=".mailster-block-form">
-							{__('Form selector', 'mailster')}
+						<option value="">
+							{__('Choose Selector', 'mailster')}
 						</option>
-						<option value=".mailster-wrapper">
-							{__('Field wrapper', 'mailster')}
-						</option>
-						<option value=".mailster-wrapper .input">
-							{__('Input fields', 'mailster')}
-						</option>
-						<option value=".mailster-wrapper label.mailster-label">
-							{__('Labels', 'mailster')}
-						</option>
-						<optgroup
-							label={__('Custom Field Wrapper divs', 'mailster')}
-						>
-							{[].map((el) => {
-								return (
-									<option
-										value={' .mailster-' + key + '-wrapper'}
-									>
-										{field}
-									</option>
-								);
-							})}
-						</optgroup>
-						<optgroup label={__('Custom Field Inputs', 'mailster')}>
-							{[].map((el) => {
-								return (
-									<option
-										value={
-											' .mailster-' +
-											key +
-											'-wrapper input.input'
-										}
-									>
-										{field}
-									</option>
-								);
-							})}
-						</optgroup>
-						<optgroup label={__('Other', 'mailster')}>
-							<option value=".mailster-wrapper-required label.mailster-label::after">
-								{__('Required Asterisk', 'mailster')}
-							</option>
-							<option value=".mailster-submit-wrapper .wp-block-button__link">
-								{__('Submit Button', 'mailster')}
-							</option>
-						</optgroup>
+						{selectors.map((group, i) => {
+							return (
+								<optgroup key={i} label={group.label}>
+									{group.items.map((el, j) => {
+										return (
+											<option key={j} value={el.selector}>
+												{el.title}
+											</option>
+										);
+									})}
+								</optgroup>
+							);
+						})}
 					</SelectControl>
 				</PanelRow>
 				{!!children && <>{children}</>}

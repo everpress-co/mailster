@@ -64,7 +64,7 @@ export const InputStylesPanel = (props) => {
 		return null;
 	}
 
-	const { style } = attributes;
+	const { style = {} } = attributes;
 
 	function setStyle(prop, value) {
 		var newStyle = { ...style };

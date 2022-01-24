@@ -44,6 +44,9 @@ _body::before {
 	margin-bottom: 0;
 }
 .editor-styles-wrapper .mailster-block-form .mailster-wrapper {
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 0;
 	margin-bottom: 0.5rem;
 	width: 100%;
 }
@@ -123,6 +126,7 @@ _body::before {
 		pointer-events: none;
 		margin: auto;
 	}
+
 	.block-editor-block-preview__container .wp-block {
 		max-width: 100%;
 	}
@@ -191,6 +195,7 @@ _body::before {
 		display: none;
 	}
 	.mailster-block-form.wp-block-mailster-form-wrapper {
+		width: 100%;
 		box-shadow: none;
 	}
 }

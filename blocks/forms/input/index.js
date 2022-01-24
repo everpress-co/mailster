@@ -57,6 +57,8 @@ window.mailster_fields &&
 									id: attributes.id,
 									inline: attributes.inline,
 									style: attributes.style,
+									align: attributes.align,
+									labelAlign: attributes.labelAlign,
 									values: attributes.values,
 								},
 								innerBlocks
@@ -69,6 +71,19 @@ window.mailster_fields &&
 				html: false,
 				multiple: false,
 				fontSize: true,
+				spacing: {
+					margin: true,
+					padding: true,
+				},
+				typography: {
+					fontSize: true,
+					lineHeight: true,
+					__experimentalFontStyle: true,
+					__experimentalFontWeight: true,
+					__experimentalLetterSpacing: true,
+					__experimentalTextTransform: true,
+				},
+				__experimentalFontFamily: true,
 			},
 			icon: {
 				src: Icons[field.id] || Icons.default,
@@ -94,12 +109,6 @@ window.mailster_fields &&
 					source: 'attribute',
 					selector: '.input',
 					attribute: 'id',
-				},
-				pattern: {
-					type: 'string',
-					source: 'attribute',
-					selector: '.input',
-					attribute: 'pattern',
 				},
 				required: {
 					type: 'boolean',
