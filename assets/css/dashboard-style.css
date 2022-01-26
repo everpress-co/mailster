@@ -42,22 +42,17 @@
 .mailster-dashboard #subscriber-chart-wrap {
 	padding: 20px 0;
 }
-.mailster-dashboard .welcome-panel h2 {
+.mailster-dashboard .postbox h2 {
 	font-size: 25px;
+	text-align: center;
 }
-.mailster-dashboard .welcome-panel h3 {
+.mailster-dashboard .postbox h3 {
 	font-size: 18px;
 	line-height: 160%;
 }
-.mailster-dashboard .welcome-panel .welcome-panel-column:first-child {
-	width: 54%;
-}
-.wp-core-ui .mailster-dashboard .welcome-panel .button.button-hero {
+.wp-core-ui .mailster-dashboard .postbox .button.button-hero {
 	margin: 0;
 	font-size: 20px;
-}
-.mailster-dashboard .welcome-panel-column-container {
-	text-align: center;
 }
 .mailster-dashboard .register_form_wrap .howto {
 	width: 66%;
@@ -346,9 +341,7 @@
 /* Add-Ons */
 .mailster-dashboard #addons-panel {
 	margin-top: 0;
-}
-.mailster-dashboard #addons-panel .welcome-panel-content {
-	margin-left: 0;
+	text-align: center;
 }
 .mailster-dashboard #addons-panel h3 {
 	max-width: 680px;
@@ -358,9 +351,10 @@
 }
 .mailster-dashboard #addons-panel .cta-buttons {
 	margin: 40px auto;
+	display: flex;
+	justify-content: center;
 }
 .mailster-dashboard #addons-panel .cta-buttons .button {
-	width: 33%;
 	margin: 0 2%;
 }
 @media screen and (max-width: 860px) {
