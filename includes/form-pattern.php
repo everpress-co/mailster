@@ -63,8 +63,8 @@ $patterns = apply_filters(
 			'title'         => __( 'With image', 'mailster' ),
 			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
 			'viewportWidth' => 880,
-			'content'       => '<!-- wp:mailster/form-wrapper {"background":{"opacity":100,"fixed":false,"repeat":false,"size":52,"image":"https://user-images.githubusercontent.com/881729/147969548-3c739442-85b8-48b2-abfc-e3d2db5c0cb8.png","position":{"x":"0.88","y":"0.02"}},"css":{"general":"h2{\n\tfont-size:2em;\n\tfont-family:sans-serif;\n\tmargin-top:0.6em;\n}\n.input{\n\tborder: 0;\n\tborder-bottom-width: 3px;\n\tborder-bottom-style: solid;\n}\n.submit-button{\n\tborder-style:solid;\n}\n.mailster-block-form{\n    outline:3px solid;\n\toutline-offset:-15px;\n}\n.mailster-wrapper{\n\tmargin-top:2em;\n}\n.mailster-wrapper ~ .mailster-wrapper{\n\tmargin-top:inherit;\n}\n.mailster-wrapper-required label.mailster-label::after{\n    display:none\n}\n","tablet":"","mobile":""},"style":{"borderColor":"#1A1B1F","borderRadius":"0px","spacing":{"padding":{"top":"1.5em","right":"1.5em","bottom":"1.5em","left":"1.5em"}},"color":{"background":"#ffffff","text":"#363636"}},"backgroundColor":"#FFFFFF"} -->
-<form method="post" action="" novalidate style="background-color:#ffffff;color:#363636;padding-top:1.5em;padding-right:1.5em;padding-bottom:1.5em;padding-left:1.5em" class="wp-block-mailster-form-wrapper mailster-block-form has-ffffff-background-color has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:heading {"style":{"typography":{"letterSpacing":"-0.1rem","fontSize":"45px"}}} -->
+			'content'       => '<!-- wp:mailster/form-wrapper {"background":{"opacity":100,"fixed":false,"repeat":false,"size":52,"image":"https://user-images.githubusercontent.com/881729/147969548-3c739442-85b8-48b2-abfc-e3d2db5c0cb8.png","position":{"x":"0.88","y":"0.02"}},"css":{"general":"h2{\n\tfont-size:2em;\n\tfont-family:sans-serif;\n\tmargin-top:0.6em;\n}\n.input{\n\tborder: 0;\n\tborder-bottom-width: 3px;\n\tborder-bottom-style: solid;\n}\n.submit-button{\n\tborder-style:solid;\n}\n.mailster-block-form{\n    outline:3px solid;\n\toutline-offset:-15px;\n}\n.mailster-wrapper{\n\tmargin-top:2em;\n}\n.mailster-wrapper ~ .mailster-wrapper{\n\tmargin-top:inherit;\n}\n.mailster-wrapper-required label.mailster-label::after{\n    display:none\n}\n","tablet":"","mobile":""},"style":{"borderColor":"#1A1B1F","borderRadius":"0px","spacing":{"padding":{"top":"2.5em","right":"2.5em","bottom":"2.5em","left":"2.5em"}},"color":{"background":"#ffffff","text":"#363636"}},"backgroundColor":"#FFFFFF"} -->
+<form method="post" action="" novalidate style="background-color:#ffffff;color:#363636;padding-top:2.5em;padding-right:2.5em;padding-bottom:2.5em;padding-left:2.5em" class="wp-block-mailster-form-wrapper mailster-block-form has-ffffff-background-color has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:heading {"style":{"typography":{"letterSpacing":"-0.1rem","fontSize":"45px"}}} -->
 <h2 id="here-is-your-20-discount" style="font-size:45px;letter-spacing:-0.1rem">Here is your 20% discount.</h2>
 <!-- /wp:heading -->
 
@@ -136,7 +136,7 @@ $patterns = apply_filters(
 <!-- /wp:mailster/form-wrapper -->',
 		),
 		array(
-			'title'         => __( 'with Logo', 'mailster' ),
+			'title'         => __( 'With Logo', 'mailster' ),
 			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
 			'viewportWidth' => 880,
 			'content'       => '<!-- wp:mailster/form-wrapper -->

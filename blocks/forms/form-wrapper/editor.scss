@@ -155,18 +155,18 @@ _body::before {
 	}
 }
 
-.wp-block-mailster-form-wrapper {
+.editor-styles-wrapper .is-root-container > [hidden] {
 	display: block;
 }
 
-.editor-styles-wrapper .editor-info {
-	content: 'Forms may look different in the editor. Please check the final result on your website.';
+.editor-styles-wrapper .mailster-editor-info {
 	font-family: sans-serif;
 	color: #1e1e1e;
 	text-align: center;
 	font-size: 12px;
 	margin-top: 3em;
 	display: block;
+	pointer-events: none;
 }
 
 .is-mobile-preview,

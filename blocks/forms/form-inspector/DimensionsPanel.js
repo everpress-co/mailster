@@ -31,8 +31,6 @@ export const DimensionsPanel = (props) => {
 	function resetPadding() {}
 	function resetAll() {}
 
-	console.warn(props);
-
 	return (
 		<ToolsPanel
 			label={__('Dimensions')}

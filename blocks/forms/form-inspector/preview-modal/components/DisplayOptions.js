@@ -25,7 +25,7 @@ export default function DisplayOptions(props) {
 	}
 
 	return (
-		<PanelBody title={<Title />} initialOpen={false}>
+		<PanelBody title={<Title />} initialOpen={true}>
 			<PostTypeFields options={options} setOptions={setOptions} />
 			{'content' == type && <DisplayOptionsContent {...props} />}
 		</PanelBody>

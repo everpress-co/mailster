@@ -380,18 +380,17 @@ export default function Edit(props) {
 				<div className="mailster-block-form-inner">
 					<InnerBlocks />
 				</div>
-				<BlockRecovery {...props} />
 			</div>
 			<div
-				className="editor-info"
+				className="mailster-editor-info"
 				hidden // overwritten via CSS
 			>
-				{' '}
 				{__(
 					'Forms may look different in the editor. Please check the final result on your website.',
 					'mailster'
 				)}
 			</div>
+			<BlockRecovery {...props} />
 		</>
 	);
 }

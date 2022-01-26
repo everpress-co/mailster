@@ -63,8 +63,6 @@ export default function Edit(props) {
 		className: classnames({}, className),
 	});
 
-	console.warn(blockProps);
-
 	return (
 		<>
 			<div {...blockProps}>
