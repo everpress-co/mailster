@@ -189,6 +189,8 @@ Get professional development help from our expert support partner *Codeable* for
 
 = 3.1.2 =
 
+* fixed: small typo in variable
+
 = 3.1.1 =
 
 * fixed: time specific auto responders sent only on Sundays causes sending the following to be way in the future
