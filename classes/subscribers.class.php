@@ -320,7 +320,7 @@ class MailsterSubscribers {
 
 				if ( $this->assign_lists( $subscriber_ids, $listid, false, true ) ) {
 					$count           = count( $subscriber_ids );
-					$success_message = sprintf( esc_html__( '%d Subscribers have been assigned to a new list', 'mailster' ), $coun );
+					$success_message = sprintf( esc_html__( '%d Subscribers have been assigned to a new list', 'mailster' ), $count );
 				}
 				break;
 
