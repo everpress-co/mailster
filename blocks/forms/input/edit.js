@@ -26,7 +26,7 @@ import {
 	CheckboxControl,
 	TextControl,
 } from '@wordpress/components';
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment, useState, useEffect } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
 import { useSelect, select } from '@wordpress/data';
@@ -77,6 +77,14 @@ export default function Edit(props) {
 	const innerStyle = blockProps.style;
 	blockProps.style = undefined;
 
+	let labelStyle = { color: style.labelColor };
+
+	if (inline) labelStyle = { ...labelStyle, ...innerStyle };
+
+	useEffect(() => {
+		if (!attributes.id) setAttributes({ id: clientId });
+	});
+
 	return (
 		<>
 			<div {...blockProps} style={styleSheets}>
@@ -85,7 +93,7 @@ export default function Edit(props) {
 						tagName="label"
 						value={label}
 						onChange={(val) => setAttributes({ label: val })}
-						style={{ color: style.labelColor }}
+						style={labelStyle}
 						className="mailster-label"
 						placeholder={__('Enter Label', 'mailster')}
 					/>

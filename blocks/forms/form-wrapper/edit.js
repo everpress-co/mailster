@@ -23,6 +23,7 @@ import {
 	__experimentalUseColorProps as useColorProps,
 	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
+
 import {
 	Button,
 	PanelBody,
@@ -59,6 +60,7 @@ import { store as editPostStore } from '@wordpress/edit-post';
 
 import './editor.scss';
 
+import { useUpdateEffect } from '../../util';
 import BlockRecovery from './BlockRecovery';
 
 const prefixCss = (css, className, type) => {
@@ -122,8 +124,13 @@ const prefixCss = (css, className, type) => {
 };
 
 export default function Edit(props) {
-	const { attributes, setAttributes, toggleSelection, isSelected, clientId } =
-		props;
+	const {
+		attributes,
+		setAttributes,
+		toggleSelection,
+		isSelected,
+		clientId,
+	} = props;
 	const { css, style, background, inputs } = attributes;
 
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
@@ -342,30 +349,49 @@ export default function Edit(props) {
 	}, [meta.userschoice]);
 
 	return (
-		<div
-			{...useBlockProps({
-				className: formClasses,
-			})}
-			style={cleanedFormStyle}
-		>
-			{window.mailster_inline_styles && (
-				<style className="mailster-custom-styles">
-					{window.mailster_inline_styles}
-				</style>
-			)}
-			{prefixedCss && (
-				<style className="mailster-custom-styles">{prefixedCss}</style>
-			)}
-			{backgroundStyles && (
-				<style className="mailster-bg-styles">{backgroundStyles}</style>
-			)}
-			{inputStyle && (
-				<style className="mailster-inline-styles">{inputStyle}</style>
-			)}
-			<div className="mailster-block-form-inner">
-				<InnerBlocks />
+		<>
+			<div
+				{...useBlockProps({
+					className: formClasses,
+				})}
+				hidden // overwritten via CSS
+				style={cleanedFormStyle}
+			>
+				{window.mailster_inline_styles && (
+					<style className="mailster-custom-styles">
+						{window.mailster_inline_styles}
+					</style>
+				)}
+				{prefixedCss && (
+					<style className="mailster-custom-styles">
+						{prefixedCss}
+					</style>
+				)}
+				{backgroundStyles && (
+					<style className="mailster-bg-styles">
+						{backgroundStyles}
+					</style>
+				)}
+				{inputStyle && (
+					<style className="mailster-inline-styles">
+						{inputStyle}
+					</style>
+				)}
+				<div className="mailster-block-form-inner">
+					<InnerBlocks />
+				</div>
+				<BlockRecovery {...props} />
 			</div>
-			<BlockRecovery {...props} />
-		</div>
+			<div
+				className="editor-info"
+				hidden // overwritten via CSS
+			>
+				{' '}
+				{__(
+					'Forms may look different in the editor. Please check the final result on your website.',
+					'mailster'
+				)}
+			</div>
+		</>
 	);
 }

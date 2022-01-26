@@ -2,6 +2,8 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -31,11 +33,14 @@ import { more } from '@wordpress/icons';
  */
 
 import InputFieldInspectorControls from './inspector.js';
+import InputBlockControls from './InputBlockControls';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { successMessage, errorMessage } = attributes;
+	const { successMessage, errorMessage, align } = attributes;
 	const className = ['mailster-block-form-info'];
+
+	if (align) className.push('has-text-align-' + align);
 
 	const [meta, setMeta] = useEntityProp(
 		'postType',
@@ -54,13 +59,15 @@ export default function Edit(props) {
 		background: attributes.errorBackground,
 	};
 
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
+
+	console.warn(blockProps);
+
 	return (
 		<>
-			<div
-				{...useBlockProps({
-					className: className.join(' '),
-				})}
-			>
+			<div {...blockProps}>
 				<div
 					className="mailster-block-form-info-success"
 					style={styleSuccessMessage}
@@ -88,6 +95,7 @@ export default function Edit(props) {
 					<div className="mailster-block-form-info-extra"></div>
 				</div>
 
+				<InputBlockControls {...props} />
 				<InputFieldInspectorControls
 					meta={meta}
 					setMeta={setMeta}

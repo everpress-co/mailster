@@ -84,7 +84,7 @@ export default function BlockRecovery(props) {
 		setHasBrokenBlocks(broken.length);
 	}, [hasBrokenBlocks]);
 
-	useUpdateEffect(() => {
+	useEffect(() => {
 		hasBrokenBlocks &&
 			recoverAllBlocks() &&
 			dispatch('core/notices').createNotice(

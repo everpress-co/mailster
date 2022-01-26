@@ -2,6 +2,8 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -15,8 +17,10 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
 
 export default function save(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { successMessage, errorMessage } = attributes;
+	const { successMessage, errorMessage, align } = attributes;
 	const className = ['mailster-block-form-info'];
+
+	if (align) className.push('has-text-align-' + align);
 
 	const styleSuccessMessage = {
 		width: attributes.width + '%',
@@ -29,12 +33,12 @@ export default function save(props) {
 		background: attributes.errorBackground,
 	};
 
+	const blockProps = useBlockProps.save({
+		className: classnames({}, className),
+	});
+
 	return (
-		<div
-			{...useBlockProps.save({
-				className: className.join(' '),
-			})}
-		>
+		<div {...blockProps}>
 			<div
 				className="mailster-block-form-info-success"
 				style={styleSuccessMessage}

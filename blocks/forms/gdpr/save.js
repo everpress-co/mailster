@@ -2,6 +2,8 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -15,18 +17,17 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
 
 export default function save(props) {
 	const { attributes, setAttributes } = props;
-	const { content } = attributes;
+	const { content, align } = attributes;
 	const className = ['mailster-wrapper'];
 
-	//if (required) className.push('mailster-wrapper-required');
-	//if (inline) className.push('mailster-wrapper-inline');
+	if (align) className.push('mailster-wrapper-label-align-' + align);
+
+	const blockProps = useBlockProps.save({
+		className: classnames({}, className),
+	});
 
 	return (
-		<div
-			{...useBlockProps.save({
-				className: className.join(' '),
-			})}
-		>
+		<div {...blockProps}>
 			<label>
 				<input type="checkbox" name="_gdpr" value="1" />
 				<RichText.Content tagName="span" value={content} />

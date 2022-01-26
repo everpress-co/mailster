@@ -12,7 +12,31 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 
-export function useUpdateEffect(callback, dependencies) {
+export function useUpdateEffectCustom(callback, dependencies) {
+	const firstRenderRef = useRef(true);
+
+	useEffect(() => {
+		if (firstRenderRef.current) {
+			firstRenderRef.current = false;
+			return;
+		}
+		return callback();
+	}, dependencies);
+}
+
+export function useUpdateEffect(effect, deps) {
+	const mounted = useRef(false);
+
+	useEffect(() => {
+		if (mounted.current) {
+			return effect();
+		}
+		mounted.current = true;
+		return undefined;
+	}, deps);
+}
+
+export function useCustomFields(callback, dependencies) {
 	const firstRenderRef = useRef(true);
 
 	useEffect(() => {

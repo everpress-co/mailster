@@ -106,9 +106,6 @@ window.mailster_fields &&
 				},
 				id: {
 					type: 'string',
-					source: 'attribute',
-					selector: '.input',
-					attribute: 'id',
 				},
 				required: {
 					type: 'boolean',

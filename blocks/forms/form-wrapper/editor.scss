@@ -155,14 +155,18 @@ _body::before {
 	}
 }
 
-.editor-styles-wrapper::after {
+.wp-block-mailster-form-wrapper {
+	display: block;
+}
+
+.editor-styles-wrapper .editor-info {
 	content: 'Forms may look different in the editor. Please check the final result on your website.';
 	font-family: sans-serif;
 	color: #1e1e1e;
 	text-align: center;
-	display: block;
 	font-size: 12px;
 	margin-top: 3em;
+	display: block;
 }
 
 .is-mobile-preview,
@@ -170,12 +174,17 @@ _body::before {
 	border: none !important;
 }
 
-.editor-styles-wrapper.wp-embed-responsive::after {
+.block-editor-block-preview__content-iframe .editor-styles-wrapper::after {
 	content: unset;
 }
 
-.editor-styles-wrapper.wp-embed-responsive {
+.block-editor-block-preview__content-iframe .editor-styles-wrapper {
 	background-color: unset;
+
+	.editor-info {
+		display: none;
+	}
+
 	.is-root-container {
 		padding: 0;
 	}

@@ -117,7 +117,7 @@ function SettingsPanelPlugin() {
 			<FormStyles {...blockProps} />
 			<InputStyles {...blockProps} />
 			<Css {...blockProps} />
-			<Placement meta={meta} setMeta={setMeta} />
+			<Placement meta={meta} setMeta={setMeta} {...blockProps} />
 		</>
 	);
 }

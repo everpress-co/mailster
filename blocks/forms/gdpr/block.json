@@ -19,6 +19,9 @@
 			"default": "I agree to the privacy policy and terms.",
 			"source": "html",
 			"selector": "span"
+		},
+		"align": {
+			"type": "string"
 		}
 	},
 	"textdomain": "mailster",

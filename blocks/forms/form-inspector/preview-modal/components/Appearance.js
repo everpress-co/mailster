@@ -22,8 +22,16 @@ import {
  */
 
 export default function PlacementSettings(props) {
-	const { options, setOptions, placement } = props;
+	const { options, setOptions, placement, attributes } = props;
 	const { type } = placement;
+
+	const padding = options.padding ||
+		attributes?.style?.spacing?.padding || {
+			top: '1em',
+			left: '1em',
+			right: '1em',
+			bottom: '1em',
+		};
 
 	return (
 		<PanelBody title={__('Appearance', 'mailster')} initialOpen={false}>
@@ -43,14 +51,9 @@ export default function PlacementSettings(props) {
 			<PanelRow>
 				<BoxControl
 					label={__('Form Padding', 'mailster')}
-					values={options.padding}
+					values={padding}
 					help={__('Set the padding of your form in %', 'mailster')}
-					resetValues={{
-						top: undefined,
-						left: undefined,
-						right: undefined,
-						bottom: undefined,
-					}}
+					resetValues={null}
 					onChange={(val) => setOptions({ padding: val })}
 				/>
 			</PanelRow>

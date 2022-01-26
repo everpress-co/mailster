@@ -602,12 +602,7 @@ class MailsterBlockForms {
 					'trigger_click'    => '',
 					'trigger_scroll'   => 66,
 					'width'            => 70,
-					'padding'          => array(
-						'top'    => '1em',
-						'right'  => '1em',
-						'bottom' => '1em',
-						'left'   => '1em',
-					),
+
 				);
 			}
 

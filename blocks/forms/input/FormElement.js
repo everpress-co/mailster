@@ -71,6 +71,8 @@ export default function FormElement(props) {
 
 	const elem = classnames(colorProps.className, borderProps.className);
 
+	const id = 'mailster-input-' + attributes.id;
+
 	const inputStyle = {
 		...borderProps.style,
 		...colorProps.style,
@@ -140,6 +142,7 @@ export default function FormElement(props) {
 			return (
 				<select
 					name={name}
+					id={id}
 					className="input"
 					aria-required={required}
 					aria-label={label}
@@ -166,6 +169,7 @@ export default function FormElement(props) {
 			return (
 				<input
 					name={name}
+					id={id}
 					type="submit"
 					style={inputStyle}
 					value={label}
@@ -181,6 +185,7 @@ export default function FormElement(props) {
 			return (
 				<input
 					name={name}
+					id={id}
 					type={native ? type : 'text'}
 					aria-required={required}
 					aria-label={label}

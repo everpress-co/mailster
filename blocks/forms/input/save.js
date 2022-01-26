@@ -60,11 +60,17 @@ export default function save(props) {
 	const innerStyle = blockProps.style;
 	blockProps.style = undefined;
 
+	let labelStyle = { color: style.labelColor };
+
+	if (inline) labelStyle = { ...labelStyle, ...innerStyle };
+
+	const id = 'mailster-input-' + attributes.id;
+
 	const labelElement = (
 		<RichText.Content
 			tagName="label"
-			//htmlFor={type != 'radio' ? id : null}
-			style={{ color: style.labelColor }}
+			htmlFor={type != 'radio' ? id : null}
+			style={labelStyle}
 			className="mailster-label"
 			value={label}
 		/>

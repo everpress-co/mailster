@@ -56,6 +56,9 @@
 			"type": "string",
 			"default": "#bf4d4d"
 		},
+		"align": {
+			"type": "string"
+		},
 		"width": {
 			"type": "integer"
 		}

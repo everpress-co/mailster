@@ -353,6 +353,7 @@ body::before {
 		display: flex;
 	}
 	.mailster-wrapper-label-align-left {
+		justify-content: flex-start;
 		label.mailster-label {
 			justify-content: flex-start;
 		}
@@ -361,6 +362,7 @@ body::before {
 		}
 	}
 	.mailster-wrapper-label-align-center {
+		justify-content: center;
 		label.mailster-label {
 			justify-content: center;
 		}
@@ -369,6 +371,7 @@ body::before {
 		}
 	}
 	.mailster-wrapper-label-align-right {
+		justify-content: flex-end;
 		label.mailster-label {
 			justify-content: flex-end;
 		}
