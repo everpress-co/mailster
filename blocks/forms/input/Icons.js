@@ -73,4 +73,52 @@ Icons.default = (
 	</svg>
 );
 
+Icons.labelLeft = (
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+		<rect
+			x="4.75"
+			y="17.25"
+			width="5.5"
+			height="14.5"
+			transform="rotate(-90 4.75 17.25)"
+			stroke="currentColor"
+			fill="none"
+			strokeWidth="1.5"
+		/>
+		<rect x="4" y="7" width="10" height="2" fill="currentColor" />
+	</svg>
+);
+
+Icons.labelCenter = (
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+		<rect
+			x="4.75"
+			y="17.25"
+			width="5.5"
+			height="14.5"
+			transform="rotate(-90 4.75 17.25)"
+			stroke="currentColor"
+			fill="none"
+			strokeWidth="1.5"
+		/>
+		<rect x="7" y="7" width="10" height="2" fill="currentColor" />
+	</svg>
+);
+
+Icons.labelRight = (
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+		<rect
+			x="4.75"
+			y="17.25"
+			width="5.5"
+			height="14.5"
+			transform="rotate(-90 4.75 17.25)"
+			stroke="currentColor"
+			fill="none"
+			strokeWidth="1.5"
+		/>
+		<rect x="10" y="7" width="10" height="2" fill="currentColor" />
+	</svg>
+);
+
 export default Icons;

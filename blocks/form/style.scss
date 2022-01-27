@@ -200,6 +200,7 @@ body::before {
 			max-width: 100%;
 			margin: 0;
 			box-sizing: border-box;
+			text-overflow: ellipsis;
 			// add some default style here
 		}
 
