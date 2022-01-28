@@ -352,6 +352,16 @@ body::before {
 	}
 	.mailster-group {
 		display: flex;
+		flex-wrap: wrap;
+	}
+	.mailster-label + .mailster-group {
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+	.mailster-wrapper-is-vertical .mailster-group {
+		padding-left: inherit;
+		padding-right: inherit;
+		width: 100%;
 	}
 	.mailster-wrapper-label-align-left {
 		justify-content: flex-start;
@@ -412,6 +422,15 @@ body::before {
 
 		.submit-button {
 			text-align: right;
+		}
+	}
+
+	.mailster-wrapper-is-vertical {
+		.mailster-label {
+			width: 100%;
+		}
+		.mailster-group > label {
+			width: 100%;
 		}
 	}
 

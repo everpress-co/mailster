@@ -2,6 +2,8 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -33,10 +35,11 @@ import { more } from '@wordpress/icons';
  */
 
 import InputFieldInspectorControls from './inspector.js';
+import InputBlockControls from './InputBlockControls';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { lists, dropdown } = attributes;
+	const { lists, dropdown, vertical } = attributes;
 	const className = ['mailster-wrapper mailster-wrapper-_lists'];
 
 	const [meta, setMeta] = useEntityProp(
@@ -44,6 +47,12 @@ export default function Edit(props) {
 		'newsletter_form',
 		'meta'
 	);
+
+	if (vertical) className.push('mailster-wrapper-is-vertical');
+
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
 
 	const allLists = useSelect(
 		(select) => select('mailster/form').getLists(),
@@ -96,11 +105,7 @@ export default function Edit(props) {
 	};
 
 	return (
-		<div
-			{...useBlockProps({
-				className: className.join(' '),
-			})}
-		>
+		<div {...blockProps}>
 			{dropdown ? (
 				<select className="input">
 					{lists.map((list, i) => {
@@ -147,6 +152,7 @@ export default function Edit(props) {
 				</>
 			)}
 
+			<InputBlockControls {...props} />
 			<InputFieldInspectorControls
 				meta={meta}
 				setMeta={setMeta}

@@ -42,11 +42,6 @@
 	max-width: 100%;
 	width: 100%;
 }
-
-button[name='link'] {
-	display: none;
-}
-
 .components-navigator-provider {
 	width: 100%;
 }
@@ -208,13 +203,4 @@ button[name='link'] {
 	.editor-post-title__input {
 	all: unset !important;
 	font-size: 30px !important;
-}
-.post-type-newsletter_form .edit-post-visual-editor p[data-empty='true'] {
-	display: none;
-}
-.post-type-newsletter_form .edit-post-visual-editor:hover p[data-empty='true'] {
-	display: block;
-}
-.post-type-newsletter_form .is-root-container > .block-list-appender {
-	display: none;
 }

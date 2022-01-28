@@ -94,6 +94,9 @@ window.mailster_fields &&
 					type: 'boolean',
 					default: !['checkbox', 'submit'].includes(field.type),
 				},
+				vertical: {
+					type: 'boolean',
+				},
 				name: {
 					type: 'string',
 					default: field.id,

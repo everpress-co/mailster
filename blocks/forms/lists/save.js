@@ -2,6 +2,8 @@
  * External dependencies
  */
 
+import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -16,15 +18,17 @@ import { useEntityProp } from '@wordpress/core-data';
 
 export default function save(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { lists, dropdown } = attributes;
+	const { lists, dropdown, vertical } = attributes;
 	const className = ['mailster-wrapper mailster-wrapper-_lists'];
 
+	if (vertical) className.push('mailster-wrapper-is-vertical');
+
+	const blockProps = useBlockProps.save({
+		className: classnames({}, className),
+	});
+
 	return (
-		<div
-			{...useBlockProps.save({
-				className: className.join(' '),
-			})}
-		>
+		<div {...blockProps}>
 			{dropdown ? (
 				<select name="_lists[]" className="input">
 					{lists.map((list, i) => {

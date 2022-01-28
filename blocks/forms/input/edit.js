@@ -51,11 +51,13 @@ export default function Edit(props) {
 		hasLabel,
 		align,
 		labelAlign,
+		vertical,
 	} = attributes;
 	const className = ['mailster-wrapper'];
 
 	if (required) className.push('mailster-wrapper-required');
 	if (align) className.push('mailster-wrapper-align-' + align);
+	if (vertical) className.push('mailster-wrapper-is-vertical');
 	if (labelAlign)
 		className.push('mailster-wrapper-label-align-' + labelAlign);
 	if (inline) className.push('mailster-wrapper-inline');

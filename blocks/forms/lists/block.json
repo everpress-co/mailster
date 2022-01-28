@@ -24,6 +24,9 @@
 			"type": "boolean",
 			"default": false
 		},
+		"vertical": {
+			"type": "boolean"
+		},
 		"lists": {
 			"type": "array",
 			"source": "query",

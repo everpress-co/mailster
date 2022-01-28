@@ -8,7 +8,14 @@
 import { __ } from '@wordpress/i18n';
 
 import { BlockControls, AlignmentToolbar } from '@wordpress/block-editor';
-import { ToolbarDropdownMenu, ToolbarGroup } from '@wordpress/components';
+import {
+	ToolbarDropdownMenu,
+	ToolbarGroup,
+	Toolbar,
+	ToolbarButton,
+} from '@wordpress/components';
+
+import { arrowRight, arrowDown } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -18,7 +25,7 @@ import Icons from './Icons';
 
 export default function InputBlockControls(props) {
 	const { attributes, setAttributes } = props;
-	const { align, labelAlign, hasLabel } = attributes;
+	const { align, labelAlign, hasLabel, vertical, type } = attributes;
 
 	const buttonPositionControls = [
 		{
@@ -62,6 +69,13 @@ export default function InputBlockControls(props) {
 
 	return (
 		<BlockControls group="block">
+			{'radio' == type && (
+				<ToolbarButton
+					icon={vertical ? arrowDown : arrowRight}
+					onClick={() => setAttributes({ vertical: !vertical })}
+					label={__('Orientation', 'mailster')}
+				/>
+			)}
 			<AlignmentToolbar
 				value={align}
 				onChange={updateAlignment}

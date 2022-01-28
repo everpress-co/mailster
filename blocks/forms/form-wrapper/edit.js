@@ -124,13 +124,8 @@ const prefixCss = (css, className, type) => {
 };
 
 export default function Edit(props) {
-	const {
-		attributes,
-		setAttributes,
-		toggleSelection,
-		isSelected,
-		clientId,
-	} = props;
+	const { attributes, setAttributes, toggleSelection, isSelected, clientId } =
+		props;
 	const { css, style, background, inputs } = attributes;
 
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
@@ -378,7 +373,7 @@ export default function Edit(props) {
 					</style>
 				)}
 				<div className="mailster-block-form-inner">
-					<InnerBlocks />
+					<InnerBlocks renderAppender={null} />
 				</div>
 			</div>
 			<div
