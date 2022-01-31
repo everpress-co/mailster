@@ -4,6 +4,7 @@ export function setLists(lists) {
 		lists,
 	};
 }
+
 export function getLists(path) {
 	return {
 		type: 'GET_LISTS',

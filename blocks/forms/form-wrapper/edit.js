@@ -343,6 +343,11 @@ export default function Edit(props) {
 		}
 	}, [meta.userschoice]);
 
+	const [inlineStyles, setInlineStyles] = useEntityProp(
+		'root',
+		'site',
+		'mailster_inline_styles'
+	);
 	return (
 		<>
 			<div
@@ -357,8 +362,13 @@ export default function Edit(props) {
 						{window.mailster_inline_styles}
 					</style>
 				)}
-				{prefixedCss && (
+				{inlineStyles && (
 					<style className="mailster-custom-styles">
+						{inlineStyles}
+					</style>
+				)}
+				{prefixedCss && (
+					<style className="mailster-prefixed-custom-styles">
 						{prefixedCss}
 					</style>
 				)}

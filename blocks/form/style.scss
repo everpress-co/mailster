@@ -175,6 +175,7 @@ body::before {
 	}
 	.submit-button {
 		width: 100%;
+		display: inline-block;
 	}
 	.mailster-block-form-info > div {
 		padding: 0.5rem 1rem;
@@ -304,7 +305,7 @@ body::before {
 	}
 	label.mailster-label {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 	}
 	.mailster-wrapper-inline {
 		label.mailster-label {

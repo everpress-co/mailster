@@ -142,6 +142,10 @@ export default function InputFieldInspectorControls(props) {
 						<PanelRow>
 							<CheckboxControl
 								label={__('Inline Labels', 'mailster')}
+								help={__(
+									'Place the label inside the input field to save some space.',
+									'mailster'
+								)}
 								checked={inline}
 								onChange={() =>
 									setAttributes({ inline: !inline })
@@ -149,10 +153,14 @@ export default function InputFieldInspectorControls(props) {
 							/>
 						</PanelRow>
 					)}
-					{typeof required !== 'undefined' && (
+					{typeof required !== 'undefined' && 'submit' != type && (
 						<PanelRow>
 							<CheckboxControl
 								label={__('Required Field', 'mailster')}
+								help={__(
+									'Make this field mandatory so people cannot submit the form without entering data.',
+									'mailster'
+								)}
 								checked={required || name == 'email'}
 								disabled={name == 'email'}
 								onChange={() =>
@@ -165,6 +173,10 @@ export default function InputFieldInspectorControls(props) {
 						<PanelRow>
 							<CheckboxControl
 								label={__('Show asterisk', 'mailster')}
+								help={__(
+									'Enable an asterisk (*) after the label on required fields',
+									'mailster'
+								)}
 								checked={asterisk}
 								onChange={() =>
 									setAttributes({ asterisk: !asterisk })
@@ -179,7 +191,10 @@ export default function InputFieldInspectorControls(props) {
 									'Use native form element',
 									'mailster'
 								)}
-								help="Native form elements provide a better user experience but often miss some styling."
+								help={__(
+									'Native form elements provide a better user experience but often miss some styling.',
+									'mailster'
+								)}
 								checked={native}
 								onChange={() =>
 									setAttributes({ native: !native })
@@ -195,6 +210,10 @@ export default function InputFieldInspectorControls(props) {
 							allowReset={true}
 							initialPosition={100}
 							onChange={(value) => setStyle('width', value)}
+							help={__(
+								'Set the width of the input field',
+								'mailster'
+							)}
 							min={10}
 							max={100}
 						/>

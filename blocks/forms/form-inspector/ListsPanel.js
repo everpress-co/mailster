@@ -45,10 +45,7 @@ export default function ListsPanel(props) {
 	const { meta, setMeta, attributes, setAttributes } = props;
 	const { userschoice, lists } = meta;
 
-	const allLists = useSelect(
-		(select) => select('mailster/form').getLists(),
-		[]
-	);
+	const allLists = useSelect((select) => select('mailster/form').getLists());
 
 	function setList(id, add) {
 		var newLists = [...lists];

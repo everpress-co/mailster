@@ -9,9 +9,10 @@
 import { __ } from '@wordpress/i18n';
 
 import { useState } from '@wordpress/element';
-import { dispatch } from '@wordpress/data';
+import { dispatch, useSelect } from '@wordpress/data';
 
 import apiFetch from '@wordpress/api-fetch';
+import { useEntityProp } from '@wordpress/core-data';
 
 import { PluginPostStatusInfo } from '@wordpress/edit-post';
 
@@ -57,8 +58,8 @@ const getStyles = function () {
 
 	return s;
 };
-const getInputStyles = () => {
-	const iframe = document.getElementById('inputStylesIframe');
+const getInlineStyles = () => {
+	const iframe = document.getElementById('inlineStylesIframe');
 
 	if (!iframe) return;
 
@@ -110,19 +111,33 @@ const getInputStyles = () => {
 
 export default function InlineStyles(props) {
 	const { meta, setMeta } = props;
-	const [inputStyles, setinputStyles] = useState(
-		window.mailster_inline_styles
-	);
 
+	const [inlineStyles, setInlineStyles] = useEntityProp(
+		'root',
+		'site',
+		'mailster_inline_styles'
+	);
 	const [render, setRender] = useState(true);
 
+	const posts = useSelect((select) => {
+		return select('core').getEntityRecords('postType', 'post', {
+			per_page: 1,
+		});
+	});
+
+	if (!posts || posts.length < 0) {
+		return null;
+	}
+
 	const updateStyles = () => {
-		const styles = getInputStyles();
-		if (styles != inputStyles) {
+		const styles = getInlineStyles();
+		if (styles != inlineStyles) {
+			setInlineStyles(styles);
 			apiFetch({
 				path: '/wp/v2/settings',
 				method: 'POST',
 				data: { mailster_inline_styles: styles },
+				//data: { mailster_inline_styles: '' },
 			}).then((settings) => {
 				dispatch('core/notices').createNotice(
 					'success',
@@ -133,28 +148,24 @@ export default function InlineStyles(props) {
 					}
 				);
 			});
-			setinputStyles(styles);
-			window.mailster_inline_styles = styles;
 		}
 		setRender(false);
 	};
 
 	return (
 		<>
-			{inputStyles && (
-				<style className="mailster-inline-styles">{inputStyles}</style>
-			)}
 			{render && (
-				<PluginPostStatusInfo className="my-plugin-post-status-info">
+				<PluginPostStatusInfo className="mailster-inline-styles-handler">
 					<iframe
-						src="../"
-						id="inputStylesIframe"
+						src={posts[0].link}
+						id="inlineStylesIframe"
 						style={{
 							width: screen.width,
-							zIndex: -1,
-							position: 'absolute',
-							top: 0,
-							visibility: 'hidden',
+							_height: 0,
+							__zIndex: -1,
+							_position: 'absolute',
+							_top: 0,
+							_visibility: 'hidden',
 						}}
 						onLoad={updateStyles}
 						sandbox="allow-scripts allow-same-origin"
