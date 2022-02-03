@@ -1,6 +1,8 @@
 name: Convert Readme
 on:
   push:
+    branches:
+      - 'develop'
     paths:
       - 'readme.txt'
 jobs:
