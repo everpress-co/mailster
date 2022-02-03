@@ -9,7 +9,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@master
       - name: PHPUnit tests
-        uses: php-actions/phpunit@v3
+        uses: evrpress/action-wp-phpunit@main
         with:
           configuration: phpunit.xml
           memory_limit: 256M
