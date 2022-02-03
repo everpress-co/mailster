@@ -4,8 +4,6 @@ Tags: email newsletter, newsletter, newsletter signup, email signup, email marke
 Requires at least: 4.6
 Tested up to: 5.9
 Stable tag: 3.1.2
-Author: EverPress
-Author URI: https://everpress.co
 License: GPLv2 or later
 Requires PHP: 5.3.6
 
