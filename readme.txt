@@ -7,7 +7,6 @@ Stable tag: 3.1.2
 License: GPLv2 or later
 Requires PHP: 5.3.6
 
-
 == Description ==
 
 == Mailster is an easy to use Email Newsletter Plugin for WordPress. Create, send and track your Newsletter Campaigns without hassle. ==
