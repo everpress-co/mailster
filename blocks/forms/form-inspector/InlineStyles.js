@@ -11,7 +11,6 @@ import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { dispatch, useSelect } from '@wordpress/data';
 
-import apiFetch from '@wordpress/api-fetch';
 import { useEntityProp } from '@wordpress/core-data';
 
 import { PluginPostStatusInfo } from '@wordpress/edit-post';
@@ -112,11 +111,16 @@ const getInlineStyles = () => {
 export default function InlineStyles(props) {
 	const { meta, setMeta } = props;
 
+	const can = useSelect((select) =>
+		select('core').canUser('update', 'settings')
+	);
+
 	const [inlineStyles, setInlineStyles] = useEntityProp(
 		'root',
 		'site',
 		'mailster_inline_styles'
 	);
+
 	const [render, setRender] = useState(true);
 
 	const posts = useSelect((select) => {
@@ -125,7 +129,7 @@ export default function InlineStyles(props) {
 		});
 	});
 
-	if (!posts || posts.length < 0) {
+	if (!can || !posts || posts.length < 0) {
 		return null;
 	}
 
@@ -133,21 +137,15 @@ export default function InlineStyles(props) {
 		const styles = getInlineStyles();
 		if (styles != inlineStyles) {
 			setInlineStyles(styles);
-			apiFetch({
-				path: '/wp/v2/settings',
-				method: 'POST',
-				data: { mailster_inline_styles: styles },
-				//data: { mailster_inline_styles: '' },
-			}).then((settings) => {
-				dispatch('core/notices').createNotice(
-					'success',
-					__('Input field styles have been updated.', 'mailster'),
-					{
-						type: 'snackbar',
-						isDismissible: true,
-					}
-				);
-			});
+			dispatch('core').saveEditedEntityRecord('root', 'site');
+			dispatch('core/notices').createNotice(
+				'success',
+				__('Input field styles have been updated.', 'mailster'),
+				{
+					type: 'snackbar',
+					isDismissible: true,
+				}
+			);
 		}
 		setRender(false);
 	};
