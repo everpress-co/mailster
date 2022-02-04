@@ -7,7 +7,7 @@
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite>
+		<testsuite name="Mailster Unit Test">
 			<directory>./tests/Unit</directory>
 		</testsuite>
 	</testsuites>
