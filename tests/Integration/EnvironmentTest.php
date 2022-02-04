@@ -1,4 +1,5 @@
 <?php
+namespace Mailster\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
