@@ -2256,6 +2256,7 @@ class MailsterCampaigns {
 			'webversion'          => true,
 			'auto_post_thumbnail' => false,
 			'tags'                => array(),
+			'attachments'         => array(),
 		);
 
 		if ( ! is_null( $key ) ) {

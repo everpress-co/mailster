@@ -33,12 +33,10 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 require $_tests_dir . '/includes/bootstrap.php';
 
 
-_setup();
-
 
 function _setup() {
 
-	echo '<pre>'.print_r('SETUP', true).'</pre>';
+	echo '<pre>' . print_r( 'SETUP', true ) . '</pre>';
 
 	global $wpdb;
 
@@ -63,6 +61,7 @@ function _setup() {
 	flush_rewrite_rules( false );
 
 	activate_plugin( 'mailster/mailster.php' );
+	mailster()->activate();
 
 	mailster_update_option(
 		array(
@@ -83,17 +82,15 @@ function _setup() {
 			'smtp_user'               => '',
 			'smtp_pwd'                => '',
 
-			// 'deliverymethod' => 'simple',
+			'deliverymethod' => 'simple',
 			'simplemethod'            => 'mail',
 
 			'remove_data'             => true,
 
+			'disable_cache'           => true,
+
 		)
 	);
 
-
-	echo '<pre>IP '.print_r(mailster_get_ip(), true).'</pre>';
-
-
-	//mailcatcher()->clearinbox();
+	// mailcatcher()->clearinbox();
 }
