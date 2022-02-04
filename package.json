@@ -1,0 +1,36 @@
+{
+	"name": "@evrpess/mailster",
+	"version": "0.0.1",
+	"main": "index.js",
+	"author": "Xaver <xaver@everpress.co>",
+	"license": "GPL-2.0",
+	"private": true,
+	"workspaces": [
+		"pages",
+		"components"
+	],
+	"wp-env": {
+		"plugin-dir": "mailster",
+		"plugin-name": "Mailster",
+		"welcome-logo": [
+			"Hi Roy"
+		]
+	},
+	"dependencies": {
+		"@wordpress/env": "@latest",
+		"@wordpress/scripts": "@latest",
+		"shelljs": "^0.8.4",
+		"wsrun": "^5.2.0"
+	},
+	"scripts": {
+		"packages-update": "wp-scripts packages-update",
+		"start": "yarn wsrun start",
+		"c": "yarn workspace components",
+		"p": "yarn workspace pages",
+		"storybook": "yarn c storybook",
+		"test:ci": "yarn c test --ci && yarn p test --ci",
+		"build": "yarn c build && yarn p build",
+		"rename": "node ./cli/rename.js",
+		"rename:basic": "node ./cli/basic.js"
+	}
+}
