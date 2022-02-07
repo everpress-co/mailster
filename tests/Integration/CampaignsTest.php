@@ -45,7 +45,7 @@ class CampaignsTest extends TestCase {
 
 		$success = mailster( 'campaigns' )->send( self::$campaign_id, 1 );
 
-		//self::$message = mailcatcher()->get_by_subject( $subject );
+		// self::$message = mailcatcher()->get_by_subject( $subject );
 	}
 
 	function testCampaignCreated() {
