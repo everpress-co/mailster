@@ -36,8 +36,6 @@ require $_tests_dir . '/includes/bootstrap.php';
 
 function _setup() {
 
-	echo '<pre>' . print_r( 'SETUP', true ) . '</pre>';
-
 	global $wpdb;
 
 	if ( ! $wpdb->has_connected ) {
@@ -82,7 +80,7 @@ function _setup() {
 			'smtp_user'               => '',
 			'smtp_pwd'                => '',
 
-			'deliverymethod'          => 'simple',
+			//'deliverymethod'          => 'simple',
 			'simplemethod'            => 'mail',
 
 			'remove_data'             => true,

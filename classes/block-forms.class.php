@@ -668,13 +668,14 @@ class MailsterBlockForms {
 								'animation'        => array(
 									'type' => 'string',
 								),
-
 							),
 						),
 					),
-				),
+				)
 			);
-		}       }
+		}
+
+	}
 
 
 
@@ -847,9 +848,8 @@ class MailsterBlockForms {
 					'slug'  => 'mailster-form-fields',
 					'title' => __( 'Newsletter Form Fields', 'mailster' ),
 				),
-
 			),
-			$categories,
+			$categories
 		);
 	}
 
