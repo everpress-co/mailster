@@ -12,6 +12,7 @@
 	],
 	"scripts": {
 		"build": "wp-scripts build",
+		"zip": "wp-scripts plugin-zip",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
@@ -35,10 +36,12 @@
 		"@wordpress/date": "^4.2.3",
 		"@wordpress/edit-post": "^5.1.0",
 		"@wordpress/element": "^4.0.4",
+		"@wordpress/env": "^4.2.0",
 		"@wordpress/hooks": "^3.2.2",
 		"@wordpress/i18n": "^4.3.0",
 		"@wordpress/icons": "^6.2.0",
 		"@wordpress/plugins": "^4.0.5",
+		"@wordpress/scripts": "^19.2.4",
 		"@wordpress/server-side-render": "^3.0.5",
 		"child_process": "^1.0.2",
 		"classnames": "^2.3.1",
@@ -46,14 +49,11 @@
 		"lodash": "^4.17.21",
 		"path": "^0.12.7",
 		"react-select": "^5.2.2",
-		"webpack-remove-empty-scripts": "^0.7.1",
-		"@wordpress/env": "@latest",
-		"@wordpress/scripts": "@latest",
 		"shelljs": "^0.8.4",
+		"webpack-remove-empty-scripts": "^0.7.1",
 		"wsrun": "^5.2.0"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^19.2.3",
 		"sounds-webpack-plugin": "^0.0.2",
 		"webpack-remove-empty-scripts": "^0.7.1"
 	}
