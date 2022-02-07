@@ -80,7 +80,7 @@ function _setup() {
 			'smtp_user'               => '',
 			'smtp_pwd'                => '',
 
-			//'deliverymethod'          => 'simple',
+			// 'deliverymethod'          => 'simple',
 			'simplemethod'            => 'mail',
 
 			'remove_data'             => true,
