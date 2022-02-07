@@ -46,4 +46,3 @@ if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments, $file, $template );
 	}
 }
-/**/

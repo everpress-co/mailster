@@ -1464,8 +1464,6 @@ class Mailster {
 
 	public function install() {
 
-		echo '<pre>'.print_r('INSTALL', true).'</pre>';
-
 		$isNew = get_option( 'mailster' ) == false;
 
 		$this->on_activate( $isNew );
@@ -1577,8 +1575,6 @@ class Mailster {
 
 
 	public function activate() {
-
-		echo '<pre>'.print_r('activate', true).'</pre>';
 
 		global $wpdb;
 
