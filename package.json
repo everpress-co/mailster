@@ -5,13 +5,25 @@
 	"author": "The WordPress Contributors",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
+	"private": true,
+	"workspaces": [
+		"pages",
+		"components"
+	],
 	"scripts": {
 		"build": "wp-scripts build",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"start": "wp-scripts start",
-		"packages-update": "wp-scripts packages-update"
+		"packages-update": "wp-scripts packages-update",
+		"c": "yarn workspace components",
+		"p": "yarn workspace pages",
+		"storybook": "yarn c storybook",
+		"test:ci": "yarn c test --ci && yarn p test --ci",
+		"build2": "yarn c build && yarn p build",
+		"rename": "node ./cli/rename.js",
+		"rename:basic": "node ./cli/basic.js"
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^6.0.0",
@@ -34,7 +46,11 @@
 		"lodash": "^4.17.21",
 		"path": "^0.12.7",
 		"react-select": "^5.2.2",
-		"webpack-remove-empty-scripts": "^0.7.1"
+		"webpack-remove-empty-scripts": "^0.7.1",
+		"@wordpress/env": "@latest",
+		"@wordpress/scripts": "@latest",
+		"shelljs": "^0.8.4",
+		"wsrun": "^5.2.0"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^19.2.3",

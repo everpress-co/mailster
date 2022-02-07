@@ -1,12 +1,24 @@
 <?php
+
+
+namespace Mailster\Tests\Unit;
+
+use Brain\Monkey\Functions;
+use PHPUnit\Framework\TestCase;
+
 /**
- * An example test case.
+ * These tests prove test setup works.
+ *
+ * They are useful for debugging.
  */
-class Tests_Actions extends WP_UnitTestCase {
+class ActionTests extends TestCase {
 
+	public static function setUpBeforeClass() {
+		parent::setUpBeforeClass();
+		_setup();
+	}
 
-
-	function test_sent() {
+	function testSent() {
 		do_action( 'mailster_send', 1, 1 );
 
 		$actions = mailster( 'actions' )->get_by_subscriber( 1 );
@@ -15,8 +27,7 @@ class Tests_Actions extends WP_UnitTestCase {
 	}
 
 
-
-	function test_open() {
+	function testOpen() {
 		do_action( 'mailster_open', 1, 1 );
 
 		$actions = mailster( 'actions' )->get_by_subscriber( 1 );
@@ -25,8 +36,7 @@ class Tests_Actions extends WP_UnitTestCase {
 	}
 
 
-
-	function test_click() {
+	function testClick() {
 		do_action( 'mailster_click', 1, 1, 'http://google.com' );
 
 		$actions = mailster( 'actions' )->get_by_subscriber( 1 );
@@ -35,8 +45,7 @@ class Tests_Actions extends WP_UnitTestCase {
 	}
 
 
-
-	function test_unsubscribes() {
+	function testUnsubscribes() {
 		do_action( 'mailster_unsubscribe', 1, 1 );
 
 		$actions = mailster( 'actions' )->get_by_subscriber( 1 );
@@ -45,8 +54,7 @@ class Tests_Actions extends WP_UnitTestCase {
 	}
 
 
-
-	function test_softbounce() {
+	function testSoftbounce() {
 		do_action( 'mailster_bounce', 1, 1, false );
 
 		$actions = mailster( 'actions' )->get_by_subscriber( 1 );
@@ -54,15 +62,12 @@ class Tests_Actions extends WP_UnitTestCase {
 		$this->assertEquals( $actions['softbounces'], 1 );
 	}
 
-
-
-	function test_hardbounce() {
+	function testHardbounce() {
 		do_action( 'mailster_bounce', 1, 1, true );
 
 		$actions = mailster( 'actions' )->get_by_subscriber( 1 );
 
 		$this->assertEquals( $actions['bounces'], 1 );
 	}
-
 
 }
