@@ -2256,12 +2256,48 @@ class MailsterCampaigns {
 			'webversion'          => true,
 			'auto_post_thumbnail' => false,
 			'tags'                => array(),
+			'attachments'         => array(),
 		);
 
 		if ( ! is_null( $key ) ) {
 			return isset( $defaults[ $key ] ) ? $defaults[ $key ] : null;
 		}
 
+		/**
+		 * Filter the default meta values of new campaigns
+		 *
+		 * defaults:
+		 * `parent_id: null`
+		 * `timestamp: null`
+		 * `finished: null`
+		 * `active: null`
+		 * `timezone: mailster_option( 'timezone' )`
+		 * `sent: null`
+		 * `error: null`
+		 * `from_name: mailster_option( 'from_name' )`
+		 * `from_email: mailster_option( 'from' )`
+		 * `reply_to: mailster_option( 'reply_to' )`
+		 * `subject: null`
+		 * `preheader: null`
+		 * `template: null`
+		 * `file: null`
+		 * `editor_height: 500`
+		 * `lists: null`
+		 * `ignore_lists: null`
+		 * `autoresponder: null`
+		 * `list_conditions: null`
+		 * `head: null`
+		 * `colors: null`
+		 * `track_opens: mailster_option( 'track_opens' )`
+		 * `track_clicks: mailster_option( 'track_clicks' )`
+		 * `autoplaintext: true`
+		 * `webversion: true`
+		 * `auto_post_thumbnail: false`
+		 * `tags: array()`
+		 * `attachments: array()`
+		 *
+		 * @param array $defaults the default values
+		 */
 		return apply_filters( 'mailster_campaign_meta_defaults', $defaults );
 
 	}

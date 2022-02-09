@@ -981,12 +981,13 @@ class MailsterForm {
 
 		if ( ! is_admin() && ! is_user_logged_in() && isset( $_BASE['_timestamp'] ) && $this->valid() ) {
 
+			$time_in_seconds = 4;
 			/**
 			* Seconds to prevent forms being submitted
 			*
 			* @param int $time_in_seconds the time in seconds (default:4)
 			*/
-			$time_check_value = apply_filters( 'mailster_time_check_value', 4 );
+			$time_check_value = apply_filters( 'mailster_time_check_value', $time_in_seconds );
 
 			if ( isset( $_BASE['_timestamp'] ) && time() - $_BASE['_timestamp'] <= $time_check_value ) {
 				$this->object['errors']['_timestamp'] = sprintf( esc_html__( 'Please wait at least %d seconds before submitting the form.', 'mailster' ), $time_check_value );
