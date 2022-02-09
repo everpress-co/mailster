@@ -28,16 +28,16 @@ if ( ! defined( 'MAILSTER_VERSION' ) && preg_match( '|^(Stable tag): (.+)$|im', 
 	define( 'MAILSTER_VERSION', $version );
 }
 
-$changelog = explode( '= ' . MAILSTER_VERSION . ' =', $readme )[1];
-$changelog = explode( "\n= ", $changelog )[0];
-$changelog = $eol . $eol . '### Version ' . MAILSTER_VERSION . ' (' . date( 'Y-m-d' ) . ')' . $eol . $eol . trim( $changelog ) . $eol;
-
-
+$changelog = explode( '= ' . MAILSTER_VERSION . ' =', $readme );
+if ( isset( $changelog[1] ) ) {
+	$changelog = explode( "\n= ", $changelog )[0];
+	$changelog = $eol . $eol . '### Version ' . MAILSTER_VERSION . ' (' . date( 'Y-m-d' ) . ')' . $eol . $eol . trim( $changelog ) . $eol;
+	error_log( $changelog );
+}
 
 $skip_without_summery = true;
 
 if ( is_null( $documentor->type ) || in_array( 'actions', (array) $documentor->type ) ) {
-	error_log( $changelog );
 
 	if ( empty( $actions ) ) {
 		echo '*This project does not contain any WordPress actions.*', $eol;
