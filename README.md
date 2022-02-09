@@ -4,13 +4,11 @@
 **Tags:** email newsletter, newsletter, newsletter signup, email signup, email marketing \
 **Requires at least:** 4.6 \
 **Tested up to:** 5.9 \
-**Stable tag:** 3.1.2 \
+**Stable tag:** 3.1.3 \
 **License:** GPLv2 or later \
 **Requires PHP:** 5.3.6
 
 ## Description
-
-
 
 ## Mailster is an easy to use Email Newsletter Plugin for WordPress. Create, send and track your Newsletter Campaigns without hassle.
 
@@ -18,11 +16,13 @@
 
 Mailster lets you send all your posts, products, events or other custom post types. Every type can also be used for email automation.
 
+
 ### Welcome Your New Subscribers.
 
 Set up your welcome series and leave the rest to Mailster.
 
 You sit back and focus on your business while Mailster makes sure your new subscribers feel welcome.
+
 
 ### Free and Premium Templates.
 
@@ -30,11 +30,13 @@ Mailster offers you a choice of more than 400 free and premium designs.
 
 Create stunning and engaging campaigns in minutes!
 
+
 ### GDPR Compliance.
 
 When it comes to GDPR compliance, Mailster is your newsletter marketing tool of choice: Mailster fully complies with GDPR requirements.
 
 All your data is stored in your own database and is not transferred or shared with third parties.
+
 
 ### Grow Without Limits.
 
@@ -46,9 +48,11 @@ Go ahead and grow as much as you like!
 * Unlimited Forms
 * Unlimited Lists
 
+
 ### Send With Any Email Provider.
 
 Mailster works with any email provider, no matter if you want to use a professional provider or your own server.
+
 
 ### RSS to Email.
 
@@ -56,16 +60,19 @@ Your subscribers will want to know if there’s new content on a third-party sit
 
 With our RSS-to-email feature, new posts are automatically imported into an email and sent to your subscribers. Just set up your automation campaign and you’re ready to go.
 
+
 ### Time Zone Based Sending.
 
 You have subscribers all over the world? With Mailster you send your email campaigns based on the time zone of your subscribers.
 
 This way you ensure that your readers receive your emails at the exact times when they are most likely to open them.
 
+
 ### Know Your Subscribers.
 
 Analyze your subscribers´ data and target your marketing strategy according to their needs.
 Mailster collects and uses your subscribers’ data while staying completely within GDPR requirements.
+
 
 ### Merge Tags.
 
@@ -73,15 +80,18 @@ Merge tags are the key to marketing personalization: They are placeholder tags t
 
 Our merge tags are customizable, extendable and easy to remember.
 
+
 ### Create Better Segmentations.
 
 Increase your open rates with targeted campaigns and segmentation. Mailster provides many metrics to choose from so only the right audience gets the right email.
+
 
 ### Great Campaign Insights.
 
 Track and analyse your campaigns and subscribers: Benefit from real time insights into your campaigns.
 
 Find out about your subscribers’ click rates and open rates, their location, and other activities relevant for your online marketing strategy.
+
 
 ### Test Your Email Quality Before Sending.
 
@@ -90,20 +100,24 @@ Mailster gives you feedback on what you should improve.
 
 Fix these issues, send and relax – your campaign will be good.
 
+
 ### Automation.
 
 Send automatic welcome emails, birthday emails, drip campaigns, follow-ups, auto-responders and more.
 
 Just sit back and let Mailster take care of your email marketing.
 
+
 ### You Own Your Data.
 
 All your subscribers’ data is stored in your own database.
 No third party has access to that data.
 
+
 ### Dozens of Integrations With Plugins.
 
 We’ve partnered with many popular developers so you can continue using your favorite plugins along with Mailster.
+
 
 ### Built in Capability Management.
 
@@ -111,9 +125,11 @@ Assign specific rights to the people in your team. This makes it easy to keep fu
 
 Let your team support you!
 
+
 ### Custom Template Language
 
 With Mailster’s simple and straightforward template markup language, coding your own template or adopting existing ones is easy.
+
 
 ### Developer Friendly
 
@@ -147,9 +163,8 @@ Just go ahead and adapt Mailster to your unique needs.
 * Capability management.
 * Developer friendly.
 
+
 ## Templates
-
-
 
 ## Free and Premium Templates
 
@@ -159,17 +174,14 @@ Mailster supports over 400 templates from various authors. Please visit our webs
 
 ## Add Ons
 
-
-
 ## Add Ons
 
 Extend the functionality of Mailster or your site with these add ons.
 
 **[Add ons →](https://mailster.co/addons)**
 
+
 ## Support
-
-
 
 ## We’re Here to Help.
 
@@ -189,13 +201,10 @@ We provide all of our official support via the member area. Please login or regi
 
 Get professional development help from our expert support partner *Codeable* for consultations, customisations and small to medium sized projects.
 
-**[Get a Quote →](https://codeable.io/?ref
+**[Get a Quote →](https://codeable.io/?ref=zATDD)**
 
-### zATDD)**
 
 ## Changelog
-
-
 
 ## Changelog
 
@@ -203,6 +212,7 @@ Get professional development help from our expert support partner *Codeable* for
 
 * fixed: CSS for WP 5.9
 * fixed: small typo in variable
+* fixed: compatibility for PHP 5.6+
 
 ### 3.1.1
 

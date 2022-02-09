@@ -1,30 +1,20 @@
 {
-	"name": "mailster",
-	"version": "0.1.0",
-	"description": "Example block written with ESNext standard and JSX support – build step required.",
-	"author": "The WordPress Contributors",
-	"license": "GPL-2.0-or-later",
-	"main": "build/index.js",
+	"name": "@evrpess/mailster",
+	"version": "0.0.1",
+	"main": "index.js",
+	"author": "Xaver <xaver@everpress.co>",
+	"license": "GPL-2.0",
 	"private": true,
 	"workspaces": [
 		"pages",
 		"components"
 	],
-	"scripts": {
-		"build": "wp-scripts build",
-		"zip": "wp-scripts plugin-zip",
-		"format": "wp-scripts format",
-		"lint:css": "wp-scripts lint-style",
-		"lint:js": "wp-scripts lint-js",
-		"start": "wp-scripts start",
-		"packages-update": "wp-scripts packages-update",
-		"c": "yarn workspace components",
-		"p": "yarn workspace pages",
-		"storybook": "yarn c storybook",
-		"test:ci": "yarn c test --ci && yarn p test --ci",
-		"build2": "yarn c build && yarn p build",
-		"rename": "node ./cli/rename.js",
-		"rename:basic": "node ./cli/basic.js"
+	"wp-env": {
+		"plugin-dir": "mailster",
+		"plugin-name": "Mailster",
+		"welcome-logo": [
+			"Hi Roy"
+		]
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^6.0.0",
@@ -51,10 +41,25 @@
 		"react-select": "^5.2.2",
 		"shelljs": "^0.8.4",
 		"webpack-remove-empty-scripts": "^0.7.1",
+		"wsrun": "^5.2.0",
+		"shelljs": "^0.8.4",
 		"wsrun": "^5.2.0"
 	},
 	"devDependencies": {
+		"@wordpress/env": "^4.2.0",
+		"@wordpress/scripts": "^20.0.2",
 		"sounds-webpack-plugin": "^0.0.2",
 		"webpack-remove-empty-scripts": "^0.7.1"
+	},
+	"scripts": {
+		"packages-update": "wp-scripts packages-update",
+		"start": "yarn wsrun start",
+		"c": "yarn workspace components",
+		"p": "yarn workspace pages",
+		"storybook": "yarn c storybook",
+		"test:ci": "yarn c test --ci && yarn p test --ci",
+		"build": "yarn c build && yarn p build",
+		"rename": "node ./cli/rename.js",
+		"rename:basic": "node ./cli/basic.js"
 	}
 }

@@ -133,29 +133,50 @@ class MailsterMail {
 
 		$this->send_limit = mailster_option( 'send_limit' );
 
-		$this->subscriber_errors = apply_filters(
-			'mailster_subscriber_errors',
-			array(
-				'SMTP Error: The following recipients failed',
-				'The following From address failed',
-				'Invalid address:',
-				'SMTP Error: Data not accepted',
-			)
+		$default = array(
+			'SMTP Error: The following recipients failed',
+			'The following From address failed',
+			'Invalid address:',
+			'SMTP Error: Data not accepted',
 		);
+		/**
+		 * Default subscriber errors where campaigns do not get paused or skipped
+		 *
+		 * defaults:
+		 * `SMTP Error: The following recipients failed`
+		 * `The following From address failed`
+		 * `Invalid address:`
+		 * `SMTP Error: Data not accepted`
+		 *
+		 * @param array $default default values
+		 */
+		$this->subscriber_errors = apply_filters( 'mailster_subscriber_errors', $default );
 
-		$this->server_errors = apply_filters(
-			'mailster_server_errors',
-			array(
-				'Sender address rejected',
-			)
+		$default = array(
+			'Sender address rejected',
 		);
+		/**
+		 * Default server errors where campaigns get paused or skipped
+		 *
+		 * defaults:
+		 * `Sender address rejected`
+		 *
+		 * @param array $default default values
+		 */
+		$this->server_errors = apply_filters( 'mailster_server_errors', $default );
 
-		$this->system_errors = apply_filters(
-			'mailster_system_errors',
-			array(
-				'Not in Time Frame',
-			)
+		$default = array(
+			'Not in Time Frame',
 		);
+		/**
+		 * Default System errors where campaigns get paused or skipped
+		 *
+		 * defaults:
+		 * `Not in Time Frame`
+		 *
+		 * @param array $default default values
+		 */
+		$this->server_errors = apply_filters( 'mailster_system_errors', $default );
 
 		if ( ! get_transient( '_mailster_send_period_timeout' ) ) {
 			set_transient( '_mailster_send_period_timeout', true, mailster_option( 'send_period' ) * 3600 );
@@ -554,7 +575,14 @@ class MailsterMail {
 
 		$this->content = $placeholder->get_content();
 		$this->content = mailster( 'helper' )->prepare_content( $this->content );
-		if ( apply_filters( 'mailster_inline_css', true ) ) {
+
+		$inline_css = true;
+		/**
+		 * Filter to skip inline CSS
+		 *
+		 * @param boolean $inline_css Whenever to enable inline styles or not
+		 */
+		if ( apply_filters( 'mailster_inline_css', $inline_css ) ) {
 			$content = mailster( 'helper' )->inline_css( $this->content );
 		}
 
