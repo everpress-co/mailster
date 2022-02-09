@@ -7,7 +7,10 @@
 		"yoast/phpunit-polyfills": "^1.0.1",
 		"mockery/mockery": "1.2",
 		"brain/monkey": "2.*",
-		"pronamic/wp-documentor": "^1.2"
+		"pronamic/wp-documentor": "^1.2",
+		"wp-coding-standards/wpcs": "^2.3",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+		"phpcompatibility/phpcompatibility-wp": "^2.1"
 	},
 	"autoload": {
 		"psr-4": {
