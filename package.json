@@ -17,10 +17,12 @@
 		]
 	},
 	"dependencies": {
-		"@wordpress/env": "@latest",
-		"@wordpress/scripts": "@latest",
 		"shelljs": "^0.8.4",
 		"wsrun": "^5.2.0"
+	},
+	"devDependencies": {
+		"@wordpress/env": "^4.2.0",
+		"@wordpress/scripts": "^20.0.2"
 	},
 	"scripts": {
 		"packages-update": "wp-scripts packages-update",

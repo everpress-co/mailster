@@ -6,7 +6,8 @@
 		"phpunit/phpunit": "^7.0",
 		"yoast/phpunit-polyfills": "^1.0.1",
 		"mockery/mockery": "1.2",
-		"brain/monkey": "2.*"
+		"brain/monkey": "2.*",
+		"pronamic/wp-documentor": "^1.2"
 	},
 	"autoload": {
 		"psr-4": {
