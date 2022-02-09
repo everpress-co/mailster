@@ -9,16 +9,16 @@
     "packages-dev": [
         {
             "name": "antecedent/patchwork",
-            "version": "2.1.19",
+            "version": "2.1.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/antecedent/patchwork.git",
-                "reference": "94fe587cb0a6c1695b1ddc650e877231be80b8bc"
+                "reference": "25c1fa0cd9a6e6d0d13863d8df8f050b6733f16d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/antecedent/patchwork/zipball/94fe587cb0a6c1695b1ddc650e877231be80b8bc",
-                "reference": "94fe587cb0a6c1695b1ddc650e877231be80b8bc",
+                "url": "https://api.github.com/repos/antecedent/patchwork/zipball/25c1fa0cd9a6e6d0d13863d8df8f050b6733f16d",
+                "reference": "25c1fa0cd9a6e6d0d13863d8df8f050b6733f16d",
                 "shasum": ""
             },
             "require": {
@@ -51,9 +51,9 @@
             ],
             "support": {
                 "issues": "https://github.com/antecedent/patchwork/issues",
-                "source": "https://github.com/antecedent/patchwork/tree/2.1.19"
+                "source": "https://github.com/antecedent/patchwork/tree/2.1.21"
             },
-            "time": "2022-01-20T04:47:04+00:00"
+            "time": "2022-02-07T07:28:34+00:00"
         },
         {
             "name": "brain/monkey",
@@ -87,12 +87,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Brain\\Monkey\\": "src/"
-                },
                 "files": [
                     "inc/api.php"
-                ]
+                ],
+                "psr-4": {
+                    "Brain\\Monkey\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [

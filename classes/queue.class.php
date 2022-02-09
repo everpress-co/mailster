@@ -434,8 +434,16 @@ class MailsterQueue {
 				continue;
 			}
 
-			// time when user no longer get the campaign
-			$grace_period  = apply_filters( 'mailster_autoresponder_grace_period', WEEK_IN_SECONDS, $campaign );
+			$grace_period = WEEK_IN_SECONDS;
+			/**
+			 * Filter the grace period from campaigns to decide the time when user no longer get the campaign.
+			 *
+			 * default: 604800 (one week)
+			 *
+			 * @param int $grace_period The grace period in seconds. set to false to disable
+			 * @param int $campaign_id the campaign id
+			 */
+			$grace_period  = apply_filters( 'mailster_autoresponder_grace_period', $grace_period, $campaign );
 			$queue_upfront = 3600;
 
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
