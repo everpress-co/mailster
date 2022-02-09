@@ -18,7 +18,15 @@ if ( ! isset( $documentor ) ) {
 $actions = $documentor->get_actions();
 $filters = $documentor->get_filters();
 
-$hooks = array();
+$version = null;
+$hooks   = array();
+
+$readme = file_get_contents( dirname( dirname( __DIR__ ) ) . '/readme.txt' );
+if ( ! defined( 'MAILSTER_VERSION' ) && preg_match( '|^(Stable tag): (.+)$|im', $readme, $match ) ) {
+	$version = $match[2];
+	define( 'MAILSTER_VERSION', $version );
+}
+
 
 $eol = "\n";
 
@@ -33,7 +41,7 @@ if ( is_null( $documentor->type ) || in_array( 'actions', (array) $documentor->t
 
 		echo 'Mailster provides various hooks and filters you can use to alter the behavior of the plugin or write your own add-ons and extensions. We recommend to read more about hooks on the [official site](https://developer.wordpress.org/plugins/hooks/).', $eol, $eol;
 
-		echo '!>  While there are more hooks in the plugin we only list a few here.<hr>', $eol;
+		echo '!>  While there are more hooks in the plugin we only list a few here.', $eol;
 
 		echo $eol;
 		foreach ( $actions as $hook ) {
@@ -52,7 +60,9 @@ if ( is_null( $documentor->type ) || in_array( 'actions', (array) $documentor->t
 			ob_end_clean();
 		}
 		foreach ( $hooks as $name => $output ) {
+			echo '<hr>', $eol, $eol;
 			echo $output;
+			echo $eol;
 			echo $eol;
 		}
 	}
@@ -69,7 +79,7 @@ if ( is_null( $documentor->type ) || in_array( 'filters', (array) $documentor->t
 
 		echo 'Mailster provides various hooks and filters you can use to alter the behavior of the plugin or write your own add-ons and extensions. We recommend to read more about hooks on the [official site](https://developer.wordpress.org/plugins/hooks/).', $eol, $eol;
 
-		echo '!>  While there are more hooks in the plugin we only list a few here.<hr>', $eol;
+		echo '!>  While there are more hooks in the plugin we only list a few here.', $eol;
 
 		echo $eol;
 		foreach ( $filters as $hook ) {
@@ -89,7 +99,9 @@ if ( is_null( $documentor->type ) || in_array( 'filters', (array) $documentor->t
 
 		}
 		foreach ( $hooks as $name => $output ) {
+			echo '<hr>', $eol, $eol;
 			echo $output;
+			echo $eol;
 			echo $eol;
 		}
 	}

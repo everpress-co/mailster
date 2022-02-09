@@ -10,7 +10,8 @@
 
 if ( ! function_exists( 'github_link' ) ) :
 	function github_link( $path ) {
-		$base = 'https://github.com/evrpress/mailster/tree/master';
+
+		$base = 'https://github.com/evrpress/mailster/blob/' . MAILSTER_VERSION;
 
 		return rtrim( $base, '/' ) . '/' . $path;
 	}
