@@ -31,7 +31,7 @@
 		"@wordpress/i18n": "^4.3.0",
 		"@wordpress/icons": "^6.2.0",
 		"@wordpress/plugins": "^4.0.5",
-		"@wordpress/scripts": "^19.2.4",
+		"@wordpress/scripts": "^20.0.2",
 		"@wordpress/server-side-render": "^3.0.5",
 		"child_process": "^1.0.2",
 		"classnames": "^2.3.1",
@@ -52,13 +52,18 @@
 		"webpack-remove-empty-scripts": "^0.7.1"
 	},
 	"scripts": {
+		"build": "wp-scripts build",
+		"zip": "wp-scripts plugin-zip",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"start": "wp-scripts start",
 		"packages-update": "wp-scripts packages-update",
-		"start": "yarn wsrun start",
 		"c": "yarn workspace components",
 		"p": "yarn workspace pages",
 		"storybook": "yarn c storybook",
 		"test:ci": "yarn c test --ci && yarn p test --ci",
-		"build": "yarn c build && yarn p build",
+		"build2": "yarn c build && yarn p build",
 		"rename": "node ./cli/rename.js",
 		"rename:basic": "node ./cli/basic.js"
 	}
