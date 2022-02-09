@@ -122,3 +122,6 @@ vendor
 wordpress
 build
 .phpunit.result.cache
+composer.lock
+package-lock.json
+yarn.lock
