@@ -21,7 +21,7 @@
 		"@wordpress/data": "^6.1.5",
 		"@wordpress/date": "^4.2.3",
 		"@wordpress/edit-post": "^5.1.0",
-		"@wordpress/element": "^4.0.4",
+		"@wordpress/element": "^4.1.1",
 		"@wordpress/env": "^4.2.0",
 		"@wordpress/hooks": "^3.2.2",
 		"@wordpress/i18n": "^4.3.0",
@@ -37,8 +37,6 @@
 		"react-select": "^5.2.2",
 		"shelljs": "^0.8.4",
 		"webpack-remove-empty-scripts": "^0.7.1",
-		"wsrun": "^5.2.0",
-		"shelljs": "^0.8.4",
 		"wsrun": "^5.2.0"
 	},
 	"devDependencies": {

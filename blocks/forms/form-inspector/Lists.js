@@ -53,7 +53,7 @@ import ListsPanel from './ListsPanel';
 export default function Lists(props) {
 	return (
 		<PluginDocumentSettingPanel
-			name="userschoice"
+			name="lists"
 			title={__('Lists', 'mailster')}
 		>
 			<ListsPanel {...props} />

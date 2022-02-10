@@ -37,6 +37,13 @@ import {
 
 let locked = false;
 
+const showEditorPanel = (name) => {
+	const id = 'mailster-block-form-settings-panel/' + name;
+	const isOpen = select('core/edit-post').isEditorPanelOpened(id);
+	dispatch('core/edit-post').closePublishSidebar();
+	if (!isOpen) dispatch('core/edit-post').toggleEditorPanelOpened(id);
+};
+
 export default function PublishChecks(props) {
 	const { meta, setMeta } = props;
 	const { gdpr, lists } = meta;
@@ -46,24 +53,16 @@ export default function PublishChecks(props) {
 
 	if (lists.length < 1) {
 		errors.push({
-			msg: 'Please select a list',
-			onClick: () => console.warn('Error'),
+			msg: __('Please select a list', 'mailster'),
+			onClick: () => showEditorPanel('lists'),
 		});
 	}
 	if (!gdpr) {
 		warnings.push({
-			msg: 'You have no GDPR field in place',
-			onClick: () => console.warn('Warning'),
+			msg: __('You have no GDPR field in place', 'mailster'),
+			onClick: () => showEditorPanel('options'),
 		});
 	}
-
-	// if (errors.length > 0) {
-	// 	locked = true;
-	// 	dispatch('core/editor').lockPostSaving('title-lock');
-	// } else {
-	// 	locked = false;
-	// 	dispatch('core/editor').unlockPostSaving('title-lock');
-	// }
 
 	return (
 		<MenuGroup className="widefat">
