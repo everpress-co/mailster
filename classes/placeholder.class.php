@@ -1084,9 +1084,19 @@ class MailsterPlaceholder {
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
 
-					// using preview text fix from https://www.litmus.com/blog?p=4367
-					if ( $replace && '{preheader}' == $search && apply_filters( 'mailster_preview_text_fix', true ) ) {
-						$replace .= ' ' . str_repeat( '&nbsp;&zwnj;', 220 - strlen( $replace ) );
+					/**
+					 * Adds invisible characters after the preheader text also known as "preview text hack"
+					 * Read more here: https://www.litmus.com/blog?p=4367
+					 *
+					 * defaults:
+					 * `true`
+					 *
+					 * @param boolean $default default values
+					 */
+					$preview_text_fix = apply_filters( 'mailster_preview_text_fix', true );
+
+					if ( $replace && '{preheader}' == $search && $preview_text_fix ) {
+						$replace .= ' ' . str_repeat( '&#847;&zwnj;&nbsp;', 146 - strlen( $replace ) );
 					}
 
 					// tag is a custom tag

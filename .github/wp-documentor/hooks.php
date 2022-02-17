@@ -24,7 +24,7 @@ $eol     = "\n";
 
 $readme = file_get_contents( dirname( dirname( __DIR__ ) ) . '/README.md' );
 if ( ! defined( 'MAILSTER_VERSION' ) && preg_match( '|^(Stable tag): (.+)$|im', $readme, $match ) ) {
-	$version = $match[2];
+	$version = trim( $match[2] );
 	define( 'MAILSTER_VERSION', $version );
 }
 
