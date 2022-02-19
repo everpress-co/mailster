@@ -562,6 +562,8 @@ class MailsterMail {
 
 		$placeholder = mailster( 'placeholder', $this->content );
 
+		$placeholder->add_defaults();
+
 		$placeholder->add(
 			array(
 				'subject'   => $this->subject,

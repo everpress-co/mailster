@@ -2495,6 +2495,8 @@ class Mailster {
 
 		$placeholder = mailster( 'placeholder', $content );
 
+		$placeholder->add_defaults();
+
 		$placeholder->add(
 			array(
 				'subject'   => $subject,
