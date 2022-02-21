@@ -32,11 +32,18 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 // Start up the WP testing environment.
 require $_tests_dir . '/includes/bootstrap.php';
 
+require dirname( __FILE__ ) . '/sendria.php';
+
+
+function sendria() {
+	$class = Sendria::getInstance();
+	return $class;
+}
 
 
 function _setup() {
 
-	echo '<pre>' . print_r( 'SETUP', true ) . '</pre>';
+	echo 'SETUP';
 
 	global $wpdb;
 
@@ -82,11 +89,7 @@ function _setup() {
 			'smtp_user'               => '',
 			'smtp_pwd'                => '',
 
-			'deliverymethod'          => 'simple',
-			'simplemethod'            => 'mail',
-
 			'remove_data'             => true,
-
 			'disable_cache'           => true,
 
 		)

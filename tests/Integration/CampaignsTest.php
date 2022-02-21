@@ -6,11 +6,6 @@ namespace Mailster\Tests\Unit;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 
-/**
- * These tests prove test setup works.
- *
- * They are useful for debugging.
- */
 class CampaignsTest extends TestCase {
 
 	static $campaign_id;
@@ -45,11 +40,13 @@ class CampaignsTest extends TestCase {
 
 		$success = mailster( 'campaigns' )->send( self::$campaign_id, 1 );
 
-		// self::$message = mailcatcher()->get_by_subject( $subject );
+		self::$message = sendria()->get_by_subject( $subject );
+
 	}
 
 	function testCampaignCreated() {
 		$this->assertTrue( ! is_wp_error( self::$campaign_id ) );
 	}
+
 
 }
