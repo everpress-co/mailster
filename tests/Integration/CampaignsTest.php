@@ -49,4 +49,39 @@ class CampaignsTest extends TestCase {
 	}
 
 
+	function testCampaignCreated() {
+		$this->assertTrue( ! is_wp_error( self::$campaign_id ) );
+	}
+
+	function testCampaignSent() {
+		$this->assertNotNull( self::$message );
+	}
+
+	function testCampaignTestHeaders() {
+		$message = self::$message;
+
+		$source = $message->source;
+
+		$this->assertRegExp( '/X-Mailer/', $source, 'X-Mailer Header is missing' );
+		$this->assertRegExp( '/X-Mailster: [a-f0-9]{32}/', $source, 'X-Mailster Header is wrong or missing' );
+		$this->assertRegExp( '/X-Mailster-Campaign: ' . self::$campaign_id . '/', $source, 'X-Mailster-Campaign is wrong' );
+		$this->assertRegExp( '/X-Mailster-ID: ' . mailster_option( 'ID' ) . '/', $source, 'X-Mailster-ID is wrong' );
+		$this->assertRegExp( '/List-Unsubscribe:/', $source, 'List-Unsubscribe is missing' );
+	}
+
+	function _testCampaignTestLinks() {
+		$baselink = mailster()->get_base_link( self::$campaign_id );
+
+		$message = self::$message;
+
+		$source = $message->source;
+
+		echo '<pre>' . print_r( wp_extract_urls( $source ), true ) . '</pre>';
+
+		if ( preg_match_all( '#' . preg_quote( trailingslashit( $baselink ) ) . '[a-f0-9]{32}\/[A-Za-z0-9]+#', $source, $matches ) ) {
+		}
+
+		echo '<pre>' . print_r( $matches, true ) . '</pre>';
+	}
+
 }
