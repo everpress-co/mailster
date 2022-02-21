@@ -48,11 +48,6 @@ class CampaignsTest extends TestCase {
 		$this->assertTrue( ! is_wp_error( self::$campaign_id ) );
 	}
 
-
-	function testCampaignCreated() {
-		$this->assertTrue( ! is_wp_error( self::$campaign_id ) );
-	}
-
 	function testCampaignSent() {
 		$this->assertNotNull( self::$message );
 	}
