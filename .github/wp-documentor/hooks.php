@@ -22,22 +22,22 @@ $version = null;
 $hooks   = array();
 $eol     = "\n";
 
-$readme = file_get_contents( dirname( dirname( __DIR__ ) ) . '/readme.txt' );
+$readme = file_get_contents( dirname( dirname( __DIR__ ) ) . '/README.md' );
 if ( ! defined( 'MAILSTER_VERSION' ) && preg_match( '|^(Stable tag): (.+)$|im', $readme, $match ) ) {
-	$version = $match[2];
+	$version = trim( $match[2] );
 	define( 'MAILSTER_VERSION', $version );
 }
 
-$changelog = explode( '= ' . MAILSTER_VERSION . ' =', $readme )[1];
-$changelog = explode( "\n= ", $changelog )[0];
-$changelog = $eol . $eol . '### Version ' . MAILSTER_VERSION . ' (' . date( 'Y-m-d' ) . ')' . $eol . $eol . trim( $changelog ) . $eol;
-
-
+$changelog = explode( '= ' . MAILSTER_VERSION . ' =', $readme );
+if ( isset( $changelog[1] ) ) {
+	$changelog = explode( "\n= ", $changelog )[0];
+	$changelog = $eol . $eol . '### Version ' . MAILSTER_VERSION . ' (' . date( 'Y-m-d' ) . ')' . $eol . $eol . trim( $changelog ) . $eol;
+	error_log( $changelog );
+}
 
 $skip_without_summery = true;
 
 if ( is_null( $documentor->type ) || in_array( 'actions', (array) $documentor->type ) ) {
-	error_log( $changelog );
 
 	if ( empty( $actions ) ) {
 		echo '*This project does not contain any WordPress actions.*', $eol;

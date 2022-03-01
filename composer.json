@@ -25,5 +25,10 @@
 	"scripts": {
 		"test": "phpunit --config=phpunit-unit.xml",
 		"test:wordpress": "phpunit --config=phpunit-integration.xml"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	}
 }

@@ -511,10 +511,10 @@ class MailsterFrontpage {
 				break;
 
 			case 'unsubscribe':
+					$hash = get_query_var( '_mailster_hash' );
 				// handle one click unsubscribe for RFC8058 (https://tools.ietf.org/html/rfc8058)
 				if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 
-					$hash        = get_query_var( '_mailster_hash' );
 					$campaign_id = get_query_var( '_mailster_extra' );
 					$status      = 'list_unsubscribe';
 
@@ -528,11 +528,11 @@ class MailsterFrontpage {
 
 				}
 
-				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+				$unsubscribe_url = $this->get_link( 'unsubscribe', $hash, get_query_var( '_mailster_extra' ) );
 				// if tracking is disabled
-				if ( strpos( $unsubscribe_url, $wp->request ) === false ) {
-					$this->setcookie( get_query_var( '_mailster_hash' ) );
-					$redirect_to = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+				if ( ! empty( $hash ) && strpos( $unsubscribe_url, $wp->request ) === false ) {
+					$this->setcookie( $hash );
+					$redirect_to = $this->get_link( 'unsubscribe', $hash, get_query_var( '_mailster_extra' ) );
 					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
@@ -542,18 +542,18 @@ class MailsterFrontpage {
 				break;
 
 			case 'profile':
-				$profile_url = $this->get_link( 'profile', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+				$hash        = get_query_var( '_mailster_hash' );
+				$profile_url = $this->get_link( 'profile', $hash, get_query_var( '_mailster_extra' ) );
 
 				// if tracking is disabled
-				if ( strpos( $profile_url, $wp->request ) === false ) {
-					$this->setcookie( get_query_var( '_mailster_hash' ) );
-					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . get_query_var( '_mailster_hash' ) ), get_query_var( '_mailster_extra' ) );
+				if ( ! empty( $hash ) && strpos( $profile_url, $wp->request ) === false ) {
+					$this->setcookie( $hash );
+					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $hash ), get_query_var( '_mailster_extra' ) );
 					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
 
 				do_action( 'mailster_homepage_profile' );
-				$hash = get_query_var( '_mailster_hash' );
 
 				// redirect if no hash is set
 				if ( empty( $hash ) ) {
@@ -575,9 +575,10 @@ class MailsterFrontpage {
 				break;
 
 			case 'confirm':
+				$hash = get_query_var( '_mailster_hash' );
 				do_action( 'mailster_homepage_confirm' );
 
-				$subscriber = mailster( 'subscribers' )->get_by_hash( get_query_var( '_mailster_hash' ) );
+				$subscriber = mailster( 'subscribers' )->get_by_hash( $hash );
 				// redirect if no such subscriber
 				if ( ! $subscriber ) {
 
@@ -587,7 +588,7 @@ class MailsterFrontpage {
 
 				$subscriber_id = $subscriber->ID;
 
-				$this->setcookie( get_query_var( '_mailster_hash' ) );
+				$this->setcookie( $hash );
 
 				$extra = explode( '/', get_query_var( '_mailster_extra' ) );
 				if ( isset( $extra[0] ) ) {
