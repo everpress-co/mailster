@@ -192,6 +192,7 @@ Get professional development help from our expert support partner _Codeable_ for
 -   fixed: default placeholder tags where not replaced on system mails
 -   fixed: security vulnerability where a logged in user can discover the profile URL from a different user. (discovered by D.Jong from patchstack.com)
 -   improved: ajax operations are now checked against capabilities
+-   improved: better handling of translations on plugin activation
 -   improved: updated "Preheader text hack" from Litmus
 
 ### 3.1.2
