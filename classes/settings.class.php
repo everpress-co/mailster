@@ -139,6 +139,7 @@ class MailsterSettings {
 			'synclist'                           => array(
 				'firstname' => 'first_name',
 				'lastname'  => 'last_name',
+				'email'     => 'email',
 			),
 			'delete_wp_subscriber'               => false,
 			'delete_wp_user'                     => false,
