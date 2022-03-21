@@ -523,6 +523,7 @@ class MailsterSubscribers {
 					if ( isset( $_POST['mailster_tags'] ) ) {
 						$tags     = array_filter( $_POST['mailster_tags'], 'is_numeric' );
 						$new_tags = array_values( array_diff( $_POST['mailster_tags'], $tags ) );
+						$new_tags = stripslashes_deep( $new_tags );
 						foreach ( $new_tags as $tagname ) {
 							$tags[] = mailster( 'tags' )->add( $tagname );
 						}
@@ -1071,7 +1072,7 @@ class MailsterSubscribers {
 			unset( $entry['_lists'] );
 		}
 		if ( isset( $entry['_tags'] ) ) {
-			$lists = $entry['_tags'];
+			$tags = $entry['_tags'];
 			unset( $entry['_tags'] );
 		}
 
