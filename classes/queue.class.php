@@ -157,12 +157,12 @@ class MailsterQueue {
 		}
 
 		if ( ! empty( $tags ) ) {
-			$tags = maybe_serialize( $tags );
+			$tags = wp_slash( maybe_serialize($tags) );
 		} else {
 			$tags = '';
 		}
 		if ( ! empty( $options ) ) {
-			$options = maybe_serialize( $options );
+			$options = wp_slash( maybe_serialize($options) );
 		} else {
 			$options = '';
 		}
@@ -1232,7 +1232,7 @@ class MailsterQueue {
 						continue;
 					}
 
-					$tags = ! empty( $data->_tags ) ? @unserialize( $data->_tags ) : array();
+					$tags = ! empty( $data->_tags ) ? maybe_unserialize( $data->_tags ) : array();
 
 					// regular campaign
 					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, true, $tags );
