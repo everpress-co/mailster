@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 5.9  
-Stable tag: 3.1.3  
+Stable tag: 3.1.4  
 License: GPLv2 or later  
 Requires PHP: 5.3.6
 
@@ -187,15 +187,23 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ## Changelog
 
+### 3.1.4
+
+-   fixed: using single quotes in tags causes problems
+-   improved: better handling of translations on plugin activation
+
+### 3.1.3
+
+-   fixed: default placeholder tags where not replaced on system mails
+-   fixed: security vulnerability where a logged in user can discover the profile URL from a different user. (discovered by D.Jong from patchstack.com)
+-   improved: ajax operations are now checked against capabilities
+-   improved: updated "Preheader text hack" from Litmus
+
 ### 3.1.2
 
 -   fixed: CSS for WP 5.9
 -   fixed: small typo in variable
 -   fixed: compatibility for PHP 5.6+
--   fixed: default placeholder tags where not replaced on system mails
--   fixed: security vulnerability where a logged in user can discover the profile URL from a different user. (discovered by D.Jong from patchstack.com)
--   improved: ajax operations are now checked against capabilities
--   improved: updated "Preheader text hack" from Litmus
 
 ### 3.1.1
 
