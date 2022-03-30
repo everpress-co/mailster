@@ -157,12 +157,12 @@ class MailsterQueue {
 		}
 
 		if ( ! empty( $tags ) ) {
-			$tags = wp_slash( maybe_serialize($tags) );
+			$tags = wp_slash( maybe_serialize( $tags ) );
 		} else {
 			$tags = '';
 		}
 		if ( ! empty( $options ) ) {
-			$options = wp_slash( maybe_serialize($options) );
+			$options = wp_slash( maybe_serialize( $options ) );
 		} else {
 			$options = '';
 		}

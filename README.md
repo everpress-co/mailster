@@ -190,6 +190,7 @@ Get professional development help from our expert support partner _Codeable_ for
 ### 3.1.4
 
 -   fixed: using single quotes in tags causes problems
+-   fixed: PHP warning on PHP 8.1
 -   improved: better handling of translations on plugin activation
 
 ### 3.1.3
