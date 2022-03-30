@@ -210,6 +210,21 @@ class MailsterBlockForms {
 
 		$post_type = get_post_type();
 
+		// fails if not in a schedule
+		if ( ! $this->preview_data && ! empty( $options['schedule'] ) ) {
+			$now  = current_time( 'timestamp' );
+			$pass = false;
+			foreach ( $options['schedule'] as $schedule ) {
+				if ( $now > strtotime( $schedule['start'] ) && $now < strtotime( $schedule['end'] ) ) {
+					$pass = true;
+					break;
+				}
+			}
+			if ( ! $pass ) {
+				return false;
+			}
+		}
+
 		if ( ! empty( $options['all'] ) && in_array( $post_type, $options['all'] ) ) {
 			return true;
 		}
