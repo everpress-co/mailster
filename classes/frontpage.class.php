@@ -637,8 +637,12 @@ class MailsterFrontpage {
 					if ( $subscriber_id = mailster( 'subscribers' )->update( $user_meta, true, false, true ) ) {
 
 						if ( ! is_wp_error( $subscriber_id ) ) {
+							/**
+							 * Run after the users confirms the subscription
+							 *
+							 * @param int $subscriber_id The ID of the subscriber
+							 */
 							do_action( 'mailster_subscriber_subscribed', $subscriber_id );
-							// old hook for backward compatibility
 						}
 					} else {
 
@@ -653,7 +657,7 @@ class MailsterFrontpage {
 				 * Filters the redirection target after clicking a link in a campaign
 				 *
 				 * @param string $target The redirect link
-				 * @param int $subscriber_id Form The ID of the subscriber
+				 * @param int $subscriber_id The ID of the subscriber
 				 */
 				$redirect_to = apply_filters( 'mailster_confirm_target', $target, $subscriber_id );
 
