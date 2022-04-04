@@ -2125,6 +2125,16 @@ class Mailster {
                 UNIQUE KEY `id` (`form_id`,`field_id`)
             ) $collate;",
 
+			"CREATE TABLE {$wpdb->prefix}mailster_form_actions (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `form_id` bigint(20) unsigned NOT NULL,
+                `post_id` bigint(20) unsigned NOT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `type` tinyint(1) unsigned NOT NULL,
+                `msg` longtext NOT NULL,
+                PRIMARY KEY  (`ID`)
+            ) $collate;",
+
 			"CREATE TABLE {$wpdb->prefix}mailster_forms_lists (
                 `form_id` bigint(20) unsigned NOT NULL,
                 `list_id` bigint(20) unsigned NOT NULL,

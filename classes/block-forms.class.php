@@ -151,13 +151,13 @@ class MailsterBlockForms {
 
 		switch ( $column ) {
 			case 'impressions':
-				echo '0';
+				echo number_format_i18n( $this->get_impressions( $post_id ) );
 				break;
 			case 'conversions':
-				echo '0';
+				echo number_format_i18n( $this->get_conversions( $post_id ) );
 				break;
 			case 'conversion_rate':
-				echo '0%';
+				printf( '%s %%', number_format_i18n( $this->get_conversion_rate( $post_id ) * 100, 1 ) );
 				break;
 			default:
 				break;
@@ -1262,6 +1262,52 @@ class MailsterBlockForms {
 	public function clear_inline_style() {
 
 		update_option( 'mailster_inline_styles', '', 'no' );
+
+	}
+
+
+	public function impression( $form_id, $post_id = null ) {
+
+		global $wpdb;
+
+		$sql = "INSERT INTO {$wpdb->prefix}mailster_form_actions (`form_id`,`post_id`, `timestamp`, `type`, `msg`)";
+
+		$sql .= 'VALUES (%d, %d, %d, %d, %s)';
+
+		$msg = 'No message';
+
+		$wpdb->query( $wpdb->prepare( $sql, $form_id, $post_id, time(), 3, $msg ) );
+
+	}
+
+	public function get_impressions( $form_id ) {
+
+		global $wpdb;
+
+		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE form_id = %d";
+
+		return $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) );
+
+	}
+
+	public function get_conversions( $form_id ) {
+
+		return 3;
+
+		global $wpdb;
+
+		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE form_id = %d";
+
+		return $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) );
+
+	}
+
+	public function get_conversion_rate( $form_id ) {
+
+		$impressions = $this->get_impressions( $form_id );
+		$conversions = $this->get_conversions( $form_id );
+
+		return $impressions ? $conversions / $impressions : 0;
 
 	}
 }

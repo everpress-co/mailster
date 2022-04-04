@@ -335,14 +335,14 @@
 		if (placement.isPreview) {
 			return false;
 		}
-		if (!inTimeFrame(placement.identifier, 'impression', 30)) {
+		if (!inTimeFrame(placement.identifier, 'impression', 3)) {
 			console.warn('IMPRESSION', placement);
 
 			set(placement.identifier, 'impression');
 
 			var url = form
 				.getAttribute('action')
-				.replace(/subscribe/, 'form/' + placement.id + '/impression');
+				.replace(/subscribe/, 'forms/' + placement.id + '/impression');
 
 			console.warn(url);
 
