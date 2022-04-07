@@ -2131,7 +2131,6 @@ class Mailster {
                 `post_id` bigint(20) unsigned NOT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
                 `type` tinyint(1) unsigned NOT NULL,
-                `msg` longtext NOT NULL,
                 PRIMARY KEY  (`ID`)
             ) $collate;",
 

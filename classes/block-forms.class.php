@@ -36,15 +36,17 @@ class MailsterBlockForms {
 		add_action( 'mailster_block_form_body', array( &$this, 'form_body' ) );
 		// add_action( 'mailster_block_form_footer', array( &$this, 'form_footer' ) );
 
-		add_action(
-			'__save_post_newsletter_form',
-			function( $post_id, $post ) {
+		add_action( 'admin_print_scripts-edit.php', array( &$this, 'beta_notice' ) );
 
-				error_log( print_r( $post->post_content, true ) );
-			},
-			10,
-			2
-		);
+	}
+
+
+	public function beta_notice() {
+		$msg  = '<h2>Welcome to the New Block Forms page</h2>';
+		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize WordPress Block editor (Gutenberg) to create you custom, feature rich forms.</p>';
+		$msg .= '<p>If you like to lean more check out our guide or create a new form right a way</p>';
+		$msg .= '<p><a href="post-new.php?post_type=newsletter_form" class="button button-primary button-hero">Add New Form</a> or <a href="" class="external">check out our guide.</a></p>';
+		mailster_notice( $msg, 'info', true, 'Asdasd', true, 'edit-newsletter_form' );
 	}
 
 
@@ -138,9 +140,9 @@ class MailsterBlockForms {
 		$columns = array(
 			'cb'              => '<input type="checkbox" />',
 			'title'           => esc_html__( 'Title', 'mailster' ),
-			'impressions'     => esc_html__( 'Impressions', 'mailster' ),
-			'conversions'     => esc_html__( 'Conversions', 'mailster' ),
-			'conversion_rate' => esc_html__( 'Conversion Rate', 'mailster' ),
+			'impressions'     => esc_html__( 'Impressions', 'mailster' ) . ' (' . number_format_i18n( $this->get_impressions() ) . ')',
+			'conversions'     => esc_html__( 'Conversions', 'mailster' ) . ' (' . number_format_i18n( $this->get_conversions() ) . ')',
+			'conversion_rate' => esc_html__( 'Conversion Rate', 'mailster' ) . ' (' . number_format_i18n( $this->get_conversion_rate() ) . ')',
 			'date'            => esc_html__( 'Date', 'mailster' ),
 		);
 		return $columns;
@@ -539,7 +541,7 @@ class MailsterBlockForms {
 				'type'         => 'string',
 				'show_in_rest' => true,
 				'single'       => true,
-				'default'      => esc_html__( 'Please confirm', 'mailster' ),
+				'default'      => esc_html__( 'Welcome to {company}!', 'mailster' ),
 			)
 		);
 		register_post_meta(
@@ -549,7 +551,7 @@ class MailsterBlockForms {
 				'type'         => 'string',
 				'show_in_rest' => true,
 				'single'       => true,
-				'default'      => esc_html__( 'Please confirm your Email Address', 'mailster' ),
+				'default'      => esc_html__( 'Please confirm your email', 'mailster' ),
 			)
 		);
 
@@ -560,7 +562,7 @@ class MailsterBlockForms {
 				'type'         => 'string',
 				'show_in_rest' => true,
 				'single'       => true,
-				'default'      => sprintf( esc_html__( 'You have to confirm your email address. Please click the link below to confirm. %s', 'mailster' ), "\n{link}" ),
+				'default'      => sprintf( esc_html__( 'You have to confirm your email address to subscribe. Please click the link below to confirm. %s', 'mailster' ), "\n{link}" ),
 			)
 		);
 
@@ -696,6 +698,16 @@ class MailsterBlockForms {
 			);
 		}
 
+	}
+
+
+
+	public function get( $id ) {
+		$post = get_post( $id );
+		if ( 'newsletter_form' !== $post->post_type ) {
+			return false;
+		}
+		return $post;
 	}
 
 
@@ -1270,39 +1282,56 @@ class MailsterBlockForms {
 
 		global $wpdb;
 
-		$sql = "INSERT INTO {$wpdb->prefix}mailster_form_actions (`form_id`,`post_id`, `timestamp`, `type`, `msg`)";
+		$sql = "INSERT INTO {$wpdb->prefix}mailster_form_actions (`form_id`,`post_id`, `timestamp`, `type`)";
 
-		$sql .= 'VALUES (%d, %d, %d, %d, %s)';
+		$sql .= 'VALUES (%d, %d, %d, %d)';
 
-		$msg = 'No message';
-
-		$wpdb->query( $wpdb->prepare( $sql, $form_id, $post_id, time(), 3, $msg ) );
+		$wpdb->query( $wpdb->prepare( $sql, $form_id, $post_id, time(), 3 ) );
 
 	}
 
-	public function get_impressions( $form_id ) {
+	public function get_impressions( $form_id = '' ) {
 
 		global $wpdb;
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE form_id = %d";
+		$cache_key = 'form_get_impressions_' . $form_id;
 
-		return $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) );
+		if ( false === ( $val = mailster_cache_get( $cache_key ) ) ) {
+
+			$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE 1=1";
+			if ( $form_id ) {
+				$sql .= $wpdb->prepare( ' AND form_id = %d', $form_id );
+			}
+			$val = $wpdb->get_var( $sql );
+
+			mailster_cache_add( $cache_key, $val );
+		}
+
+		return $val;
 
 	}
 
-	public function get_conversions( $form_id ) {
-
-		return 3;
+	public function get_conversions( $form_id = '' ) {
 
 		global $wpdb;
+		$cache_key = 'form_get_conversions_' . $form_id;
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE form_id = %d";
+		if ( false === ( $val = mailster_cache_get( $cache_key ) ) ) {
 
-		return $wpdb->get_var( $wpdb->prepare( $sql, $form_id ) );
+			$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscriber_meta AS meta LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = meta.subscriber_id WHERE subscribers.status != 0";
+			if ( $form_id ) {
+				$sql .= $wpdb->prepare( " AND meta.meta_key = 'form' AND  meta.meta_value = %d", $form_id );
+			}
+			$val = $wpdb->get_var( $sql );
+
+			mailster_cache_add( $cache_key, $val );
+		}
+
+		return $val;
 
 	}
 
-	public function get_conversion_rate( $form_id ) {
+	public function get_conversion_rate( $form_id = '' ) {
 
 		$impressions = $this->get_impressions( $form_id );
 		$conversions = $this->get_conversions( $form_id );

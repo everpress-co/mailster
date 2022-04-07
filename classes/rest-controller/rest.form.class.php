@@ -41,9 +41,9 @@ class Mailster_REST_Form_Controller extends WP_REST_Controller {
 					),
 				),
 				array(
-					'methods'  => WP_REST_Server::CREATABLE,
-					'callback' => array( $this, 'create_impression' ),
-					// 'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_impression' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 				),
 				'schema' => null,
 
