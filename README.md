@@ -189,6 +189,7 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### 3.1.4
 
+-   new: forms on frontend no longer requires jQuery
 -   fixed: using single quotes in tags causes problems
 -   fixed: PHP warning on PHP 8.1
 -   improved: better handling of translations on plugin activation
