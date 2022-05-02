@@ -57,6 +57,18 @@ export default function PlacementSettings(props) {
 					onChange={(val) => setOptions({ padding: val })}
 				/>
 			</PanelRow>
+			<PanelRow>
+				<SelectControl
+					label={__('Show form every', 'mailster')}
+					value={options.delay}
+					onChange={(val) => setOptions({ delay: val })}
+				>
+					<option value={0}>{__('Always', 'mailster')}</option>
+					<option value={1}>{__('1 hour', 'mailster')}</option>
+					<option value={12}>{__('12 hours', 'mailster')}</option>
+					<option value={24}>{__('1 day', 'mailster')}</option>
+				</SelectControl>
+			</PanelRow>
 			{'content' != type && (
 				<PanelRow>
 					<ItemGroup isBordered={false} size="small">

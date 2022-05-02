@@ -45,7 +45,7 @@ class MailsterBlockForms {
 		$msg  = '<h2>Welcome to the New Block Forms page</h2>';
 		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize WordPress Block editor (Gutenberg) to create you custom, feature rich forms.</p>';
 		$msg .= '<p>If you like to lean more check out our guide or create a new form right a way</p>';
-		$msg .= '<p><a href="post-new.php?post_type=newsletter_form" class="button button-primary button-hero">Add New Form</a> or <a href="" class="external">check out our guide.</a></p>';
+		$msg .= '<p><a href="post-new.php?post_type=newsletter_form" class="page-title-action">Add New</a> or <a href="" class="external">check out our guide.</a></p>';
 		mailster_notice( $msg, 'info', true, 'Asdasd', true, 'edit-newsletter_form' );
 	}
 
@@ -142,7 +142,7 @@ class MailsterBlockForms {
 			'title'           => esc_html__( 'Title', 'mailster' ),
 			'impressions'     => esc_html__( 'Impressions', 'mailster' ) . ' (' . number_format_i18n( $this->get_impressions() ) . ')',
 			'conversions'     => esc_html__( 'Conversions', 'mailster' ) . ' (' . number_format_i18n( $this->get_conversions() ) . ')',
-			'conversion_rate' => esc_html__( 'Conversion Rate', 'mailster' ) . ' (' . number_format_i18n( $this->get_conversion_rate() ) . ')',
+			'conversion_rate' => esc_html__( 'Conversion Rate', 'mailster' ) . ' (' . sprintf( '%s %%', number_format_i18n( $this->get_conversion_rate() * 100, 1 ) ) . ')',
 			'date'            => esc_html__( 'Date', 'mailster' ),
 		);
 		return $columns;
@@ -691,6 +691,9 @@ class MailsterBlockForms {
 								'animation'        => array(
 									'type' => 'string',
 								),
+								'delay'            => array(
+									'type' => 'integer',
+								),
 							),
 						),
 					),
@@ -980,6 +983,7 @@ class MailsterBlockForms {
 			array(
 				'identifier' => hash( 'crc32', md5( serialize( $args ) ) ),
 				'classes'    => array( 'mailster-block-form-type-content' ), // gets overwritten by other types
+				'delay'      => 0,
 				'isPreview'  => false,
 			)
 		);
@@ -1201,6 +1205,7 @@ class MailsterBlockForms {
 		$form_args = array(
 			'id'         => $args['id'],
 			'identifier' => $args['identifier'],
+			'delay'      => $args['delay'],
 			'isPreview'  => $args['isPreview'],
 		);
 
@@ -1278,15 +1283,27 @@ class MailsterBlockForms {
 	}
 
 
-	public function impression( $form_id, $post_id = null ) {
+	public function impression( $form_id, $post_id = null, $subscriber_id = null ) {
 
 		global $wpdb;
 
-		$sql = "INSERT INTO {$wpdb->prefix}mailster_form_actions (`form_id`,`post_id`, `timestamp`, `type`)";
+		$sql = "INSERT INTO {$wpdb->prefix}mailster_form_actions (`form_id`, `post_id`, `subscriber_id`, `timestamp`, `type`)";
 
-		$sql .= 'VALUES (%d, %d, %d, %d)';
+		$sql .= 'VALUES (%d, %d, %d, %d, %d)';
 
-		$wpdb->query( $wpdb->prepare( $sql, $form_id, $post_id, time(), 3 ) );
+		$wpdb->query( $wpdb->prepare( $sql, $form_id, $post_id, $subscriber_id, time(), 1 ) );
+
+	}
+
+	public function conversion( $form_id, $post_id = null, $subscriber_id = null, $type = 3 ) {
+
+		global $wpdb;
+
+		$sql = "INSERT INTO {$wpdb->prefix}mailster_form_actions (`form_id`, `post_id`, `subscriber_id`, `timestamp`, `type`)";
+
+		$sql .= 'VALUES (%d, %d, %d, %d, %d)';
+
+		$wpdb->query( $wpdb->prepare( $sql, $form_id, $post_id, $subscriber_id, time(), absint( $type ) ) );
 
 	}
 
@@ -1298,7 +1315,7 @@ class MailsterBlockForms {
 
 		if ( false === ( $val = mailster_cache_get( $cache_key ) ) ) {
 
-			$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE 1=1";
+			$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE type = 1";
 			if ( $form_id ) {
 				$sql .= $wpdb->prepare( ' AND form_id = %d', $form_id );
 			}
@@ -1324,6 +1341,12 @@ class MailsterBlockForms {
 			}
 			$val = $wpdb->get_var( $sql );
 
+			$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_form_actions WHERE type = 3";
+			if ( $form_id ) {
+				$sql .= $wpdb->prepare( ' AND form_id = %d', $form_id );
+			}
+			$val = $wpdb->get_var( $sql );
+
 			mailster_cache_add( $cache_key, $val );
 		}
 
@@ -1336,7 +1359,9 @@ class MailsterBlockForms {
 		$impressions = $this->get_impressions( $form_id );
 		$conversions = $this->get_conversions( $form_id );
 
-		return $impressions ? $conversions / $impressions : 0;
+		$rate = $impressions ? $conversions / $impressions : 0;
+
+		return max( min( 1, $rate ), 0 );
 
 	}
 }

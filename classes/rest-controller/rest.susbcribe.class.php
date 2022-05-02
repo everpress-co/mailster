@@ -180,6 +180,9 @@ class Mailster_REST_Subscribe_Controller extends WP_REST_Controller {
 			return new WP_Error( 'rest_forbidden', mailster_text( 'error' ), $this->response_data( array( 'fields' => $fields_errors ) ) );
 		}
 
+		$post_id = url_to_postid( wp_get_referer() );
+		mailster( 'block-forms' )->conversion( $entry['form'], $post_id, $subscriber_id, $doubleoptin ? 2 : 3 );
+
 		$response = array(
 			'data'    => array(
 				'status'   => 200,

@@ -227,7 +227,7 @@
 		if (get(placement.identifier, 'submit')) {
 			return true;
 		}
-		return inTimeFrame(placement.identifier, 'show');
+		return inTimeFrame(placement.identifier, 'show', placement.delay);
 	}
 
 	function inTimeFrame(identifier, key, delay) {
@@ -335,7 +335,7 @@
 		if (placement.isPreview) {
 			return false;
 		}
-		if (!inTimeFrame(placement.identifier, 'impression', 3)) {
+		if (!inTimeFrame(placement.identifier, 'impression', 30)) {
 			console.warn('IMPRESSION', placement);
 
 			set(placement.identifier, 'impression');

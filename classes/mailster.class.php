@@ -2129,6 +2129,7 @@ class Mailster {
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned NOT NULL,
                 `post_id` bigint(20) unsigned NOT NULL,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
                 `type` tinyint(1) unsigned NOT NULL,
                 PRIMARY KEY  (`ID`)
