@@ -205,7 +205,11 @@ class MailsterSubscriberQuery {
 			$this->args['actions'] = explode( ',', $this->args['actions'] );
 		}
 		if ( 'OR' != $this->args['operator'] ) {
-			$this->args['operator'] = 'AND' === strtoupper( $this->args['operator'] ) ? 'AND' : 'OR';
+			if ( is_null( $this->args['operator'] ) ) {
+				$this->args['operator'] == 'OR';
+			} else {
+				$this->args['operator'] = $this->args['operator'] && 'AND' === strtoupper( $this->args['operator'] ) ? 'AND' : 'OR';
+			}
 		}
 		if ( $this->args['orderby'] && ! is_array( $this->args['orderby'] ) ) {
 			$this->args['orderby'] = explode( ',', $this->args['orderby'] );

@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 5.9  
-Stable tag: 3.1.3  
+Stable tag: 3.1.4  
 License: GPLv2 or later  
 Requires PHP: 5.3.6
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ## Changelog
+
+### 3.1.4
+
+-   new: forms on frontend no longer requires jQuery
+-   fixed: using single quotes in tags causes problems
+-   fixed: PHP warning on PHP 8.1
+-   improved: better handling of translations on plugin activation
 
 ### 3.1.3
 
