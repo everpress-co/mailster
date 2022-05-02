@@ -2,94 +2,93 @@
 
 class MailsterAjax {
 
+	// all methods which require a certain capability
 	private $methods = array(
 
-		'remove_notice',
-
 		// edit screen
-		'get_template',
-		'get_plaintext',
-		'create_new_template',
-		'toggle_codeview',
-		'set_preview',
-		'get_preview',
-		'precheck',
-		'precheck_result',
-		'precheck_agree',
-		'search_subscribers',
-		'send_test',
-		'get_totals',
-		'get_totals_list',
-		'get_totals_list_part',
-		'save_color_schema',
-		'delete_color_schema',
-		'delete_color_schema_all',
-		'get_recipients',
-		'get_recipients_page',
-		'get_recipient_detail',
-		'get_clicks',
-		'get_errors',
-		'get_environment',
-		'get_geolocation',
-		'get_post_term_dropdown',
-		'check_for_posts',
-		'create_image',
-		'get_post_list',
-		'get_post',
+		'get_template'                => 'edit_newsletters',
+		'get_plaintext'               => 'edit_newsletters',
+		'create_new_template'         => 'mailster_edit_templates',
+		'toggle_codeview'             => 'mailster_see_codeview',
+		'set_preview'                 => 'edit_newsletters',
+		'get_preview'                 => 'edit_newsletters',
+		'precheck'                    => 'edit_newsletters',
+		'precheck_result'             => 'edit_newsletters',
+		'precheck_agree'              => 'edit_newsletters',
+		'search_subscribers'          => 'mailster_manage_subscribers',
+		'send_test'                   => 'edit_newsletters',
+		'get_totals'                  => 'edit_newsletters',
+		'get_totals_list'             => 'edit_newsletters',
+		'get_totals_list_part'        => 'edit_newsletters',
+		'save_color_schema'           => 'edit_newsletters',
+		'delete_color_schema'         => 'edit_newsletters',
+		'delete_color_schema_all'     => 'edit_newsletters',
+		'get_recipients'              => 'edit_newsletters',
+		'get_recipients_page'         => 'edit_newsletters',
+		'get_recipient_detail'        => 'edit_newsletters',
+		'get_clicks'                  => 'edit_newsletters',
+		'get_errors'                  => 'edit_newsletters',
+		'get_environment'             => 'edit_newsletters',
+		'get_geolocation'             => 'edit_newsletters',
+		'get_post_term_dropdown'      => 'edit_newsletters',
+		'check_for_posts'             => 'edit_newsletters',
+		'create_image'                => 'edit_newsletters',
+		'get_post_list'               => 'edit_newsletters',
+		'get_post'                    => 'edit_newsletters',
 
-		'get_file_list',
-		'get_template_html',
-		'set_template_html',
-		'remove_template',
+		'get_file_list'               => 'edit_newsletters',
+		'get_template_html'           => 'edit_newsletters',
+		'set_template_html'           => 'mailster_save_template',
+		'remove_template'             => 'mailster_save_template',
 
-		'notice_dismiss',
-		'notice_dismiss_all',
+		'remove_notice'               => 'manage_options',
+		'notice_dismiss'              => 'read',
+		'notice_dismiss_all'          => 'read',
 
 		// settings
-		'load_geo_data',
-		'get_fallback_images',
-		'bounce_test',
-		'bounce_test_check',
-		'get_system_info',
-		'get_gravatar',
-		'check_email',
-		'spf_check',
-		'dkim_check',
+		'load_geo_data'               => 'manage_options',
+		'get_fallback_images'         => 'manage_options',
+		'bounce_test'                 => 'manage_options',
+		'bounce_test_check'           => 'manage_options',
+		'get_system_info'             => 'manage_options',
+		'get_gravatar'                => 'manage_options',
+		'check_email'                 => 'manage_options',
+		'spf_check'                   => 'manage_options',
+		'dkim_check'                  => 'manage_options',
 
-		'sync_all_subscriber',
-		'sync_all_wp_user',
+		'sync_all_subscriber'         => 'manage_options',
+		'sync_all_wp_user'            => 'manage_options',
 
-		'create_list',
-		'get_create_list_count',
+		'create_list'                 => 'mailster_edit_lists',
+		'get_create_list_count'       => 'mailster_edit_lists',
 
-		'get_subscriber_count',
+		'get_subscriber_count'        => 'edit_newsletters',
 
-		'editor_image_upload_handler',
-		'template_upload_handler',
+		'editor_image_upload_handler' => 'edit_newsletters',
+		'template_upload_handler'     => 'mailster_upload_templates',
 
-		'query_templates',
-		'delete_template',
-		'download_template',
-		'default_template',
-		'template_endpoint',
-		'load_template_file',
+		'query_templates'             => 'mailster_manage_templates',
+		'delete_template'             => 'mailster_delete_templates',
+		'download_template'           => 'mailster_manage_templates',
+		'default_template'            => 'mailster_manage_templates',
+		'template_endpoint'           => 'mailster_manage_templates',
+		'load_template_file'          => 'mailster_edit_templates',
 
-		'query_addons',
+		'query_addons'                => 'mailster_manage_addons',
 
 		// dashboard
-		'get_dashboard_data',
-		'get_dashboard_chart',
+		'get_dashboard_data'          => 'mailster_dashboard',
+		'get_dashboard_chart'         => 'mailster_dashboard',
 
-		'register',
-		'envato_verify',
-		'check_for_update',
-		'check_language',
-		'load_language',
-		'quick_install',
-		'wizard_save',
+		'register'                    => 'mailster_dashboard',
+		'envato_verify'               => 'mailster_dashboard',
+		'check_for_update'            => 'mailster_dashboard',
+		'check_language'              => 'mailster_dashboard',
+		'load_language'               => 'mailster_dashboard',
+		'quick_install'               => 'mailster_dashboard',
+		'wizard_save'                 => 'mailster_dashboard',
 
-
-		'test',
+		'test'                        => 'manage_options',
 
 	);
 
@@ -121,7 +120,7 @@ class MailsterAjax {
 
 	public function init() {
 
-		foreach ( $this->methods as $method ) {
+		foreach ( $this->methods as $method => $cap ) {
 
 			add_action( 'wp_ajax_mailster_' . $method, array( &$this, 'call_method' ) );
 
@@ -140,16 +139,22 @@ class MailsterAjax {
 	public function call_method() {
 
 		$method_name = str_replace( array( 'wp_ajax_mailster_', 'wp_ajax_nopriv_mailster_' ), '', current_filter() );
-		$args        = func_get_args();
 
 		if ( method_exists( $this, $method_name ) ) {
+			$capability = isset( $this->methods[ $method_name ] ) ? $this->methods[ $method_name ] : null;
+			$post_id    = isset( $_REQUEST['id'] ) ? (int) $_REQUEST['id'] : null;
+			$args       = func_get_args();
+
+			// method requires a capability
+			if ( $capability && ! current_user_can( $capability, $post_id ) ) {
+				die( 'You are not allowed to do this action.' );
+			}
 			call_user_func_array( array( $this, $method_name ), $args );
 		} else {
-			die( "Method $method does not exist!" );
+			die( sprintf( 'Method %s does not exist!', $method ) );
 		}
 
 	}
-
 
 
 	public function ajax_nonce( $return = null, $nonce = 'mailster_nonce' ) {
@@ -312,6 +317,7 @@ class MailsterAjax {
 
 
 	private function create_new_template() {
+
 		$this->ajax_nonce();
 
 		$this->ajax_filesystem();
@@ -350,6 +356,7 @@ class MailsterAjax {
 
 
 	private function toggle_codeview() {
+
 		$this->ajax_nonce();
 
 		$head           = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
@@ -364,6 +371,7 @@ class MailsterAjax {
 
 
 	private function set_preview() {
+
 		$this->ajax_nonce();
 
 		$content       = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : '';
@@ -707,7 +715,8 @@ class MailsterAjax {
 				if ( mailster_option( 'mail_opt_out' ) ) {
 					$listunsubscribe_mail    = $bouncemail ? $bouncemail : $from;
 					$listunsubscribe_subject = 'Please remove me from the list';
-					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID}" );
+					$listunsubscribe_link    = mailster()->get_unsubscribe_link( $ID, $mail->hash );
+					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
 
 					$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 				}
@@ -915,6 +924,7 @@ class MailsterAjax {
 
 
 	private function save_color_schema() {
+
 		$this->ajax_nonce();
 
 		$colors = get_option( 'mailster_colors' );
@@ -942,6 +952,7 @@ class MailsterAjax {
 
 
 	private function delete_color_schema() {
+
 		$this->ajax_nonce();
 
 		$colors = get_option( 'mailster_colors' );
@@ -969,6 +980,7 @@ class MailsterAjax {
 
 
 	private function delete_color_schema_all() {
+
 		$this->ajax_nonce();
 
 		$colors = get_option( 'mailster_colors' );
@@ -1181,6 +1193,7 @@ class MailsterAjax {
 
 
 	private function create_image() {
+
 		$this->ajax_nonce();
 
 		if ( ! isset( $_POST['id'] ) ) {
@@ -1521,6 +1534,7 @@ class MailsterAjax {
 
 
 	private function get_post() {
+
 		$this->ajax_nonce();
 
 		if ( is_numeric( $_POST['id'] ) ) {
@@ -1594,6 +1608,7 @@ class MailsterAjax {
 
 
 	private function check_for_posts() {
+
 		$this->ajax_nonce();
 
 		$campaign_id            = (int) $_POST['id'];
@@ -1668,6 +1683,7 @@ class MailsterAjax {
 
 
 	private function get_post_term_dropdown() {
+
 		$this->ajax_nonce();
 
 		$post_type = $_POST['posttype'];
@@ -1742,6 +1758,7 @@ class MailsterAjax {
 
 
 	private function set_template_html() {
+
 		$this->ajax_nonce();
 
 		$this->ajax_filesystem();
@@ -1791,6 +1808,7 @@ class MailsterAjax {
 
 
 	private function delete_template() {
+
 		$this->ajax_nonce();
 
 		$slug = basename( $_POST['slug'] );
@@ -1805,6 +1823,7 @@ class MailsterAjax {
 	}
 
 	private function download_template() {
+
 		$this->ajax_nonce();
 
 		$url  = esc_url( $_POST['url'] );
@@ -1832,6 +1851,7 @@ class MailsterAjax {
 	}
 
 	private function default_template() {
+
 		$this->ajax_nonce();
 
 		$slug = basename( $_POST['slug'] );
@@ -1879,6 +1899,7 @@ class MailsterAjax {
 
 
 	private function load_geo_data() {
+
 		$this->ajax_nonce();
 
 		if ( ! mailster( 'geo' )->update( true ) ) {
@@ -1927,7 +1948,7 @@ class MailsterAjax {
 			mailster_update_option( $formdata['mailster_options'], true );
 		}
 
-		$identifier = 'mailster_bonuce_test_' . md5( uniqid() );
+		$identifier = 'mailster_bounce_test_' . md5( uniqid() );
 
 		$return['identifier'] = $identifier;
 
@@ -2187,13 +2208,15 @@ class MailsterAjax {
 
 
 	private function get_subscriber_count() {
+
 		$this->ajax_nonce();
 
 		parse_str( $_POST['data'], $data );
 
-		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : -1;
+		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : array();
+		$nolists    = isset( $data['nolists'] ) ? (bool) $data['nolists'] : null;
 		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
-		$status     = isset( $data['status'] ) ? (array) $data['status'] : false;
+		$status     = isset( $data['status'] ) ? (array) $data['status'] : -1;
 
 		$args = array(
 			'return_count' => true,
@@ -2203,6 +2226,12 @@ class MailsterAjax {
 		);
 
 		$return['count'] = mailster( 'subscribers' )->query( $args );
+		if ( $nolists ) {
+			$args['lists']    = -1;
+			$return['count'] += mailster( 'subscribers' )->query( $args );
+		}
+
+		$return['count_formated'] = number_format_i18n( $return['count'] );
 
 		wp_send_json_success( $return );
 
@@ -2378,6 +2407,7 @@ class MailsterAjax {
 	}
 
 	private function remove_template() {
+
 		$this->ajax_nonce();
 
 		$path = mailster( 'templates' )->get_path();
@@ -2703,6 +2733,7 @@ class MailsterAjax {
 
 
 	private function check_for_update() {
+
 		$this->ajax_nonce();
 
 		if ( ! $plugin_info = mailster()->plugin_info( null, true ) ) {
@@ -2728,19 +2759,23 @@ class MailsterAjax {
 
 		switch ( $step ) {
 			case 'install':
-				$success = mailster( 'helper' )->install_plugin( $plugin );
+				$success        = mailster( 'helper' )->install_plugin( $plugin );
+				$return['next'] = 'activate';
 				break;
 			case 'activate':
-				$success = mailster( 'helper' )->activate_plugin( $plugin );
+				$success        = mailster( 'helper' )->activate_plugin( $plugin );
+				$return['next'] = 'content';
 				break;
 			case 'deactivate':
 				$success = mailster( 'helper' )->deactivate_plugin( $plugin );
 				break;
 			case 'content':
-				ob_start();
+				$context = (array) $_POST['context'];
+				$action  = array_shift( $context );
+				$args    = array_values( $context );
 
-				$method = sanitize_key( $_POST['method'] );
-				do_action( "mailster_deliverymethod_tab_{$method}" );
+				ob_start();
+				do_action_ref_array( "mailster_{$action}", $args );
 
 				$content = ob_get_contents();
 

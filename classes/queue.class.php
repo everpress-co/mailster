@@ -157,12 +157,12 @@ class MailsterQueue {
 		}
 
 		if ( ! empty( $tags ) ) {
-			$tags = maybe_serialize( $tags );
+			$tags = wp_slash( maybe_serialize( $tags ) );
 		} else {
 			$tags = '';
 		}
 		if ( ! empty( $options ) ) {
-			$options = maybe_serialize( $options );
+			$options = wp_slash( maybe_serialize( $options ) );
 		} else {
 			$options = '';
 		}
@@ -434,8 +434,16 @@ class MailsterQueue {
 				continue;
 			}
 
-			// time when user no longer get the campaign
-			$grace_period  = apply_filters( 'mailster_autoresponder_grace_period', WEEK_IN_SECONDS, $campaign );
+			$grace_period = WEEK_IN_SECONDS;
+			/**
+			 * Filter the grace period from campaigns to decide the time when user no longer get the campaign.
+			 *
+			 * default: 604800 (one week)
+			 *
+			 * @param int $grace_period The grace period in seconds. set to false to disable
+			 * @param int $campaign_id the campaign id
+			 */
+			$grace_period  = apply_filters( 'mailster_autoresponder_grace_period', $grace_period, $campaign );
 			$queue_upfront = 3600;
 
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
@@ -793,6 +801,12 @@ class MailsterQueue {
 				}
 
 				do_action( 'mailster_autoresponder_timebased', $campaign->ID, $new_id );
+
+				// fix since 3.1.1 where Sunday was stored as "7" (should be "0")
+				if ( isset( $autoresponder_meta['weekdays'] ) && ( $key = array_search( 7, $autoresponder_meta['weekdays'] ) ) !== false ) {
+					unset( $autoresponder_meta['weekdays'][ $key ] );
+					$autoresponder_meta['weekdays'][] = 0;
+				}
 
 				mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
 
@@ -1218,7 +1232,7 @@ class MailsterQueue {
 						continue;
 					}
 
-					$tags = ! empty( $data->_tags ) ? @unserialize( $data->_tags ) : array();
+					$tags = ! empty( $data->_tags ) ? maybe_unserialize( $data->_tags ) : array();
 
 					// regular campaign
 					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, true, $tags );

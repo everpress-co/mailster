@@ -48,17 +48,18 @@
 .register_form_wrap input.register-form-purchasecode {
 	text-align: center;
 }
+
 .register_form_wrap
 	input.register-form-purchasecode::-webkit-input-placeholder {
 	/* WebKit, Blink, Edge */
 	color: #ccc;
 }
-.register_form_wrapinput.register-form-purchasecode:-moz-placeholder {
+.register_form_wrapinput.register-form-purchasecode:moz-placeholder {
 	/* Mozilla Firefox 4 to 18 */
 	color: #ccc;
 	opacity: 1;
 }
-.register_form_wrap input.register-form-purchasecode::-moz-placeholder {
+.register_form_wrap input.register-form-purchasecode:-moz-placeholder {
 	/* Mozilla Firefox 19+ */
 	color: #ccc;
 	opacity: 1;

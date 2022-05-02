@@ -205,12 +205,12 @@ class MailsterCampaigns {
 		$single           = $is_autoresponder ? esc_html__( 'Autoresponder', 'mailster' ) : esc_html__( 'Campaign', 'mailster' );
 		$plural           = $is_autoresponder ? esc_html__( 'Autoresponders', 'mailster' ) : esc_html__( 'Campaigns', 'mailster' );
 
-		$color = '#a0a5aa';
+		$color = '#a7aaad';
 		if ( is_admin() && ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] || isset( $_GET['page'] ) && 'mailster_dashboard' == $_GET['page'] ) ) {
 			$color = '#ffffff';
-			// $menu_icon = '<svg fill="#fff" aria-hidden="true" focusable="false" data-prefix="fas" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" transform="scale(0.9)"><path d="M176 216h160c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16H176c-8.84 0-16 7.16-16 16v16c0 8.84 7.16 16 16 16zm-16 80c0 8.84 7.16 16 16 16h160c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16H176c-8.84 0-16 7.16-16 16v16zm96 121.13c-16.42 0-32.84-5.06-46.86-15.19L0 250.86V464c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V250.86L302.86 401.94c-14.02 10.12-30.44 15.19-46.86 15.19zm237.61-254.18c-8.85-6.94-17.24-13.47-29.61-22.81V96c0-26.51-21.49-48-48-48h-77.55c-3.04-2.2-5.87-4.26-9.04-6.56C312.6 29.17 279.2-.35 256 0c-23.2-.35-56.59 29.17-73.41 41.44-3.17 2.3-6 4.36-9.04 6.56H96c-26.51 0-48 21.49-48 48v44.14c-12.37 9.33-20.76 15.87-29.61 22.81A47.995 47.995 0 0 0 0 200.72v10.65l96 69.35V96h320v184.72l96-69.35v-10.65c0-14.74-6.78-28.67-18.39-37.77z"></path></svg>';
 		}
-		$menu_icon = '<svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" transform="scale(0.9)"><path fill="' . $color . '" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z" transform="scale(0.9)"></path></svg>';
+
+		$menu_icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" xml:space="preserve"><path fill="' . $color . '" d="M932.6 400c6.7-5.3 16.6-.3 16.6 8v349.2c0 45.3-36.7 82-82 82H156.8c-45.3 0-82-36.7-82-82v-349c0-8.5 9.7-13.3 16.6-8 38.3 29.7 89 67.5 263.2 194 36 26.3 96.8 81.6 157.5 81.3 61 .5 123-56 157.6-81.3C843.8 467.7 894.4 429.7 932.6 400zM512 620.7c39.6.7 96.7-49.9 125.4-70.7C864 385.5 881.2 371.2 933.5 330.2c9.9-7.7 15.7-19.6 15.7-32.3v-32.4c0-45.3-36.7-82-82-82H156.8c-45.3 0-82 36.7-82 82v32.4c0 12.6 5.8 24.4 15.7 32.3C142.8 371 160 385.5 386.6 550c28.7 20.8 85.8 71.4 125.4 70.7z"/></svg>';
 
 		register_post_type(
 			'newsletter',
@@ -2256,13 +2256,49 @@ class MailsterCampaigns {
 			'webversion'          => true,
 			'auto_post_thumbnail' => false,
 			'tags'                => array(),
+			'attachments'         => array(),
 		);
 
 		if ( ! is_null( $key ) ) {
 			return isset( $defaults[ $key ] ) ? $defaults[ $key ] : null;
 		}
 
-		return $defaults;
+		/**
+		 * Filter the default meta values of new campaigns
+		 *
+		 * defaults:
+		 * `parent_id: null`
+		 * `timestamp: null`
+		 * `finished: null`
+		 * `active: null`
+		 * `timezone: mailster_option( 'timezone' )`
+		 * `sent: null`
+		 * `error: null`
+		 * `from_name: mailster_option( 'from_name' )`
+		 * `from_email: mailster_option( 'from' )`
+		 * `reply_to: mailster_option( 'reply_to' )`
+		 * `subject: null`
+		 * `preheader: null`
+		 * `template: null`
+		 * `file: null`
+		 * `editor_height: 500`
+		 * `lists: null`
+		 * `ignore_lists: null`
+		 * `autoresponder: null`
+		 * `list_conditions: null`
+		 * `head: null`
+		 * `colors: null`
+		 * `track_opens: mailster_option( 'track_opens' )`
+		 * `track_clicks: mailster_option( 'track_clicks' )`
+		 * `autoplaintext: true`
+		 * `webversion: true`
+		 * `auto_post_thumbnail: false`
+		 * `tags: array()`
+		 * `attachments: array()`
+		 *
+		 * @param array $defaults the default values
+		 */
+		return apply_filters( 'mailster_campaign_meta_defaults', $defaults );
 
 	}
 
@@ -4538,8 +4574,9 @@ class MailsterCampaigns {
 		$listunsubscribe = array();
 		if ( mailster_option( 'mail_opt_out' ) ) {
 			$listunsubscribe_mail    = $mail->bouncemail ? $mail->bouncemail : $mail->from;
-			$listunsubscribe_subject = 'Please remove me from the list';
-			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign_string} X-Mailster-ID: {$MID}" );
+			$listunsubscribe_subject = rawurlencode( 'Please remove me from the list' );
+			$listunsubscribe_link    = mailster()->get_unsubscribe_link( $campaign->ID, $subscriber->hash, $campaignindex );
+			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign_string} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
 
 			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 		}

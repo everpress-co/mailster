@@ -1,0 +1,34 @@
+{
+	"require": {
+		"php": "^7.2|^8.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^7.0",
+		"yoast/phpunit-polyfills": "^1.0.1",
+		"mockery/mockery": "1.2",
+		"brain/monkey": "2.*",
+		"pronamic/wp-documentor": "^1.2",
+		"wp-coding-standards/wpcs": "^2.3",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+		"phpcompatibility/phpcompatibility-wp": "^2.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"Mailster\\": "."
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Mailster\\Tests\\": "./tests"
+		}
+	},
+	"scripts": {
+		"test": "phpunit --config=phpunit-unit.xml",
+		"test:wordpress": "phpunit --config=phpunit-integration.xml"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	}
+}

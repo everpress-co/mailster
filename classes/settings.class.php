@@ -137,6 +137,7 @@ class MailsterSettings {
 			'custom_field'                       => array(),
 			'sync'                               => false,
 			'synclist'                           => array(
+				'email'     => 'user_email',
 				'firstname' => 'first_name',
 				'lastname'  => 'last_name',
 			),
@@ -230,43 +231,44 @@ class MailsterSettings {
 	}
 
 
+
 	/**
 	 *
 	 *
 	 * @return unknown
 	 */
-	public function get_default_texts( $domain = 'mailster' ) {
+	public function get_default_texts() {
 
 		return array(
-			'confirmation'          => esc_html__( 'Please confirm your subscription!', $domain ),
-			'success'               => esc_html__( 'Thanks for your interest!', $domain ),
-			'error'                 => esc_html__( 'Following fields are missing or incorrect', $domain ),
-			'newsletter_signup'     => esc_html__( 'Sign up to our newsletter', $domain ),
-			'unsubscribe'           => esc_html__( 'You have successfully unsubscribed!', $domain ),
-			'unsubscribeerror'      => esc_html__( 'An error occurred! Please try again later!', $domain ),
-			'profile_update'        => esc_html__( 'Profile updated!', $domain ),
-			'email'                 => esc_html__( 'Email', $domain ),
-			'firstname'             => esc_html__( 'First Name', $domain ),
-			'lastname'              => esc_html__( 'Last Name', $domain ),
-			'lists'                 => esc_html__( 'Lists', $domain ),
-			'submitbutton'          => esc_html__( 'Subscribe', $domain ),
-			'profilebutton'         => esc_html__( 'Update Profile', $domain ),
-			'unsubscribebutton'     => esc_html__( 'Yes, unsubscribe me', $domain ),
-			'unsubscribelink'       => esc_html_x( 'unsubscribe', 'unsubscribelink', $domain ),
-			'webversion'            => esc_html__( 'webversion', $domain ),
-			'forward'               => esc_html__( 'forward to a friend', $domain ),
-			'profile'               => esc_html__( 'update profile', $domain ),
-			'already_registered'    => esc_html__( 'You are already registered', $domain ),
-			'new_confirmation_sent' => esc_html__( 'A new confirmation message has been sent', $domain ),
-			'enter_email'           => esc_html__( 'Please enter your email address', $domain ),
-			'gdpr_text'             => esc_html__( 'I agree to the privacy policy and terms.', $domain ),
-			'gdpr_error'            => esc_html__( 'You have to agree to the privacy policy and terms!', $domain ),
-			'general_checks'        => esc_html__( 'Sorry, you cannot signup with this email address.', $domain ),
-			'smtp_mx_check'         => esc_html__( 'We weren\'t able to check your email address.', $domain ),
-			'blocked_email'         => esc_html__( 'Sorry, your email address is not accepted!', $domain ),
-			'blocked_domain'        => esc_html__( 'Sorry, you are not allowed to signup with this domain.', $domain ),
-			'blocked_ip'            => esc_html__( 'Sorry, your IP address has been blocked from signing up.', $domain ),
-			'blocked_country'       => esc_html__( 'Sorry, your country has been blocked from signing up.', $domain ),
+			'confirmation'          => esc_html__( 'Please confirm your subscription!', 'mailster' ),
+			'success'               => esc_html__( 'Thanks for your interest!', 'mailster' ),
+			'error'                 => esc_html__( 'Following fields are missing or incorrect', 'mailster' ),
+			'newsletter_signup'     => esc_html__( 'Sign up to our newsletter', 'mailster' ),
+			'unsubscribe'           => esc_html__( 'You have successfully unsubscribed!', 'mailster' ),
+			'unsubscribeerror'      => esc_html__( 'An error occurred! Please try again later!', 'mailster' ),
+			'profile_update'        => esc_html__( 'Profile updated!', 'mailster' ),
+			'email'                 => esc_html__( 'Email', 'mailster' ),
+			'firstname'             => esc_html__( 'First Name', 'mailster' ),
+			'lastname'              => esc_html__( 'Last Name', 'mailster' ),
+			'lists'                 => esc_html__( 'Lists', 'mailster' ),
+			'submitbutton'          => esc_html__( 'Subscribe', 'mailster' ),
+			'profilebutton'         => esc_html__( 'Update Profile', 'mailster' ),
+			'unsubscribebutton'     => esc_html__( 'Yes, unsubscribe me', 'mailster' ),
+			'unsubscribelink'       => esc_html_x( 'unsubscribe', 'unsubscribelink', 'mailster' ),
+			'webversion'            => esc_html__( 'webversion', 'mailster' ),
+			'forward'               => esc_html__( 'forward to a friend', 'mailster' ),
+			'profile'               => esc_html__( 'update profile', 'mailster' ),
+			'already_registered'    => esc_html__( 'You are already registered', 'mailster' ),
+			'new_confirmation_sent' => esc_html__( 'A new confirmation message has been sent', 'mailster' ),
+			'enter_email'           => esc_html__( 'Please enter your email address', 'mailster' ),
+			'gdpr_text'             => esc_html__( 'I agree to the privacy policy and terms.', 'mailster' ),
+			'gdpr_error'            => esc_html__( 'You have to agree to the privacy policy and terms!', 'mailster' ),
+			'general_checks'        => esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ),
+			'smtp_mx_check'         => esc_html__( 'We weren\'t able to check your email address.', 'mailster' ),
+			'blocked_email'         => esc_html__( 'Sorry, your email address is not accepted!', 'mailster' ),
+			'blocked_domain'        => esc_html__( 'Sorry, you are not allowed to signup with this domain.', 'mailster' ),
+			'blocked_ip'            => esc_html__( 'Sorry, your IP address has been blocked from signing up.', 'mailster' ),
+			'blocked_country'       => esc_html__( 'Sorry, your country has been blocked from signing up.', 'mailster' ),
 		);
 
 	}
@@ -1293,12 +1295,9 @@ class MailsterSettings {
 			unload_textdomain( 'mailster' );
 			if ( file_exists( $file ) ) {
 				load_textdomain( 'mailster', $file );
-				$mailster_texts = $texts = $this->get_default_texts();
-			} else {
-				// load defaults with undefined textdomain
-				$mailster_texts = $texts = $this->get_default_texts( 'mailster_en_US' );
-
 			}
+
+			$mailster_texts = $texts = $this->get_default_texts();
 
 			load_plugin_textdomain( 'mailster', false, basename( MAILSTER_DIR ) . '/languages' );
 

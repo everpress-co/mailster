@@ -63,6 +63,8 @@ class MailsterSubscriberQuery {
 		'signup_before'       => null,
 		'confirm_after'       => null,
 		'confirm_before'      => null,
+		'updated_after'       => null,
+		'updated_before'      => null,
 
 		'sent'                => null,
 		'sent__not_in'        => null,
@@ -203,7 +205,11 @@ class MailsterSubscriberQuery {
 			$this->args['actions'] = explode( ',', $this->args['actions'] );
 		}
 		if ( 'OR' != $this->args['operator'] ) {
-			$this->args['operator'] = 'AND' === strtoupper( $this->args['operator'] ) ? 'AND' : 'OR';
+			if ( is_null( $this->args['operator'] ) ) {
+				$this->args['operator'] == 'OR';
+			} else {
+				$this->args['operator'] = $this->args['operator'] && 'AND' === strtoupper( $this->args['operator'] ) ? 'AND' : 'OR';
+			}
 		}
 		if ( $this->args['orderby'] && ! is_array( $this->args['orderby'] ) ) {
 			$this->args['orderby'] = explode( ',', $this->args['orderby'] );
@@ -257,16 +263,22 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['signup_after'] ) {
-			$this->add_condition( 'signup', '>=', $this->get_timestamp( $this->args['signup_after'] ) );
+			$this->add_condition( 'signup', '>', $this->get_timestamp( $this->args['signup_after'], 'Y-m-d H:i:s' ) );
 		}
 		if ( $this->args['signup_before'] ) {
-			$this->add_condition( 'signup', '<=', $this->get_timestamp( $this->args['signup_before'] ) );
+			$this->add_condition( 'signup', '<', $this->get_timestamp( $this->args['signup_before'], 'Y-m-d H:i:s' ) );
 		}
 		if ( $this->args['confirm_after'] ) {
-			$this->add_condition( 'confirm', '>=', $this->get_timestamp( $this->args['confirm_after'] ) );
+			$this->add_condition( 'confirm', '>', $this->get_timestamp( $this->args['confirm_after'], 'Y-m-d H:i:s' ) );
 		}
 		if ( $this->args['confirm_before'] ) {
-			$this->add_condition( 'confirm', '<=', $this->get_timestamp( $this->args['signup_before'] ) );
+			$this->add_condition( 'confirm', '<', $this->get_timestamp( $this->args['confirm_before'], 'Y-m-d H:i:s' ) );
+		}
+		if ( $this->args['updated_after'] ) {
+			$this->add_condition( 'updated', '>', $this->get_timestamp( $this->args['updated_after'], 'Y-m-d H:i:s' ) );
+		}
+		if ( $this->args['updated_before'] ) {
+			$this->add_condition( 'updated', '<', $this->get_timestamp( $this->args['updated_before'], 'Y-m-d H:i:s' ) );
 		}
 
 		if ( $this->args['sent'] ) {
@@ -278,11 +290,11 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['sent_before'] ) {
-			$this->add_condition( '_sent_before', '=', $this->get_timestamp( $this->args['sent_before'] ) );
+			$this->add_condition( '_sent_before', '=', $this->get_timestamp( $this->args['sent_before'], 'Y-m-d H:i:s' ) );
 		}
 
 		if ( $this->args['sent_after'] ) {
-			$this->add_condition( '_sent_after', '=', $this->get_timestamp( $this->args['sent_after'] ) );
+			$this->add_condition( '_sent_after', '=', $this->get_timestamp( $this->args['sent_after'], 'Y-m-d H:i:s' ) );
 		}
 
 		if ( $this->args['open'] ) {
@@ -294,11 +306,11 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['open_before'] ) {
-			$this->add_condition( '_open_before', '=', $this->get_timestamp( $this->args['open_before'] ) );
+			$this->add_condition( '_open_before', '=', $this->get_timestamp( $this->args['open_before'], 'Y-m-d H:i:s' ) );
 		}
 
 		if ( $this->args['open_after'] ) {
-			$this->add_condition( '_open_after', '=', $this->get_timestamp( $this->args['open_after'] ) );
+			$this->add_condition( '_open_after', '=', $this->get_timestamp( $this->args['open_after'], 'Y-m-d H:i:s' ) );
 		}
 
 		if ( $this->args['click'] ) {
@@ -310,33 +322,33 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['click_before'] ) {
-			$this->add_condition( '_click_before', '=', $this->get_timestamp( $this->args['click_before'] ) );
+			$this->add_condition( '_click_before', '=', $this->get_timestamp( $this->args['click_before'], 'Y-m-d H:i:s' ) );
 		}
 
 		if ( $this->args['click_after'] ) {
-			$this->add_condition( '_click_after', '=', $this->get_timestamp( $this->args['click_after'] ) );
+			$this->add_condition( '_click_after', '=', $this->get_timestamp( $this->args['click_after'], 'Y-m-d H:i:s' ) );
 		}
 
 		if ( $this->args['click_link'] ) {
-			$this->add_condition( '_click_link', '=', ( $this->args['click_link'] ) );
+			$this->add_condition( '_click_link', '=', $this->args['click_link'] );
 		}
 
 		if ( $this->args['click_link__not_in'] ) {
-			$this->add_condition( '_click_link__not_in', '=', ( $this->args['click_link__not_in'] ) );
+			$this->add_condition( '_click_link__not_in', '=', $this->args['click_link__not_in'] );
 		}
 
 		if ( $this->args['lists__in'] ) {
-			$this->add_condition( '_lists__in', '=', ( $this->args['lists__in'] ) );
+			$this->add_condition( '_lists__in', '=', $this->args['lists__in'] );
 		}
 		if ( $this->args['lists__not_in'] ) {
-			$this->add_condition( '_lists__not_in', '=', ( $this->args['lists__not_in'] ) );
+			$this->add_condition( '_lists__not_in', '=', $this->args['lists__not_in'] );
 		}
 
 		if ( $this->args['tags__in'] ) {
-			$this->add_condition( '_tags__in', '=', ( $this->args['tags__in'] ) );
+			$this->add_condition( '_tags__in', '=', $this->args['tags__in'] );
 		}
 		if ( $this->args['tags__not_in'] ) {
-			$this->add_condition( '_tags__not_in', '=', ( $this->args['tags__not_in'] ) );
+			$this->add_condition( '_tags__not_in', '=', $this->args['tags__not_in'] );
 		}
 
 		if ( ! $this->args['return_count'] ) {
@@ -742,6 +754,11 @@ class MailsterSubscriberQuery {
 			$wheres[] = 'AND queue.subscriber_id IS NULL';
 		}
 
+		// always exclude deleted if not defined
+		if ( ! $this->args['status'] ) {
+			$wheres[] = 'AND subscribers.status != 5';
+		}
+
 		if ( $this->args['s'] ) {
 
 			$raw_search       = addcslashes( trim( $this->args['s'] ), '%[]_' );
@@ -1137,9 +1154,6 @@ class MailsterSubscriberQuery {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
 					$f = "`meta_$field`.meta_value";
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f     = "subscribers.$field";
-					$value = $this->get_timestamp( $value, 'Y-m-d' );
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
@@ -1151,6 +1165,9 @@ class MailsterSubscriberQuery {
 					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f = "subscribers.$field";
+					if ( in_array( $field, $this->time_fields ) ) {
+						$value = $this->get_timestamp( $value );
+					}
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
@@ -1158,8 +1175,6 @@ class MailsterSubscriberQuery {
 					if ( ! $is_empty ) {
 						$f = "STR_TO_DATE($f,'%Y-%m-%d')";
 					}
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f = "FROM_UNIXTIME($f, '%Y-%m-%d')";
 				}
 
 				$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
@@ -1264,19 +1279,28 @@ class MailsterSubscriberQuery {
 			case 'is_greater':
 			case '<':
 			case 'is_smaller':
+			case '>':
+			case 'is_greater':
+			case '>~':
+			case 'is_older':
+			case '<~':
+			case 'is_younger':
 				if ( $f ) {
 				} elseif ( in_array( $field, $this->custom_date_fields ) ) {
 					$f     = "`field_$field`.meta_value";
+					$value = $this->get_timestamp( $value, 'Y-m-d' );
 					$value = "'$value'";
+
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f     = "`field_$field`.meta_value";
 					$value = is_numeric( $value ) ? (float) $value : "'$value'";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
-					$f     = "`meta_$field`.meta_value";
-					$value = is_numeric( $value ) ? (float) $value : "'$value'";
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f     = "subscribers.$field";
-					$value = "'" . $this->get_timestamp( $value, 'Y-m-d' ) . "'";
+					$f = "`meta_$field`.meta_value";
+					if ( in_array( $field, $this->time_fields ) ) {
+						$value = $this->get_timestamp( $value );
+					} else {
+						$value = is_numeric( $value ) ? (float) $value : "'$value'";
+					}
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
@@ -1285,19 +1309,21 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
-					$f     = "subscribers.$field";
-					$value = (float) $value;
+					$f = "subscribers.$field";
+					if ( in_array( $field, $this->time_fields ) ) {
+						$value = $this->get_timestamp( $value );
+					} else {
+						$value = (float) $value;
+					}
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
 					if ( ! $is_empty ) {
 						$f = "STR_TO_DATE($f,'%Y-%m-%d')";
 					}
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f = "FROM_UNIXTIME($f, '%Y-%m-%d')";
 				}
 
-				$c = $f . ' ' . ( in_array( $operator, array( 'is_greater', 'is_greater_equal', '>', '>=' ) ) ? '>' . $extra : '<' . $extra ) . " $value";
+				$c = $f . ' ' . ( in_array( $operator, array( 'is_greater', 'is_greater_equal', 'is_younger', '<~', '>', '>=' ) ) ? '>' . $extra : '<' . $extra ) . " $value";
 
 				return $c;
 				break;
@@ -1366,6 +1392,10 @@ class MailsterSubscriberQuery {
 				return 'is_greater';
 			case '<':
 				return 'is_smaller';
+			case '~>':
+				return 'is_older';
+			case '<~':
+				return 'is_younger';
 			case '%':
 				return 'pattern';
 			case '!%':
@@ -1399,6 +1429,10 @@ class MailsterSubscriberQuery {
 				return 'is_greater';
 			case '<':
 				return 'is_smaller';
+			case '~>':
+				return 'is_older';
+			case '<~':
+				return 'is_younger';
 			case '%':
 			case '!%':
 			case 'not_pattern':
@@ -1435,7 +1469,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_meta_fields() {
-		$meta_fields = mailster( 'subscribers' )->get_meta_keys( true );
+		$meta_fields = mailster( 'subscribers' )->get_meta_keys( true, true );
 
 		return $meta_fields;
 	}
@@ -1546,7 +1580,7 @@ class MailsterSubscriberQuery {
 		return $campaign_ids;
 	}
 
-	private function get_timestamp( $value, $format = null ) {
+	private function get_timestamp( $value, $format = null, $relative = null ) {
 		$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
 		if ( false !== $timestamp ) {
 		} elseif ( is_numeric( $value ) ) {
@@ -1555,6 +1589,9 @@ class MailsterSubscriberQuery {
 			return false;
 		}
 
+		if ( ! is_null( $relative ) ) {
+			$timestamp = time() + $timestamp;
+		}
 		if ( is_null( $format ) ) {
 			return $timestamp;
 		}
