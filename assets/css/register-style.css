@@ -42,6 +42,10 @@
 	margin: 0.1em auto 1em;
 	width: 100%;
 }
+.register_form_wrap .howto.tos-field .tos {
+	float: none;
+	width: auto;
+}
 .register_form_wrap .registration_complete {
 	top: 20%;
 }

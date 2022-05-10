@@ -5,7 +5,7 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-from-email">
 		<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> *</th>
-		<td><input type="text" name="mailster_options[from]" value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The sender email address. Force your receivers to whitelabel this email address.', 'mailster' ); ?></span></td>
+		<td><input type="text" name="mailster_options[from]" value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The sender email address. Ask your subscribers to white label this email address.', 'mailster' ); ?></span></td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-reply-to-email">
 		<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> *</th>
