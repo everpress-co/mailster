@@ -30,6 +30,7 @@ if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
 	define( 'MAILSTER_UPLOAD_URI', trailingslashit( $upload_folder['baseurl'] ) . 'mailster' );
 }
 
+require_once MAILSTER_DIR . 'vendor/autoload.php';
 require_once MAILSTER_DIR . 'includes/check.php';
 require_once MAILSTER_DIR . 'includes/functions.php';
 require_once MAILSTER_DIR . 'includes/deprecated.php';

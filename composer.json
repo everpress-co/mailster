@@ -1,6 +1,7 @@
 {
 	"require": {
-		"php": "^7.2|^8.0"
+		"php": "^7.2|^8.0",
+		"mixpanel/mixpanel-php": "2.*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^7.0",
