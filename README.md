@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 5.9  
-Stable tag: 3.1.5  
+Stable tag: 3.1.4.1
 License: GPLv2 or later  
 Requires PHP: 5.3.6
 
@@ -187,7 +187,7 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ## Changelog
 
-### 3.1.5
+### 3.1.4.1
 
 -   fixed: issue with WooCommerce 6.5.1 and third party library
 
