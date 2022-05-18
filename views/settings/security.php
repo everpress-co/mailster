@@ -50,7 +50,7 @@
 	<tr valign="top" class="settings-row settings-row-blocked-ip-addresses">
 		<th scope="row"><?php esc_html_e( 'Blocked IP Addresses', 'mailster' ); ?></th>
 		<td>
-		<p class="howto"><?php esc_html_e( 'List of blocked IP addresses. One domain each line.', 'mailster' ); ?></p>
+		<p class="howto"><?php esc_html_e( 'List of blocked IP addresses. One expression each line.', 'mailster' ); ?></p>
 		<textarea name="mailster_options[blocked_ips]" placeholder="192.168.1.0-192.168.1.100&#10;192.168.*.*&#10;192.*.*.*&#10;192.168.0.0/16&#10;192.169.1.0/24&#10;192.168.1.95" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_ips' ) ); ?></textarea>
 		</td>
 	</tr>

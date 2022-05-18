@@ -569,7 +569,7 @@ mailster = (function (mailster, $, window, document) {
 		addon
 			.find('.notice-warning')
 			.addClass('updating-message')
-			.html('<p>1' + mailster.l10n.addons.activating + '</p>');
+			.html('<p>' + mailster.l10n.addons.activating + '</p>');
 
 		mailster.util.ajax(
 			'quick_install',
@@ -611,7 +611,7 @@ mailster = (function (mailster, $, window, document) {
 		addon
 			.find('.notice-warning')
 			.addClass('updating-message')
-			.html('<p>2' + mailster.l10n.addons.deactivating + '</p>');
+			.html('<p>' + mailster.l10n.addons.deactivating + '</p>');
 
 		mailster.util.ajax(
 			'quick_install',
