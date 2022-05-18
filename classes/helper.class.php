@@ -1093,8 +1093,6 @@ class MailsterHelper {
 				}
 			}
 
-			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
-
 			$i_error = libxml_use_internal_errors( true );
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
