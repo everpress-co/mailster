@@ -29,6 +29,7 @@ div.mailster-notice h3 {
 div.mailster-notice > p {
 	font-size: 1.2em;
 	color: #72777c;
+	max-width: 900px;
 }
 div.mailster-notice > hr {
 	margin: 20px -23px 0 -23px;

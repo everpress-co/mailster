@@ -1176,7 +1176,7 @@ class MailsterSettings {
 
 				case 'usage_tracking':
 					if ( ! $value ) {
-						wp_clear_scheduled_hook( 'put_do_weekly_action' );
+						mailster( 'mixpanel' )->remove_data();
 					}
 
 					break;

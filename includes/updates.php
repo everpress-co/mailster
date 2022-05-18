@@ -622,6 +622,30 @@ if ( $old_version ) {
 		case '3.0.4':
 			mailster( 'cron' )->unschedule();
 
+		case '3.1':
+		case '3.1.1':
+		case '3.1.2':
+		case '3.1.3':
+		case '3.1.4':
+		case '3.1.5':
+			// ask again for usage tracking
+			if ( $mailster_options['usage_tracking'] ) {
+				$mailster_options['usage_tracking']     = false;
+				$mailster_options['ask_usage_tracking'] = true;
+
+				$url = admin_url( 'admin.php?page=mailster_dashboard&mailster_remove_notice=mixpanel_tracking' );
+				mailster_notice(
+					'<p><strong>[Action required] We\'ve updated the usage tracking for Mailster.</strong></p><p>You\'ve choosen to allow usage tracking of Mailster on your site. We\'ve now switched to <a class="external" href="https://mixpanel.com">Mixpanel</a> to help us build a better experience. We\'ve also changed the things which we keep track of. Please check our <a class="external" href="https://mixpanel.com">knowledge page</a> about the changes.</p><p>If you\'re happy with it please click oon the button below.</p><a class="button button-primary" href="' . wp_nonce_url( add_query_arg( 'mailster_allow_usage_tracking', 1, $url ), 'mailster_allow_usage_tracking', '_wpnonce' ) . '">' . esc_html__( 'Yes, let me help you by enabling this option!', 'mailster' ) . '</a> <a class="button" href="' . wp_nonce_url( add_query_arg( 'mailster_allow_usage_tracking', 0, $url ), 'mailster_allow_usage_tracking', '_wpnonce' ) . '">' . esc_html__(
+						'No, I\'m not interested.',
+						'mailster'
+					) . '</a>',
+					'info',
+					false,
+					'mixpanel_tracking'
+				);
+
+			}
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );

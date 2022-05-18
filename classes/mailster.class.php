@@ -331,6 +331,7 @@ class Mailster {
 
 		if ( isset( $_GET['mailster_remove_notice'] ) && isset( $mailster_notices[ $_GET['mailster_remove_notice'] ] ) ) {
 			unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
+			$this->save_admin_notices();
 		}
 
 		$notices = array_reverse( $mailster_notices, true );
@@ -1567,6 +1568,8 @@ class Mailster {
 				$filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
 			}
 		}
+
+		mailster( 'mixpanel' )->remove_data();
 
 		return true;
 	}

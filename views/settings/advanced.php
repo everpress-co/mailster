@@ -1,9 +1,14 @@
 <p class="description"><?php esc_html_e( 'Some of these settings may affect your website. In normal circumstance it is not required to change anything on this page.', 'mailster' ); ?></p>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-usage-tracking">
-		<th scope="row"><?php esc_html_e( 'Usage Tracking', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Usage Tracking', 'mailster' ); ?>
+		<?php $usage_tracking = mailster_option( 'usage_tracking' ); ?>
+		<?php if ( $usage_tracking ) : ?>
+		<p class="howto"><?php printf( esc_html__( 'Permission granted on %s', 'mailster' ), '<br>' . date_i18n( 'Y-m-d H:i', $usage_tracking + $timeoffset ) ); ?></p>
+		<?php endif ?>
+		</th>
 		<td>
-			<label><input type="hidden" name="mailster_options[usage_tracking]" value=""><input type="checkbox" name="mailster_options[usage_tracking]" value="1" <?php checked( mailster_option( 'usage_tracking' ) ); ?>> <?php esc_html_e( 'Enable usage tracking for this site.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="https://kb.mailster.co/usage-tracking/" class="external"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a></p>
+			<label><input type="hidden" name="mailster_options[usage_tracking]" value=""><input type="checkbox" name="mailster_options[usage_tracking]" value="<?php echo $usage_tracking ? $usage_tracking : time(); ?>" <?php checked( ! ! $usage_tracking ); ?>> <?php esc_html_e( 'Enable usage tracking for this site.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="https://kb.mailster.co/usage-tracking/" class="external"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a></p>
 			<input type="hidden" name="mailster_options[ask_usage_tracking]" value="<?php echo mailster_option( 'ask_usage_tracking' ); ?>">
 		</td>
 	</tr>
