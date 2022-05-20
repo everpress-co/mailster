@@ -189,7 +189,7 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### 3.1.5
 
--   required PHP version is now 7.2.5
+-   minimum required PHP version is now 7.2.5
 -   reduced size of vendor folder
 
 ### 3.1.4.1
