@@ -97,6 +97,15 @@ table.wp-list-table .column-bounces {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
+table.wp-list-table .column-open a,
+table.wp-list-table .column-click a,
+table.wp-list-table .column-unsubs a,
+table.wp-list-table .column-bounces a {
+	min-width: 200px;
+	text-align: right;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
 
 table.wp-list-table .column-title {
 	width: 200px;
@@ -200,6 +209,12 @@ table.wp-list-table .column-bounces a {
 	float: right;
 	padding-right: 0;
 	padding-left: 4px;
+}
+.rate-good {
+	color: #3ab61b;
+}
+.rate-bad {
+	color: #d54e21;
 }
 @media screen and (max-width: 782px) {
 	table.wp-list-table .column-total,
