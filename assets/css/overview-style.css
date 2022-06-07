@@ -92,19 +92,24 @@ table.wp-list-table .column-click,
 table.wp-list-table .column-unsubs,
 table.wp-list-table .column-bounces {
 	width: 10%;
-	min-width: 200px;
 	text-align: right;
 	text-overflow: ellipsis;
-	overflow: hidden;
 }
 table.wp-list-table .column-open a,
 table.wp-list-table .column-click a,
 table.wp-list-table .column-unsubs a,
 table.wp-list-table .column-bounces a {
-	min-width: 200px;
+	float: right;
 	text-align: right;
-	text-overflow: ellipsis;
+}
+table.wp-list-table .column-open a span:first-child,
+table.wp-list-table .column-click a span:first-child,
+table.wp-list-table .column-unsubs a span:first-child,
+table.wp-list-table .column-bounces a span:first-child {
 	overflow: hidden;
+	display: block;
+	max-width: 80%;
+	text-overflow: ellipsis;
 }
 
 table.wp-list-table .column-title {

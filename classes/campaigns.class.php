@@ -638,10 +638,10 @@ class MailsterCampaigns {
 	public function columns_sortable( $columns ) {
 
 		$columns['status']  = 'status';
-		$columns['open']    = 'open';
-		$columns['click']   = 'click';
-		$columns['unsubs']  = 'unsub';
-		$columns['bounces'] = 'bounce';
+		$columns['open']    = array( 'open', 'desc' );
+		$columns['click']   = array( 'click', 'desc' );
+		$columns['unsubs']  = array( 'unsub', 'desc' );
+		$columns['bounces'] = array( 'bounce', 'desc' );
 
 		return $columns;
 
@@ -1073,9 +1073,9 @@ class MailsterCampaigns {
 					$rate_growth = round( $this->get_open_rate_growth( $post->ID ) * 100, 2 );
 					$global_rate = round( $this->get_open_rate() * 100, 2 );
 					if ( $rate_growth > 0 ) {
-						echo '<span title="' . sprintf( esc_attr__( 'Open rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good">&#9650; ' . $rate_growth . '%</span>';
+						echo '<span title="' . sprintf( esc_attr__( 'Open rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
 					} elseif ( $rate_growth < 0 ) {
-						echo '<span title="' . sprintf( esc_attr__( 'Open rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad">&#9660; ' . $rate_growth . '%</span>';
+						echo '<span title="' . sprintf( esc_attr__( 'Open rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
 					}
 				} else {
 					echo '&ndash;';
@@ -1106,9 +1106,9 @@ class MailsterCampaigns {
 					$rate_growth = round( $this->get_click_rate_growth( $post->ID ) * 100, 2 );
 					$global_rate = round( $this->get_click_rate() * 100, 2 );
 					if ( $rate_growth > 0 ) {
-						echo '<span title="' . sprintf( esc_attr__( 'Click rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good">&#9650; ' . $rate_growth . '%</span>';
+						echo '<span title="' . sprintf( esc_attr__( 'Click rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
 					} elseif ( $rate_growth < 0 ) {
-						echo '<span title="' . sprintf( esc_attr__( 'Click rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad">&#9660; ' . $rate_growth . '%</span>';
+						echo '<span title="' . sprintf( esc_attr__( 'Click rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
 					}
 				} else {
 					echo '&ndash;';
@@ -1137,9 +1137,9 @@ class MailsterCampaigns {
 					$rate_growth = round( $this->get_unsubscribe_rate_growth( $post->ID ) * 100, 2 );
 					$global_rate = round( $this->get_unsubscribe_rate() * 100, 2 );
 					if ( $rate_growth > 0 ) {
-						echo '<span title="' . sprintf( esc_attr__( 'Unsubscribe rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad">&#9650; ' . $rate_growth . '%</span>';
+						echo '<span title="' . sprintf( esc_attr__( 'Unsubscribe rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
 					} elseif ( $rate_growth < 0 ) {
-						echo '<span title="' . sprintf( esc_attr__( 'Unsubscribe rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good">&#9660; ' . $rate_growth . '%</span>';
+						echo '<span title="' . sprintf( esc_attr__( 'Unsubscribe rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
 					}
 				} else {
 					echo '&ndash;';
@@ -1154,17 +1154,16 @@ class MailsterCampaigns {
 					echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 					echo ' (' . $rate . '%)';
 					echo '</span>';
+					echo '<br>';
+					$rate_growth = round( $this->get_bounce_rate_growth( $post->ID ) * 100, 2 );
+					$global_rate = round( $this->get_bounce_rate() * 100, 2 );
+					if ( $rate_growth > 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Bounce rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
+					} elseif ( $rate_growth < 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Bounce rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
+					}
 				} else {
 					echo '&ndash;';
-				}
-				echo '<br>';
-				$rate_growth = round( $this->get_bounce_rate_growth( $post->ID ) * 100, 2 );
-				$global_rate = round( $this->get_bounce_rate() * 100, 2 );
-				if ( $rate_growth > 0 ) {
-						echo '<span title="' . sprintf( esc_attr__( 'Bounce rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad">&#9650; ' . $rate_growth . '%</span>';
-				} elseif ( $rate_growth < 0 ) {
-					echo '<span title="' . sprintf( esc_attr__( 'Bounce rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good">&#9660; ' . $rate_growth . '%</span>';
-
 				}
 				break;
 

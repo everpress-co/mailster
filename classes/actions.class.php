@@ -409,72 +409,68 @@ class MailsterActions {
 			return false;
 		}
 
-		$cache_key = 'action_counts_by_total_' . $action;
+		$cache_key = 'action_counts_total_' . $action;
 
 		$action_counts = mailster_cache_get( $cache_key );
 		if ( ! $action_counts ) {
-			$action_counts = array();
-		}
+			$action_counts = $default;
 
-		$table = $mod_action = str_replace( array( '_total', '_deleted' ), '', $action );
-		$table = str_replace( array( 'soft' ), '', $table );
+			$table = $mod_action = str_replace( array( '_total', '_deleted' ), '', $action );
+			$table = str_replace( array( 'soft' ), '', $table );
 
-		// $sql = "SELECT COUNT( DISTINCT COALESCE( a.subscriber_id, 1) ) AS count, COUNT(DISTINCT a.subscriber_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a";
+			$sql = "SELECT COUNT(DISTINCT subscriber_id, campaign_id) AS count, COUNT(DISTINCT a.subscriber_id, campaign_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a WHERE a.campaign_id IS NOT NULL AND a.timestamp > %d";
 
-		$sql = "SELECT COUNT(DISTINCT subscriber_id, campaign_id) AS count, COUNT(DISTINCT a.subscriber_id, campaign_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a WHERE a.campaign_id IS NOT NULL AND a.timestamp > %d";
+			$offset = YEAR_IN_SECONDS * 10;
 
-		$offset = YEAR_IN_SECONDS * 10;
+			$result = $wpdb->get_results( $wpdb->prepare( $sql, time() - $offset ) );
 
-		$result = $wpdb->get_results( $wpdb->prepare( $sql, time() - $offset ) );
+			foreach ( $result as $row ) {
 
-		$action_counts = $default;
+				// sent
+				if ( 'sent' == $mod_action ) {
+					$action_counts['sent']         = (int) $row->count;
+					$action_counts['sent_total']   = (int) $row->total;
+					$action_counts['sent_deleted'] = (int) $row->count - (int) $row->count_cleard;
 
-		foreach ( $result as $row ) {
+				} // opens
+				elseif ( 'opens' == $mod_action ) {
+					$action_counts['opens']         = (int) $row->count;
+					$action_counts['opens_total']   = (int) $row->total;
+					$action_counts['opens_deleted'] = (int) $row->count - (int) $row->count_cleard;
 
-			// sent
-			if ( 'sent' == $mod_action ) {
-				$action_counts['sent']         = (int) $row->count;
-				$action_counts['sent_total']   = (int) $row->total;
-				$action_counts['sent_deleted'] = (int) $row->count - (int) $row->count_cleard;
+				} // clicks
+				elseif ( 'clicks' == $mod_action ) {
+					$action_counts['clicks']         = (int) $row->count;
+					$action_counts['clicks_total']   = (int) $row->total;
+					$action_counts['clicks_deleted'] = (int) $row->count - (int) $row->count_cleard;
 
-			} // opens
-			elseif ( 'opens' == $mod_action ) {
-				$action_counts['opens']         = (int) $row->count;
-				$action_counts['opens_total']   = (int) $row->total;
-				$action_counts['opens_deleted'] = (int) $row->count - (int) $row->count_cleard;
+				} // unsubs
+				elseif ( 'unsubs' == $mod_action ) {
+					$action_counts['unsubs']         = (int) $row->count;
+					$action_counts['unsubs_deleted'] = (int) $row->count - (int) $row->count_cleard;
 
-			} // clicks
-			elseif ( 'clicks' == $mod_action ) {
-				$action_counts['clicks']         = (int) $row->count;
-				$action_counts['clicks_total']   = (int) $row->total;
-				$action_counts['clicks_deleted'] = (int) $row->count - (int) $row->count_cleard;
+				} // softbounces
+				elseif ( 'softbounces' == $mod_action ) {
+					$action_counts['softbounces']         = (int) $row->count;
+					$action_counts['softbounces_deleted'] = (int) $row->count - (int) $row->count_cleard;
 
-			} // unsubs
-			elseif ( 'unsubs' == $mod_action ) {
-				$action_counts['unsubs']         = (int) $row->count;
-				$action_counts['unsubs_deleted'] = (int) $row->count - (int) $row->count_cleard;
+				} // bounces
+				elseif ( 'bounces' == $mod_action ) {
+					$action_counts['bounces']         = (int) $row->count;
+					$action_counts['bounces_deleted'] = (int) $row->count - (int) $row->count_cleard;
+					$action_counts['sent']           -= (int) $row->count;
 
-			} // softbounces
-			elseif ( 'softbounces' == $mod_action ) {
-				$action_counts['softbounces']         = (int) $row->count;
-				$action_counts['softbounces_deleted'] = (int) $row->count - (int) $row->count_cleard;
+				} // error
+				elseif ( 'errors' == $mod_action ) {
+					$action_counts['errors']         = (int) $row->count;
+					$action_counts['errors_total']   = (int) $row->total;
+					$action_counts['errors_deleted'] = (int) $row->count - (int) $row->count_cleard;
 
-			} // bounces
-			elseif ( 'bounces' == $mod_action ) {
-				$action_counts['bounces']         = (int) $row->count;
-				$action_counts['bounces_deleted'] = (int) $row->count - (int) $row->count_cleard;
-				$action_counts['sent']           -= (int) $row->count;
-
-			} // error
-			elseif ( 'errors' == $mod_action ) {
-				$action_counts['errors']         = (int) $row->count;
-				$action_counts['errors_total']   = (int) $row->total;
-				$action_counts['errors_deleted'] = (int) $row->count - (int) $row->count_cleard;
-
+				}
 			}
-		}
 
-		mailster_cache_set( $cache_key, $action_counts );
+			mailster_cache_set( $cache_key, $action_counts );
+		}
 
 		if ( is_null( $action ) ) {
 			return $action_counts;
