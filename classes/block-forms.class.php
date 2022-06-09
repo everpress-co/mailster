@@ -17,6 +17,7 @@ class MailsterBlockForms {
 		add_action( 'init', array( &$this, 'register_post_type' ) );
 		add_action( 'init', array( &$this, 'register_post_meta' ) );
 		add_action( 'init', array( &$this, 'block_init' ) );
+		add_action( 'rest_api_init', array( &$this, 'register_block_patterns' ) );
 
 		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
 
@@ -763,8 +764,6 @@ class MailsterBlockForms {
 			// not in use on the form edit page
 			unregister_block_type( 'mailster/form' );
 			unregister_block_type( 'mailster/homepage' );
-			$this->register_block_pattern();
-			$this->register_block_pattern_category();
 
 			wp_enqueue_code_editor(
 				array(
@@ -889,18 +888,15 @@ class MailsterBlockForms {
 		);
 	}
 
-	public function register_block_pattern_category() {
-		register_block_pattern_category( 'mailster-forms', array( 'label' => __( 'Mailster Forms', 'mailster' ) ) );
-	}
+	public function register_block_patterns() {
 
-	public function register_block_pattern() {
+		$query = wp_parse_url( wp_get_referer(), PHP_URL_QUERY );
 
-		$WP_Block_Patterns_Registry = WP_Block_Patterns_Registry::get_instance();
-		$registered                 = wp_list_pluck( $WP_Block_Patterns_Registry->get_all_registered(), 'name' );
-
-		foreach ( $registered as $pattern ) {
-			unregister_block_pattern( $pattern );
+		if ( false === strpos( $query, 'post_type=newsletter_form' ) ) {
+			return;
 		}
+
+		register_block_pattern_category( 'mailster-forms', array( 'label' => __( 'Mailster Forms', 'mailster' ) ) );
 
 		include MAILSTER_DIR . 'includes/form-pattern.php';
 
@@ -1129,8 +1125,6 @@ class MailsterBlockForms {
 		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {
 			$embeded_style .= $input_styles;
 		}
-
-		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
 		// $i_error = libxml_use_internal_errors( true );
 		$htmldoc = new \InlineStyle\InlineStyle();

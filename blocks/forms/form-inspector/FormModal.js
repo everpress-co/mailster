@@ -45,7 +45,6 @@ import { more } from '@wordpress/icons';
  */
 
 const editor = select('core/editor');
-const blockEditor = select('core/block-editor');
 
 const EmptyEditor = () => {
 	if (editor.isEditedPostEmpty()) {
@@ -63,15 +62,12 @@ const EmptyEditor = () => {
 	return true;
 };
 
-const ModalContent = ({ setOpen }) => {
-	const { __experimentalBlockPatterns } = blockEditor.getSettings();
-
-	const patterns = __experimentalBlockPatterns.filter((pattern) =>
-		pattern.categories.includes('mailster-forms')
-	);
-
-	if (!patterns.length) {
+const ModalContent = ({ setOpen, patterns }) => {
+	if (!patterns) {
 		return <></>;
+	}
+	if (!patterns || !patterns.length) {
+		return <h4>{__('No Pattern found.', 'mailster')}</h4>;
 	}
 
 	const setPattern = (pattern, block) => {
@@ -159,6 +155,12 @@ export default function FormModal(props) {
 		}
 	});
 
+	const patterns = useSelect((select) => {
+		return select('core')
+			.getBlockPatterns()
+			.filter((pattern) => pattern.categories.includes('mailster-forms'));
+	});
+
 	useEffect(() => {
 		setOpen(isEmpty);
 	}, [isEmpty]);
@@ -172,7 +174,7 @@ export default function FormModal(props) {
 					isFullScreen
 					onRequestClose={closeModal}
 				>
-					<ModalContent setOpen={setOpen} />
+					<ModalContent setOpen={setOpen} patterns={patterns} />
 				</Modal>
 			)}
 		</>
