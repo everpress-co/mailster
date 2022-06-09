@@ -159,14 +159,14 @@ class MailsterTemplate {
 		$doc->formatOutput    = true;
 
 		if ( file_exists( $file ) ) {
-			$data = file_get_contents( $file );
-			$data = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $data );
+			$raw = file_get_contents( $file );
+			$raw = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
 		} else {
-			$data = '{headline}<br>{content}';
+			$raw = '{headline}<br>{content}';
 		}
 
 		$i_error = libxml_use_internal_errors( true );
-		$doc->loadHTML( $data );
+		$doc->loadHTML( $raw );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -321,11 +321,15 @@ class MailsterTemplate {
 			}
 		}
 
-		$raw  = $doc->saveHTML();
-		$data = $this->get_template_data( $file );
-		if ( $data && $data['name'] ) {
-			$raw        = preg_replace( '#<!--(.*?)-->#s', '', $raw, 1 );
-			$this->data = $data;
+		$template_data = $this->get_template_data( $file );
+		if ( $template_data && $template_data['name'] ) {
+			$this->data = $template_data;
+		}
+
+		$raw = $doc->saveHTML();
+		if ( preg_match( '#<!--(.*?)-->#s', $raw, $match ) ) {
+			$header = $match[0];
+			$raw    = $header . "\n" . str_replace( $header, '', $raw );
 		}
 
 		$this->slug   = $slug;
@@ -419,10 +423,17 @@ class MailsterTemplate {
 			$filename = str_replace( '.html', '-' . uniqid() . '.html', $filename );
 		}
 
+		if ( preg_match( '#<!--(.*?)-->#s', $content, $match ) ) {
+			$header  = $match[0];
+			$content = str_replace( $header, '', $content );
+		}
+
 		$pre = '<!--' . "\n\n";
 
-		foreach ( $this->data as $k => $v ) {
-			$pre .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $v ) . "\n";
+		foreach ( $this->headers as $k => $v ) {
+			if ( isset( $this->data[ $k ] ) ) {
+				$pre .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $this->data[ $k ] ) . "\n";
+			}
 		}
 
 		$pre .= "\n-->\n";
@@ -443,6 +454,8 @@ class MailsterTemplate {
 
 		}
 
+		$content = trim( $content );
+
 		// remove absolute path to images from the template
 		$content = str_replace( 'src="' . $this->url . '/' . $this->slug . '/', 'src="', $content );
 
@@ -454,6 +467,7 @@ class MailsterTemplate {
 		mailster_require_filesystem();
 
 		if ( $wp_filesystem->put_contents( $this->templatepath . '/' . $filename, $pre . $content, FS_CHMOD_FILE ) ) {
+			mailster( 'templates' )->reset_query_cache();
 			return $filename;
 		}
 

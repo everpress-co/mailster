@@ -62,6 +62,19 @@
 		</td>
 	</tr>
 </table>
+<table class="form-table">
+	<tr valign="top" class="settings-row settings-row-security">
+		<th scope="row"><?php esc_html_e( 'Security', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Define texts for errors during signup defined on the security settings page.', 'mailster' ); ?></p></th>
+		<td>
+		<div class="mailster_text"><label><?php esc_html_e( 'General Error', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[general_checks]" value="<?php echo esc_attr( mailster_text( 'general_checks' ) ); ?>" class="regular-text"></div>
+		<div class="mailster_text"><label><?php esc_html_e( 'SMTP/MX Check', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[smtp_mx_check]" value="<?php echo esc_attr( mailster_text( 'smtp_mx_check' ) ); ?>" class="regular-text"></div>
+		<div class="mailster_text"><label><?php esc_html_e( 'Blocked email address', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[blocked_email]" value="<?php echo esc_attr( mailster_text( 'blocked_email' ) ); ?>" class="regular-text"></div>
+		<div class="mailster_text"><label><?php esc_html_e( 'Blocked domain', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[blocked_domain]" value="<?php echo esc_attr( mailster_text( 'blocked_domain' ) ); ?>" class="regular-text"></div>
+		<div class="mailster_text"><label><?php esc_html_e( 'Blocked IP', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[blocked_ip]" value="<?php echo esc_attr( mailster_text( 'blocked_ip' ) ); ?>" class="regular-text"></div>
+		<div class="mailster_text"><label><?php esc_html_e( 'Blocked Country', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[blocked_country]" value="<?php echo esc_attr( mailster_text( 'blocked_country' ) ); ?>" class="regular-text"></div>
+		</td>
+	</tr>
+</table>
 <?php
 
 $dir    = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';

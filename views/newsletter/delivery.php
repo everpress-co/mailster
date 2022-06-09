@@ -286,7 +286,7 @@ $sent = $this->get_sent( $post->ID );
 
 				for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
 					$j = $i;
-					if ( $j > 7 ) {
+					if ( $j >= 7 ) {
 						$j = $j - 7;
 					}
 

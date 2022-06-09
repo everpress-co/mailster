@@ -158,7 +158,7 @@ class MailsterForms {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array(), MAILSTER_VERSION );
 
 		if ( $is_button ) {
 
@@ -713,11 +713,13 @@ class MailsterForms {
 			$error_msg = wp_list_pluck( $form->fields, 'error_msg' );
 			$required  = $form->required;
 			$lists     = $form->lists;
+			$tags      = $form->tags;
 
 			unset( $form->ID );
 			unset( $form->fields );
 			unset( $form->required );
 			unset( $form->lists );
+			unset( $form->tags );
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
@@ -736,6 +738,7 @@ class MailsterForms {
 			$new_id = $this->add( $form );
 			if ( ! is_wp_error( $new_id ) ) {
 				$this->assign_lists( $new_id, $lists );
+				$this->assign_tags( $new_id, $tags );
 				$this->update_fields( $new_id, $fields, $required, $error_msg );
 
 				do_action( 'mailster_form_duplicate', $id, $new_id );

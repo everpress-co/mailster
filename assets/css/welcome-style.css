@@ -1,7 +1,9 @@
-.notice, .error, .update-nag{
+.notice,
+.error,
+.update-nag {
 	display: none !important;
 }
-.mailster-badge{
+.mailster-badge {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -14,12 +16,12 @@
 	display: inline-block;
 	width: 150px;
 	text-rendering: optimizeLegibility;
-	box-shadow: 0 1px 3px rgba(0,0,0,.2);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 	background: #fff url(../img/logo.svg) no-repeat 50% 34%;
 	background-size: 90%;
-	color: #2BB3E7;
+	color: #2bb3e7;
 }
-.rtl .mailster-badge{
+.rtl .mailster-badge {
 	right: inherit;
 	left: 0;
 }
@@ -39,7 +41,6 @@
 .wrap.mailster-welcome-wrap .notice {
 	display: none !important;
 }
-
 
 /* 1.1 - Typography */
 
@@ -66,7 +67,7 @@
 }
 
 .wrap.mailster-welcome-wrap h2 {
-	margin: 40px 0 .6em;
+	margin: 40px 0 0.6em;
 	font-size: 2.7em;
 	line-height: 1.3;
 	font-weight: 300;
@@ -75,7 +76,7 @@
 }
 
 .wrap.mailster-welcome-wrap h3 {
-	margin: 1.25em 0 .6em;
+	margin: 1.25em 0 0.6em;
 	font-size: 1.4em;
 	line-height: 1.5;
 }
@@ -117,7 +118,7 @@
 	color: #555d66;
 }
 
-.promo-video{
+.promo-video {
 	position: relative;
 	width: 100%;
 	height: 0;
@@ -131,13 +132,12 @@
 	height: 100%;
 }
 
-
-.feature-fresh-ui{
+.feature-fresh-ui {
 	height: 84px;
 	background: #fff;
 	padding: 100px 20px;
 }
-.campaign-progress{
+.campaign-progress {
 	width: 100%;
 	height: 80px;
 	background: #efefef;
@@ -148,21 +148,21 @@
 	line-height: 20px;
 	border-radius: 2px;
 }
-.dark-mode .campaign-progress{
+.dark-mode .campaign-progress {
 	background: #50626f;
 }
 
-.campaign-progress var{
+.campaign-progress var {
 	padding-right: 2px;
 	font-style: normal;
 	visibility: hidden;
 	position: relative;
 	z-index: 2;
 }
-.campaign-progress:hover var{
+.campaign-progress:hover var {
 	visibility: visible;
 }
-.campaign-progress span{
+.campaign-progress span {
 	display: block;
 	max-width: 100%;
 	position: absolute;
@@ -173,20 +173,20 @@
 	white-space: nowrap;
 }
 
-.campaign-progress span.bar{
+.campaign-progress span.bar {
 	transition: width 1.25s ease;
 	overflow: visible;
 	border-radius: 2px;
 	z-index: 1;
 	overflow: hidden;
 }
-.campaign-progress span.bar{
+.campaign-progress span.bar {
 	text-shadow: none;
-	background: #2BB3E7;
-	_background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
-	_background: linear-gradient(to right, #084067, #2BB3E7);
+	background: #2bb3e7;
+	_background: -webkit-linear-gradient(to right, #084067, #2bb3e7);
+	_background: linear-gradient(to right, #084067, #2bb3e7);
 }
-.campaign-progress span.bar:before{
+.campaign-progress span.bar:before {
 	content: '';
 	display: block;
 	top: -2px;
@@ -196,28 +196,45 @@
 	left: 0%;
 	position: absolute;
 }
-.feature-fresh-ui:hover .campaign-progress span.bar:before{
-	background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 50%,rgba(255,255,255,0) 100%);
-	background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.2) 50%,rgba(255,255,255,0) 100%);
+.feature-fresh-ui:hover .campaign-progress span.bar:before {
+	background: -webkit-linear-gradient(
+		left,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.2) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	background: linear-gradient(
+		to right,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.2) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
 	-webkit-animation: progressindicator 0.75s ease infinite;
 	animation: progressindicator 0.75s ease infinite;
 }
 @-webkit-keyframes progressindicator {
-	0%{left:-20%;}
-	100%{left:120%;}
+	0% {
+		left: -20%;
+	}
+	100% {
+		left: 120%;
+	}
 }
 @keyframes progressindicator {
-	0%{left:-20%;}
-	100%{left:120%;}
+	0% {
+		left: -20%;
+	}
+	100% {
+		left: 120%;
+	}
 }
 
-
-.main-feature .about-text{
+.main-feature .about-text {
 	text-align: center;
 }
 /* 1.2 - Structure */
 
-.wrap.mailster-welcome-wrap [class$="-col"] {
+.wrap.mailster-welcome-wrap [class$='-col'] {
 	display: -ms-flexbox;
 	display: -webkit-flex;
 	display: -webkit-box;
@@ -242,7 +259,7 @@
 	margin: 0 auto;
 }
 
-.wrap.mailster-welcome-wrap [class$="-col"] .col {
+.wrap.mailster-welcome-wrap [class$='-col'] .col {
 	-webkit-flex: 1;
 	-ms-flex: 1;
 	-webkit-box-flex: 1;
@@ -416,7 +433,7 @@
 }
 
 .wrap.mailster-welcome-wrap .compact {
-	margin-bottom: 0
+	margin-bottom: 0;
 }
 
 .wrap.mailster-welcome-wrap .wp-person {
@@ -482,7 +499,7 @@
 	margin: 0.6em 0;
 }
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 	.wrap.mailster-welcome-wrap .two-col-text {
 		-webkit-column-count: 1;
 		-moz-column-count: 1;
@@ -544,15 +561,15 @@
 	}
 }
 
-.mailster-transition{
-	min-height:450px;
+.mailster-transition {
+	min-height: 450px;
 	min-width: 100%;
 	position: relative;
 	background: #fff;
 }
 @media screen and (max-width: 860px) {
-	.mailster-transition{
-		min-height:150px;
+	.mailster-transition {
+		min-height: 150px;
 	}
 }
 .mailster-transition .mailster-transition-box {
@@ -562,22 +579,22 @@
 	width: 612px;
 	position: absolute;
 }
-.wrap.mailster-welcome-wrap .mailster-transition img{
-	border:0;
-	transition: all .25s ease;
+.wrap.mailster-welcome-wrap .mailster-transition img {
+	border: 0;
+	transition: all 0.25s ease;
 }
-.mailster-transition .mailster-transition-my{
+.mailster-transition .mailster-transition-my {
 	-webkit-transform: translateX(100px);
 	-moz-transform: translateX(100px);
 	transform: translateX(100px);
 	margin-top: 32px;
 }
-.mailster-transition .mailster-transition-mail{
+.mailster-transition .mailster-transition-mail {
 	-webkit-transform: translateX(100px);
 	-moz-transform: translateX(100px);
 	transform: translateX(100px);
 }
-.mailster-transition .mailster-transition-ster{
+.mailster-transition .mailster-transition-ster {
 	opacity: 0;
 	-webkit-transform: translateX(-100px);
 	-moz-transform: translateX(-100px);

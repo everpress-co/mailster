@@ -50,7 +50,7 @@ class MailsterSecurity {
 
 		// check for email addresses
 		if ( $this->match( $email, mailster_option( 'blocked_emails' ) ) ) {
-			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'blocked' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_email' ), 'blocked' );
 		}
 
 		// check for white listed
@@ -60,47 +60,62 @@ class MailsterSecurity {
 
 		// check for domains
 		if ( $this->match( $domain, mailster_option( 'blocked_domains' ) ) ) {
-			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_domain' ), 'blocked' );
 		}
 
 		// check for domains
-		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), true ) ) {
-			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
+		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), "\n", true ) ) {
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_ip' ), 'blocked' );
 		}
 
 		// check DEP
 		if ( mailster_option( 'reject_dep' ) && $this->match( $domain, $this->get_dep_domains() ) ) {
-			return new WP_Error( 'error_dep', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_email' ), 'blocked' );
 		}
 
 		// check IP record
 		if ( mailster_option( 'check_ip' ) && ! is_user_logged_in() && $this->ip_has_pending_subscriber( $ip ) ) {
-			return new WP_Error( 'error_ip', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_ip' ), 'blocked' );
 		}
 
 		// check MX record
 		if ( mailster_option( 'check_mx' ) && function_exists( 'checkdnsrr' ) ) {
 			if ( ! checkdnsrr( $domain, 'MX' ) ) {
-				return new WP_Error( 'error_mx', esc_html__( 'We weren\'t able to check your email address.', 'mailster' ), 'email' );
+				return new WP_Error( 'error_blocked', mailster_text( 'smtp_mx_check' ), 'blocked' );
 			}
 		}
 
 		// check via SMTP server
 		if ( mailster_option( 'check_smtp' ) ) {
 			if ( ! $this->smtp_check( $email ) ) {
-				return new WP_Error( 'error_smtp', esc_html__( 'We weren\'t able to check your email address.', 'mailster' ), 'email' );
+				return new WP_Error( 'error_blocked', mailster_text( 'smtp_mx_check' ), 'blocked' );
 			}
 		}
 
 		// check via Akismet if enabled
 		if ( $this->is_akismet_block( $email, $ip ) ) {
-			return new WP_Error( 'error_aksimet', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
+			return new WP_Error( 'error_blocked', mailster_text( 'general_checks' ), 'blocked' );
 		}
 
 		// check Antiflood
 		if ( mailster_option( 'antiflood' ) && $timestamp = $this->is_flood( $ip ) ) {
 			$t = ( $timestamp - time() > 60 ) ? human_time_diff( $timestamp ) : sprintf( esc_html__( '%d seconds', 'mailster' ), $timestamp - time() );
 			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s for the next signup.', 'mailster' ), $t ), 'email' );
+		}
+
+		// check country
+		if ( mailster_option( 'track_location' ) ) {
+
+			$country = mailster_ip2Country();
+
+			// it's blocked
+			if ( $this->match( $country, mailster_option( 'blocked_countries' ), ',' ) ) {
+				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
+			}
+
+			if ( mailster_option( 'allowed_countries' ) && ! $this->match( $country, mailster_option( 'allowed_countries' ), ',' ) ) {
+				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
+			}
 		}
 
 		return true;
@@ -116,11 +131,11 @@ class MailsterSecurity {
 	 * @param unknown $check (optional)
 	 * @return unknown
 	 */
-	public function match( $string, $haystack, $net_match = false ) {
+	private function match( $string, $haystack, $separator = "\n", $net_match = false ) {
 		if ( empty( $haystack ) ) {
 			return false;
 		}
-		$lines = is_array( $haystack ) ? $haystack : explode( "\n", $haystack );
+		$lines = is_array( $haystack ) ? $haystack : explode( $separator, $haystack );
 		foreach ( $lines as $line ) {
 			$line = trim( $line );
 			if ( '' === $line ) {
@@ -141,7 +156,7 @@ class MailsterSecurity {
 		return false;
 	}
 
-	public function net_match( $network, $ip ) {
+	private function net_match( $network, $ip ) {
 		$network      = trim( $network );
 		$orig_network = $network;
 		$ip           = trim( $ip );
@@ -204,14 +219,14 @@ class MailsterSecurity {
 	public function flood( $subscriber_id ) {
 		if ( ! is_admin() && $time = mailster_option( 'antiflood' ) ) {
 			$ip = mailster_get_ip();
-			set_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ), time() + $time, $time );
+			set_transient( 'mailster_ip_check_' . md5( ip2long( $ip ) ), time() + $time, $time );
 		}
 	}
 
 
 	public function is_flood( $ip ) {
 
-		return get_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ) );
+		return get_transient( 'mailster_ip_check_' . md5( ip2long( $ip ) ) );
 
 	}
 

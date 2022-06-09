@@ -13,10 +13,10 @@
 			<?php $mn = strtotime( 'midnight' ); ?>
 			<option value="" <?php selected( ! mailster_option( 'warmup' ) ); ?>><?php esc_html_e( 'no warmup', 'mailster' ); ?> - 100%</option>
 			<?php
-			for ( $i = 1; $i <= 30; $i++ ) :
+			for ( $i = 1; $i <= 60; $i++ ) :
 				$v = $mn + ( $i * DAY_IN_SECONDS );
 				?>
-				<option value="<?php echo $v; ?>" <?php selected( mailster_option( 'warmup' ), $v ); ?>><?php printf( esc_html__( _n( '%d day', '%d days', $i, 'mailster' ) ), $i ); ?> - <?php echo ceil( 100 * ( 1 - $i / 30 ) + 1 ) . '%'; ?></option>
+				<option value="<?php echo $v; ?>" <?php selected( mailster_option( 'warmup' ), $v ); ?>><?php printf( esc_html__( _n( '%d day', '%d days', $i, 'mailster' ) ), $i ); ?> - <?php echo ceil( 100 * ( 1 - $i / 60 ) + 1 ) . '%'; ?></option>
 			<?php endfor; ?>
 			</select>
 			 <a class="infolink external" href="https://kb.mailster.co/warm-up-your-email-delivery-method/" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></p>

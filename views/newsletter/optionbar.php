@@ -4,6 +4,7 @@ $templates = mailster( 'templates' )->get_templates();
 $all_files = mailster( 'templates' )->get_all_files();
 $template  = $this->get_template();
 $file      = $this->get_file();
+$current   = $template . '/' . $file;
 
 ?>
 <div id="optionbar" class="optionbar">
@@ -43,7 +44,6 @@ $file      = $this->get_file();
 					<div class="inner">
 						<h4><?php esc_html_e( 'Change Template', 'mailster' ); ?></h4>
 						<ul>
-							<?php $current = $template . '/' . $file; ?>
 							<?php foreach ( $templates as $slug => $data ) : ?>
 								<li>
 								<?php if ( ! $single ) : ?>

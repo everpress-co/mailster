@@ -80,6 +80,11 @@ class MailsterFrontpage {
 
 		$rules['^(index\.php/)?mailster/form$'] = 'index.php?_mailster_form=1';
 
+		/**
+		 * Filters Mailster specific rewrite rules
+		 *
+		 * @param array $rules rewrite rules as assoc array
+		 */
 		$rules = apply_filters( 'mailster_rewrite_rules', $rules );
 
 		return $rules + $wp_rules;
@@ -339,7 +344,17 @@ class MailsterFrontpage {
 		$subscriber_id = $subscriber->ID;
 		$meta          = mailster( 'campaigns' )->meta( $campaign_id );
 
-		if ( $target = apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber_id, $campaign_index ) ) {
+		/**
+		 * Filters the target of the clicked link of a campaign
+		 *
+		 * @param string $target The target link
+		 * @param int $campaign_id Form The ID of the campaign
+		 * @param int $subscriber_id Form The ID of the subscriber
+		 * @param int $campaign_index The index of the link
+		 */
+		$target = apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber_id, $campaign_index );
+
+		if ( $target ) {
 
 			if ( ! preg_match( '#^https?:#', $target ) ) {
 				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
@@ -428,6 +443,7 @@ class MailsterFrontpage {
 				 * @param int $campaign_id Form The ID of the campaign
 				 * @param string $target The target link
 				 * @param int $index The index of the link
+				 * @param int $campaign_index The index of the campaign
 				 */
 				do_action( 'mailster_click', $subscriber_id, $campaign_id, $target, $index, $campaign_index );
 			}
@@ -440,13 +456,14 @@ class MailsterFrontpage {
 				 *
 				 * @param int $subscriber_id The ID of the subscriber
 				 * @param int $campaign_id Form The ID of the campaign
+				 * @param int $campaign_index The index of the campaign
 				 */
 				do_action( 'mailster_open', $subscriber_id, $campaign_id, $campaign_index );
 			}
 		}
 
 		if ( ! $redirect_to ) {
-			$redirect_to = $target ? apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber->ID, $campaign_index ) : false;
+			$redirect_to = $target ? apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber_id, $campaign_index ) : false;
 		}
 
 		// no target => tracking image
@@ -458,9 +475,18 @@ class MailsterFrontpage {
 			echo chr( 71 ) . chr( 73 ) . chr( 70 ) . chr( 56 ) . chr( 57 ) . chr( 97 ) . chr( 1 ) . chr( 0 ) . chr( 1 ) . chr( 0 ) . chr( 128 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 33 ) . chr( 249 ) . chr( 4 ) . chr( 1 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 44 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 1 ) . chr( 0 ) . chr( 1 ) . chr( 0 ) . chr( 0 ) . chr( 2 ) . chr( 2 ) . chr( 68 ) . chr( 1 ) . chr( 0 ) . chr( 59 );
 
 		} else {
-			// redirect in any case with 307 (temporary moved) to force tracking
-			$to = apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber->ID, $campaign_index );
+
+			/**
+			 * Filters the redirection target after clicking a link in a campaign
+			 *
+			 * @param string $redirect_to The redirect link
+			 * @param int $campaign_id Form The ID of the campaign
+			 * @param int $subscriber_id Form The ID of the subscriber
+			 * @param int $campaign_index The index of the link
+			 */
+			$to = apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber_id, $campaign_index );
 			$to = str_replace( '&amp;', '&', $to );
+			// redirect in any case with 307 (temporary moved) to force tracking
 			header( 'Location: ' . $to, true, 307 );
 		}
 
@@ -485,10 +511,10 @@ class MailsterFrontpage {
 				break;
 
 			case 'unsubscribe':
+					$hash = get_query_var( '_mailster_hash' );
 				// handle one click unsubscribe for RFC8058 (https://tools.ietf.org/html/rfc8058)
 				if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 
-					$hash        = get_query_var( '_mailster_hash' );
 					$campaign_id = get_query_var( '_mailster_extra' );
 					$status      = 'list_unsubscribe';
 
@@ -502,11 +528,11 @@ class MailsterFrontpage {
 
 				}
 
-				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+				$unsubscribe_url = $this->get_link( 'unsubscribe', $hash, get_query_var( '_mailster_extra' ) );
 				// if tracking is disabled
-				if ( strpos( $unsubscribe_url, $wp->request ) === false ) {
-					$this->setcookie( get_query_var( '_mailster_hash' ) );
-					$redirect_to = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+				if ( ! empty( $hash ) && strpos( $unsubscribe_url, $wp->request ) === false ) {
+					$this->setcookie( $hash );
+					$redirect_to = $this->get_link( 'unsubscribe', $hash, get_query_var( '_mailster_extra' ) );
 					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
@@ -516,18 +542,18 @@ class MailsterFrontpage {
 				break;
 
 			case 'profile':
-				$profile_url = $this->get_link( 'profile', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+				$hash        = get_query_var( '_mailster_hash' );
+				$profile_url = $this->get_link( 'profile', $hash, get_query_var( '_mailster_extra' ) );
 
 				// if tracking is disabled
-				if ( strpos( $profile_url, $wp->request ) === false ) {
-					$this->setcookie( get_query_var( '_mailster_hash' ) );
-					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . get_query_var( '_mailster_hash' ) ), get_query_var( '_mailster_extra' ) );
+				if ( ! empty( $hash ) && strpos( $profile_url, $wp->request ) === false ) {
+					$this->setcookie( $hash );
+					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $hash ), get_query_var( '_mailster_extra' ) );
 					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
 
 				do_action( 'mailster_homepage_profile' );
-				$hash = get_query_var( '_mailster_hash' );
 
 				// redirect if no hash is set
 				if ( empty( $hash ) ) {
@@ -549,9 +575,10 @@ class MailsterFrontpage {
 				break;
 
 			case 'confirm':
+				$hash = get_query_var( '_mailster_hash' );
 				do_action( 'mailster_homepage_confirm' );
 
-				$subscriber = mailster( 'subscribers' )->get_by_hash( get_query_var( '_mailster_hash' ) );
+				$subscriber = mailster( 'subscribers' )->get_by_hash( $hash );
 				// redirect if no such subscriber
 				if ( ! $subscriber ) {
 
@@ -559,13 +586,15 @@ class MailsterFrontpage {
 					exit;
 				}
 
-				$this->setcookie( get_query_var( '_mailster_hash' ) );
+				$subscriber_id = $subscriber->ID;
+
+				$this->setcookie( $hash );
 
 				$extra = explode( '/', get_query_var( '_mailster_extra' ) );
 				if ( isset( $extra[0] ) ) {
 					$form_id = array_shift( $extra );
 				} else {
-					$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+					$form_id = mailster( 'subscribers' )->meta( $subscriber_id, 'form' );
 				}
 
 				if ( ! $form_id ) {
@@ -589,7 +618,7 @@ class MailsterFrontpage {
 
 					$ip        = mailster_option( 'track_users' ) ? mailster_get_ip() : null;
 					$user_meta = array(
-						'ID'         => $subscriber->ID,
+						'ID'         => $subscriber_id,
 						'confirm'    => time(),
 						'status'     => 1,
 						'ip_confirm' => $ip,
@@ -608,8 +637,12 @@ class MailsterFrontpage {
 					if ( $subscriber_id = mailster( 'subscribers' )->update( $user_meta, true, false, true ) ) {
 
 						if ( ! is_wp_error( $subscriber_id ) ) {
-							do_action( 'mailster_subscriber_subscribed', $subscriber->ID );
-							// old hook for backward compatibility
+							/**
+							 * Run after the users confirms the subscription
+							 *
+							 * @param int $subscriber_id The ID of the subscriber
+							 */
+							do_action( 'mailster_subscriber_subscribed', $subscriber_id );
 						}
 					} else {
 
@@ -618,9 +651,15 @@ class MailsterFrontpage {
 					}
 				}
 
-				mailster( 'lists' )->confirm_subscribers( $list_ids, $subscriber->ID );
+				mailster( 'lists' )->confirm_subscribers( $list_ids, $subscriber_id );
 
-				$redirect_to = apply_filters( 'mailster_confirm_target', $target, $subscriber->ID );
+				/**
+				 * Filters the redirection target after clicking a link in a campaign
+				 *
+				 * @param string $target The redirect link
+				 * @param int $subscriber_id The ID of the subscriber
+				 */
+				$redirect_to = apply_filters( 'mailster_confirm_target', $target, $subscriber_id );
 
 				wp_redirect( $redirect_to, 307 );
 				exit;
@@ -761,6 +800,7 @@ class MailsterFrontpage {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
 					}
 					$content = mailster( 'helper' )->add_mailster_styles( $content );
+					$content = mailster( 'helper' )->handle_shortcodes( $content );
 
 					echo $content;
 
@@ -1054,7 +1094,14 @@ class MailsterFrontpage {
 	 */
 	private function setcookie( $hash, $timeout = 3600 ) {
 
-		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
+		/**
+		 * Filters the lifetime of the Mailster cookie.
+		 *
+		 * Default is 3600 seconds ( 1 Minute )
+		 *
+		 * @param int $timeout timeout in seconds
+		 */
+		 $cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 
 		if ( $cookietime ) {
 			return setcookie( 'mailster', $hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );

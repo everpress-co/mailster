@@ -256,24 +256,20 @@ class MailsterHelper {
 	 */
 	public function install_plugin( $plugin ) {
 
-		$plugins     = array_keys( get_plugins() );
-		$pluginslugs = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
+		$installed_plugins = array_keys( get_plugins() );
+
+		$is_installed = array_values( preg_grep( '/^' . preg_quote( $plugin ) . '\/.*$/', $installed_plugins ) );
+		if ( ! empty( $is_installed ) ) {
+			return true;
+		}
 
 		include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
 		$api = plugins_api( 'plugin_information', array( 'slug' => $plugin ) );
-
-		$title        = esc_html__( 'Plugin Install', 'mailster' );
-		$parent_file  = 'plugins.php';
-		$submenu_file = 'plugin-install.php';
-
-		$title = sprintf( esc_html__( 'Installing Plugin: %s', 'mailster' ), $api->name . ' ' . $api->version );
-		$nonce = 'install-plugin_' . $plugin;
-		$url   = 'update.php?action=install-plugin&plugin=' . urlencode( $plugin );
-
-		$type = 'web'; // Install plugin type, From Web or an Upload.
-
-		include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		if ( is_wp_error( $api ) ) {
+			return $api;
+		}
 
 		$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
 		return $upgrader->install( $api->download_link );
@@ -291,7 +287,7 @@ class MailsterHelper {
 
 		$plugins = array_keys( get_plugins() );
 
-		$plugin = array_values( preg_grep( '/^' . $plugin . '\/.*$/', $plugins ) );
+		$plugin = array_values( preg_grep( '/^' . preg_quote( $plugin ) . '\/.*$/', $plugins ) );
 		if ( empty( $plugin ) ) {
 			return false;
 		}
@@ -755,11 +751,7 @@ class MailsterHelper {
 		$offset = get_option( 'gmt_offset' );
 
 		if ( $offset == '' ) {
-			$tzstring = get_option( 'timezone_string' );
-			$current  = date_default_timezone_get();
-			date_default_timezone_set( $tzstring );
-			$offset = date( 'Z' ) / 3600;
-			date_default_timezone_set( $current );
+			$offset = $this->get_timezone_offset_by_string( get_option( 'timezone_string' ) );
 		}
 
 		// check if timestamp has DST
@@ -771,6 +763,24 @@ class MailsterHelper {
 		}
 
 		return $in_seconds ? $offset * 3600 : (int) $offset;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $string
+	 * @return unknown
+	 */
+	public function get_timezone_offset_by_string( $tzstring ) {
+
+		$current = date_default_timezone_get();
+		date_default_timezone_set( $tzstring );
+		$offset = date( 'Z' ) / 3600;
+		date_default_timezone_set( $current );
+
+		return $offset;
+
 	}
 
 
@@ -1082,8 +1092,6 @@ class MailsterHelper {
 					$content = str_replace( $data_image, '/*Mailster:html_data_image_' . $i . '*/', $content );
 				}
 			}
-
-			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
 			$i_error = libxml_use_internal_errors( true );
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
@@ -1448,9 +1456,12 @@ class MailsterHelper {
 
 		// further check if not 24h
 		if ( abs( $from - $to ) ) {
+
+			// set from to the previous date.
 			if ( $to < $from ) {
-				$to += 24;
+				$from -= 24;
 			}
+
 			if ( $from > $hour || $hour >= $to ) {
 				return false;
 			}

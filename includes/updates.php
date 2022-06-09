@@ -616,9 +616,19 @@ if ( $old_version ) {
 				$mailster_options['db_update_required'] = false;
 			}
 
+		case '3.0.1':
+		case '3.0.2':
+		case '3.0.3':
+		case '3.0.4':
+			mailster( 'cron' )->unschedule();
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
+
+			mailster( 'update' )->ask_for_auto_update();
+
+			$texts = wp_parse_args( $texts, $default_texts );
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );

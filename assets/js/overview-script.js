@@ -1,6 +1,5 @@
 mailster = (function (mailster, $, window, document) {
-
-	"use strict";
+	'use strict';
 
 	var current = [],
 		scrolltimeout = false,
@@ -12,21 +11,22 @@ mailster = (function (mailster, $, window, document) {
 		.on('submit', '#posts-filter', function () {
 			var s1 = select1.val(),
 				s2 = select2.val(),
-				v = s1 != -1 ? s1 : (s2 != -1 ? s2 : false);
+				v = s1 != -1 ? s1 : s2 != -1 ? s2 : false;
 
 			switch (v) {
-			case 'finish':
-				return confirm(mailster.l10n.campaigns.finish_campaigns);
-				break;
-			case 'start':
-				return confirm(mailster.l10n.campaigns.start_campaigns);
-				break;
+				case 'finish':
+					return confirm(mailster.l10n.campaigns.finish_campaigns);
+					break;
+				case 'start':
+					return confirm(mailster.l10n.campaigns.start_campaigns);
+					break;
 			}
-
 		})
 		.on('click', 'a.live-action', function () {
-
-			if ($(this).hasClass('finish') && !confirm(mailster.l10n.campaigns.finish_campaign)) {
+			if (
+				$(this).hasClass('finish') &&
+				!confirm(mailster.l10n.campaigns.finish_campaign)
+			) {
 				return false;
 			}
 
@@ -38,7 +38,6 @@ mailster = (function (mailster, $, window, document) {
 				}, 500);
 			});
 			return false;
-
 		})
 		.on('scroll', function () {
 			clearTimeout(scrolltimeout);
@@ -57,32 +56,29 @@ mailster = (function (mailster, $, window, document) {
 			wp.heartbeat.connectNow();
 		})
 		.on('heartbeat-send', function (e, data) {
-
 			var ids = [],
 				id;
 
 			rows.each(function () {
 				id = parseInt($(this).find('input').eq(0).val(), 10);
 				current[id] = current[id] || {};
-				if (mailster.util.inViewport(this))
-					ids.push(id);
+				if (mailster.util.inViewport(this)) ids.push(id);
 			});
 
 			data['mailster'] = {
 				page: 'overview',
 				ids: ids,
-				columns: $('.hide-column-tog:checked').map(function () {
-					return this.value;
-				}).toArray()
+				columns: $('.hide-column-tog:checked')
+					.map(function () {
+						return this.value;
+					})
+					.toArray(),
 			};
-
 		})
 		.on('heartbeat-tick', function (e, data) {
-
 			var first = false;
 
 			if (data['mailster']) {
-
 				if (!current) {
 					current = $.extend(data['mailster'], current);
 					first = true;
@@ -92,7 +88,6 @@ mailster = (function (mailster, $, window, document) {
 					i = 0;
 
 				$.each(rows, function (id, row) {
-
 					var rowdata;
 					row = $(row);
 					id = row.attr('id').replace('post-', '');
@@ -101,58 +96,76 @@ mailster = (function (mailster, $, window, document) {
 					if (!data['mailster'][id]) return;
 					rowdata = data['mailster'][id];
 
-					row.find('.column-status')[rowdata.cron ? 'removeClass' : 'addClass']('cron-issue');
-					row.find('.campaign-status').html(rowdata.cron ? '' : rowdata.status_title);
+					row.find('.column-status')[
+						rowdata.cron ? 'removeClass' : 'addClass'
+					]('cron-issue');
+					row.find('.campaign-status').html(
+						rowdata.cron ? '' : rowdata.status_title
+					);
 
 					$.each(rowdata, function (key, value) {
 						if (!first && current[id][key] == value) return;
 
-						var statuschange = current[id] && current[id].status && (rowdata.status != current[id].status || rowdata.is_active != current[id].is_active);
+						var statuschange =
+							current[id] &&
+							current[id].status &&
+							(rowdata.status != current[id].status ||
+								rowdata.is_active != current[id].is_active);
 
 						switch (key) {
-						case 'status':
-							if (statuschange) {
-								row.removeClass('status-' + current[id].status).addClass('status-' + rowdata.status);
-							}
-						case 'sent':
-						case 'total':
-						case 'sent_formatted':
-							break;
-						case 'column-status':
-							if (rowdata.status == 'active' && !statuschange) {
-								var progress = row.find('.campaign-progress'),
-									p = Math.round(rowdata.sent / rowdata.total * 100);
-								progress.find('.bar').width(p + '%');
-								progress.find('span').eq(1).html(rowdata.sent_formatted);
-								progress.find('span').eq(2).html(rowdata.sent_formatted);
-								progress.find('var').html(p + '%');
-							}
-							if (!statuschange) break;
-						default:
-							var el = row.find('.' + key);
-							if (!el.is(':visible')) break;
-							el.fadeTo(10, 0.01, function () {
-								el.html(value).delay(10 * (i++)).fadeTo(200, 1);
-							});
-
+							case 'status':
+								if (statuschange) {
+									row.removeClass(
+										'status-' + current[id].status
+									).addClass('status-' + rowdata.status);
+								}
+							case 'sent':
+							case 'total':
+							case 'sent_formatted':
+								break;
+							case 'column-status':
+								if (
+									rowdata.status == 'active' &&
+									!statuschange
+								) {
+									var progress =
+											row.find('.campaign-progress'),
+										p = Math.round(
+											(rowdata.sent / rowdata.total) * 100
+										);
+									progress.find('.bar').width(p + '%');
+									progress
+										.find('span')
+										.eq(1)
+										.html(rowdata.sent_formatted);
+									progress
+										.find('span')
+										.eq(2)
+										.html(rowdata.sent_formatted);
+									progress.find('var').html(p + '%');
+								}
+								if (!statuschange) break;
+							default:
+								var el = row.find('.' + key);
+								if (!el.is(':visible')) break;
+								el.fadeTo(10, 0.01, function () {
+									el.html(value)
+										.delay(10 * i++)
+										.fadeTo(200, 1);
+								});
 						}
 
 						change = true;
-
 					});
-
-
 				});
 
 				if (change) wp.heartbeat.interval('fast');
 				current = $.extend(current, data['mailster']);
 			}
-
 		});
 
 	wp.heartbeat.interval('fast');
 	if (wp.heartbeat.connectNow) wp.heartbeat.connectNow();
 
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);
