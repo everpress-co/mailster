@@ -420,7 +420,7 @@ class MailsterActions {
 
 			$sql = "SELECT COUNT(DISTINCT subscriber_id, campaign_id) AS count, COUNT(DISTINCT a.subscriber_id, campaign_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a WHERE a.campaign_id IS NOT NULL AND a.timestamp > %d";
 
-			$offset = YEAR_IN_SECONDS * 10;
+			$offset = YEAR_IN_SECONDS;
 
 			$result = $wpdb->get_results( $wpdb->prepare( $sql, time() - $offset ) );
 

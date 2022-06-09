@@ -753,7 +753,10 @@ class MailsterCampaigns {
 		$timeformat = mailster( 'helper' )->timeformat();
 
 		if ( ! $is_ajax && $column != 'status' && wp_script_is( 'heartbeat', 'registered' ) ) {
-			echo '&ndash;';
+			echo '<span class="skeleton-loading"></span>';
+			if ( in_array( $column, array( 'open', 'click', 'unsubs', 'bounces' ) ) ) {
+				echo '<br><span class="skeleton-loading nonessential"></span>';
+			}
 			return;
 		}
 
