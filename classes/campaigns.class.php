@@ -637,7 +637,11 @@ class MailsterCampaigns {
 	 */
 	public function columns_sortable( $columns ) {
 
-		$columns['status'] = 'status';
+		$columns['status']  = 'status';
+		$columns['open']    = array( 'open', 'desc' );
+		$columns['click']   = array( 'click', 'desc' );
+		$columns['unsubs']  = array( 'unsub', 'desc' );
+		$columns['bounces'] = array( 'bounce', 'desc' );
 
 		return $columns;
 
@@ -651,36 +655,68 @@ class MailsterCampaigns {
 	 */
 	public function pre_get_posts( $query ) {
 
-		if ( ! is_admin() ) {
-			return;
+		if ( ! $query->is_admin ) {
+			return $query;
+		}
+		if ( ! $query->is_main_query() ) {
+			return $query;
+		}
+		if ( 'newsletter' !== $query->query_vars['post_type'] ) {
+			return $query;
 		}
 
-		if ( 'newsletter' == get_query_var( 'post_type' ) ) {
-
-			switch ( get_query_var( 'orderby' ) ) {
-				case 'status':
-					$query->set( 'meta_key', '_mailster_timestamp' );
-					// order by post status is not supported by WordPress so we sort by date and fix it later with 'allow_order_by_status'
-					add_filter( 'posts_orderby', array( &$this, 'allow_order_by_status' ) );
-					$query->set(
-						'orderby',
-						array(
-							'post_date'      => $query->get( 'order' ),
-							'meta_value_num' => $query->get( 'order' ),
-						)
-					);
-					break;
-			}
+		switch ( get_query_var( 'orderby' ) ) {
+			case 'status':
+				$query->set( 'meta_key', '_mailster_timestamp' );
+				// order by post status is not supported by WordPress so we sort by date and fix it later with 'allow_order_by_status'
+				add_filter( 'posts_orderby', array( &$this, 'allow_order_by_status' ) );
+				$query->set(
+					'orderby',
+					array(
+						'post_date'      => $query->get( 'order' ),
+						'meta_value_num' => $query->get( 'order' ),
+					)
+				);
+				break;
+			case 'open':
+			case 'click':
+			case 'unsub':
+			case 'bounce':
+				add_filter( 'posts_join_request', array( &$this, 'posts_join_request' ) );
+				add_filter( 'posts_orderby_request', array( &$this, 'posts_orderby_request' ) );
+				break;
 		}
+
+		return $query;
 
 	}
-
 
 	public function allow_order_by_status( $orderby ) {
 
 		return str_replace( 'posts.post_date', 'posts.post_status', $orderby );
 
 	}
+
+	public function posts_join_request( $join ) {
+
+		global $wpdb;
+
+		$order = get_query_var( 'orderby' );
+
+		$join .= $wpdb->prepare( "LEFT JOIN (SELECT campaign_id, COUNT(*) AS %s FROM {$wpdb->prefix}mailster_action_{$order}s GROUP BY campaign_id ORDER BY %s DESC) AS action ON action.campaign_id = {$wpdb->posts}.ID", $order, $order );
+
+		return $join;
+	}
+
+
+	public function posts_orderby_request( $orderby ) {
+
+		$orderby = sprintf( '%s %s', get_query_var( 'orderby' ), get_query_var( 'order', 'desc' ) ) . ', ' . $orderby;
+		return $orderby;
+
+	}
+
+
 
 
 	/**
@@ -717,7 +753,10 @@ class MailsterCampaigns {
 		$timeformat = mailster( 'helper' )->timeformat();
 
 		if ( ! $is_ajax && $column != 'status' && wp_script_is( 'heartbeat', 'registered' ) ) {
-			echo '&ndash;';
+			echo '<span class="skeleton-loading"></span>';
+			if ( in_array( $column, array( 'open', 'click', 'unsubs', 'bounces' ) ) ) {
+				echo '<br><span class="skeleton-loading nonessential"></span>';
+			}
 			return;
 		}
 
@@ -1033,6 +1072,14 @@ class MailsterCampaigns {
 					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 					echo ' (' . $rate . '%)';
 					echo '</span>';
+					echo '<br>';
+					$rate_growth = round( $this->get_open_rate_growth( $post->ID ) * 100, 2 );
+					$global_rate = round( $this->get_open_rate() * 100, 2 );
+					if ( $rate_growth > 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Open rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
+					} elseif ( $rate_growth < 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Open rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
+					}
 				} else {
 					echo '&ndash;';
 				}
@@ -1058,6 +1105,14 @@ class MailsterCampaigns {
 						echo ' (' . $rate . '%)';
 						echo '</span>';
 					}
+					echo '<br>';
+					$rate_growth = round( $this->get_click_rate_growth( $post->ID ) * 100, 2 );
+					$global_rate = round( $this->get_click_rate() * 100, 2 );
+					if ( $rate_growth > 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Click rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
+					} elseif ( $rate_growth < 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Click rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
+					}
 				} else {
 					echo '&ndash;';
 				}
@@ -1081,6 +1136,14 @@ class MailsterCampaigns {
 						echo ' (' . $rate . '%)';
 						echo '</span>';
 					}
+					echo '<br>';
+					$rate_growth = round( $this->get_unsubscribe_rate_growth( $post->ID ) * 100, 2 );
+					$global_rate = round( $this->get_unsubscribe_rate() * 100, 2 );
+					if ( $rate_growth > 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Unsubscribe rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
+					} elseif ( $rate_growth < 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Unsubscribe rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
+					}
 				} else {
 					echo '&ndash;';
 				}
@@ -1094,6 +1157,14 @@ class MailsterCampaigns {
 					echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 					echo ' (' . $rate . '%)';
 					echo '</span>';
+					echo '<br>';
+					$rate_growth = round( $this->get_bounce_rate_growth( $post->ID ) * 100, 2 );
+					$global_rate = round( $this->get_bounce_rate() * 100, 2 );
+					if ( $rate_growth > 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Bounce rate is higher as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-bad"><span class="dashicons dashicons-arrow-up-alt2"></span>' . $rate_growth . '%</span>';
+					} elseif ( $rate_growth < 0 ) {
+						echo '<span title="' . sprintf( esc_attr__( 'Bounce rate is lower as your average rate of %s', 'mailster' ), $global_rate . '%' ) . '" class="nonessential rate-good"><span class="dashicons dashicons-arrow-down-alt2"></span>' . $rate_growth . '%</span>';
+					}
 				} else {
 					echo '&ndash;';
 				}
@@ -3351,15 +3422,16 @@ class MailsterCampaigns {
 	 */
 	public function get_totals( $id = null, $unsubscribes = true, $bounces = true, $deleted = true ) {
 
-		$campaign = $this->get( $id );
-		if ( ! $campaign ) {
-			return 0;
-		}
-
-		if ( 'finished' == $campaign->post_status || 'notification' == $campaign->post_status ) {
-			$subscribers_count  = $this->get_sent( $id, false );
-			$subscribers_count -= $this->get_bounces( $id );
-			return $subscribers_count;
+		if ( ! is_null( $id ) ) {
+			$campaign = $this->get( $id );
+			if ( ! $campaign ) {
+				return 0;
+			}
+			if ( 'finished' == $campaign->post_status || 'notification' == $campaign->post_status ) {
+				$subscribers_count  = $this->get_sent( $id, false );
+				$subscribers_count -= $this->get_bounces( $id );
+				return $subscribers_count;
+			}
 		}
 
 		$subscribers_count = $this->get_subscribers( $id );
@@ -3522,6 +3594,30 @@ class MailsterCampaigns {
 
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $id    (optional)
+	 * @param unknown $total (optional)
+	 * @return unknown
+	 */
+	public function get_open_rate_growth( $id = null, $total = false ) {
+
+		$rate = $this->get_open_rate( $id, $total );
+		if ( ! $rate ) {
+			return 0;
+		}
+
+		$global_rate = $this->get_open_rate( null, true );
+
+		if ( ! $global_rate ) {
+			return 0;
+		}
+
+		return $rate - $global_rate;
+
+	}
+
 
 	/**
 	 *
@@ -3557,6 +3653,31 @@ class MailsterCampaigns {
 
 	}
 
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id    (optional)
+	 * @param unknown $total (optional)
+	 * @return unknown
+	 */
+	public function get_click_rate_growth( $id = null, $total = false ) {
+
+		$rate = $this->get_click_rate( $id, $total );
+		if ( ! $rate ) {
+			return 0;
+		}
+
+		$global_rate = $this->get_click_rate( null, true );
+
+		if ( ! $global_rate ) {
+			return 0;
+		}
+
+		return $rate - $global_rate;
+
+	}
 
 	/**
 	 *
@@ -3633,6 +3754,32 @@ class MailsterCampaigns {
 	}
 
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $id    (optional)
+	 * @param unknown $total (optional)
+	 * @return unknown
+	 */
+	public function get_unsubscribe_rate_growth( $id = null, $total = false ) {
+
+		$rate = $this->get_unsubscribe_rate( $id, $total );
+		if ( ! $rate ) {
+			return 0;
+		}
+
+		$global_rate = $this->get_unsubscribe_rate( null, true );
+
+		if ( ! $global_rate ) {
+			return 0;
+		}
+
+		return $rate - $global_rate;
+
+	}
+
+
 	/**
 	 *
 	 *
@@ -3675,14 +3822,39 @@ class MailsterCampaigns {
 	 */
 	public function get_bounce_rate( $id = null ) {
 
-		$totals = $this->get_totals( $id );
-		if ( ! $totals ) {
+		$sent = $this->get_sent( $id );
+		if ( ! $sent ) {
 			return 0;
 		}
 
 		$bounces = $this->get_bounces( $id );
 
-		return $bounces / ( $totals + $bounces );
+		return $bounces / ( $sent + $bounces );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id    (optional)
+	 * @param unknown $total (optional)
+	 * @return unknown
+	 */
+	public function get_bounce_rate_growth( $id = null, $total = false ) {
+
+		$rate = $this->get_bounce_rate( $id, $total );
+		if ( ! $rate ) {
+			return 0;
+		}
+
+		$global_rate = $this->get_bounce_rate( null, true );
+
+		if ( ! $global_rate ) {
+			return 0;
+		}
+
+		return $rate - $global_rate;
 
 	}
 
@@ -3696,6 +3868,10 @@ class MailsterCampaigns {
 	 * @return unknown
 	 */
 	private function get_action( $action, $id = null, $total = false ) {
+
+		if ( is_null( $id ) ) {
+			return mailster( 'actions' )->get_total( $action );
+		}
 
 		return mailster( 'actions' )->get_by_campaign( $id, $action . ( $total ? '_total' : '' ) );
 

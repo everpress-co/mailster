@@ -4,9 +4,9 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 5.9  
-Stable tag: 3.1.4  
+Stable tag: 3.1.5
 License: GPLv2 or later  
-Requires PHP: 5.3.6
+Requires PHP: 7.2.5
 
 ## Description
 
@@ -187,8 +187,18 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ## Changelog
 
+### 3.1.5
+
+-   minimum required PHP version is now 7.2.5
+-   reduced size of vendor folder
+
+### 3.1.4.1
+
+-   fixed: issue with WooCommerce 6.5.1 and third party library
+
 ### 3.1.4
 
+-   new: forms on frontend no longer requires jQuery
 -   fixed: using single quotes in tags causes problems
 -   fixed: PHP warning on PHP 8.1
 -   improved: better handling of translations on plugin activation

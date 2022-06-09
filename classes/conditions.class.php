@@ -239,8 +239,8 @@ class MailsterConditions {
 	}
 	private function get_relative_date_operators() {
 		return array(
-			'is_older'   => esc_html__( 'is older then', 'mailster' ),
-			'is_younger' => esc_html__( 'is younger then', 'mailster' ),
+			'is_older'   => esc_html__( 'is older than', 'mailster' ),
+			'is_younger' => esc_html__( 'is younger than', 'mailster' ),
 		);
 
 	}
