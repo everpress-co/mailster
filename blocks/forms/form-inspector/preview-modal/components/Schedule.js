@@ -16,6 +16,9 @@ import {
 	BaseControl,
 	Notice,
 	DateTimePicker,
+	Flex,
+	FlexItem,
+	FlexBlock,
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 } from '@wordpress/components';
@@ -29,20 +32,8 @@ import { format, __experimentalGetSettings } from '@wordpress/date';
 import DisplayOptionsContent from './DisplayOptionsContent';
 import PostTypeFields from './PostTypeFields';
 
-function DatePicker(props) {
-	const { date, setDate } = props;
-
-	return (
-		<DateTimePicker
-			currentDate={date}
-			onChange={(newDate) => setDate(newDate)}
-			//is12Hour={true}
-		/>
-	);
-}
-
 function ScheduleEntry(props) {
-	const { index, setDate, schedule } = props;
+	const { index, setDate, schedule, removeSchedule } = props;
 
 	const [isValid, setIsValid] = useState(true);
 
@@ -70,64 +61,75 @@ function ScheduleEntry(props) {
 	}, [schedule]);
 
 	return (
-		<ItemGroup className="widefat" isBordered size="medium">
-			<Item>
-				<BaseControl label={__('Start', 'mailster')}>
-					<Dropdown
-						position="bottom left"
-						renderToggle={({ onToggle, isOpen }) => (
-							<Button
-								onClick={onToggle}
-								aria-expanded={isOpen}
-								variant="tertiary"
-							>
-								{formatDate(
-									schedule.start,
-									__('immediately', 'mailster')
-								)}
-							</Button>
-						)}
-						renderContent={() => (
-							<DatePicker
-								date={schedule.start}
-								setDate={setStartDate}
-							/>
-						)}
-					/>
-				</BaseControl>
-				<BaseControl label={__('End', 'mailster')}>
-					<Dropdown
-						position="bottom left"
-						renderToggle={({ onToggle, isOpen }) => (
-							<Button
-								onClick={onToggle}
-								aria-expanded={isOpen}
-								variant="tertiary"
-							>
-								{formatDate(
-									schedule.end,
-									__('never', 'mailster')
-								)}
-							</Button>
-						)}
-						renderContent={() => (
-							<DatePicker
-								date={schedule.end}
-								setDate={setEndDate}
-							/>
-						)}
-					/>
-				</BaseControl>
-				{!isValid && (
-					<Notice status="warning" isDismissible={false}>
-						{__(
-							'The start time is after the end time. Please fix schedule settings to function properly.',
-							'mailster'
-						)}
-					</Notice>
-				)}
-			</Item>
-		</ItemGroup>
+		<Item className="schedule-box">
+			<BaseControl label={__('Start', 'mailster') + ': '}>
+				<Dropdown
+					position="bottom left"
+					renderToggle={({ onToggle, isOpen }) => (
+						<Button
+							onClick={onToggle}
+							aria-expanded={isOpen}
+							variant="tertiary"
+						>
+							{formatDate(
+								schedule.start,
+								__('immediately', 'mailster')
+							)}
+						</Button>
+					)}
+					onClose={() => console.warn('asdasdasd')}
+					renderContent={() => (
+						<DateTimePicker
+							currentDate={schedule.start}
+							onChange={(newDate) => setStartDate(newDate)}
+							//is12Hour={true}
+						/>
+					)}
+				/>
+			</BaseControl>
+			<BaseControl label={__('End', 'mailster') + ': '}>
+				<Dropdown
+					position="bottom left"
+					renderToggle={({ onToggle, isOpen }) => (
+						<Button
+							onClick={onToggle}
+							aria-expanded={isOpen}
+							variant="tertiary"
+						>
+							{formatDate(schedule.end, __('never', 'mailster'))}
+						</Button>
+					)}
+					renderContent={() => (
+						<DateTimePicker
+							currentDate={schedule.end}
+							onChange={(newDate) => setEndDate(newDate)}
+							//is12Hour={true}
+						/>
+					)}
+				/>
+			</BaseControl>
+			{!isValid && (
+				<Notice status="warning" isDismissible={false}>
+					{__(
+						'The start time is after the end time. Please fix schedule settings to function properly.',
+						'mailster'
+					)}
+				</Notice>
+			)}
+			<BaseControl>
+				<Button
+					onClick={() => {
+						removeSchedule(index);
+					}}
+					isDestructive
+					isSmall
+					variant="tertiary"
+					label={__('Remove Entry', 'mailster')}
+				>
+					{__('Remove Entry', 'mailster')}
+				</Button>
+			</BaseControl>
+		</Item>
 	);
 }
 
@@ -147,9 +149,16 @@ export default function Schedule(props) {
 		setOptions({ schedule: newSchedule });
 	}
 
+	function removeSchedule(i) {
+		const newSchedule = [...schedule];
+		newSchedule.splice(i, 1);
+		setOptions({ schedule: newSchedule });
+	}
+
 	function setDate(i, prop, value) {
 		const newSchedule = [...schedule];
 		newSchedule[i][prop] = value;
+		console.warn(newSchedule);
 		setOptions({ schedule: newSchedule });
 	}
 
@@ -187,19 +196,32 @@ export default function Schedule(props) {
 				</p>
 			</PanelRow>
 			<PanelRow>
-				{schedule.map((s, i) => {
-					return (
-						<ScheduleEntry
-							index={i}
-							key={i}
-							setDate={setDate}
-							schedule={s}
-						/>
-					);
-				})}
+				<ItemGroup
+					className="widefat"
+					size="small"
+					isBordered
+					isSeparated
+				>
+					{schedule.map((s, i) => {
+						return (
+							<ScheduleEntry
+								index={i}
+								key={i}
+								setDate={setDate}
+								removeSchedule={removeSchedule}
+								schedule={s}
+							/>
+						);
+					})}
+				</ItemGroup>
 			</PanelRow>
 			<PanelRow>
-				<Button variant="secondary" onClick={addSchedule}>
+				<Button
+					variant="secondary"
+					onClick={addSchedule}
+					icon="plus"
+					isSmall
+				>
 					{__('Add Schedule', 'mailster')}
 				</Button>
 			</PanelRow>

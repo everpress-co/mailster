@@ -47,21 +47,21 @@ const placements = [
 		type: 'content',
 		image: PlacementIcons.content,
 	},
-	{
-		title: 'Fixed bar',
-		type: 'bar',
-		image: PlacementIcons.bar,
-	},
+	// {
+	// 	title: 'Fixed bar',
+	// 	type: 'bar',
+	// 	image: PlacementIcons.bar,
+	// },
 	{
 		title: 'Popup',
 		type: 'popup',
 		image: PlacementIcons.popup,
 	},
-	{
-		title: 'Slide-in',
-		type: 'side',
-		image: PlacementIcons.side,
-	},
+	// {
+	// 	title: 'Slide-in',
+	// 	type: 'side',
+	// 	image: PlacementIcons.side,
+	// },
 	{
 		title: 'Other',
 		type: 'other',

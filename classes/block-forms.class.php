@@ -217,8 +217,9 @@ class MailsterBlockForms {
 		if ( ! $this->preview_data && ! empty( $options['schedule'] ) ) {
 			$now  = current_time( 'timestamp' );
 			$pass = false;
+
 			foreach ( $options['schedule'] as $schedule ) {
-				if ( $now > strtotime( $schedule['start'] ) && $now < strtotime( $schedule['end'] ) ) {
+				if ( $now > strtotime( $schedule['start'] ) && ( $now < strtotime( $schedule['end'] ) || empty( $schedule['end'] ) ) ) {
 					$pass = true;
 					break;
 				}
