@@ -185,6 +185,41 @@ $patterns = apply_filters(
 <!-- /wp:mailster/form-wrapper -->',
 
 		),
+		array(
+			'title'         => __( 'Next Order', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"background":{"opacity":100,"scale":1,"fixed":false,"repeat":true,"size":62,"position":{"x":"0.28","y":"0.26"}},"css":{"general":".mailster-block-form-inner{\n\toutline:3px solid;\n\tpadding:1.2em;\n}","tablet":"","mobile":""},"style":{"spacing":{"padding":{"top":"2em","right":"2em","bottom":"2em","left":"2em"}},"color":{"background":"#FFFFFF"}},"className":"has-background"} -->
+<form method="post" action="" novalidate style="background-color:#FFFFFF;padding-top:2em;padding-right:2em;padding-bottom:2em;padding-left:2em" class="wp-block-mailster-form-wrapper mailster-block-form has-background"><div class="mailster-block-form-inner"><!-- wp:heading {"textAlign":"center","align":"full"} -->
+<h2 class="alignfull has-text-align-center" id="hi-john">Get 20% off your next order</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center"} -->
+<p class="has-text-align-center">Subscribe to our newsletter below and<br>get a discount code to get 20% off your next order.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/messages -->
+<div class="wp-block-mailster-messages mailster-block-form-info"><div class="mailster-block-form-info-success" style="width:undefined%;color:#ffffff;background:#6fbf4d"><div>Please confirm your subscription!</div><div class="mailster-block-form-info-extra"></div></div><div class="mailster-block-form-info-error" style="width:undefined%;color:#ffffff;background:#bf4d4d"><div>Following fields are missing or incorrect</div><div class="mailster-block-form-info-extra"></div></div></div>
+<!-- /wp:mailster/messages -->
+
+<!-- wp:mailster/field-firstname {"id":"d431fb4a-a25f-4ec0-963a-2d3f0982f0af","style":{"width":49},"className":"mailster-wrapper-asterisk"} -->
+<div class="wp-block-mailster-field-firstname mailster-wrapper mailster-wrapper-asterisk" style="width:49%"><label for="mailster-input-d431fb4a-a25f-4ec0-963a-2d3f0982f0af" class="mailster-label">First Name</label><input name="firstname" id="mailster-input-d431fb4a-a25f-4ec0-963a-2d3f0982f0af" type="text" aria-required="false" aria-label="First Name" spellcheck="false" value="" class="input" placeholder=" "/></div>
+<!-- /wp:mailster/field-firstname -->
+
+<!-- wp:mailster/field-lastname {"id":"0f3fbf6b-77b6-44c2-8ba9-7e30859c6e91","style":{"width":49}} -->
+<div class="wp-block-mailster-field-lastname mailster-wrapper" style="width:49%"><label for="mailster-input-0f3fbf6b-77b6-44c2-8ba9-7e30859c6e91" class="mailster-label">Last Name</label><input name="lastname" id="mailster-input-0f3fbf6b-77b6-44c2-8ba9-7e30859c6e91" type="text" aria-required="false" aria-label="Last Name" spellcheck="false" value="" class="input" placeholder=" "/></div>
+<!-- /wp:mailster/field-lastname -->
+
+<!-- wp:mailster/field-email {"id":"51518e3c-5896-4002-9cba-536a9d27b069","style":{"width":100}} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-asterisk" style="width:100%"><label for="mailster-input-51518e3c-5896-4002-9cba-536a9d27b069" class="mailster-label">Email</label><input name="email" id="mailster-input-51518e3c-5896-4002-9cba-536a9d27b069" type="email" aria-required="true" aria-label="Email" spellcheck="false" required value="" class="input" placeholder=" "/></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit {"id":"112cdf48-ab08-4d47-ada5-809ba3a32dab","style":{"width":100},"className":"mailster-wrapper-asterisk"} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button mailster-wrapper-asterisk" style="width:100%"><input name="submit" id="mailster-input-112cdf48-ab08-4d47-ada5-809ba3a32dab" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
 	)
 );
 // $patterns = array();
