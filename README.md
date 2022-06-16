@@ -3,10 +3,10 @@
 Contributors: everpress  
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
-Tested up to: 5.9  
-Stable tag: 3.1.4.1
+Tested up to: 6.0
+Stable tag: 3.1.5
 License: GPLv2 or later  
-Requires PHP: 5.3.6
+Requires PHP: 7.2.5
 
 ## Description
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ## Changelog
+
+### 3.1.5
+
+-   new: growth rates on campaign overview
+-   opens, clicks, unsubscribes and bounces are now sortable
+-   minimum required PHP version is now 7.2.5
+-   reduced size of vendor folder
 
 ### 3.1.4.1
 

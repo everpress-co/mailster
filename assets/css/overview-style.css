@@ -92,10 +92,24 @@ table.wp-list-table .column-click,
 table.wp-list-table .column-unsubs,
 table.wp-list-table .column-bounces {
 	width: 10%;
-	min-width: 200px;
 	text-align: right;
 	text-overflow: ellipsis;
+}
+table.wp-list-table .column-open a,
+table.wp-list-table .column-click a,
+table.wp-list-table .column-unsubs a,
+table.wp-list-table .column-bounces a {
+	float: right;
+	text-align: right;
+}
+table.wp-list-table .column-open a span:first-child,
+table.wp-list-table .column-click a span:first-child,
+table.wp-list-table .column-unsubs a span:first-child,
+table.wp-list-table .column-bounces a span:first-child {
 	overflow: hidden;
+	display: block;
+	max-width: 80%;
+	text-overflow: ellipsis;
 }
 
 table.wp-list-table .column-title {
@@ -200,6 +214,36 @@ table.wp-list-table .column-bounces a {
 	float: right;
 	padding-right: 0;
 	padding-left: 4px;
+}
+
+.skeleton-loading {
+	display: inline-block;
+	height: 1em;
+	width: 3em;
+	background-color: #ededed;
+	background: linear-gradient(
+			100deg,
+			rgba(255, 255, 255, 0) 40%,
+			rgba(255, 255, 255, 0.5) 50%,
+			rgba(255, 255, 255, 0) 60%
+		)
+		#ededed;
+	background-size: 200% 100%;
+	background-position-x: 180%;
+	animation: 1s skeleton-loading ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+	to {
+		background-position-x: -20%;
+	}
+}
+
+.rate-good {
+	color: #3ab61b;
+}
+.rate-bad {
+	color: #d54e21;
 }
 @media screen and (max-width: 782px) {
 	table.wp-list-table .column-total,
