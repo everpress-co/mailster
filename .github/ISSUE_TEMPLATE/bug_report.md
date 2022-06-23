@@ -1,7 +1,6 @@
 name: Bug report
 description: Report a bug with the Mailster Newsletter plugin
 body:
-
 -   type: markdown
     attributes:
     value: |
