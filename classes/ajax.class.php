@@ -17,6 +17,7 @@ class MailsterAjax {
 		'precheck_agree'              => 'edit_newsletters',
 		'search_subscribers'          => 'mailster_manage_subscribers',
 		'send_test'                   => 'edit_newsletters',
+		'get_list_counts'             => 'edit_newsletters',
 		'get_totals'                  => 'edit_newsletters',
 		'get_totals_list'             => 'edit_newsletters',
 		'get_totals_list_part'        => 'edit_newsletters',
@@ -842,6 +843,30 @@ class MailsterAjax {
 
 		if ( ! $success ) {
 			wp_send_json_error( $return );
+		}
+
+		wp_send_json_success( $return );
+
+	}
+
+
+	private function get_list_counts() {
+
+		$this->ajax_nonce();
+
+		$return = array();
+
+		$id        = isset( $_POST['id'] ) ? (array) $_POST['id'] : null;
+		$status    = isset( $_POST['status'] ) ? (array) $_POST['status'] : null;
+		$formatted = isset( $_POST['formatted'] ) ? ( $_POST['formatted'] == 'true' ) : false;
+
+		$counts = mailster( 'lists' )->get( $id, $status, true );
+
+		$counts = wp_list_pluck( $counts, 'subscribers', 'ID' );
+		if ( $formatted ) {
+			$return['counts'] = array_map( 'number_format_i18n', $counts );
+		} else {
+			$return['counts'] = array_map( 'absint', $counts );
 		}
 
 		wp_send_json_success( $return );
