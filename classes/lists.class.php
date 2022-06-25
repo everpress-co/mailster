@@ -1153,13 +1153,13 @@ class MailsterLists {
 			if ( $type == 'checkbox' ) {
 				$html .= '<ul>';
 				foreach ( $lists as $list ) {
-					$html .= '<li><label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="' . $name . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
+					$html .= '<li data-id="' . esc_attr( $list->ID ) . '"><label title="' . esc_attr( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . esc_attr( $list->ID ) . '" name="' . esc_attr( $name ) . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . esc_attr( $list->parent_id ? ' list-parent-' . esc_attr( $list->parent_id ) : '' ) . '"> ' . esc_html( $list->name ) . ' <span class="count">' . ( $show_count ? '(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . esc_html( $show_count ) : '' ) . ')' : '&nbsp;' ) . '</span></label></li>';
 				}
 				$html .= '</ul>';
 			} else {
-				$html .= '<select class="widefat" multiple name="' . $name . '">';
+				$html .= '<select class="widefat" multiple name="' . esc_attr( $name ) . '">';
 				foreach ( $lists as $list ) {
-					$html .= '<option value="' . $list->ID . '" ' . selected( in_array( $list->ID, $checked ), true, false ) . '>' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . $list->name . '' . ( $show_count ? ' (' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')' : '' ) . '</option>';
+					$html .= '<option data-id="' . esc_attr( $list->ID ) . '" value=' . esc_attr( $list->ID ) . '" ' . selected( in_array( $list->ID, $checked ), true, false ) . '>' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . esc_html( $list->name ) . ( $show_count ? ' (' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . esc_html( $show_count ) : '' ) . ')' : '' ) . '</option>';
 				}
 				$html .= '</select>';
 			}

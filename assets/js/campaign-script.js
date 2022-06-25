@@ -1906,6 +1906,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.events.push('documentReady', function () {
 		mailster.trigger('enable');
+		get_list_counts();
 	});
 
 	mailster.editable &&
@@ -1996,6 +1997,24 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		return data;
+	}
+
+	function get_list_counts() {
+		var list = $('#list-checkboxes');
+		mailster.util.ajax(
+			'get_list_counts',
+			{
+				formatted: true,
+			},
+			function (response) {
+				$.each(response.data.counts, function (id, count) {
+					list.find('li[data-id="' + id + '"]')
+						.find('.count')
+						.html(mailster.util.sprintf('(%s)', count));
+				});
+			},
+			function (jqXHR, textStatus, errorThrown) {}
+		);
 	}
 
 	function loader(show, html) {
