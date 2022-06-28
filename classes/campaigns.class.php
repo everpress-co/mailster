@@ -1065,7 +1065,7 @@ class MailsterCampaigns {
 
 			case 'open':
 				if ( ! $this->meta( $post->ID, 'track_opens' ) ) {
-					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
+					echo '<span class="mailster-icon mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
 				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification' ) ) ) {
 					echo '<span class="s-opens">' . number_format_i18n( $this->get_opens( $post->ID ) ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $this->get_sent( $post->ID ) ) . '</span>';
 					$rate = round( $this->get_open_rate( $post->ID ) * 100, 2 );
@@ -1087,7 +1087,7 @@ class MailsterCampaigns {
 
 			case 'click':
 				if ( ! $this->meta( $post->ID, 'track_clicks' ) ) {
-					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
+					echo '<span class="mailster-icon mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
 				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification' ) ) ) {
 					$clicks = $this->get_clicks( $post->ID );
 					$rate   = round( $this->get_click_rate( $post->ID ) * 100, 2 );
@@ -1781,7 +1781,9 @@ class MailsterCampaigns {
 
 		if ( isset( $postdata ) ) {
 
-			$meta['webversion'] = isset( $postdata['webversion'] );
+			$meta['webversion']   = isset( $postdata['webversion'] );
+			$meta['track_opens']  = isset( $postdata['track_opens'] );
+			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
 
 			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
 
