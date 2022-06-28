@@ -6,7 +6,7 @@
 	},
 	"require-dev": {
 		"humbug/php-scoper": "^0.17.5",
-		"phpunit/phpunit": "^9.0",
+		"phpunit/phpunit": "^7.0",
 		"yoast/phpunit-polyfills": "^1.0.1",
 		"yoast/wp-test-utils": "^1.0.0",
 		"mockery/mockery": "1.2",

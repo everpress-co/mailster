@@ -1,7 +1,24 @@
 # Based on https://github.com/wp-cli/scaffold-command/blob/f9bad3dd7224d5684d950d31c486df70905e386f/templates/plugin-github.mustache
 name: WordPress Test
 
-on: [push]
+on:
+  # Run on pushes to select branches and on all pull requests.
+  push:
+    branches:
+      - master
+      - develop
+      - 'release/**'
+      - 'hotfix/[0-9]+.[0-9]+*'
+      - 'feature/**'
+  pull_request:
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
+
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 #env:
 #  WP_TESTS_DIR: /tmp/wp-tests/wordpress-tests-lib
