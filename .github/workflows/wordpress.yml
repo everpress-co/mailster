@@ -54,6 +54,9 @@ jobs:
       - name: Run Composer Install
         run: composer update --no-interaction && composer install --no-interaction
 
+      - name: run syntax check
+        run: composer lint
+
       - name: run unit tests
         run: vendor/bin/phpunit --config=phpunit-unit.xml
 
