@@ -36,6 +36,7 @@
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"composer/installers": true,
 			"php-parallel-lint/php-parallel-lint": true
 		}
 	}
