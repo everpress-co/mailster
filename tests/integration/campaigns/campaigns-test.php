@@ -53,7 +53,7 @@ class CampaignsTest extends Mailster_UnitTestCase {
 	public function testCampaignCreated() {
 
 		echo '<pre>'.print_r($GLOBALS['phpmailer'], true).'</pre>';
-		tests_retrieve_phpmailer_instance()
+		//tests_retrieve_phpmailer_instance()
 
 		echo '<pre>'.print_r(tests_retrieve_phpmailer_instance(), true).'</pre>';
 
