@@ -1,4 +1,4 @@
-name: Unit Test X
+name: Unit Test
 
 on:
   # Run on pushes to select branches and on all pull requests.
@@ -78,14 +78,6 @@ jobs:
           dependency-versions: 'highest'
           # But make it selective.
           composer-options: 'yoast/wp-test-utils --with-dependencies --no-scripts'
-
-      - name: Get Dire
-        run: |
-          pwd
-          ls
-          cd tests
-          pwd
-          ls
 
       - name: Run unit tests
         run: composer test
