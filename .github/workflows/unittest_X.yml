@@ -79,5 +79,10 @@ jobs:
           # But make it selective.
           composer-options: 'yoast/wp-test-utils --with-dependencies --no-scripts'
 
+      - name: Get Dire
+        run: |
+          pwd
+          ls
+
       - name: Run unit tests
         run: composer test
