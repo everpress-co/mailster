@@ -1,6 +1,6 @@
 <?php
 
-class BarTest extends Mailster_UnitTestCase {
+class CampaignsTest extends Mailster_UnitTestCase {
 
 	public function set_up() {
 		parent::set_up();
