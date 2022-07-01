@@ -83,6 +83,9 @@ jobs:
         run: |
           pwd
           ls
+          cd tests
+          pwd
+          ls
 
       - name: Run unit tests
         run: composer test
