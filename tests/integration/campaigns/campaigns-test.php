@@ -49,9 +49,12 @@ class CampaignsTest extends Mailster_UnitTestCase {
 	 *
 	 * @covers *
 	 */
-	public function test_one() {
-		$this->assertTrue( true );
+	function testCampaignCreated() {
 
+		echo '<pre>'.print_r(tests_retrieve_phpmailer_instance()->get_sent(), true).'</pre>';
+
+
+		$this->assertTrue( ! is_wp_error( self::$campaign_id ) );
 	}
 
 	/**
@@ -59,25 +62,16 @@ class CampaignsTest extends Mailster_UnitTestCase {
 	 *
 	 * @covers *
 	 */
-	public function test_two() {
-
-		$this->assertTrue( true );
-
-		$x = wp_mail( 'xaver@everpress.co', 'test 1', 'test' );
-
-		$email = tests_retrieve_phpmailer_instance()->get_sent();
-
-	}
-
-	function testCampaignCreated() {
-		$this->assertTrue( ! is_wp_error( self::$campaign_id ) );
-	}
-
 	function testCampaignSent() {
 		$this->assertNotNull( tests_retrieve_phpmailer_instance()->get_sent() );
 	}
 
-	function testCampaignTestHeaders() {
+	/**
+	 *
+	 *
+	 * @covers *
+	 */
+	 function testCampaignTestHeaders() {
 		$message = tests_retrieve_phpmailer_instance()->get_sent();
 
 		echo '<pre>'.print_r($message, true).'</pre>';
