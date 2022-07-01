@@ -35,6 +35,8 @@ class CampaignsTest extends Mailster_UnitTestCase {
 
 		$success = mailster( 'campaigns' )->send( $campaign_id, 1 );
 
+		echo '<pre>'.print_r($GLOBALS['phpmailer'], true).'</pre>';
+
 	}
 
 	public function tear_down() {
@@ -51,10 +53,12 @@ class CampaignsTest extends Mailster_UnitTestCase {
 	 */
 	public function testCampaignCreated() {
 
-		echo '<pre>'.print_r(tests_retrieve_phpmailer_instance()->get_sent(), true).'</pre>';
+		tests_retrieve_phpmailer_instance()
+
+		echo '<pre>'.print_r(tests_retrieve_phpmailer_instance(), true).'</pre>';
 
 
-		//$this->assertTrue( ! is_wp_error( $campaign_id ) );
+		$this->assertTrue( true );
 	}
 
 
