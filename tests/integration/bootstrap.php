@@ -68,6 +68,10 @@ function _setup() {
 	$GLOBALS['wp_rewrite']->set_permalink_structure( '/%postname%/' );
 	flush_rewrite_rules( false );
 
+	if ( ! function_exists( 'activate_plugin' ) ) {
+		include ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
 	activate_plugin( 'mailster/mailster.php' );
 	mailster()->activate();
 
@@ -94,7 +98,7 @@ function _setup() {
 			'disable_cache'           => true,
 
 		)
-	);	
+	);
 
 	// run this code once
 }
