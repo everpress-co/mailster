@@ -10,10 +10,9 @@ abstract class Mailster_UnitTestCase extends TestCase {
 	public function set_up() {
 		parent::set_up();
 		// Your own additional setup.
-
 	}
 
-	public function tear_down() {		
+	public function tear_down() {
 		// Your own additional tear down.
 		parent::tear_down();
 	}

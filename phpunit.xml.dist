@@ -19,22 +19,8 @@
 		verbose="true"
 	>
 	<testsuites>
-		<testsuite name="yoastseo">
+		<testsuite name="mailster">
 			<directory suffix="-test.php">./tests/unit/</directory>
 		</testsuite>
 	</testsuites>
-
-	<filter>
-		<whitelist addUncoveredFilesFromWhitelist="true" processUncoveredFilesFromWhitelist="false">
-			<file>./wp-seo.php</file>
-			<file>./wp-seo-main.php</file>
-			<directory>./admin</directory>
-			<directory>./inc</directory>
-			<directory>./src</directory>
-			<exclude>
-				<directory suffix=".php">./src/deprecated</directory>
-				<file>./inc/wpseo-functions-deprecated.php</file>
-			</exclude>
-		</whitelist>
-	</filter>
 </phpunit>
