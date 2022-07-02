@@ -88,18 +88,39 @@ $mailster_capabilities = array(
 		'roles' => array( 'editor' ),
 	),
 
-	'mailster_edit_forms'                 => array(
-		'title' => esc_html__( 'edit forms', 'mailster' ),
+	'mailster_edit_form'                  => array(
+		'title' => esc_html__( 'edit form', 'mailster' ),
 		'roles' => array( 'editor' ),
 	),
 
-	'mailster_add_forms'                  => array(
-		'title' => esc_html__( 'add forms', 'mailster' ),
+
+	'mailster_read_form'                  => array(
+		'title' => esc_html__( 'read form', 'mailster' ),
 		'roles' => array( 'editor' ),
 	),
 
 	'mailster_delete_forms'               => array(
 		'title' => esc_html__( 'delete forms', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_edit_forms'                 => array(
+		'title' => esc_html__( 'edit forms', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_edit_others_forms'          => array(
+		'title' => esc_html__( 'edit others forms', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_publish_forms'              => array(
+		'title' => esc_html__( 'publish forms', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_read_private_forms'         => array(
+		'title' => esc_html__( 'read private forms', 'mailster' ),
 		'roles' => array( 'editor' ),
 	),
 

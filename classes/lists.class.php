@@ -956,6 +956,29 @@ class MailsterLists {
 	/**
 	 *
 	 *
+	 * @param unknown $id     (optional)
+	 * @param unknown $status (optional)
+	 * @return unknown
+	 */
+	public function get_simple( $id = null, $status = null ) {
+		$lists  = $this->get( $id, $status, false );
+		$return = array();
+
+		if ( is_array( $lists ) ) {
+			foreach ( $lists as $list ) {
+				$return[ (int) $list->ID ] = $list->name;
+			}
+		} else {
+			$return[ (int) $lists->ID ] = $lists->name;
+		}
+
+		return $return;
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $name
 	 * @param unknown $field  (optional)
 	 * @param unknown $status (optional)

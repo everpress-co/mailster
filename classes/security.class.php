@@ -46,11 +46,19 @@ class MailsterSecurity {
 		$email = $entry['email'];
 		$ip    = mailster_get_ip();
 
+		// handled in subscriber class
+		if ( empty( $email ) ) {
+			return true;
+		}
+		if ( ! mailster_is_email( $email ) ) {
+			return new WP_Error( 'error_blocked', sprintf( esc_html__( '%s is not a valid email address', 'mailster' ), '"' . $email . '"' ), array( 'status' => 401 ) );
+		}
+
 		list( $user, $domain ) = explode( '@', $email );
 
 		// check for email addresses
 		if ( $this->match( $email, mailster_option( 'blocked_emails' ) ) ) {
-			return new WP_Error( 'error_blocked', mailster_text( 'blocked_email' ), 'blocked' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_email' ), array( 'status' => 401 ) );
 		}
 
 		// check for white listed
@@ -60,41 +68,41 @@ class MailsterSecurity {
 
 		// check for domains
 		if ( $this->match( $domain, mailster_option( 'blocked_domains' ) ) ) {
-			return new WP_Error( 'error_blocked', mailster_text( 'blocked_domain' ), 'blocked' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_domain' ), array( 'status' => 401 ) );
 		}
 
 		// check for domains
 		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), "\n", true ) ) {
-			return new WP_Error( 'error_blocked', mailster_text( 'blocked_ip' ), 'blocked' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_ip' ), array( 'status' => 401 ) );
 		}
 
 		// check DEP
 		if ( mailster_option( 'reject_dep' ) && $this->match( $domain, $this->get_dep_domains() ) ) {
-			return new WP_Error( 'error_blocked', mailster_text( 'blocked_email' ), 'blocked' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_email' ), array( 'status' => 401 ) );
 		}
 
 		// check IP record
 		if ( mailster_option( 'check_ip' ) && ! is_user_logged_in() && $this->ip_has_pending_subscriber( $ip ) ) {
-			return new WP_Error( 'error_blocked', mailster_text( 'blocked_ip' ), 'blocked' );
+			return new WP_Error( 'error_blocked', mailster_text( 'blocked_ip' ), array( 'status' => 401 ) );
 		}
 
 		// check MX record
 		if ( mailster_option( 'check_mx' ) && function_exists( 'checkdnsrr' ) ) {
 			if ( ! checkdnsrr( $domain, 'MX' ) ) {
-				return new WP_Error( 'error_blocked', mailster_text( 'smtp_mx_check' ), 'blocked' );
+				return new WP_Error( 'error_blocked', mailster_text( 'smtp_mx_check' ), array( 'status' => 401 ) );
 			}
 		}
 
 		// check via SMTP server
 		if ( mailster_option( 'check_smtp' ) ) {
 			if ( ! $this->smtp_check( $email ) ) {
-				return new WP_Error( 'error_blocked', mailster_text( 'smtp_mx_check' ), 'blocked' );
+				return new WP_Error( 'error_blocked', mailster_text( 'smtp_mx_check' ), array( 'status' => 401 ) );
 			}
 		}
 
 		// check via Akismet if enabled
 		if ( $this->is_akismet_block( $email, $ip ) ) {
-			return new WP_Error( 'error_blocked', mailster_text( 'general_checks' ), 'blocked' );
+			return new WP_Error( 'error_blocked', mailster_text( 'general_checks' ), array( 'status' => 401 ) );
 		}
 
 		// check Antiflood
@@ -110,11 +118,11 @@ class MailsterSecurity {
 
 			// it's blocked
 			if ( $this->match( $country, mailster_option( 'blocked_countries' ), ',' ) ) {
-				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
+				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), array( 'status' => 401 ) );
 			}
 
 			if ( mailster_option( 'allowed_countries' ) && ! $this->match( $country, mailster_option( 'allowed_countries' ), ',' ) ) {
-				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
+				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), array( 'status' => 401 ) );
 			}
 		}
 

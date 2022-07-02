@@ -637,6 +637,9 @@ class MailsterFrontpage {
 					if ( $subscriber_id = mailster( 'subscribers' )->update( $user_meta, true, false, true ) ) {
 
 						if ( ! is_wp_error( $subscriber_id ) ) {
+
+							mailster( 'block-forms' )->conversion( $form_id, null, $subscriber_id, 3 );
+
 							/**
 							 * Run after the users confirms the subscription
 							 *

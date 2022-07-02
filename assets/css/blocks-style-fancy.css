@@ -1,0 +1,20 @@
+.wp-block-mailster-form.is-style-fancy {
+}
+
+.wp-block-mailster-form.is-style-fancy label {
+	display: none;
+}
+.wp-block-mailster-form.is-style-fancy .mailster-form-fields {
+	display: grid;
+	grid-template-columns: 66% 34%;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	grid-gap: 0px;
+}
+.wp-block-mailster-form.is-style-fancy .mailster-wrapper {
+	grid-column-start: span 1;
+	grid-row-start: 1;
+}
+.wp-block-mailster-form.is-style-fancy
+	.mailster-wrapper.mailster-wrapper-_submit {
+	grid-column-start: 2;
+}

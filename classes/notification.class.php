@@ -552,7 +552,20 @@ class MailsterNotification {
 	 * @param unknown $options
 	 */
 	private function get_form_options( $options, $subscriber, $fields = false, $lists = false ) {
-		$form = mailster( 'forms' )->get( $options['form'], $fields, $lists );
+		if ( $block_form = mailster( 'block-forms' )->get( $options['block_form'] ) ) {
+			$form = (object) array(
+				'ID'       => $block_form->ID,
+				'subject'  => get_post_meta( $block_form->ID, 'subject', true ),
+				'headline' => get_post_meta( $block_form->ID, 'headline', true ),
+				'content'  => get_post_meta( $block_form->ID, 'content', true ),
+				'link'     => get_post_meta( $block_form->ID, 'link', true ),
+				'template' => get_post_meta( $block_form->ID, 'template', true ),
+				'vcard'    => null,
+				'list_ids' => get_post_meta( $block_form->ID, 'lists', true ),
+			);
+		} elseif ( $form = mailster( 'forms' )->get( $options['form'], $fields, $lists ) ) {
+
+		}
 		if ( $form_key = mailster( 'subscribers' )->meta( $subscriber->ID, 'formkey' ) ) {
 			$form_args = (array) get_transient( '_mailster_form_' . $form_key );
 			$form      = (object) wp_parse_args( $form_args, (array) $form );

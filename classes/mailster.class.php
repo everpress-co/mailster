@@ -19,12 +19,14 @@ class Mailster {
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
+		require_once MAILSTER_DIR . 'classes/api.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
 		require_once MAILSTER_DIR . 'classes/tags.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
+		require_once MAILSTER_DIR . 'classes/block-forms.class.php';
 		require_once MAILSTER_DIR . 'classes/precheck.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
 		require_once MAILSTER_DIR . 'classes/templates.class.php';
@@ -51,12 +53,14 @@ class Mailster {
 
 		$this->_classes = array(
 			'settings'     => new MailsterSettings(),
+			'api'          => new MailsterApi(),
 			'translations' => new MailsterTranslations(),
 			'campaigns'    => new MailsterCampaigns(),
 			'subscribers'  => new MailsterSubscribers(),
 			'lists'        => new MailsterLists(),
 			'tags'         => new MailsterTags(),
 			'forms'        => new MailsterForms(),
+			'block-forms'  => new MailsterBlockForms(),
 			'precheck'     => new MailsterPrecheck(),
 			'manage'       => new MailsterManage(),
 			'templates'    => new MailsterTemplates(),
@@ -2119,6 +2123,16 @@ class Mailster {
                 `position` int(11) unsigned NOT NULL,
                 PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`form_id`,`field_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_form_actions (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `form_id` bigint(20) unsigned NOT NULL,
+                `post_id` bigint(20) unsigned NOT NULL,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `type` tinyint(1) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_forms_lists (

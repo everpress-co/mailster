@@ -34,7 +34,7 @@ class MailsterSubscribers {
 		add_action( 'comment_post', array( &$this, 'comment_post' ), 10, 2 );
 		add_action( 'wp_set_comment_status', array( &$this, 'wp_set_comment_status' ), 10, 2 );
 
-		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 20 );
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 5 );
 
 		add_action( 'mailster_update_rating', array( &$this, 'update_rating' ) );
 
@@ -61,13 +61,13 @@ class MailsterSubscribers {
 
 			add_action( 'load-' . $page, array( &$this, 'edit_entry' ), 99 );
 
-		else :
+			else :
 
-			add_action( 'load-' . $page, array( &$this, 'bulk_actions' ), 99 );
-			add_action( 'load-' . $page, array( &$this, 'screen_options' ) );
-			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
+				add_action( 'load-' . $page, array( &$this, 'bulk_actions' ), 99 );
+				add_action( 'load-' . $page, array( &$this, 'screen_options' ) );
+				add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
-		endif;
+			endif;
 
 	}
 
@@ -113,39 +113,39 @@ class MailsterSubscribers {
 				)
 			);
 
-		else :
+	else :
 
-			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'jquery-ui-datepicker' );
 
-			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script( 'thickbox' );
 
-			wp_enqueue_style( 'mailster-subscribers-table', MAILSTER_URI . 'assets/css/subscribers-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			mailster_localize_script(
-				'subscribers',
-				array(
-					'onbeforeunload' => esc_html__( 'Bulk process in progress!', 'mailster' ),
-					'initprogess'    => sprintf( esc_html__( 'processing page %d', 'mailster' ), 1 ),
-					'filters'        => esc_html__( 'Add filters', 'mailster' ),
-				)
-			);
-			mailster_localize_script(
-				'conditions',
-				array(
-					'next'          => esc_html__( 'next', 'mailster' ),
-					'prev'          => esc_html__( 'prev', 'mailster' ),
-					'start_of_week' => get_option( 'start_of_week' ),
-					'day_names'     => $wp_locale->weekday,
-					'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
-					'month_names'   => array_values( $wp_locale->month ),
-				)
-			);
-		endif;
+		wp_enqueue_style( 'mailster-subscribers-table', MAILSTER_URI . 'assets/css/subscribers-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		mailster_localize_script(
+			'subscribers',
+			array(
+				'onbeforeunload' => esc_html__( 'Bulk process in progress!', 'mailster' ),
+				'initprogess'    => sprintf( esc_html__( 'processing page %d', 'mailster' ), 1 ),
+				'filters'        => esc_html__( 'Add filters', 'mailster' ),
+			)
+		);
+		mailster_localize_script(
+			'conditions',
+			array(
+				'next'          => esc_html__( 'next', 'mailster' ),
+				'prev'          => esc_html__( 'prev', 'mailster' ),
+				'start_of_week' => get_option( 'start_of_week' ),
+				'day_names'     => $wp_locale->weekday,
+				'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
+				'month_names'   => array_values( $wp_locale->month ),
+			)
+		);
+	endif;
 
 	}
 
@@ -256,7 +256,7 @@ class MailsterSubscribers {
 		switch ( $action ) {
 
 			case 'empty_trash_all':
-					$redirect = remove_query_arg( 'status' );
+				$redirect = remove_query_arg( 'status' );
 			case 'empty_trash':
 				if ( current_user_can( 'mailster_delete_subscribers' ) ) {
 					if ( ! empty( $subscriber_ids ) ) {
@@ -576,17 +576,17 @@ class MailsterSubscribers {
 
 					};
 
-			elseif ( isset( $_POST['confirmation'] ) ) :
+				elseif ( isset( $_POST['confirmation'] ) ) :
 
-				if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true ) ) {
-					if ( $this->send_confirmations( $subscriber->ID, true, true ) ) {
-						mailster_notice( esc_html__( 'Confirmation has been sent', 'mailster' ), 'success', true );
-					}
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
-					exit;
-				};
+					if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true ) ) {
+						if ( $this->send_confirmations( $subscriber->ID, true, true ) ) {
+							mailster_notice( esc_html__( 'Confirmation has been sent', 'mailster' ), 'success', true );
+						}
+						wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+						exit;
+					};
 
-			endif;
+				endif;
 
 		}
 
@@ -821,11 +821,11 @@ class MailsterSubscribers {
 
 			include MAILSTER_DIR . 'views/subscribers/detail.php';
 
-		else :
+			else :
 
-			include MAILSTER_DIR . 'views/subscribers/overview.php';
+				include MAILSTER_DIR . 'views/subscribers/overview.php';
 
-		endif;
+			endif;
 
 	}
 
@@ -894,16 +894,24 @@ class MailsterSubscribers {
 					break;
 
 			}
-			if ( isset( $meta->form ) && $form = mailster( 'forms' )->get( $meta->form, false, false ) ) :
-				?>
-			<br><strong><?php esc_html_e( 'Form', 'mailster' ); ?> #<?php echo $form->ID; ?>:</strong> <a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $form->ID ); ?>"><?php echo esc_html( $form->name ); ?></a>
-					<?php
+			if ( isset( $meta->form ) ) :
+				if ( $form = mailster( 'forms' )->get( $meta->form, false, false ) ) :
+					?>
+
+					<br><strong><?php esc_html_e( 'Form', 'mailster' ); ?> #<?php echo $form->ID; ?>:</strong> <a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $form->ID ); ?>"><?php echo esc_html( $form->name ); ?></a>
+					
+					<?php elseif ( $form = get_post( $meta->form ) ) : ?>
+
+					<br><strong><?php esc_html_e( 'Form', 'mailster' ); ?>:</strong> <a href="<?php echo admin_url( 'post.php?post=' . $form->ID . '&action=edit' ); ?>"><?php echo esc_html( $form->post_title ); ?></a>
+
+						<?php
+					endif;
+
+				endif;
+
 			endif;
 
-		endif;
-
 	}
-
 
 	/**
 	 *
@@ -914,7 +922,6 @@ class MailsterSubscribers {
 
 		include MAILSTER_DIR . 'views/subscribers/user_edit.php';
 	}
-
 
 	public function screen_options() {
 
@@ -932,7 +939,6 @@ class MailsterSubscribers {
 		);
 
 	}
-
 
 	/**
 	 *
@@ -953,7 +959,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	public function admin_notices() {
 
 		if ( isset( $_GET['post_type'] ) && 'subscriber' == $_GET['post_type'] && isset( $_GET['post_status'] ) && 'error' == $_GET['post_status'] ) {
@@ -968,7 +973,6 @@ class MailsterSubscribers {
 		}
 	}
 
-
 	public function remove_unassigned_meta() {
 
 		global $wpdb;
@@ -979,7 +983,6 @@ class MailsterSubscribers {
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_lists_subscribers AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 
 	}
-
 
 	/**
 	 *
@@ -1000,7 +1003,6 @@ class MailsterSubscribers {
 
 		return apply_filters( 'mailster_verify_subscriber', (array) $entry );
 	}
-
 
 	/**
 	 *
@@ -1195,7 +1197,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -1266,7 +1267,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -1291,7 +1291,6 @@ class MailsterSubscribers {
 		return $subscriber_id;
 
 	}
-
 
 	/**
 	 *
@@ -1349,7 +1348,6 @@ class MailsterSubscribers {
 		return $subscriber_id;
 
 	}
-
 
 	/**
 	 *
@@ -1427,7 +1425,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -1451,7 +1448,6 @@ class MailsterSubscribers {
 		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old, $added );
 
 	}
-
 
 	/**
 	 *
@@ -1494,7 +1490,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -1517,7 +1512,6 @@ class MailsterSubscribers {
 		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids, $remove_old );
 
 	}
-
 
 	/**
 	 *
@@ -1559,7 +1553,6 @@ class MailsterSubscribers {
 		return false;
 
 	}
-
 
 	/**
 	 *
@@ -1666,7 +1659,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -1746,7 +1738,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -1771,7 +1762,6 @@ class MailsterSubscribers {
 		}
 
 	}
-
 
 	/**
 	 *
@@ -1816,7 +1806,6 @@ class MailsterSubscribers {
 	public function get_single_meta_keys() {
 		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating', '_remove_meta', '_remove_actions', '_old_status' );
 	}
-
 
 	/**
 	 *
@@ -1864,7 +1853,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -1889,7 +1877,6 @@ class MailsterSubscribers {
 
 		return $success;
 	}
-
 
 	/**
 	 *
@@ -1971,8 +1958,6 @@ class MailsterSubscribers {
 
 	}
 
-
-
 	/**
 	 *
 	 *
@@ -2000,8 +1985,6 @@ class MailsterSubscribers {
 			$this->update_rating( $ids );
 		}
 	}
-
-
 
 	/**
 	 *
@@ -2054,7 +2037,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2096,7 +2078,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2129,7 +2110,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2151,7 +2131,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2168,7 +2147,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2181,7 +2159,6 @@ class MailsterSubscribers {
 		return mailster( 'actions' )->get_by_subscriber( $id, 'sent' . ( $total ? '_total' : '' ) );
 
 	}
-
 
 	/**
 	 *
@@ -2201,7 +2178,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2214,7 +2190,6 @@ class MailsterSubscribers {
 		return mailster( 'actions' )->get_by_subscriber( $id, 'opens' . ( $total ? '_total' : '' ) );
 
 	}
-
 
 	/**
 	 *
@@ -2234,7 +2209,6 @@ class MailsterSubscribers {
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
 
 	}
-
 
 	/**
 	 *
@@ -2256,7 +2230,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2269,7 +2242,6 @@ class MailsterSubscribers {
 		return mailster( 'actions' )->get_by_subscriber( $id, 'clicks' . ( $total ? '_total' : '' ) );
 
 	}
-
 
 	/**
 	 *
@@ -2291,7 +2263,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2312,7 +2283,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2331,7 +2301,6 @@ class MailsterSubscribers {
 		return $unsubscribes / $clicks;
 
 	}
-
 
 	/**
 	 *
@@ -2352,7 +2321,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2365,7 +2333,6 @@ class MailsterSubscribers {
 		return mailster( 'actions' )->get_by_subscriber( $id, 'unsubs' . ( $total ? '_total' : '' ) );
 
 	}
-
 
 	/**
 	 *
@@ -2385,7 +2352,6 @@ class MailsterSubscribers {
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
 
 	}
-
 
 	/**
 	 *
@@ -2407,7 +2373,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2420,7 +2385,6 @@ class MailsterSubscribers {
 		return mailster( 'actions' )->get_by_subscriber( $id, 'bounces' . ( $total ? '_total' : '' ) );
 
 	}
-
 
 	/**
 	 *
@@ -2440,7 +2404,6 @@ class MailsterSubscribers {
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
 
 	}
-
 
 	/**
 	 *
@@ -2462,7 +2425,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2475,7 +2437,6 @@ class MailsterSubscribers {
 		return mailster( 'actions' )->get_by_subscriber( $id, 'softbounces' . ( $total ? '_total' : '' ) );
 
 	}
-
 
 	/**
 	 *
@@ -2495,7 +2456,6 @@ class MailsterSubscribers {
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
 
 	}
-
 
 	/**
 	 *
@@ -2517,7 +2477,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2531,7 +2490,6 @@ class MailsterSubscribers {
 		return mailster( 'actions' )->get_activity( null, $id, $limit, $exclude );
 
 	}
-
 
 	/**
 	 *
@@ -2562,7 +2520,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2572,7 +2529,6 @@ class MailsterSubscribers {
 	public function open_time( $id ) {
 		return $this->compare( $id, 'sent', 'opens' );
 	}
-
 
 	/**
 	 *
@@ -2584,7 +2540,6 @@ class MailsterSubscribers {
 	public function click_time( $id, $since_open = true ) {
 		return $this->compare( $id, $since_open ? 'opens' : 'sent', 'clicks' );
 	}
-
 
 	/**
 	 *
@@ -2610,7 +2565,6 @@ class MailsterSubscribers {
 		return $average;
 
 	}
-
 
 	/**
 	 *
@@ -2639,7 +2593,6 @@ class MailsterSubscribers {
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
 
 	}
-
 
 	/**
 	 *
@@ -2685,7 +2638,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2715,7 +2667,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2730,7 +2681,6 @@ class MailsterSubscribers {
 		return $this->unsubscribe_by_type( 'id', $id, $campaign_id, $status, $index );
 
 	}
-
 
 	/**
 	 *
@@ -2747,7 +2697,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2763,7 +2712,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2778,7 +2726,6 @@ class MailsterSubscribers {
 		return $this->unsubscribe_by_type( 'email', $email, $campaign_id, $status, $index );
 
 	}
-
 
 	/**
 	 *
@@ -2849,7 +2796,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2899,7 +2845,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2919,7 +2864,6 @@ class MailsterSubscribers {
 		);
 
 	}
-
 
 	/**
 	 *
@@ -2971,7 +2915,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -2992,7 +2935,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3010,13 +2952,13 @@ class MailsterSubscribers {
 		$fallback_form_id = (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
 
 		// get all pending subscribers which are not queued already
-		$sql  = "SELECT subscribers.ID, subscribers.signup, IFNULL( confirmation.meta_value, 0 ) AS try, forms.resend, forms.resend_count, forms.resend_time, IFNULL( forms.ID, $fallback_form_id ) AS form_id, lists_subscribers.list_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers";
+		$sql  = "SELECT subscribers.ID, subscribers.signup, IFNULL( confirmation.meta_value, 0 ) AS try, forms.resend, forms.resend_count, forms.resend_time, IFNULL( forms.ID, $fallback_form_id ) AS form_id, IFNULL( block_forms.ID, $fallback_form_id ) AS block_form_id, lists_subscribers.list_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added = 0";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS confirmation ON subscribers.ID = confirmation.subscriber_id AND confirmation.meta_key = 'confirmation'";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS form ON subscribers.ID = form.subscriber_id AND form.meta_key = 'form'";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON subscribers.ID = queue.subscriber_id AND queue.campaign_id = 0";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_forms AS forms ON forms.ID = IFNULL( form.meta_value, $fallback_form_id )";
-
+		$sql .= " LEFT JOIN {$wpdb->posts} AS block_forms ON block_forms.ID = IFNULL( form.meta_value, $fallback_form_id ) AND block_forms.post_type = 'newsletter_form'";
 		$sql .= ' WHERE 1=1';
 
 		// status is either pending or list assignment is pending
@@ -3065,6 +3007,7 @@ class MailsterSubscribers {
 					'subscriber_id' => $subscriber->ID,
 					'template'      => 'confirmation',
 					'form'          => ! is_null( $user_form_id ) ? (int) $user_form_id : $subscriber->form_id,
+					'block_form'    => ! is_null( $user_form_id ) ? (int) $user_form_id : $subscriber->block_form_id,
 					'list_ids'      => $subscriber->list_ids,
 				)
 			) ) {
@@ -3076,7 +3019,6 @@ class MailsterSubscribers {
 		return $count;
 
 	}
-
 
 	/**
 	 *
@@ -3098,7 +3040,6 @@ class MailsterSubscribers {
 		return false !== $wpdb->query( $sql );
 	}
 
-
 	/**
 	 *
 	 *
@@ -3113,7 +3054,6 @@ class MailsterSubscribers {
 		return $query->run( $args, $campaign_id );
 
 	}
-
 
 	/**
 	 *
@@ -3131,7 +3071,6 @@ class MailsterSubscribers {
 		}
 
 	}
-
 
 	/**
 	 *
@@ -3156,7 +3095,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3172,7 +3110,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3186,7 +3123,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3199,7 +3135,6 @@ class MailsterSubscribers {
 		return $this->get_by_type( 'hash', $hash, $custom_fields );
 	}
 
-
 	/**
 	 *
 	 *
@@ -3211,7 +3146,6 @@ class MailsterSubscribers {
 
 		return $this->get_by_type( 'md5', $md5, $custom_fields );
 	}
-
 
 	/**
 	 *
@@ -3232,7 +3166,6 @@ class MailsterSubscribers {
 
 		return $this->get_by_type( 'wp_id', $wpid, $custom_fields );
 	}
-
 
 	/**
 	 *
@@ -3266,7 +3199,6 @@ class MailsterSubscribers {
 		return $wpdb->get_col( $sql );
 
 	}
-
 
 	/**
 	 *
@@ -3324,7 +3256,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3371,7 +3302,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3402,7 +3332,6 @@ class MailsterSubscribers {
 		return $subscriber;
 
 	}
-
 
 	/**
 	 *
@@ -3457,7 +3386,6 @@ class MailsterSubscribers {
 		return $link;
 
 	}
-
 
 	/**
 	 *
@@ -3555,7 +3483,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3576,7 +3503,6 @@ class MailsterSubscribers {
 		}
 
 	}
-
 
 	/**
 	 *
@@ -3658,7 +3584,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	public function register_form() {
 
 		if ( ! mailster_option( 'register_signup' ) ) {
@@ -3670,7 +3595,6 @@ class MailsterSubscribers {
 		echo apply_filters( 'mailster_register_form_signup_field', $output ) . "\n";
 
 	}
-
 
 	public function comment_form_checkbox() {
 
@@ -3695,7 +3619,6 @@ class MailsterSubscribers {
 		echo apply_filters( 'comment_form_field_newsletter_signup', $field ) . "\n";
 
 	}
-
 
 	/**
 	 *
@@ -3744,7 +3667,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3790,7 +3712,6 @@ class MailsterSubscribers {
 		}
 
 	}
-
 
 	/**
 	 *
@@ -3844,7 +3765,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3873,7 +3793,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3887,7 +3806,6 @@ class MailsterSubscribers {
 		return $this->get_gravatar_uri( $subscriber->email, $size );
 
 	}
-
 
 	/**
 	 *
@@ -3916,7 +3834,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -3935,7 +3852,6 @@ class MailsterSubscribers {
 
 		return $found;
 	}
-
 
 	/**
 	 *
@@ -3970,7 +3886,6 @@ class MailsterSubscribers {
 		return is_null( $id ) ? $statuses : ( isset( $statuses[ $id ] ) ? $statuses[ $id ] : false );
 	}
 
-
 	/**
 	 *
 	 *
@@ -3987,7 +3902,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -4000,7 +3914,6 @@ class MailsterSubscribers {
 		return (object) array_intersect_key( (array) $data, array_flip( array_keys( array_diff_key( (array) $data, (array) $userdata ) ) ) );
 
 	}
-
 
 	/**
 	 *
@@ -4064,7 +3977,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -4124,7 +4036,6 @@ class MailsterSubscribers {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -4143,6 +4054,5 @@ class MailsterSubscribers {
 		return apply_filters( 'mailster_subscriber_hash', $hash, $org_email );
 
 	}
-
 
 }

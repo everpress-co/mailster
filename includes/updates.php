@@ -622,6 +622,9 @@ if ( $old_version ) {
 		case '3.0.4':
 			mailster( 'cron' )->unschedule();
 
+			// this option should be autoloaded
+			update_option( 'mailster_inline_styles', '', 'no' );
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );

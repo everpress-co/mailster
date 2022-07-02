@@ -1,0 +1,29 @@
+{
+	"apiVersion": 2,
+	"name": "mailster/homepage",
+	"version": "0.1.0",
+	"title": "Mailster Homepage",
+	"category": "widgets",
+	"icon": "email",
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"align": true,
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"attributes": {
+		"id": {
+			"type": "integer"
+		},
+		"height": {
+			"type": "integer"
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./../../build/homepage/index.js",
+	"editorStyle": "file:./../../build/homepage.css",
+	"style": "file:./../../build/style-homepage.css"
+}

@@ -43,8 +43,6 @@ function sendria() {
 
 function _setup() {
 
-	echo 'SETUP';
-
 	global $wpdb;
 
 	if ( ! $wpdb->has_connected ) {
