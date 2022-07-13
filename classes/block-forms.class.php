@@ -370,16 +370,6 @@ class MailsterBlockForms {
 	}
 
 
-
-	public function wp_register_scripts() {
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'mailster-form-block', MAILSTER_URI . 'assets/js/form-block' . $suffix . '.js', array(), MAILSTER_VERSION, true );
-		wp_register_style( 'mailster-form-block', MAILSTER_URI . 'build/style-form.css', array(), MAILSTER_VERSION );
-
-	}
-
-
 	public function register_post_type() {
 
 		$labels = array(
@@ -720,19 +710,11 @@ class MailsterBlockForms {
 	public function block_init() {
 
 		// add_action( 'wp_enqueue_scripts', array( &$this, 'wp_register_scripts' ) );
-		$this->wp_register_scripts();
+		// $this->wp_register_scripts();
 
-		register_block_type(
-			MAILSTER_DIR . 'blocks/form/',
-			array(
-				'api_version'     => 2,
-				'render_callback' => array( $this, 'render_form' ),
-				'textdomain'      => 'mailster',
-				'script'          => 'mailster-form-block',
-				// 'style'           => 'mailster-form-block',
-			)
-		);
-		register_block_type( MAILSTER_DIR . 'blocks/homepage/', array() );
+		register_block_type( MAILSTER_DIR . 'build/form', array( 'render_callback' => array( $this, 'render_form' ) ) );
+
+		register_block_type( MAILSTER_DIR . 'build/homepage/', array() );
 
 		if ( ! is_admin() ) {
 			return;
@@ -791,7 +773,7 @@ class MailsterBlockForms {
 	}
 
 	private function get_blocks() {
-		$blocks = glob( MAILSTER_DIR . 'blocks/forms/*/block.json' );
+		$blocks = glob( MAILSTER_DIR . 'build/forms/*/block.json' );
 		return $blocks;
 	}
 
@@ -804,7 +786,7 @@ class MailsterBlockForms {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'build/forms/form-inspector/index.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-form-field-block-editor', MAILSTER_URI . 'build/forms/input/index.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+		// wp_enqueue_script( 'mailster-form-field-block-editor', MAILSTER_URI . 'build/forms/input/index.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
 
 		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_fields() ) ) . ';' );
@@ -984,6 +966,8 @@ class MailsterBlockForms {
 				'isPreview'  => false,
 			)
 		);
+
+		wp_enqueue_script( 'mailster-form-view-script' );
 
 		// is on a page in the backend and loaded via the REST API
 		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;

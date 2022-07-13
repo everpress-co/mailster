@@ -1,4 +1,4 @@
-(function () {
+window.addEventListener('DOMContentLoaded', (event) => {
 	'use strict';
 
 	var forms = document.querySelectorAll('.mailster-block-form');
@@ -390,4 +390,4 @@
 			}
 		};
 	}
-})();
+});

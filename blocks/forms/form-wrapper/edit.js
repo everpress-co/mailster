@@ -62,6 +62,8 @@ import './editor.scss';
 
 import { useUpdateEffect } from '../../util';
 import BlockRecovery from './BlockRecovery';
+import '../form-inspector';
+import '../input';
 
 const prefixCss = (css, className, type) => {
 	if (!css) return css;

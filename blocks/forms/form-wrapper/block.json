@@ -64,7 +64,7 @@
 		}
 	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../../build/forms/form-wrapper/index.js",
-	"editorStyle": "file:./../../../build/forms/form-wrapper.css",
-	"style": "file:./../../../build/style-form.css"
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:../../form/style-index.css"
 }

@@ -4,6 +4,17 @@
  *
  * It' used to define the general style of the form. Used "every were"
  */
+
+body::before {
+	content: 'STYLE LOADED';
+	font-size: 10px;
+	position: fixed;
+	top: 20px;
+	z-index: 100000;
+	background: green;
+	color: #fff;
+}
+
 .mailster-block-form-type-popup,
 .mailster-block-form-type-bar,
 .mailster-block-form-type-side {
@@ -135,16 +146,6 @@
 	right: 0;
 	z-index: -1;
 }
-body::before {
-	_content: 'STYLE LOADED';
-	font-size: 10px;
-	position: fixed;
-	top: 0;
-	z-index: 100000;
-	background: red;
-	color: #fff;
-}
-
 .mailster-block-form.wp-block-mailster-form-wrapper {
 	position: relative;
 	flex-basis: 100%;

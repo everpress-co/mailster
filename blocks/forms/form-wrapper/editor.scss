@@ -4,17 +4,17 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.block-editor-inner-blocks {
-	width: 100%;
-}
-_body::before {
+body::before {
 	content: 'EDITOR STYLE LOADED';
 	font-size: 10px;
 	position: fixed;
-	top: 0;
+	top: 10px;
 	z-index: 100000;
 	background: red;
 	color: #fff;
+}
+.block-editor-inner-blocks {
+	width: 100%;
 }
 .mailster-inline-styles-handler {
 	display: none;

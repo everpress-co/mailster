@@ -23,7 +23,7 @@
 		}
 	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/homepage/index.js",
-	"editorStyle": "file:./../../build/homepage.css",
-	"style": "file:./../../build/style-homepage.css"
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
 }
