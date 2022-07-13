@@ -19,6 +19,9 @@ class MailsterBlockForms {
 		add_action( 'init', array( &$this, 'block_init' ) );
 		add_action( 'rest_api_init', array( &$this, 'register_block_patterns' ) );
 
+		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
+		add_action( 'admin_print_scripts-edit.php', array( &$this, 'beta_notice' ) );
+
 		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
 
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );
@@ -36,9 +39,6 @@ class MailsterBlockForms {
 		add_action( 'mailster_block_form_head', array( &$this, 'form_head' ) );
 		add_action( 'mailster_block_form_body', array( &$this, 'form_body' ) );
 		// add_action( 'mailster_block_form_footer', array( &$this, 'form_footer' ) );
-
-		add_action( 'admin_print_scripts-edit.php', array( &$this, 'beta_notice' ) );
-
 	}
 
 
@@ -47,7 +47,7 @@ class MailsterBlockForms {
 		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize WordPress Block editor (Gutenberg) to create you custom, feature rich forms.</p>';
 		$msg .= '<p>If you like to lean more check out our guide or create a new form right a way</p>';
 		$msg .= '<p><a href="post-new.php?post_type=newsletter_form" class="page-title-action">Add New</a> or <a href="" class="external">check out our guide.</a></p>';
-		mailster_notice( $msg, 'info', true, 'Asdasd', true, 'edit-newsletter_form' );
+		mailster_notice( $msg, 'info', true, 'newsletter_form_beta_notice', true, 'edit-newsletter_form' );
 	}
 
 
@@ -73,10 +73,11 @@ class MailsterBlockForms {
 			}
 
 			if ( json_last_error() === JSON_ERROR_NONE ) {
-				$this->preview_data = $data;
+					$this->preview_data = $data;
 				if ( ! $data['user'] ) {
 					add_filter( 'determine_current_user', '__return_false', PHP_INT_MAX );
 				}
+				// }
 			}
 		}
 	}
@@ -107,32 +108,51 @@ class MailsterBlockForms {
 
 	public function form_head() {
 
-		$form_id = isset( $_GET['id'] ) ? (int) $_GET['id'] : null;
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		wp_register_style( 'mailster-form-default-style', MAILSTER_URI . 'assets/css/form-default-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		if ( isset( $_GET['style'] ) ) {
-			wp_register_style( 'mailster-theme-style', get_template_directory_uri() . '/style.css', array(), MAILSTER_VERSION );
-			wp_print_styles( 'mailster-theme-style' );
+		if ( ! isset( $_GET['id'] ) ) {
+			wp_die( esc_html__( 'Form ID is missing', 'mailster' ) );
 		}
-		wp_print_styles( 'mailster-form-block' );
-		wp_print_scripts( 'mailster-form-block-preview' );
-		wp_print_scripts( 'mailster-form-block' );
+
+		$form_id = (int) $_GET['id'];
+
+		$css_dep = array();
+		$js_dep  = array();
+
+		if ( $this->preview_data ) {
+			wp_print_styles( 'mailster-form-block-preview' );
+			wp_print_scripts( 'mailster-form-block-preview' );
+		}
+
+		if ( isset( $_GET['style'] ) ) {
+			$theme  = wp_get_theme();
+			$child  = $theme->get_stylesheet_directory_uri();
+			$parent = $theme->get_template_directory_uri();
+			if ( $child !== $parent ) {
+				wp_register_style( 'mailster-theme-style-parent', $parent . '/style.css', array(), $theme->parent()->get( 'Version' ) );
+				$css_dep[] = 'mailster-theme-style-parent';
+			}
+			wp_register_style( 'mailster-theme-style-child', $child . '/style.css', array(), $theme->get( 'Version' ) );
+			$css_dep[] = 'mailster-theme-style-child';
+
+		}
+
+		wp_register_script( 'mailster-form-view-script', MAILSTER_URI . 'build/form/view.js', $js_dep, MAILSTER_VERSION );
+		wp_register_style( 'mailster-form-style-css', MAILSTER_URI . 'build/form/style-index.css', $css_dep, MAILSTER_VERSION );
+
+		wp_print_styles( 'mailster-form-style-css' );
+		wp_print_scripts( 'mailster-form-view-script' );
 
 	}
 
 	public function form_body() {
 
-		$form_id = isset( $_GET['id'] ) ? (int) $_GET['id'] : null;
-
-		$options = $this->preview_data['options'];
-
+		$form_id = (int) $_GET['id'];
+		$options = array();
+		if ( $this->preview_data ) {
+			$options = $this->preview_data['options'];
+		}
 		$options['classes'] = array( 'mailster-block-form-type-embed' );
 
-		if ( $form_html = $this->render_form_with_options( $form_id, $options, false ) ) {
-			echo $form_html;
-		}
+		echo $this->render_form_with_options( $form_id, $options, false );
 	}
 
 
@@ -141,9 +161,9 @@ class MailsterBlockForms {
 		$columns = array(
 			'cb'              => '<input type="checkbox" />',
 			'title'           => esc_html__( 'Title', 'mailster' ),
-			'impressions'     => esc_html__( 'Impressions', 'mailster' ) . ' (' . number_format_i18n( $this->get_impressions() ) . ')',
-			'conversions'     => esc_html__( 'Conversions', 'mailster' ) . ' (' . number_format_i18n( $this->get_conversions() ) . ')',
-			'conversion_rate' => esc_html__( 'Conversion Rate', 'mailster' ) . ' (' . sprintf( '%s %%', number_format_i18n( $this->get_conversion_rate() * 100, 1 ) ) . ')',
+			'impressions'     => esc_html__( 'Impressions', 'mailster' ) . ' <span class="count">' . number_format_i18n( $this->get_impressions() ) . '</span>',
+			'conversions'     => esc_html__( 'Conversions', 'mailster' ) . ' <span class="count">' . number_format_i18n( $this->get_conversions() ) . '</span>',
+			'conversion_rate' => esc_html__( 'CV Rate', 'mailster' ) . ' <span class="count">' . sprintf( '%s %%', number_format_i18n( $this->get_conversion_rate() * 100, 1 ) ) . '</span>',
 			'date'            => esc_html__( 'Date', 'mailster' ),
 		);
 		return $columns;
@@ -173,8 +193,6 @@ class MailsterBlockForms {
 
 	public function prepare_forms() {
 
-		// $terms = wp_get_object_terms( get_the_ID(), get_object_taxonomies('post'), array('fields' => 'ids') );
-
 		if ( $this->preview_data ) {
 
 			$options = $this->preview_data['options'];
@@ -184,7 +202,6 @@ class MailsterBlockForms {
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'wp-api-fetch', 'wp-polyfill', 'jquery' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-form-block-preview', MAILSTER_URI . 'assets/css/form-block-preview' . $suffix . '.css', array(), MAILSTER_VERSION );
-			// wp_register_style( 'mailster-form-block', MAILSTER_URI . 'build/style-form.css', array(), MAILSTER_VERSION );
 
 		} elseif ( $forms = $this->query_forms() ) {
 
@@ -282,6 +299,10 @@ class MailsterBlockForms {
 						$chunks = explode( $split_at, $content );
 						if ( $pos < 0 ) {
 							$pos = max( 0, count( $chunks ) + $pos );
+						}
+
+						if ( ! $pos && false === strpos( $content, $split_at ) ) {
+							$pos = -1;
 						}
 
 						if ( isset( $chunks[ $pos ] ) ) {
@@ -777,6 +798,26 @@ class MailsterBlockForms {
 		return $blocks;
 	}
 
+	public function overview_script_styles( $hook ) {
+
+		if ( 'newsletter_form' != get_post_type() ) {
+			return;
+		}
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mailster-block-forms-overview', MAILSTER_URI . 'assets/css/block-form-overview' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+		// $suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		// wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'build/forms/form-inspector/index.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+		// // wp_enqueue_script( 'mailster-form-field-block-editor', MAILSTER_URI . 'build/forms/input/index.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+
+		// wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
+		// wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_fields() ) ) . ';' );
+		// wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_inline_styles = ' . json_encode( get_option( 'mailster_inline_styles' ) ) . ';' );
+	}
+
 	public function block_script_styles( $hook ) {
 
 		if ( 'newsletter_form' != get_post_type() ) {
@@ -933,6 +974,7 @@ class MailsterBlockForms {
 			$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
 
 			$html = render_block( $block[0] );
+
 		}
 
 		return $html;

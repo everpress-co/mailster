@@ -1,0 +1,15 @@
+.wp-list-table .count {
+	display: block;
+	color: #646970;
+	font-size: 11px;
+}
+.wp-list-table tfoot .count {
+	display: none;
+}
+
+.wp-list-table .column-impressions,
+.wp-list-table .column-conversions,
+.wp-list-table .column-conversion_rate {
+	width: 100px;
+	text-align: center;
+}

@@ -98,7 +98,7 @@ jQuery(document).ready(function ($) {
 		}
 
 		function reloadFormScript() {
-			var script = $('#mailster-form-block-js');
+			var script = $('#mailster-form-view-script-js');
 			script.remove();
 			script.appendTo('head');
 		}
