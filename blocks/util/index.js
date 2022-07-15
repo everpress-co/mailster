@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef } from '@wordpress/element';
+import { select } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -86,4 +87,25 @@ export function useBlockAttributes() {
 	);
 
 	return [attributes, setAttributes];
+}
+
+export function searchBlock(blockName, clientId) {
+	const all = select('core/block-editor').getBlocks(clientId);
+
+	var found = all.find((block) => {
+		return new RegExp(blockName, 'g').test(block.name);
+	});
+
+	if (found) {
+		found.rootClientId = clientId;
+		return found;
+	} else {
+		for (var i = 0; i < all.length; i++) {
+			if ((found = searchBlock(blockName, all[i].clientId))) {
+				return found;
+			}
+		}
+	}
+
+	return false;
 }

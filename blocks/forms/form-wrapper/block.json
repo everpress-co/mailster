@@ -8,6 +8,7 @@
 	"category": "widgets",
 	"description": "Define the look of your form here.",
 	"parent": ["core/post-content"],
+	"example": {},
 	"supports": {
 		"html": false,
 		"inserter": false,

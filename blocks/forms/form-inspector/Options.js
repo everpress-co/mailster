@@ -35,6 +35,8 @@ import { more } from '@wordpress/icons';
  * Internal dependencies
  */
 
+import { searchBlock } from '../../util';
+
 export default function Options(props) {
 	const { meta, setMeta } = props;
 	const { redirect, overwrite, gdpr, doubleoptin } = meta;
@@ -46,15 +48,7 @@ export default function Options(props) {
 	);
 
 	const editMessages = () => {
-		const mblock = select('core/block-editor')
-			.getBlocks()
-			.find((block) => {
-				return block.name == 'mailster/form-wrapper';
-			})
-			?.innerBlocks.find((block) => {
-				return block.name == 'mailster/messages';
-			});
-
+		const mblock = searchBlock('mailster/messages');
 		if (mblock) dispatch('core/block-editor').selectBlock(mblock.clientId);
 	};
 

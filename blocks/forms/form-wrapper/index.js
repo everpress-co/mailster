@@ -49,12 +49,21 @@ registerBlockType(name, {
 	save,
 });
 
+// only allow blocks inside the form wrapper
 function setParentToBlocks(settings, name) {
 	if (!/^mailster\//.test(name)) {
 		if (!settings['parent']) {
-			settings['parent'] = ['mailster/form-wrapper'];
+			settings['parent'] = [
+				'mailster/form-wrapper',
+				'core/column',
+				'core/group',
+			];
 		} else if (!settings['parent'].includes('mailster/form-wrapper')) {
-			settings['parent'].push('mailster/form-wrapper');
+			settings['parent'].push(
+				'mailster/form-wrapper',
+				'core/column',
+				'core/group'
+			);
 			settings['parent'] = settings['parent'].filter(
 				(item) => item !== 'core/post-content'
 			);

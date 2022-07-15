@@ -198,10 +198,6 @@ $patterns = apply_filters(
 <p class="has-text-align-center">Subscribe to our newsletter below and<br>get a discount code to get 20% off your next order.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:mailster/messages -->
-<div class="wp-block-mailster-messages mailster-block-form-info"><div class="mailster-block-form-info-success" style="width:undefined%;color:#ffffff;background:#6fbf4d"><div>Please confirm your subscription!</div><div class="mailster-block-form-info-extra"></div></div><div class="mailster-block-form-info-error" style="width:undefined%;color:#ffffff;background:#bf4d4d"><div>Following fields are missing or incorrect</div><div class="mailster-block-form-info-extra"></div></div></div>
-<!-- /wp:mailster/messages -->
-
 <!-- wp:mailster/field-firstname {"id":"d431fb4a-a25f-4ec0-963a-2d3f0982f0af","style":{"width":49},"className":"mailster-wrapper-asterisk"} -->
 <div class="wp-block-mailster-field-firstname mailster-wrapper mailster-wrapper-asterisk" style="width:49%"><label for="mailster-input-d431fb4a-a25f-4ec0-963a-2d3f0982f0af" class="mailster-label">First Name</label><input name="firstname" id="mailster-input-d431fb4a-a25f-4ec0-963a-2d3f0982f0af" type="text" aria-required="false" aria-label="First Name" spellcheck="false" value="" class="input" placeholder=" "/></div>
 <!-- /wp:mailster/field-firstname -->
@@ -217,6 +213,45 @@ $patterns = apply_filters(
 <!-- wp:mailster/field-submit {"id":"112cdf48-ab08-4d47-ada5-809ba3a32dab","style":{"width":100},"className":"mailster-wrapper-asterisk"} -->
 <div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button mailster-wrapper-asterisk" style="width:100%"><input name="submit" id="mailster-input-112cdf48-ab08-4d47-ada5-809ba3a32dab" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
+		array(
+			'title'         => __( 'Next Order', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"lock":{"move":false,"remove":false},"css":{"general":".wp-block-columns{\n\tpadding:0;\n}","tablet":"","mobile":""}} -->
+<form method="post" action="https://dev.local/wp-json/mailster/v1/subscribe" novalidate class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner">
+
+<!-- wp:columns {"isStackedOnMobile":true,"style":{"color":{"background":"#ffffff"}},"className":"is-style-default"} -->
+<div class="wp-block-columns is-stacked-on-mobile is-style-default"><!-- wp:column {"width":"33.33%"} -->
+<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:cover {"url":"https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg","dimRatio":50,"isDark":false,"style":{"color":{"duotone":["#39414D","#EEEADD"]}}} -->
+<div class="wp-block-cover is-light"><span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container"></div></div>
+<!-- /wp:cover --></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"66.67%","style":{"spacing":{"padding":{"top":"2rem","right":"2rem","bottom":"2rem","left":"2rem"}}}} -->
+<div class="wp-block-column" style="padding-top:2rem;padding-right:2rem;padding-bottom:2rem;padding-left:2rem;flex-basis:66.67%"><!-- wp:heading -->
+<h2><strong>Subscribe!</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>to our newsletter</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/field-firstname {"id":"71f23dc3-ad5f-4298-876a-f8c6a37ada5d","inline":true,"values":[],"style":{}} -->
+<div class="wp-block-mailster-field-firstname mailster-wrapper mailster-wrapper-inline"><input name="firstname" id="mailster-input-71f23dc3-ad5f-4298-876a-f8c6a37ada5d" type="text" aria-required="false" aria-label="Name" spellcheck="false" value="" class="input" placeholder=" "/><label for="mailster-input-71f23dc3-ad5f-4298-876a-f8c6a37ada5d" class="mailster-label">Name</label></div>
+<!-- /wp:mailster/field-firstname -->
+
+<!-- wp:mailster/field-email {"id":"3ff0d93d-cd34-4939-85f7-6f32300838fb","inline":true,"values":[],"style":{}} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" id="mailster-input-3ff0d93d-cd34-4939-85f7-6f32300838fb" type="email" aria-required="true" aria-label="Email" spellcheck="false" required value="" class="input" placeholder=" "/><label for="mailster-input-3ff0d93d-cd34-4939-85f7-6f32300838fb" class="mailster-label">Email</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit {"id":"112cdf48-ab08-4d47-ada5-809ba3a32dab","values":[],"style":{"width":100},"className":"mailster-wrapper-asterisk"} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button mailster-wrapper-asterisk" style="width:100%"><input name="submit" id="mailster-input-112cdf48-ab08-4d47-ada5-809ba3a32dab" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 
 		),

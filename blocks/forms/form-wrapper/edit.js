@@ -60,7 +60,7 @@ import { store as editPostStore } from '@wordpress/edit-post';
 
 import './editor.scss';
 
-import { useUpdateEffect } from '../../util';
+import { useUpdateEffect, searchBlock } from '../../util';
 import BlockRecovery from './BlockRecovery';
 import '../form-inspector';
 import '../input';
@@ -141,6 +141,8 @@ export default function Edit(props) {
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
 	const spacingProps = useSpacingProps(attributes);
+
+	const inEditor = searchBlock('mailster/form-wrapper');
 
 	const formClasses = classnames(
 		'mailster-block-form',
@@ -267,52 +269,27 @@ export default function Edit(props) {
 		}
 	}, []);
 
-	useEffect(() => {
-		const all = select('core/block-editor').getBlocks(clientId);
-		const gdprBlock = all.find((block) => {
-			return block.name == 'mailster/gdpr';
-		});
-
-		if (gdprBlock && !meta.gdpr) {
-			dispatch('core/block-editor').removeBlock(gdprBlock.clientId);
-			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
-		} else if (!gdprBlock && meta.gdpr) {
-			const block = wp.blocks.createBlock('mailster/gdpr');
-			const submit = all.find((block) => {
-				return block.name == 'mailster/field-submit';
-			});
-			const pos = submit
-				? select('core/block-editor').getBlockIndex(
-						submit.clientId,
-						clientId
-				  )
-				: all.length;
-
-			dispatch('core/block-editor').insertBlock(block, pos, clientId);
-		}
-	}, [meta.gdpr]);
-
 	// add message block if missing
 	useEffect(() => {
-		const all = select('core/block-editor').getBlocks(clientId);
-		const messagesBlock = all.find((block) => {
-			return block.name == 'mailster/messages';
-		});
+		if (!inEditor) return;
+		const messagesBlock = searchBlock('mailster/messages', clientId);
 
 		if (!messagesBlock) {
 			const block = wp.blocks.createBlock('mailster/messages');
-			const first = all.find((block) => {
-				return /mailster\//.test(block.name);
-				return block.name == 'mailster/field-submit';
-			});
-			const pos = first
+			const referenceBlock = searchBlock(/^mailster\/field-/);
+
+			const pos = referenceBlock
 				? select('core/block-editor').getBlockIndex(
-						first.clientId,
-						clientId
+						referenceBlock.clientId,
+						referenceBlock.rootClientId
 				  )
 				: 0;
 
-			dispatch('core/block-editor').insertBlock(block, pos, clientId);
+			dispatch('core/block-editor').insertBlock(
+				block,
+				pos,
+				referenceBlock.rootClientId
+			);
 			// clear any selected block
 			dispatch('core/block-editor').clearSelectedBlock();
 			// select "Form" in side panel
@@ -321,27 +298,53 @@ export default function Edit(props) {
 	}, []);
 
 	useEffect(() => {
-		const all = select('core/block-editor').getBlocks(clientId);
-		const listBlock = all.find((block) => {
-			return block.name == 'mailster/lists';
-		});
+		if (!inEditor) return;
+		const gdprBlock = searchBlock('mailster/gdpr', clientId);
+
+		if (gdprBlock && !meta.gdpr) {
+			dispatch('core/block-editor').removeBlock(gdprBlock.clientId);
+			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
+		} else if (!gdprBlock && meta.gdpr) {
+			const block = wp.blocks.createBlock('mailster/gdpr');
+			const referenceBlock = searchBlock('mailster/field-submit');
+			const pos = referenceBlock
+				? select('core/block-editor').getBlockIndex(
+						referenceBlock.clientId,
+						referenceBlock.rootClientId
+				  )
+				: all.length;
+
+			dispatch('core/block-editor').insertBlock(
+				block,
+				pos,
+				referenceBlock.rootClientId
+			);
+		}
+	}, [meta.gdpr]);
+
+	useEffect(() => {
+		if (!inEditor) return;
+
+		const listBlock = searchBlock('mailster/lists', clientId);
 
 		if (listBlock && !meta.userschoice) {
 			dispatch('core/block-editor').removeBlock(listBlock.clientId);
 			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
 		} else if (!listBlock && meta.userschoice) {
 			const block = wp.blocks.createBlock('mailster/lists');
-			const submit = all.find((block) => {
-				return block.name == 'mailster/field-submit';
-			});
-			const pos = submit
+			const referenceBlock = searchBlock('mailster/field-submit');
+			const pos = referenceBlock
 				? select('core/block-editor').getBlockIndex(
-						submit.clientId,
-						clientId
+						referenceBlock.clientId,
+						referenceBlock.rootClientId
 				  )
 				: all.length;
 
-			dispatch('core/block-editor').insertBlock(block, pos, clientId);
+			dispatch('core/block-editor').insertBlock(
+				block,
+				pos,
+				referenceBlock.rootClientId
+			);
 		}
 	}, [meta.userschoice]);
 

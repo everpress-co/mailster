@@ -43,7 +43,6 @@ import Lists from './Lists';
 import WelcomeGuide from './WelcomeGuide';
 import Placement from './Placement';
 import PublishChecks from './PublishChecks';
-
 import InlineStyles from './InlineStyles';
 
 import '../store';

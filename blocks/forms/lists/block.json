@@ -8,6 +8,7 @@
 	"keywords": ["container", "wrapper", "row", "section"],
 	"parent": ["mailster/form-wrapper", "core/column", "core/group"],
 	"description": "Simple Input Field for your Mailster Form",
+	"example": {},
 	"supports": {
 		"html": false,
 		"reusable": false,

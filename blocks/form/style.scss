@@ -149,6 +149,27 @@ body::before {
 .mailster-block-form.wp-block-mailster-form-wrapper {
 	position: relative;
 	flex-basis: 100%;
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	ol,
+	ul {
+		margin: 0;
+		padding: 0;
+		font-weight: normal;
+		overflow-wrap: break-word;
+		width: 100%;
+	}
+
+	ol,
+	ul {
+		list-style: none;
+	}
 }
 
 .mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner {
@@ -172,7 +193,7 @@ body::before {
 		margin-top: 0;
 		margin-left: 0;
 		margin-right: 0;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0;
 		width: 100%;
 		max-width: 100%;
 	}
@@ -185,6 +206,29 @@ body::before {
 		margin-bottom: 0.5rem;
 		box-sizing: border-box;
 	}
+	.wp-block-columns {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 0;
+		padding: 0;
+		gap: 0;
+		.wp-block-column {
+			gap: 0;
+		}
+		.wp-block-column.is-vertically-aligned-top {
+			align-self: flex-start;
+		}
+		.wp-block-column.is-vertically-aligned-center {
+			align-self: center;
+		}
+		.wp-block-column.is-vertically-aligned-bottom {
+			align-self: flex-end;
+		}
+		.wp-block-cover {
+			min-height: 430px;
+		}
+	}
 
 	.mailster-wrapper {
 		margin-top: 0;
@@ -195,6 +239,7 @@ body::before {
 		width: 100%;
 		display: flex;
 		flex-wrap: wrap;
+		position: relative;
 
 		input.input,
 		textarea.input,
