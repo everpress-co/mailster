@@ -1,5 +1,5 @@
 {
-	"name": "@evrpess/mailster",
+	"name": "mailster",
 	"version": "3.1.3",
 	"author": "Xaver <xaver@everpress.co>",
 	"license": "GPL-2.0",
@@ -45,6 +45,17 @@
 		"sounds-webpack-plugin": "^0.0.2",
 		"webpack-remove-empty-scripts": "^0.7.1"
 	},
+	"files": [
+		"*.php",
+		"build",
+		"classes",
+		"includes",
+		"licensing",
+		"templates",
+		"vendor",
+		"views",
+		"assets"
+	],
 	"scripts": {
 		"build": "wp-scripts build --webpack-src-dir=blocks",
 		"zip": "wp-scripts plugin-zip",

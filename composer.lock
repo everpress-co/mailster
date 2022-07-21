@@ -2131,16 +2131,16 @@
         },
         {
             "name": "pronamic/wp-documentor",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pronamic/wp-documentor.git",
-                "reference": "44b4d32e83dc478d2090168fcf5972f6954986f5"
+                "reference": "3fbe5703626936e2541451ca8dd5ed71db44539e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pronamic/wp-documentor/zipball/44b4d32e83dc478d2090168fcf5972f6954986f5",
-                "reference": "44b4d32e83dc478d2090168fcf5972f6954986f5",
+                "url": "https://api.github.com/repos/pronamic/wp-documentor/zipball/3fbe5703626936e2541451ca8dd5ed71db44539e",
+                "reference": "3fbe5703626936e2541451ca8dd5ed71db44539e",
                 "shasum": ""
             },
             "require": {
@@ -2198,9 +2198,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pronamic/wp-documentor/issues",
-                "source": "https://github.com/pronamic/wp-documentor/tree/1.2.0"
+                "source": "https://github.com/pronamic/wp-documentor/tree/1.3.0"
             },
-            "time": "2022-01-27T10:08:26+00:00"
+            "time": "2022-07-18T12:17:30+00:00"
         },
         {
             "name": "psr/container",
