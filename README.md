@@ -3,8 +3,8 @@
 Contributors: everpress  
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
-Tested up to: 6.0
-Stable tag: 3.1.5
+Tested up to: 6.0  
+Stable tag: 3.1.6  
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ## Changelog
+
+### 3.1.6
+
+-   added: option to change tracking of campaigns once the campaign has been finished
+-   improved: list counts are loaded now asynchronously to improve page load time
+-   improved: embedded images are now found outside the upload folder
+-   settings with "token" in the key are now hidden in the test email
 
 ### 3.1.5
 
