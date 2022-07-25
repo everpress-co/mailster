@@ -172,24 +172,32 @@ body::before {
 	}
 }
 
-.mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner {
+.mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner,
+.mailster-block-form.wp-block-mailster-form-wrapper
+	.mailster-block-form-inner
+	.wp-block-column,
+.mailster-block-form.wp-block-mailster-form-wrapper
+	.mailster-block-form-inner
+	.wp-block-group__inner-container {
 	position: relative;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-end;
 	justify-content: space-between;
 	flex-grow: 0;
-	flex-shrink: 0;
+	_flex-shrink: 0;
 	flex-basis: 100%;
 	text-align: left;
 	pointer-events: all;
+}
+.mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner {
 	> * {
 		width: 100%;
 	}
 	> div {
 		position: relative;
 	}
-	.wp-block:not(.mailster-wrapper) {
+	.wp-block:not(.mailster-wrapper):not([data-type='core/paragraph']) {
 		margin-top: 0;
 		margin-left: 0;
 		margin-right: 0;
@@ -204,6 +212,7 @@ body::before {
 	.mailster-block-form-info > div {
 		padding: 0.5rem 1rem;
 		margin-bottom: 0.5rem;
+		margin-bottom: 0;
 		box-sizing: border-box;
 	}
 	.wp-block-columns {
@@ -229,26 +238,43 @@ body::before {
 			min-height: 430px;
 		}
 	}
+	.wp-block-group {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 0;
+		padding: 0;
+		gap: 0;
+		.wp-block-group__inner-container {
+			gap: 0;
+		}
+		.wp-block-cover {
+			min-height: 430px;
+		}
+	}
 
 	.mailster-wrapper {
 		margin-top: 0;
 		margin-left: 0;
 		margin-right: 0;
 		margin-bottom: 1rem;
+		margin-bottom: 0;
+		margin-bottom: 0.5em;
 		max-width: 100%;
 		width: 100%;
 		display: flex;
 		flex-wrap: wrap;
 		position: relative;
+		align-self: baseline;
 
 		input.input,
 		textarea.input,
 		select.input,
 		input[type='submit'] {
-			width: 100%;
+			width: 120%;
 			max-width: 100%;
 			margin: 0;
-			box-sizing: border-box;
+			box-sizing: content-box;
 			text-overflow: ellipsis;
 			// add some default style here
 		}
@@ -268,6 +294,7 @@ body::before {
 			margin-left: 0;
 			margin-right: 0;
 			margin-bottom: 1rem;
+			margin-bottom: 0;
 		}
 
 		&:last-child {

@@ -118,7 +118,7 @@ function getSelectors() {
 					title: __('Required Asterisk', 'mailster'),
 				},
 				{
-					selector: '.mailster-submit-wrapper .wp-block-button__link',
+					selector: '.mailster-wrapper .submit-button',
 					title: __('Submit Button', 'mailster'),
 				},
 			],
@@ -151,7 +151,7 @@ export const CssPanel = (props) => {
 		return <Spinner />;
 	}
 
-	const { css } = attributes;
+	const { css = {} } = attributes;
 
 	const tabs = {
 		general: __('General', 'mailster'),

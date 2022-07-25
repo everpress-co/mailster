@@ -59,8 +59,6 @@ import {
  * Internal dependencies
  */
 
-import { useUpdateEffect } from '../util';
-
 function MailsterFormSelector(props) {
 	const { attributes, setAttributes, isSelected } = props;
 	const { id } = attributes;

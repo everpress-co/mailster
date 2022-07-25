@@ -13,7 +13,7 @@ import { PanelBody } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import DisplayOptionsContent from './DisplayOptionsContent';
+import DisplayOptionsExtra from './DisplayOptionsExtra';
 import PostTypeFields from './PostTypeFields';
 
 export default function DisplayOptions(props) {
@@ -27,7 +27,7 @@ export default function DisplayOptions(props) {
 	return (
 		<PanelBody title={<Title />} initialOpen={true}>
 			<PostTypeFields options={options} setOptions={setOptions} />
-			{'content' == type && <DisplayOptionsContent {...props} />}
+			<DisplayOptionsExtra {...props} />
 		</PanelBody>
 	);
 }

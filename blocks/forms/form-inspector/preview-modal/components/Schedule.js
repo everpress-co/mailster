@@ -29,7 +29,6 @@ import { format, __experimentalGetSettings } from '@wordpress/date';
 /**
  * Internal dependencies
  */
-import DisplayOptionsContent from './DisplayOptionsContent';
 import PostTypeFields from './PostTypeFields';
 
 function ScheduleEntry(props) {

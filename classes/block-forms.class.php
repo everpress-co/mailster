@@ -1057,7 +1057,7 @@ class MailsterBlockForms {
 
 		foreach ( $form_block['innerBlocks'] as $block ) {
 
-			if ( 'mailster/messages' == $block['blockName'] ) {
+			if ( 'mailster/messages' == $block['blockName'] && ! empty( $block['attrs'] ) ) {
 				$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . '{';
 				foreach ( $block['attrs'] as $key => $value ) {
 					if ( ! is_array( $value ) ) {
@@ -1132,8 +1132,9 @@ class MailsterBlockForms {
 						case 'labelColor':
 							$custom_styles[' .mailster-label'][] = 'color:' . $value;
 							break;
-						case 'borderWidth':
 						case 'inputColor':
+							$key = 'color';
+						case 'borderWidth':
 						case 'backgroundColor':
 						case 'borderColor':
 							$custom_styles[' .input'][] = strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ':' . $value;
@@ -1143,10 +1144,12 @@ class MailsterBlockForms {
 			}
 		}
 
-		foreach ( $custom_styles as $selector => $property ) {
-			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper' . $selector . '{';
-			$embeded_style .= implode( ';', $property );
-			$embeded_style .= '}';
+		if ( ! empty( $custom_styles ) ) {
+			foreach ( $custom_styles as $selector => $property ) {
+				$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper' . $selector . '{';
+				$embeded_style .= implode( ';', $property );
+				$embeded_style .= '}';
+			}
 		}
 
 		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {
@@ -1188,33 +1191,13 @@ class MailsterBlockForms {
 			}
 		}
 
-		// $parsed = $htmldoc->parseStylesheet( $stylesheet );
-		// foreach ( $parsed as $rule ) {
-		// $selector = array_shift( $rule );
-		// if ( ! empty( $rule ) && preg_match( '(::?(after|before))', $selector ) ) {
-		// $embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' ' . $selector . '{' . implode( ';', $rule ) . '}';
-		// }
-		// }
-
 		if ( ! empty( $embeded_style ) ) {
 			$output = '<style>' . $embeded_style . '</style>' . $output;
 		}
 
 		$output = '<div class="' . implode( ' ', $args['classes'] ) . '" role="dialog" id="dialog1" aria-labelledby="dialog1_label" aria-modal="true">' . $output . '</div>';
 
-		// $htmldoc->loadHTML( $output );
-
-		// $htmldoc->applyStylesheet( $stylesheet );
-
-		// $html = $htmldoc->getHTML();
 		$html = $output;
-		// libxml_clear_errors();
-		// libxml_use_internal_errors( $i_error );
-
-		// preg_match( '#<body([^>]*)>(.*)<\/body>#is', $html, $matches );
-		// if ( ! empty( $matches ) ) {
-		// $html = trim( $matches[2] );
-		// }
 
 		if ( $is_backend ) {
 			$html = do_shortcode( $html );
@@ -1250,7 +1233,7 @@ class MailsterBlockForms {
 
 		$html = str_replace( '</form>', $inject . '</form>', $html );
 
-		return ( $html );
+		return $html;
 
 	}
 

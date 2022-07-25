@@ -63,7 +63,7 @@ $patterns = apply_filters(
 			'title'         => __( 'With image', 'mailster' ),
 			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
 			'viewportWidth' => 880,
-			'content'       => '<!-- wp:mailster/form-wrapper {"background":{"opacity":100,"fixed":false,"repeat":false,"size":52,"image":"https://user-images.githubusercontent.com/881729/147969548-3c739442-85b8-48b2-abfc-e3d2db5c0cb8.png","position":{"x":"0.88","y":"0.02"}},"css":{"general":"h2{\n\tfont-size:2em;\n\tfont-family:sans-serif;\n\tmargin-top:0.6em;\n}\n.input{\n\tborder: 0;\n\tborder-bottom-width: 3px;\n\tborder-bottom-style: solid;\n}\n.submit-button{\n\tborder-style:solid;\n}\n.mailster-block-form{\n    outline:3px solid;\n\toutline-offset:-15px;\n}\n.mailster-wrapper{\n\tmargin-top:2em;\n}\n.mailster-wrapper ~ .mailster-wrapper{\n\tmargin-top:inherit;\n}\n.mailster-wrapper-required label.mailster-label::after{\n    display:none\n}\n","tablet":"","mobile":""},"style":{"borderColor":"#1A1B1F","borderRadius":"0px","spacing":{"padding":{"top":"2.5em","right":"2.5em","bottom":"2.5em","left":"2.5em"}},"color":{"background":"#ffffff","text":"#363636"}},"backgroundColor":"#FFFFFF"} -->
+			'content'       => '<!-- wp:mailster/form-wrapper {"background":{"opacity":100,"fixed":false,"repeat":false,"size":37,"image":"https://static.mailster.co/forms/girl-having-nice-day-at-the-beach-with-watermelon-and-in-fashion-swimsuit.png","position":{"x":"0.80","y":"0.16"}},"css":{"general":"h2{\n\tfont-size:2em;\n\tfont-family:sans-serif;\n\tmargin-top:0.6em;\n}\n.input{\n\tborder: 0;\n\tborder-bottom-width: 3px;\n\tborder-bottom-style: solid;\n}\n.submit-button{\n\tborder-style:solid;\n}\n.mailster-block-form{\n    outline:3px solid;\n\toutline-offset:-15px;\n}\n.mailster-wrapper{\n\tmargin-top:2em;\n}\n.mailster-wrapper ~ .mailster-wrapper{\n\tmargin-top:inherit;\n}\n.mailster-wrapper-required label.mailster-label::after{\n    display:none\n}\n","tablet":"","mobile":""},"style":{"borderColor":"#1A1B1F","borderRadius":"0px","spacing":{"padding":{"top":"2.5em","right":"2.5em","bottom":"2.5em","left":"2.5em"}},"color":{"background":"#ffffff","text":"#363636"}},"backgroundColor":"#FFFFFF"} -->
 <form method="post" action="" novalidate style="background-color:#ffffff;color:#363636;padding-top:2.5em;padding-right:2.5em;padding-bottom:2.5em;padding-left:2.5em" class="wp-block-mailster-form-wrapper mailster-block-form has-ffffff-background-color has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:heading {"style":{"typography":{"letterSpacing":"-0.1rem","fontSize":"45px"}}} -->
 <h2 id="here-is-your-20-discount" style="font-size:45px;letter-spacing:-0.1rem">Here is your 20% discount.</h2>
 <!-- /wp:heading -->
@@ -221,12 +221,12 @@ $patterns = apply_filters(
 			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
 			'viewportWidth' => 880,
 			'content'       => '<!-- wp:mailster/form-wrapper {"lock":{"move":false,"remove":false},"css":{"general":".wp-block-columns{\n\tpadding:0;\n}","tablet":"","mobile":""}} -->
-<form method="post" action="https://dev.local/wp-json/mailster/v1/subscribe" novalidate class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner">
-
-<!-- wp:columns {"isStackedOnMobile":true,"style":{"color":{"background":"#ffffff"}},"className":"is-style-default"} -->
-<div class="wp-block-columns is-stacked-on-mobile is-style-default"><!-- wp:column {"width":"33.33%"} -->
+<form method="post" action="https://dev.local/wp-json/mailster/v1/subscribe" novalidate class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"width":"33.33%"} -->
 <div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:cover {"url":"https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg","dimRatio":50,"isDark":false,"style":{"color":{"duotone":["#39414D","#EEEADD"]}}} -->
-<div class="wp-block-cover is-light"><span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container"></div></div>
+<div class="wp-block-cover is-light"><span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"align":"center","placeholder":"Write title…","fontSize":"large"} -->
+<p class="has-text-align-center has-large-font-size"></p>
+<!-- /wp:paragraph --></div></div>
 <!-- /wp:cover --></div>
 <!-- /wp:column -->
 
@@ -252,6 +252,130 @@ $patterns = apply_filters(
 <!-- /wp:mailster/field-submit --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
+		array(
+			'title'         => __( 'Next Order', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"lock":{"move":false,"remove":false},"background":{"opacity":100,"fixed":false,"repeat":false,"size":"contain","image":"https://static.mailster.co/forms/dazzled-shocked-individual-dressed-in-casual-shirt.png","position":{"x":"0.24","y":"0.50"}},"css":{"general":"","tablet":"","mobile":""},"style":{"color":{"background":"#edc1c1","text":"#222222"}}} -->
+<form method="post" action="https://dev.local/wp-json/mailster/v1/subscribe" novalidate style="background-color:#edc1c1;color:#222222" class="wp-block-mailster-form-wrapper mailster-block-form has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"width":"33.33%"} -->
+<div class="wp-block-column" style="flex-basis:33.33%"></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"66.67%","style":{"spacing":{"padding":{"top":"2rem","right":"2rem","bottom":"2rem","left":"2rem"}}}} -->
+<div class="wp-block-column" style="padding-top:2rem;padding-right:2rem;padding-bottom:2rem;padding-left:2rem;flex-basis:66.67%"><!-- wp:heading -->
+<h2><strong>Subscribe!</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>to our newsletter</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/field-firstname {"id":"71f23dc3-ad5f-4298-876a-f8c6a37ada5d","inline":true,"values":[],"style":{"width":49}} -->
+<div class="wp-block-mailster-field-firstname mailster-wrapper mailster-wrapper-inline" style="width:49%"><input name="firstname" id="mailster-input-71f23dc3-ad5f-4298-876a-f8c6a37ada5d" type="text" aria-required="false" aria-label="Name" spellcheck="false" value="" class="input" placeholder=" "/><label for="mailster-input-71f23dc3-ad5f-4298-876a-f8c6a37ada5d" class="mailster-label">Name</label></div>
+<!-- /wp:mailster/field-firstname -->
+
+<!-- wp:mailster/field-lastname {"id":"a94952b3-1204-4ed4-9b1d-c8d11873cb22","inline":true,"style":{"width":49}} -->
+<div class="wp-block-mailster-field-lastname mailster-wrapper mailster-wrapper-inline" style="width:49%"><input name="lastname" id="mailster-input-a94952b3-1204-4ed4-9b1d-c8d11873cb22" type="text" aria-required="false" aria-label="Last Name" spellcheck="false" value="" class="input" placeholder=" "/><label for="mailster-input-a94952b3-1204-4ed4-9b1d-c8d11873cb22" class="mailster-label">Last Name</label></div>
+<!-- /wp:mailster/field-lastname -->
+
+<!-- wp:mailster/field-email {"id":"3ff0d93d-cd34-4939-85f7-6f32300838fb","inline":true,"values":[],"style":{}} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" id="mailster-input-3ff0d93d-cd34-4939-85f7-6f32300838fb" type="email" aria-required="true" aria-label="Email" spellcheck="false" required value="" class="input" placeholder=" "/><label for="mailster-input-3ff0d93d-cd34-4939-85f7-6f32300838fb" class="mailster-label">Email</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit {"id":"112cdf48-ab08-4d47-ada5-809ba3a32dab","values":[],"style":{"width":100},"className":"mailster-wrapper-asterisk"} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button mailster-wrapper-asterisk" style="width:100%"><input name="submit" id="mailster-input-112cdf48-ab08-4d47-ada5-809ba3a32dab" type="submit" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
+		array(
+			'title'         => __( 'Next Order', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"lock":{"move":false,"remove":false},"background":{"opacity":100,"fixed":false,"repeat":false,"size":"contain","image":"https://static.mailster.co/forms/futuristic-portrait-of-topless-african-american.png","position":{"x":"0.25","y":"0.49"}},"css":{"general":".mailster-wrapper .input, .mailster-wrapper .submit-button{\n    min-height:50px;\n\tbox-sizing: border-box;\n}","tablet":"","mobile":""},"style":{"color":{"text":"#ededed","gradient":"linear-gradient(135deg,rgb(186,53,119) 0%,rgb(22,9,26) 49%,rgb(56,134,172) 94%)"},"backgroundColor":"#252424","inputColor":"#eaeaea","labelColor":"#ebebeb","spacing":{"padding":{"top":"2vw","right":"2vw","bottom":"2vw","left":"2vw"}},"borderWidth":"0px","borderRadius":"0px"}} -->
+<form method="post" action="https://dev.local/wp-json/mailster/v1/subscribe" novalidate style="background:linear-gradient(135deg,rgb(186,53,119) 0%,rgb(22,9,26) 49%,rgb(56,134,172) 94%);color:#ededed;padding-top:2vw;padding-right:2vw;padding-bottom:2vw;padding-left:2vw" class="wp-block-mailster-form-wrapper mailster-block-form has-text-color has-background"><div class="mailster-block-form-inner"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"width":"33.33%"} -->
+<div class="wp-block-column" style="flex-basis:33.33%"></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"66.67%","style":{"spacing":{"padding":{"top":"2rem","right":"2rem","bottom":"2rem","left":"2rem"}}}} -->
+<div class="wp-block-column" style="padding-top:2rem;padding-right:2rem;padding-bottom:2rem;padding-left:2rem;flex-basis:66.67%"><!-- wp:heading {"style":{"color":{"text":"#fefefe"}},"fontSize":"large"} -->
+<h2 class="has-text-color has-large-font-size" style="color:#fefefe"><strong>Subscribe!</strong></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"style":{"color":{"text":"#fdfdfd"}}} -->
+<p class="has-text-color" style="color:#fdfdfd">to our newsletter</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:spacer {"height":"22px"} -->
+<div style="height:22px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:mailster/field-firstname {"id":"71f23dc3-ad5f-4298-876a-f8c6a37ada5d","inline":true,"values":[],"style":{"width":49}} -->
+<div class="wp-block-mailster-field-firstname mailster-wrapper mailster-wrapper-inline" style="width:49%"><input name="firstname" id="mailster-input-71f23dc3-ad5f-4298-876a-f8c6a37ada5d" type="text" aria-required="false" aria-label="Name" spellcheck="false" value="" class="input" placeholder=" "/><label for="mailster-input-71f23dc3-ad5f-4298-876a-f8c6a37ada5d" class="mailster-label">Name</label></div>
+<!-- /wp:mailster/field-firstname -->
+
+<!-- wp:mailster/field-lastname {"id":"a94952b3-1204-4ed4-9b1d-c8d11873cb22","inline":true,"style":{"width":49}} -->
+<div class="wp-block-mailster-field-lastname mailster-wrapper mailster-wrapper-inline" style="width:49%"><input name="lastname" id="mailster-input-a94952b3-1204-4ed4-9b1d-c8d11873cb22" type="text" aria-required="false" aria-label="Last Name" spellcheck="false" value="" class="input" placeholder=" "/><label for="mailster-input-a94952b3-1204-4ed4-9b1d-c8d11873cb22" class="mailster-label">Last Name</label></div>
+<!-- /wp:mailster/field-lastname -->
+
+<!-- wp:mailster/field-email {"id":"3ff0d93d-cd34-4939-85f7-6f32300838fb","inline":true,"values":[],"style":{}} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" id="mailster-input-3ff0d93d-cd34-4939-85f7-6f32300838fb" type="email" aria-required="true" aria-label="Email" spellcheck="false" required value="" class="input" placeholder=" "/><label for="mailster-input-3ff0d93d-cd34-4939-85f7-6f32300838fb" class="mailster-label">Email</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit {"id":"112cdf48-ab08-4d47-ada5-809ba3a32dab","values":[],"style":{"width":100,"backgroundColor":"#ce19b3","inputColor":"#f8f8f8","borderWidth":"0px","borderRadius":"0px"},"className":"mailster-wrapper-asterisk"} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button mailster-wrapper-asterisk" style="width:100%"><input name="submit" id="mailster-input-112cdf48-ab08-4d47-ada5-809ba3a32dab" type="submit" style="color:#f8f8f8;background-color:#ce19b3;border-width:0px;border-radius:0px" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),array(
+			'title'         => __( 'Next Order', 'mailster' ),
+			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'viewportWidth' => 880,
+			'content'       => '<!-- wp:mailster/form-wrapper {"style":{"spacing":{"padding":{}},"color":{"gradient":"linear-gradient(160deg,rgb(209,228,221) 0%,rgb(100,100,100) 100%)","text":"#242b35"},"borderWidth":"0px"}} -->
+<form method="post" action="https://dev.local/wp-json/mailster/v1/subscribe" novalidate style="background:linear-gradient(160deg,rgb(209,228,221) 0%,rgb(100,100,100) 100%);color:#242b35" class="wp-block-mailster-form-wrapper mailster-block-form has-text-color has-background"><div class="mailster-block-form-inner">
+
+<!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center","width":"60%","style":{"spacing":{"padding":{"top":"2vw","right":"2vw","bottom":"2vw","left":"2vw"}}}} -->
+<div class="wp-block-column is-vertically-aligned-center" style="padding-top:2vw;padding-right:2vw;padding-bottom:2vw;padding-left:2vw;flex-basis:60%"><!-- wp:heading -->
+<h2>Subscribe!</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>to our newsletter</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"40%"} -->
+<div class="wp-block-column" style="flex-basis:40%"><!-- wp:cover {"url":"https://dev.local/wp-content/uploads/2022/07/women-technology-girl-selfie-smart-phone-happy-laughing-internet-chat-watching-video-video-chat_t20_oEWX38-1.jpg","id":268,"dimRatio":0,"focalPoint":{"x":"0.49","y":"0.53"},"minHeight":248,"minHeightUnit":"px","isDark":false} -->
+<div class="wp-block-cover is-light" style="min-height:248px"><span aria-hidden="true" class="wp-block-cover__background has-background-dim-0 has-background-dim"></span><img class="wp-block-cover__image-background wp-image-268" alt="" src="https://dev.local/wp-content/uploads/2022/07/women-technology-girl-selfie-smart-phone-happy-laughing-internet-chat-watching-video-video-chat_t20_oEWX38-1.jpg" style="object-position:49% 53%" data-object-fit="cover" data-object-position="49% 53%"/><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"align":"center","placeholder":"Write title…","fontSize":"large"} -->
+<p class="has-text-align-center has-large-font-size"></p>
+<!-- /wp:paragraph --></div></div>
+<!-- /wp:cover --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns -->
+
+<!-- wp:group {"style":{"color":{"background":"#24a878"}},"className":"is-style-default"} -->
+<div class="wp-block-group is-style-default has-background" style="background-color:#24a878"><!-- wp:mailster/field-firstname {"id":"b4506224-0b6c-4007-8727-b97aa6583cc3","inline":true,"style":{"width":35}} -->
+<div class="wp-block-mailster-field-firstname mailster-wrapper mailster-wrapper-inline" style="width:35%"><input name="firstname" id="mailster-input-b4506224-0b6c-4007-8727-b97aa6583cc3" type="text" aria-required="false" aria-label="Name" spellcheck="false" value="" class="input" placeholder=" "/><label for="mailster-input-b4506224-0b6c-4007-8727-b97aa6583cc3" class="mailster-label">Name</label></div>
+<!-- /wp:mailster/field-firstname -->
+
+<!-- wp:mailster/field-email {"id":"87df31b3-dd63-49c6-84b1-071d67eab556","inline":true,"style":{"width":35}} -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline mailster-wrapper-asterisk" style="width:35%"><input name="email" id="mailster-input-87df31b3-dd63-49c6-84b1-071d67eab556" type="email" aria-required="true" aria-label="Email" spellcheck="false" required value="" class="input" placeholder=" "/><label for="mailster-input-87df31b3-dd63-49c6-84b1-071d67eab556" class="mailster-label">Email</label></div>
+<!-- /wp:mailster/field-email -->
+
+<!-- wp:mailster/field-submit {"id":"91ad8bde-2ac2-43cc-b42b-00b1f4f330ed","style":{"width":28,"borderWidth":"0px"}} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button" style="width:28%"><input name="submit" id="mailster-input-91ad8bde-2ac2-43cc-b42b-00b1f4f330ed" type="submit" style="border-width:0px" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- /wp:mailster/field-submit --></div>
+<!-- /wp:group --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 
 		),
