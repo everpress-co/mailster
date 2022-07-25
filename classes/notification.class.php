@@ -628,7 +628,7 @@ class MailsterNotification {
 				continue;
 			}
 
-			if ( $key && preg_match( '#_pwd|_key|apikey|_secret#', $key ) ) {
+			if ( $key && preg_match( '#_pwd|_key|apikey|_secret|_token#', $key ) ) {
 				$option = '******';
 			}
 
