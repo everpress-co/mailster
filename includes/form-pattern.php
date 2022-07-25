@@ -336,7 +336,8 @@ $patterns = apply_filters(
 <!-- /wp:columns --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 
-		),array(
+		),
+		array(
 			'title'         => __( 'Next Order', 'mailster' ),
 			'description'   => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
 			'viewportWidth' => 880,
