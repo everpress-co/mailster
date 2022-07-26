@@ -175,7 +175,7 @@ export default function Edit(props) {
 		let s = '';
 		if (background.image) {
 			s +=
-				'.wp-block-mailster-form-wrapper.mailster-block-form-' +
+				'.wp-block.wp-block.wp-block-mailster-form-wrapper.mailster-block-form-' +
 				clientId +
 				'::before{';
 			s += "content:'';";
@@ -208,7 +208,8 @@ export default function Edit(props) {
 			Object.entries(style).map(([k, v]) => {
 				if (!v) return;
 				s +=
-					'.wp-block-mailster-form-wrapper.mailster-block-form-' +
+					// higher specificity
+					'.wp-block.wp-block.wp-block-mailster-form-wrapper.mailster-block-form-' +
 					clientId;
 
 				switch (k) {
@@ -216,6 +217,8 @@ export default function Edit(props) {
 						s += ' .mailster-label{';
 						s += 'color:' + v + ';';
 						break;
+					case 'inputColor':
+						k = 'color';
 					default:
 						s += ' .input{';
 						s += kebabCase(k) + ':' + v + ';';

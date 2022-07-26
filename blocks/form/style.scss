@@ -164,6 +164,7 @@ body::before {
 		font-weight: normal;
 		overflow-wrap: break-word;
 		width: 100%;
+		color: initial;
 	}
 
 	ol,
@@ -197,7 +198,7 @@ body::before {
 	> div {
 		position: relative;
 	}
-	.wp-block:not(.mailster-wrapper):not([data-type='core/paragraph']) {
+	.wp-block.wp-block.wp-block.wp-block.wp-block:not(.mailster-wrapper) {
 		margin-top: 0;
 		margin-left: 0;
 		margin-right: 0;
@@ -258,8 +259,8 @@ body::before {
 		margin-left: 0;
 		margin-right: 0;
 		margin-bottom: 1rem;
-		margin-bottom: 0;
 		margin-bottom: 0.5em;
+		margin-bottom: 0;
 		max-width: 100%;
 		width: 100%;
 		display: flex;
@@ -327,11 +328,12 @@ body::before {
 	}
 	.mailster-block-form-info {
 		max-width: 100%;
+		flex-basis: 100%;
 		display: none;
 		transition: transform 2.2s;
 	}
-	.mailster-block-form-info.error,
-	.mailster-block-form-info.success {
+	.mailster-block-form-info.is-error,
+	.mailster-block-form-info.is-success {
 		display: block;
 		animation: mailster-fadein 0.2s 1 ease-in-out;
 	}
@@ -340,8 +342,8 @@ body::before {
 	.mailster-block-form-info .mailster-block-form-info-success {
 		display: none;
 	}
-	.mailster-block-form-info.error .mailster-block-form-info-error,
-	.mailster-block-form-info.success .mailster-block-form-info-success {
+	.mailster-block-form-info.is-error .mailster-block-form-info-error,
+	.mailster-block-form-info.is-success .mailster-block-form-info-success {
 		display: block;
 	}
 
@@ -358,7 +360,7 @@ body::before {
 		background-color: var(--mailster--color--error-background, #bf4d4d);
 	}
 
-	.mailster-wrapper.error {
+	.mailster-wrapper.is-error {
 		input,
 		select,
 		textarea {

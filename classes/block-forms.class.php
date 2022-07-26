@@ -1173,7 +1173,7 @@ class MailsterBlockForms {
 						if ( '.wp-block-mailster-form-outside-wrapper' != $selector ) {
 							$selector = ' ' . $selector;
 						}
-						$css .= 'div.wp-block-mailster-form-outside-wrapper-' . $uniqid . '.wp-block-mailster-form-outside-wrapper-' . $form->ID . $selector . '{' . implode( ';', $rule ) . '}';
+						$css .= 'div.wp-block-mailster-form-outside-wrapper.wp-block-mailster-form-outside-wrapper-' . $uniqid . '.wp-block-mailster-form-outside-wrapper-' . $form->ID . $selector . '{' . implode( ';', $rule ) . '}';
 					}
 				}
 

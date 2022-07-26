@@ -148,7 +148,7 @@
 				[].forEach.call(
 					document.querySelectorAll('div.mailster-wrapper.error'),
 					function (wrapper) {
-						wrapper.classList.remove('error');
+						wrapper.classList.remove('is-error');
 					}
 				);
 
@@ -200,24 +200,24 @@
 										', .wp-block-mailster-field-' +
 										fieldid
 								);
-								field && field.classList.add('error');
+								field && field.classList.add('is-error');
 							});
 						}
 						infoError.innerHTML = message.join('<br>');
-						info.classList.remove('success');
-						info.classList.add('error');
+						info.classList.remove('is-success');
+						info.classList.add('is-error');
 					} else {
 						set(placement.identifier, 'show');
 						set(placement.identifier, 'submit');
 
-						info.classList.remove('error');
+						info.classList.remove('is-error');
 
 						if (response.data.redirect) {
 							window.location.href = response.data.redirect;
 							return;
 						}
 
-						info.classList.add('success');
+						info.classList.add('is-success');
 						infoError.innerHTML = message.join('<br>');
 
 						if (!form.classList.contains('is-profile')) {
