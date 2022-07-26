@@ -1015,7 +1015,8 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$entry = (array) $entry;
+		$original_entry = $entry;
+		$entry          = (array) $entry;
 
 		if ( isset( $entry['id'] ) ) {
 			$entry['ID'] = $entry['id'];
@@ -1188,6 +1189,14 @@ class MailsterSubscribers {
 			}
 
 			if ( $mysql_errno == 1062 ) {
+
+				// handle deleted accounts
+				if ( $exists = $this->get_by_mail( $entry['email'], false, true ) ) {
+					if ( $exists->status === 5 ) {
+						return $this->update( $original_entry, true, $merge, $subscriber_notification );
+					}
+				}
+
 				return new WP_Error( 'email_exists', sprintf( esc_html__( 'The email "%s" already exists.', 'mailster' ), $entry['email'] ) );
 			}
 			return new WP_Error( $mysql_errno, $wpdb->last_error );
@@ -3177,12 +3186,13 @@ class MailsterSubscribers {
 	 *
 	 *
 	 * @param unknown $mail
-	 * @param unknown $custom_fields (optional)
+	 * @param unknown $custom_fields   (optional)
+	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
-	public function get_by_mail( $mail, $custom_fields = false ) {
+	public function get_by_mail( $mail, $custom_fields = false, $include_deleted = false ) {
 
-		return $this->get_by_type( 'email', $mail, $custom_fields );
+		return $this->get_by_type( 'email', $mail, $custom_fields, $include_deleted );
 
 	}
 
@@ -3191,12 +3201,13 @@ class MailsterSubscribers {
 	 *
 	 *
 	 * @param unknown $hash
-	 * @param unknown $custom_fields (optional)
+	 * @param unknown $custom_fields   (optional)
+	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
 	public function get_by_hash( $hash, $custom_fields = false ) {
 
-		return $this->get_by_type( 'hash', $hash, $custom_fields );
+		return $this->get_by_type( 'hash', $hash, $custom_fields, $include_deleted );
 	}
 
 
@@ -3204,23 +3215,25 @@ class MailsterSubscribers {
 	 *
 	 *
 	 * @param unknown $md5
-	 * @param unknown $custom_fields (optional)
+	 * @param unknown $custom_fields   (optional)
+	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
 	public function get_by_md5( $md5, $custom_fields = false ) {
 
-		return $this->get_by_type( 'md5', $md5, $custom_fields );
+		return $this->get_by_type( 'md5', $md5, $custom_fields, $include_deleted );
 	}
 
 
 	/**
 	 *
 	 *
-	 * @param unknown $wpid          (optional)
-	 * @param unknown $custom_fields (optional)
+	 * @param unknown $wpid            (optional)
+	 * @param unknown $custom_fields   (optional)
+	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
-	public function get_by_wpid( $wpid = null, $custom_fields = false ) {
+	public function get_by_wpid( $wpid = null, $custom_fields = false, $include_deleted = false ) {
 
 		if ( is_null( $wpid ) ) {
 			$wpid = get_current_user_id();
@@ -3230,7 +3243,7 @@ class MailsterSubscribers {
 			return false;
 		}
 
-		return $this->get_by_type( 'wp_id', $wpid, $custom_fields );
+		return $this->get_by_type( 'wp_id', $wpid, $custom_fields, $include_deleted );
 	}
 
 
@@ -3274,9 +3287,10 @@ class MailsterSubscribers {
 	 * @param unknown $type
 	 * @param unknown $value
 	 * @param unknown $custom_fields (optional)
+	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
-	private function get_by_type( $type, $value, $custom_fields = false ) {
+	private function get_by_type( $type, $value, $custom_fields = false, $include_deleted = false ) {
 
 		global $wpdb;
 
@@ -3292,9 +3306,13 @@ class MailsterSubscribers {
 			$type = esc_sql( $type );
 		}
 
-		$sql = "SELECT * FROM {$wpdb->prefix}mailster_subscribers WHERE " . $type . " = '" . esc_sql( $value ) . "' LIMIT 1";
+		$sql = "SELECT * FROM {$wpdb->prefix}mailster_subscribers WHERE " . $type . " = '" . esc_sql( $value ) . "'";
+		if ( ! $include_deleted ) {
+			$sql .= ' AND status != 5';
+		}
+		$sql .= ' LIMIT 1';
 
-		$sql = apply_filters( 'mailster_subscribers_get_by_type_sql', $sql, $type, $value );
+		$sql = apply_filters( 'mailster_subscribers_get_by_type_sql', $sql, $type, $value, $include_deleted );
 
 		if ( ! ( $subscriber = $wpdb->get_row( $sql ) ) ) {
 			return false;

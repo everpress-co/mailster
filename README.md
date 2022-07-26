@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.0  
-Stable tag: 3.1.6  
+Stable tag: 3.1.7  
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,12 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ## Changelog
+
+### 3.1.7
+
+-   fixed: querying subscribers do no longer return subscribers with status deleted.
+-   fixed: adding an already deleted subscriber working as expected.
+-   improved: removed skeleton loader on foreign columns in overview
 
 ### 3.1.6
 

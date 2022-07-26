@@ -748,9 +748,11 @@ class MailsterCampaigns {
 
 		global $post, $wp_post_statuses;
 
-		$now        = time();
-		$is_ajax    = defined( 'DOING_AJAX' ) && DOING_AJAX;
-		$timeformat = mailster( 'helper' )->timeformat();
+		if ( ! in_array( $column, array( 'status', 'total', 'open', 'click', 'unsubs', 'bounces' ) ) ) {
+			return;
+		}
+
+		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 
 		if ( ! $is_ajax && $column != 'status' && wp_script_is( 'heartbeat', 'registered' ) ) {
 			echo '<span class="skeleton-loading"></span>';
@@ -763,7 +765,9 @@ class MailsterCampaigns {
 		$error = ini_get( 'error_reporting' );
 		error_reporting( E_ERROR );
 
-		$meta = $this->meta( $post->ID );
+		$now        = time();
+		$timeformat = mailster( 'helper' )->timeformat();
+		$meta       = $this->meta( $post->ID );
 
 		switch ( $column ) {
 
