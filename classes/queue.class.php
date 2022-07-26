@@ -32,12 +32,7 @@ class MailsterQueue {
 
 		add_action( 'mailster_bounce', array( &$this, 'update_after_bounce' ), 10, 3 );
 
-		// hooks to remove subscriber from the queue
-		if ( ! defined( 'MAILSTER_DO_BULKIMPORT' ) ) {
-			add_action( 'mailster_subscriber_change_status', array( &$this, 'subscriber_change_status' ), 10, 3 );
-			add_action( 'mailster_unassign_lists', array( &$this, 'unassign_lists' ), 10, 3 );
-			add_action( 'mailster_update_subscriber', array( &$this, 'update_subscriber' ), 10, 3 );
-		}
+		add_action( 'mailster_subscriber_change_status', array( &$this, 'subscriber_change_status' ), 10, 3 );
 
 	}
 
@@ -1519,28 +1514,6 @@ class MailsterQueue {
 		if ( $new_status != 1 ) {
 			$this->remove_subscriber( $subscriber->ID );
 		}
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $subscriber_ids
-	 * @param unknown $lists
-	 * @param unknown $not_list
-	 */
-	public function unassign_lists( $subscriber_ids, $lists, $not_list ) {
-		$this->remove_subscriber( $subscriber_ids );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $subscriber_id
-	 */
-	public function update_subscriber( $subscriber_id ) {
-		$this->remove_subscriber( $subscriber_id );
 	}
 
 
