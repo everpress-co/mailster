@@ -3205,7 +3205,7 @@ class MailsterSubscribers {
 	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
-	public function get_by_hash( $hash, $custom_fields = false ) {
+	public function get_by_hash( $hash, $custom_fields = false, $include_deleted = false ) {
 
 		return $this->get_by_type( 'hash', $hash, $custom_fields, $include_deleted );
 	}
@@ -3219,7 +3219,7 @@ class MailsterSubscribers {
 	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
-	public function get_by_md5( $md5, $custom_fields = false ) {
+	public function get_by_md5( $md5, $custom_fields = false, $include_deleted = false ) {
 
 		return $this->get_by_type( 'md5', $md5, $custom_fields, $include_deleted );
 	}
