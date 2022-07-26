@@ -191,7 +191,9 @@ Get professional development help from our expert support partner _Codeable_ for
 
 -   fixed: querying subscribers do no longer return subscribers with status deleted.
 -   fixed: adding an already deleted subscriber working as expected.
+-   fixed: wrong timestamp on signups if subscriber exists.
 -   improved: removed skeleton loader on foreign columns in overview
+-   improved: action hook campaigns support now multiple hooks, separated with a comma.
 
 ### 3.1.6
 

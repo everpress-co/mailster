@@ -15,11 +15,14 @@ class MailsterCampaigns {
 		add_action( 'init', array( &$this, 'register_post_type' ) );
 		add_action( 'init', array( &$this, 'register_post_status' ) );
 
-		if ( $hooks = get_option( 'mailster_hooks', false ) ) {
+		$mailster_hooks = get_option( 'mailster_hooks', false );
 
-			foreach ( (array) $hooks as $campaign_id => $hook ) {
-				if ( $hook ) {
-					add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
+		if ( ! empty( $mailster_hooks ) ) {
+			foreach ( $mailster_hooks as $campaign_id => $hooks ) {
+				foreach ( (array) $hooks as $campaign_id => $hook ) {
+					if ( $hook ) {
+						add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
+					}
 				}
 			}
 		}
@@ -1935,7 +1938,8 @@ class MailsterCampaigns {
 					if ( ! is_array( $hooks ) ) {
 						$hooks = array();
 					}
-					$hooks[ $post->ID ] = $autoresponder['hook'];
+
+					$hooks[ $post->ID ] = array_map( 'trim', explode( ',', $autoresponder['hook'] ) );
 					if ( ! $meta['active'] ) {
 						unset( $hooks[ $post->ID ] );
 					}
@@ -2732,7 +2736,7 @@ class MailsterCampaigns {
 				if ( ! is_array( $hooks ) ) {
 					$hooks = array();
 				}
-				$hooks[ $campaign->ID ] = $autoresponder['hook'];
+				$hooks[ $campaign->ID ] = array_map( 'trim', explode( ',', $autoresponder['hook'] ) );
 				update_option( 'mailster_hooks', $hooks );
 			}
 		}
