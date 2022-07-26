@@ -16,10 +16,9 @@ class MailsterCampaigns {
 		add_action( 'init', array( &$this, 'register_post_status' ) );
 
 		$mailster_hooks = get_option( 'mailster_hooks', false );
-
 		if ( ! empty( $mailster_hooks ) ) {
 			foreach ( $mailster_hooks as $campaign_id => $hooks ) {
-				foreach ( (array) $hooks as $campaign_id => $hook ) {
+				foreach ( (array) $hooks as $hook ) {
 					if ( $hook ) {
 						add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
 					}
