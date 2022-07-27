@@ -17,6 +17,21 @@ class MailsterUpgrade {
 
 	}
 
+	public function __call( $method, $args ) {
+
+		if ( method_exists( $this, 'do_' . $method ) ) {
+			ob_start();
+			$return = call_user_func_array( array( &$this, 'do_' . $method ), $args );
+			$output = ob_get_contents();
+			ob_end_clean();
+			if ( ! empty( $output ) ) {
+				error_log( $output );
+			}
+			return $return;
+		}
+
+	}
+
 	public function init() {
 
 		global $pagenow;
@@ -288,7 +303,16 @@ class MailsterUpgrade {
 					'update_action_table_errors'     => 'Update Action Table - Errors',
 					'update_action_table_errors_msg' => 'Update Errors Messages',
 					'maybe_fix_indexes'              => 'Fix indexes',
-					// 'delete_legacy_action_table'      => 'Remove Legacy Table',
+				),
+				$actions
+			);
+		}
+
+		if ( $db_version < 20220727 ) {
+			$actions = wp_parse_args(
+				array(
+					'maybe_fix_indexes' => 'Fix indexes',
+					'db_structure'      => 'Checking DB structure',
 				),
 				$actions
 			);
@@ -1090,11 +1114,23 @@ class MailsterUpgrade {
 	private function do_maybe_fix_indexes() {
 
 		global $wpdb;
-		foreach ( array( 'sent', 'opens' ) as $table ) {
-			$rows = $wpdb->get_results( "SHOW INDEX IN `{$wpdb->prefix}mailster_action_{$table}` WHERE Key_name = 'id'" );
-			if ( ! empty( $rows ) && count( $rows ) <= 2 ) {
-				echo 'Remove index for "mailster_action_' . $table . '".' . "\n";
-				$wpdb->query( "ALTER TABLE `{$wpdb->prefix}mailster_action_{$table}` DROP INDEX id" );
+
+		$tables = mailster()->get_table_structure();
+
+		foreach ( $tables as $table ) {
+			if ( preg_match_all( '/UNIQUE KEY `(\w+)` \(([a-z_ ,`]+)\)/', $table, $unique_keys, PREG_SET_ORDER ) ) {
+				$table_name = preg_replace( '/(.*?)CREATE TABLE (' . preg_quote( $wpdb->prefix . 'mailster_' ) . '[a-z_]+)(.*)/s', '$2', $table );
+				foreach ( $unique_keys as $unique_key ) {
+					$index     = $unique_key[1];
+					$fields    = array_map( 'trim', explode( ',', str_replace( '`', '', $unique_key[2] ) ) );
+					$rows      = $wpdb->get_results( $wpdb->prepare( "SHOW INDEX IN `{$table_name}` WHERE Key_name = %s", $index ) );
+					$col_names = wp_list_pluck( $rows, 'Column_name' );
+					$diff      = array_diff( $fields, $col_names );
+					if ( ! empty( $diff ) ) {
+						echo 'Remove index for "' . $table_name . '".' . "\n";
+						$wpdb->query( "ALTER TABLE `{$table_name}` DROP INDEX {$index}" );
+					}
+				}
 			}
 		}
 
@@ -1419,9 +1455,14 @@ class MailsterUpgrade {
 		global $wpdb;
 
 		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
-			if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
-				echo "removed legacy action table\n";
-				return false;
+
+			$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE timestamp > %d", time() - YEAR_IN_SECONDS );
+
+			if ( $wpdb->get_var( $sql ) ) {
+				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
+					echo "removed legacy action table\n";
+					return false;
+				}
 			}
 		}
 
@@ -2231,6 +2272,8 @@ class MailsterUpgrade {
 
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_signup = '' WHERE ip_signup = 0" );
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_confirm = '' WHERE ip_confirm = 0" );
+
+		$this->do_delete_legacy_action_table();
 
 		delete_transient( 'mailster_cron_lock' );
 
