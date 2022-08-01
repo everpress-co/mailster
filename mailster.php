@@ -39,7 +39,7 @@ require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
 global $mailster;
 
-$mailster = new mailster();
+$mailster = new Mailster();
 
 if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 
