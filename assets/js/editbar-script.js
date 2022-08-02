@@ -227,6 +227,10 @@ mailster = (function (mailster, $, window, document) {
 								select.val(id);
 							});
 						});
+						$.fn.select2 &&
+							$('#dynamic_embed_options_cats')
+								.find('select')
+								.select2();
 					}
 				}
 				checkForPosts();

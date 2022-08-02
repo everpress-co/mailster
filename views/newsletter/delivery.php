@@ -207,14 +207,7 @@ $sent = $this->get_sent( $post->ID );
 			<?php endif; ?>
 			</p>
 			<div id="autoresponderfield-mailster_post_published_advanced">
-				<div id="autoresponder-taxonomies">
-				<?php
-				$taxes = mailster( 'helper' )->get_post_term_dropdown( $autoresponderdata['post_type'], false, true, isset( $autoresponderdata['terms'] ) ? $autoresponderdata['terms'] : array() );
-				if ( $taxes ) {
-					printf( esc_html__( 'only if in %s', 'mailster' ), $taxes );
-				}
-				?>
-				</div>
+				<div id="autoresponder-taxonomies"></div>
 				<p>
 					<?php
 					printf( esc_html__( _n( 'always skip %s release', 'always skip %s releases', $autoresponderdata['post_count'], 'mailster' ) ), $count );

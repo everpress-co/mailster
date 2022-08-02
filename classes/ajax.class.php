@@ -1711,11 +1711,18 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		$post_type = $_POST['posttype'];
-		$labels    = isset( $_POST['labels'] ) ? ( $_POST['labels'] == 'true' ) : false;
-		$names     = isset( $_POST['names'] ) ? $_POST['names'] : false;
+		$post_type   = $_POST['posttype'];
+		$labels      = isset( $_POST['labels'] ) ? ( $_POST['labels'] == 'true' ) : false;
+		$names       = isset( $_POST['names'] ) ? $_POST['names'] : false;
+		$campaign_id = isset( $_POST['id'] ) ? (int) $_POST['names'] : false;
+		$values      = null;
 
-		$return['html'] = '<div class="dynamic_embed_options_taxonomies">' . mailster( 'helper' )->get_post_term_dropdown( $post_type, $labels, $names ) . '</div>';
+		if ( $campaign_id ) {
+			$data   = mailster( 'campaigns' )->meta( $campaign_id, 'autoresponder' );
+			$values = isset( $data['terms'] ) ? (array) $data['terms'] : null;
+		}
+
+		$return['html'] = '<div class="dynamic_embed_options_taxonomies">' . mailster( 'helper' )->get_post_term_dropdown( $post_type, $labels, $names, $values ) . '</div>';
 
 		wp_send_json_success( $return );
 
