@@ -154,12 +154,11 @@ class MailsterSettings {
 			'register_other_lists'               => array(),
 			'register_other_roles'               => ( $wp_roles ) ? array_keys( $wp_roles->get_names() ) : array( 'administrator' ),
 			'tags'                               => array(
-				'can-spam'     => sprintf( esc_html__( 'You have received this email because you have subscribed to %s as {email}. If you no longer wish to receive emails please {unsub}.', 'mailster' ), '<a href="{homepage}">{company}</a>' ),
-				'notification' => esc_html__( 'If you received this email by mistake, simply delete it. You won\'t be subscribed if you don\'t click the confirmation link', 'mailster' ),
-				'copyright'    => '&copy; {year} {company}, ' . esc_html__( 'All rights reserved.', 'mailster' ),
-				'company'      => get_bloginfo( 'name' ),
-				'address'      => '',
-				'homepage'     => get_bloginfo( 'url' ),
+				'can-spam'  => sprintf( esc_html__( 'You have received this email because you have subscribed to %s as {email}. If you no longer wish to receive emails please {unsub}.', 'mailster' ), '<a href="{homepage}">{company}</a>' ),
+				'copyright' => '&copy; {year} {company}, ' . esc_html__( 'All rights reserved.', 'mailster' ),
+				'company'   => get_bloginfo( 'name' ),
+				'address'   => '',
+				'homepage'  => get_bloginfo( 'url' ),
 			),
 			'custom_tags'                        => array(),
 

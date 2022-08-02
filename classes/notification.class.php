@@ -239,9 +239,10 @@ class MailsterNotification {
 
 				return wp_parse_args(
 					array(
-						'link'        => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
-						'linkaddress' => $link,
-						'lists'       => implode( ', ', $list_names ),
+						'link'         => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
+						'linkaddress'  => $link,
+						'lists'        => implode( ', ', $list_names ),
+						'notification' => esc_html__( 'If you received this email by mistake, simply delete it. You won\'t be subscribed if you don\'t click the confirmation link.', 'mailster' ),
 					),
 					$content
 				);
