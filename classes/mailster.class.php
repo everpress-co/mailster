@@ -49,36 +49,39 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/export.class.php';
 		require_once MAILSTER_DIR . 'classes/empty.class.php';
 
-		$this->_classes = array(
-			'settings'     => new MailsterSettings(),
-			'translations' => new MailsterTranslations(),
-			'campaigns'    => new MailsterCampaigns(),
-			'subscribers'  => new MailsterSubscribers(),
-			'lists'        => new MailsterLists(),
-			'tags'         => new MailsterTags(),
-			'forms'        => new MailsterForms(),
-			'precheck'     => new MailsterPrecheck(),
-			'manage'       => new MailsterManage(),
-			'templates'    => new MailsterTemplates(),
-			'addons'       => new MailsterAddons(),
-			'frontpage'    => new MailsterFrontpage(),
-			'statistics'   => new MailsterStatistics(),
-			'ajax'         => new MailsterAjax(),
-			'tinymce'      => new MailsterTinymce(),
-			'cron'         => new MailsterCron(),
-			'queue'        => new MailsterQueue(),
-			'actions'      => new MailsterActions(),
-			'bounce'       => new MailsterBounce(),
-			'dashboard'    => new MailsterDashboard(),
-			'update'       => new MailsterUpdate(),
-			'upgrade'      => new MailsterUpgrade(),
-			'helpmenu'     => new MailsterHelpmenu(),
-			'register'     => new MailsterRegister(),
-			'geo'          => new MailsterGeo(),
-			'privacy'      => new MailsterPrivacy(),
-			'security'     => new MailsterSecurity(),
-			'export'       => new MailsterExport(),
-			'empty'        => new MailsterEmpty(),
+		$this->_classes = apply_filters(
+			'mailster_classes',
+			array(
+				'settings'     => new MailsterSettings(),
+				'translations' => new MailsterTranslations(),
+				'campaigns'    => new MailsterCampaigns(),
+				'subscribers'  => new MailsterSubscribers(),
+				'lists'        => new MailsterLists(),
+				'tags'         => new MailsterTags(),
+				'forms'        => new MailsterForms(),
+				'precheck'     => new MailsterPrecheck(),
+				'manage'       => new MailsterManage(),
+				'templates'    => new MailsterTemplates(),
+				'addons'       => new MailsterAddons(),
+				'frontpage'    => new MailsterFrontpage(),
+				'statistics'   => new MailsterStatistics(),
+				'ajax'         => new MailsterAjax(),
+				'tinymce'      => new MailsterTinymce(),
+				'cron'         => new MailsterCron(),
+				'queue'        => new MailsterQueue(),
+				'actions'      => new MailsterActions(),
+				'bounce'       => new MailsterBounce(),
+				'dashboard'    => new MailsterDashboard(),
+				'update'       => new MailsterUpdate(),
+				'upgrade'      => new MailsterUpgrade(),
+				'helpmenu'     => new MailsterHelpmenu(),
+				'register'     => new MailsterRegister(),
+				'geo'          => new MailsterGeo(),
+				'privacy'      => new MailsterPrivacy(),
+				'security'     => new MailsterSecurity(),
+				'export'       => new MailsterExport(),
+				'empty'        => new MailsterEmpty(),
+			)
 		);
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
@@ -2142,6 +2145,8 @@ class Mailster {
 
 		);
 
+		$table_structure = apply_filters( 'mailster_table_structure', $table_structure, $collate );
+
 		// Display width specification for integer data types was deprecated in MySQL 8.0.17 (https://stackoverflow.com/questions/60892749/mysql-8-ignoring-integer-lengths)
 		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) && version_compare( $wpdb->db_version(), '10.3', '<=' ) ) {
 			$table_structure = array_map(
@@ -2152,7 +2157,7 @@ class Mailster {
 			);
 		}
 
-		return apply_filters( 'mailster_table_structure', $table_structure, $collate );
+		return $table_structure;
 	}
 
 
