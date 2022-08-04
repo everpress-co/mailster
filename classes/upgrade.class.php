@@ -12,6 +12,7 @@ class MailsterUpgrade {
 		add_action( 'admin_init', array( &$this, 'init' ) );
 		add_action( 'wp_ajax_mailster_batch_update', array( &$this, 'run_update' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
+		add_action( 'mailster_background_update', array( &$this, 'background_update' ) );
 
 		register_activation_hook( 'myMail/myMail.php', array( &$this, 'maybe_deactivate_mymail' ) );
 
@@ -54,9 +55,13 @@ class MailsterUpgrade {
 
 		if ( mailster_option( 'db_update_required' ) ) {
 
+			global $wp;
+
+			$current_url = home_url( $_SERVER['REQUEST_URI'] );
+
 			$db_version = $this->get_db_version();
 
-			$redirectto  = admin_url( 'admin.php?page=mailster_update' );
+			$redirectto  = add_query_arg( 'redirect_to', $current_url, admin_url( 'admin.php?page=mailster_update' ) );
 			$update_msg  = '<h2>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</h2>';
 			$update_msg .= '<p>' . esc_html__( 'To continue using Mailster we need some update on the database structure. Depending on the size of your database this can take a couple of minutes.', 'mailster' ) . '</p>';
 			$update_msg .= '<p>' . esc_html__( 'Please continue by clicking the button.', 'mailster' ) . '</p>';
@@ -74,7 +79,11 @@ class MailsterUpgrade {
 			} else {
 
 				if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
-				} else {
+
+					if ( $timestamp = wp_next_scheduled( 'mailster_background_update' ) ) {
+						wp_clear_scheduled_hook( 'mailster_background_update' );
+					}
+				} elseif ( ! mailster_option( 'db_update_background' ) ) {
 					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
 						wp_redirect( $redirectto );
 						exit;
@@ -84,6 +93,15 @@ class MailsterUpgrade {
 					} else {
 						mailster_remove_notice( 'no_homepage' );
 						mailster_notice( $update_msg, 'error', true, 'db_update_required' );
+					}
+				} else {
+					$update_msg  = '<h2>' . esc_html__( 'Mailster database update in progress', 'mailster' ) . '</h2>';
+					$update_msg .= '<p>' . esc_html__( 'Mailster is updating the database in the background. The database update process may take a little while, so please be patient.', 'mailster' ) . '</p>';
+					$update_msg .= '<p><a class="button" href="' . $redirectto . '" target="_top">' . esc_html__( 'View progress →', 'mailster' ) . '</a></p>';
+					mailster_notice( $update_msg, 'info', false, 'background_update' );
+
+					if ( ! wp_next_scheduled( 'mailster_background_update' ) ) {
+						wp_schedule_single_event( time() + 10, 'mailster_background_update' );
 					}
 				}
 			}
@@ -111,6 +129,28 @@ class MailsterUpgrade {
 				exit;
 			}
 		}
+
+	}
+
+
+	public function background_update() {
+
+		$actions = $this->get_actions();
+
+		if ( empty( $actions ) ) {
+			return;
+		}
+
+		foreach ( $actions as $method => $name ) {
+			$r = $this->{$method}();
+			if ( $r === false ) {
+				return;
+			}
+		}
+
+		$update_msg  = '<h2>' . esc_html__( 'Update finished.', 'mailster' ) . '</h2>';
+		$update_msg .= '<p>' . esc_html__( 'Mailster database update complete. Thank you for updating to the latest version!', 'mailster' ) . '</p>';
+		mailster_notice( $update_msg, 'info', 20, 'background_update' );
 
 	}
 
@@ -372,6 +412,7 @@ class MailsterUpgrade {
 	public function page() {
 
 		global $wpdb;
+
 		?>
 	<div class="wrap">
 		<h1>Mailster Batch Update</h1>
@@ -2279,7 +2320,9 @@ class MailsterUpgrade {
 
 		update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 		mailster_update_option( 'db_update_required', false );
+		mailster_update_option( 'db_update_background', false );
 		mailster_remove_notice( 'db_update_required' );
+		mailster_remove_notice( 'background_update' );
 
 		delete_option( 'updatecenter_plugins' );
 		do_action( 'updatecenterplugin_check' );
