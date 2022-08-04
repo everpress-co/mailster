@@ -621,6 +621,15 @@ if ( $old_version ) {
 		case '3.0.3':
 		case '3.0.4':
 			mailster( 'cron' )->unschedule();
+		case '3.1':
+		case '3.1.1':
+		case '3.1.2':
+		case '3.1.3':
+		case '3.1.4':
+		case '3.1.5':
+		case '3.1.6':
+			mailster( 'upgrade' )->maybe_fix_indexes();
+			mailster( 'upgrade' )->db_structure();
 
 		default:
 			// reset translations
