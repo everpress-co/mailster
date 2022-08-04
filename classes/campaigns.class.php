@@ -139,12 +139,8 @@ class MailsterCampaigns {
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
-		$priority      = $meta['autoresponder']['priority'];
-		$clear         = false;
-		$ignore_status = false;
-		$reset         = true;
-		$options       = isset( $meta['autoresponder']['multiple'] ) ? uniqid() : false;
-		$tags          = $args;
+		$priority = $meta['autoresponder']['priority'];
+		$tags     = $args;
 
 		if ( $hook_type ) {
 
@@ -191,6 +187,17 @@ class MailsterCampaigns {
 			);
 
 		} else {
+			$clear         = false;
+			$ignore_status = false;
+			$reset         = true;
+			$options       = false;
+			if ( isset( $meta['autoresponder']['multiple'] ) ) {
+				$options = array(
+					'multiple' => true,
+					'unique'   => uniqid(),
+				);
+			}
+
 			mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, $clear, $ignore_status, $reset, $options, $tags );
 		}
 
@@ -4651,7 +4658,7 @@ class MailsterCampaigns {
 		$mail->set_subscriber( $subscriber->ID );
 
 		$campaignindex = $this->get_campaign_index( $campaign->ID, $subscriber->ID );
-		$mail->index   = $campaignindex;
+		$mail->index = $campaignindex;
 
 		$placeholder = mailster( 'placeholder' );
 

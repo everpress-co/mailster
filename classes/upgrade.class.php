@@ -12,8 +12,24 @@ class MailsterUpgrade {
 		add_action( 'admin_init', array( &$this, 'init' ) );
 		add_action( 'wp_ajax_mailster_batch_update', array( &$this, 'run_update' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
+		add_action( 'mailster_background_update', array( &$this, 'background_update' ) );
 
 		register_activation_hook( 'myMail/myMail.php', array( &$this, 'maybe_deactivate_mymail' ) );
+
+	}
+
+	public function __call( $method, $args ) {
+
+		if ( method_exists( $this, 'do_' . $method ) ) {
+			ob_start();
+			$return = call_user_func_array( array( &$this, 'do_' . $method ), $args );
+			$output = ob_get_contents();
+			ob_end_clean();
+			if ( ! empty( $output ) ) {
+				error_log( $output );
+			}
+			return $return;
+		}
 
 	}
 
@@ -39,9 +55,13 @@ class MailsterUpgrade {
 
 		if ( mailster_option( 'db_update_required' ) ) {
 
+			global $wp;
+
+			$current_url = home_url( $_SERVER['REQUEST_URI'] );
+
 			$db_version = $this->get_db_version();
 
-			$redirectto  = admin_url( 'admin.php?page=mailster_update' );
+			$redirectto  = add_query_arg( 'redirect_to', $current_url, admin_url( 'admin.php?page=mailster_update' ) );
 			$update_msg  = '<h2>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</h2>';
 			$update_msg .= '<p>' . esc_html__( 'To continue using Mailster we need some update on the database structure. Depending on the size of your database this can take a couple of minutes.', 'mailster' ) . '</p>';
 			$update_msg .= '<p>' . esc_html__( 'Please continue by clicking the button.', 'mailster' ) . '</p>';
@@ -59,7 +79,11 @@ class MailsterUpgrade {
 			} else {
 
 				if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
-				} else {
+
+					if ( $timestamp = wp_next_scheduled( 'mailster_background_update' ) ) {
+						wp_clear_scheduled_hook( 'mailster_background_update' );
+					}
+				} elseif ( ! mailster_option( 'db_update_background' ) ) {
 					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
 						wp_redirect( $redirectto );
 						exit;
@@ -69,6 +93,15 @@ class MailsterUpgrade {
 					} else {
 						mailster_remove_notice( 'no_homepage' );
 						mailster_notice( $update_msg, 'error', true, 'db_update_required' );
+					}
+				} else {
+					$update_msg  = '<h2>' . esc_html__( 'Mailster database update in progress', 'mailster' ) . '</h2>';
+					$update_msg .= '<p>' . esc_html__( 'Mailster is updating the database in the background. The database update process may take a little while, so please be patient.', 'mailster' ) . '</p>';
+					$update_msg .= '<p><a class="button" href="' . $redirectto . '" target="_top">' . esc_html__( 'View progress →', 'mailster' ) . '</a></p>';
+					mailster_notice( $update_msg, 'info', false, 'background_update' );
+
+					if ( ! wp_next_scheduled( 'mailster_background_update' ) ) {
+						wp_schedule_single_event( time() + 10, 'mailster_background_update' );
 					}
 				}
 			}
@@ -96,6 +129,28 @@ class MailsterUpgrade {
 				exit;
 			}
 		}
+
+	}
+
+
+	public function background_update() {
+
+		$actions = $this->get_actions();
+
+		if ( empty( $actions ) ) {
+			return;
+		}
+
+		foreach ( $actions as $method => $name ) {
+			$r = $this->{$method}();
+			if ( $r === false ) {
+				return;
+			}
+		}
+
+		$update_msg  = '<h2>' . esc_html__( 'Update finished.', 'mailster' ) . '</h2>';
+		$update_msg .= '<p>' . esc_html__( 'Mailster database update complete. Thank you for updating to the latest version!', 'mailster' ) . '</p>';
+		mailster_notice( $update_msg, 'info', 20, 'background_update' );
 
 	}
 
@@ -288,7 +343,16 @@ class MailsterUpgrade {
 					'update_action_table_errors'     => 'Update Action Table - Errors',
 					'update_action_table_errors_msg' => 'Update Errors Messages',
 					'maybe_fix_indexes'              => 'Fix indexes',
-					// 'delete_legacy_action_table'      => 'Remove Legacy Table',
+				),
+				$actions
+			);
+		}
+
+		if ( $db_version < 20220727 ) {
+			$actions = wp_parse_args(
+				array(
+					'maybe_fix_indexes' => 'Fix indexes',
+					'db_structure'      => 'Checking DB structure',
 				),
 				$actions
 			);
@@ -348,6 +412,7 @@ class MailsterUpgrade {
 	public function page() {
 
 		global $wpdb;
+
 		?>
 	<div class="wrap">
 		<h1>Mailster Batch Update</h1>
@@ -1090,11 +1155,23 @@ class MailsterUpgrade {
 	private function do_maybe_fix_indexes() {
 
 		global $wpdb;
-		foreach ( array( 'sent', 'opens' ) as $table ) {
-			$rows = $wpdb->get_results( "SHOW INDEX IN `{$wpdb->prefix}mailster_action_{$table}` WHERE Key_name = 'id'" );
-			if ( ! empty( $rows ) && count( $rows ) <= 2 ) {
-				echo 'Remove index for "mailster_action_' . $table . '".' . "\n";
-				$wpdb->query( "ALTER TABLE `{$wpdb->prefix}mailster_action_{$table}` DROP INDEX id" );
+
+		$tables = mailster()->get_table_structure();
+
+		foreach ( $tables as $table ) {
+			if ( preg_match_all( '/UNIQUE KEY `(\w+)` \(([a-z_ ,`]+)\)/', $table, $unique_keys, PREG_SET_ORDER ) ) {
+				$table_name = preg_replace( '/(.*?)CREATE TABLE (' . preg_quote( $wpdb->prefix . 'mailster_' ) . '[a-z_]+)(.*)/s', '$2', $table );
+				foreach ( $unique_keys as $unique_key ) {
+					$index     = $unique_key[1];
+					$fields    = array_map( 'trim', explode( ',', str_replace( '`', '', $unique_key[2] ) ) );
+					$rows      = $wpdb->get_results( $wpdb->prepare( "SHOW INDEX IN `{$table_name}` WHERE Key_name = %s", $index ) );
+					$col_names = wp_list_pluck( $rows, 'Column_name' );
+					$diff      = array_diff( $fields, $col_names );
+					if ( ! empty( $diff ) ) {
+						echo 'Remove index for "' . $table_name . '".' . "\n";
+						$wpdb->query( "ALTER TABLE `{$table_name}` DROP INDEX {$index}" );
+					}
+				}
 			}
 		}
 
@@ -1419,9 +1496,14 @@ class MailsterUpgrade {
 		global $wpdb;
 
 		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
-			if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
-				echo "removed legacy action table\n";
-				return false;
+
+			$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE timestamp > %d", time() - YEAR_IN_SECONDS );
+
+			if ( $wpdb->get_var( $sql ) ) {
+				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
+					echo "removed legacy action table\n";
+					return false;
+				}
 			}
 		}
 
@@ -2232,11 +2314,15 @@ class MailsterUpgrade {
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_signup = '' WHERE ip_signup = 0" );
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_confirm = '' WHERE ip_confirm = 0" );
 
+		$this->do_delete_legacy_action_table();
+
 		delete_transient( 'mailster_cron_lock' );
 
 		update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 		mailster_update_option( 'db_update_required', false );
+		mailster_update_option( 'db_update_background', false );
 		mailster_remove_notice( 'db_update_required' );
+		mailster_remove_notice( 'background_update' );
 
 		delete_option( 'updatecenter_plugins' );
 		do_action( 'updatecenterplugin_check' );

@@ -130,9 +130,19 @@ mailster = (function (mailster, $, window, document) {
 			0,
 			true
 		);
+
+		var queryString = window.location.search;
+		var urlParams = new URLSearchParams(queryString);
+
+		var href = urlParams.get('redirect_to')
+			? urlParams.get('redirect_to')
+			: 'admin.php?page=mailster_welcome';
+
 		output(
 			'finished_button',
-			'<a href="admin.php?page=mailster_welcome" class="button button-primary button-hero">Ok, fine!</a>',
+			'<a href="' +
+				href +
+				'" class="button button-primary button-hero">Ok, fine!</a>',
 			true,
 			0,
 			true
