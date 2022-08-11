@@ -137,7 +137,7 @@ class MailsterSubscriberQuery {
 		if ( 'all' == $this->args['meta'] ) {
 			$this->args['meta'] = $this->meta_fields;
 		}
-		
+
 		if ( is_null( $this->args['groupby'] ) ) {
 			$this->args['groupby'] = array( 'subscribers.ID' );
 		}

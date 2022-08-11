@@ -4658,7 +4658,7 @@ class MailsterCampaigns {
 		$mail->set_subscriber( $subscriber->ID );
 
 		$campaignindex = $this->get_campaign_index( $campaign->ID, $subscriber->ID );
-		$mail->index = $campaignindex;
+		$mail->index   = $campaignindex;
 
 		$placeholder = mailster( 'placeholder' );
 

@@ -1388,7 +1388,7 @@ class MailsterFrontpage {
 			$atts
 		);
 
-		return mailster( 'forms' )->get_subscribe_button( $args['id'], $args );
+		return wpautop( mailster( 'forms' )->get_subscribe_button( $args['id'], $args ) );
 
 	}
 

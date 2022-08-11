@@ -299,6 +299,12 @@ class MailsterTests {
 		$set_charset = true;
 		$result      = mailster()->dbstructure( false, true, $set_charset, false );
 
+		if ( false !== strpos( $result, 'Duplicate key name \'id\'' ) ) {
+			mailster( 'upgrade' )->maybe_fix_indexes();
+			mailster()->dbstructure();
+			return false;
+		}
+
 		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
 			$set_charset = false;
 			$result      = mailster()->dbstructure( false, true, $set_charset, false );
