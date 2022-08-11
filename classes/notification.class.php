@@ -211,20 +211,20 @@ class MailsterNotification {
 				return $subscriber->email;
 
 			case 'confirmation_subject':
-				$form = $this->get_form_options( $options, $subscriber );
+				$form = $this->get_form_options( $options['form'], $subscriber );
 				return $form->subject;
 
 			case 'confirmation_file':
-				$form = $this->get_form_options( $options, $subscriber );
+				$form = $this->get_form_options( $options['form'], $subscriber );
 				return $form->template;
 
 			case 'confirmation_headline':
-				$form = $this->get_form_options( $options, $subscriber );
+				$form = $this->get_form_options( $options['form'], $subscriber );
 				return $form->headline;
 
 			case 'confirmation_replace':
 				if ( isset( $options['form'] ) ) {
-					$form    = $this->get_form_options( $options, $subscriber, false, true );
+					$form    = $this->get_form_options( $options['form'], $subscriber, false, true );
 					$form_id = $form->ID;
 				} else {
 					$form_id = null;
@@ -248,7 +248,7 @@ class MailsterNotification {
 				);
 
 			case 'confirmation_attachments':
-				$form = $this->get_form_options( $options, $subscriber );
+				$form = $this->get_form_options( $options['form'], $subscriber );
 				if ( $form->vcard ) {
 
 					global $wp_filesystem;
@@ -400,7 +400,8 @@ class MailsterNotification {
 
 		ob_end_clean();
 
-		$this->message = ! empty( $output2 ) ? $output2 : $output;
+		$output        = ! empty( $output2 ) ? $output2 : $output;
+		$this->message = apply_filters( 'mailster_notification_content', $output, $template, $subscriber, $options );
 
 		if ( empty( $this->message ) ) {
 			return new WP_Error( 'notification_error', 'no content' );
@@ -552,8 +553,8 @@ class MailsterNotification {
 	 *
 	 * @param unknown $options
 	 */
-	private function get_form_options( $options, $subscriber, $fields = false, $lists = false ) {
-		$form = mailster( 'forms' )->get( $options['form'], $fields, $lists );
+	private function get_form_options( $form_id, $subscriber, $fields = false, $lists = false ) {
+		$form = mailster( 'forms' )->get( $form_id, $fields, $lists );
 		if ( $form_key = mailster( 'subscribers' )->meta( $subscriber->ID, 'formkey' ) ) {
 			$form_args = (array) get_transient( '_mailster_form_' . $form_key );
 			$form      = (object) wp_parse_args( $form_args, (array) $form );
@@ -582,7 +583,7 @@ class MailsterNotification {
 	 */
 	private function template_confirmation( $subscriber, $options ) {
 
-		$form = $this->get_form_options( $options, $subscriber );
+		$form = $this->get_form_options( $options['form'], $subscriber );
 
 		if ( false === strpos( $form->content, '{link}' ) ) {
 			$form->content .= "\n{link}";
