@@ -55,8 +55,6 @@ class MailsterUpgrade {
 
 		if ( mailster_option( 'db_update_required' ) ) {
 
-			global $wp;
-
 			$current_url = home_url( $_SERVER['REQUEST_URI'] );
 
 			$db_version = $this->get_db_version();

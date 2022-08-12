@@ -585,7 +585,6 @@ class MailsterQueue {
 				$query_args = apply_filters( 'mailster_autoresponder_hook_args', $query_args, $campaign->ID );
 
 				$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign->ID );
-				global $wpdb;
 
 				if ( ! empty( $subscribers ) ) {
 
