@@ -1024,7 +1024,7 @@ class MailsterSubscribers {
 		}
 		if ( isset( $entry['email'] ) ) {
 			if ( ! mailster_is_email( $entry['email'] ) ) {
-				return new WP_Error( 'invalid_email', esc_html__( 'invalid email address', 'mailster' ) );
+				return new WP_Error( 'invalid_email', esc_html__( 'This isn\'t a valid email address!', 'mailster' ) );
 			}
 			// local part must be case sensitive while domain must be lowercase (RFC 5321)
 			$emailparts     = explode( '@', $entry['email'] );
