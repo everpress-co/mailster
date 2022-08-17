@@ -1024,7 +1024,9 @@ class MailsterFrontpage {
 
 				preg_match( '/' . $pattern . '/s', $content, $matches );
 
-				return ! empty( $matches[5] ) ? do_shortcode( $matches[5] ) : mailster_text( 'success' );
+				$content = ! empty( $matches[5] ) ? do_shortcode( $matches[5] ) : mailster_text( 'success' );
+
+				return wpautop( $content );
 
 			break;
 
@@ -1386,7 +1388,7 @@ class MailsterFrontpage {
 			$atts
 		);
 
-		return mailster( 'forms' )->get_subscribe_button( $args['id'], $args );
+		return wpautop( mailster( 'forms' )->get_subscribe_button( $args['id'], $args ) );
 
 	}
 

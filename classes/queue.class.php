@@ -32,12 +32,7 @@ class MailsterQueue {
 
 		add_action( 'mailster_bounce', array( &$this, 'update_after_bounce' ), 10, 3 );
 
-		// hooks to remove subscriber from the queue
-		if ( ! defined( 'MAILSTER_DO_BULKIMPORT' ) ) {
-			add_action( 'mailster_subscriber_change_status', array( &$this, 'subscriber_change_status' ), 10, 3 );
-			add_action( 'mailster_unassign_lists', array( &$this, 'unassign_lists' ), 10, 3 );
-			add_action( 'mailster_update_subscriber', array( &$this, 'update_subscriber' ), 10, 3 );
-		}
+		add_action( 'mailster_subscriber_change_status', array( &$this, 'subscriber_change_status' ), 10, 3 );
 
 	}
 
@@ -126,9 +121,10 @@ class MailsterQueue {
 	 * @param unknown $reset         (optional)
 	 * @param unknown $options       (optional)
 	 * @param unknown $tags          (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function bulk_add( $campaign_id, $subscribers, $timestamp = null, $priority = 10, $clear = false, $ignore_status = false, $reset = false, $options = false, $tags = false ) {
+	public function bulk_add( $campaign_id, $subscribers, $timestamp = null, $priority = 10, $clear = false, $ignore_status = false, $reset = false, $options = false, $tags = false, $index = false ) {
 
 		global $wpdb;
 
@@ -147,6 +143,10 @@ class MailsterQueue {
 		$timestamps = ! is_array( $timestamp )
 			? array_fill( 0, count( $subscribers ), $timestamp )
 			: $timestamp;
+
+		$index = ! is_array( $index )
+			? array_fill( 0, count( $subscribers ), $index )
+			: $index;
 
 		$now = time();
 
@@ -170,7 +170,7 @@ class MailsterQueue {
 		$inserts = array();
 
 		foreach ( $subscribers as $i => $subscriber_id ) {
-			$inserts[] = "($subscriber_id,$campaign_id,$now," . $timestamps[ $i ] . ",$priority,1,'$ignore_status','$options','$tags')";
+			$inserts[] = "($subscriber_id,$campaign_id,$now," . $timestamps[ $i ] . ",$priority,1,'$ignore_status','$options','$tags'," . ( $index[ $i ] ? $index[ $i ] : 0 ) . ')';
 		}
 
 		$chunks = array_chunk( $inserts, 2000 );
@@ -178,11 +178,11 @@ class MailsterQueue {
 		$success = true;
 
 		foreach ( $chunks as $insert ) {
-			$sql = "INSERT INTO {$wpdb->prefix}mailster_queue (subscriber_id, campaign_id, added, timestamp, priority, count, ignore_status, options, tags) VALUES";
+			$sql = "INSERT INTO {$wpdb->prefix}mailster_queue (subscriber_id, campaign_id, added, timestamp, priority, count, ignore_status, options, tags, i) VALUES";
 
 			$sql .= ' ' . implode( ',', $insert );
 
-			$sql .= ' ON DUPLICATE KEY UPDATE timestamp = values(timestamp), ignore_status = values(ignore_status)';
+			$sql .= ' ON DUPLICATE KEY UPDATE timestamp = values(timestamp), ignore_status = values(ignore_status), i = values(i)';
 			if ( $reset ) {
 				$sql .= ', sent = 0';
 			}
@@ -560,14 +560,20 @@ class MailsterQueue {
 				switch ( $autoresponder_meta['followup_action'] ) {
 					case 1:
 						$query_args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_sent_1_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$query_args['select'][] = 'actions_sent_1_0.i AS campaign_index';
+						$query_args['groupby']  = false;
 						$query_args['sent']     = $campaign->post_parent;
 						break;
 					case 2:
 						$query_args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_open_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$query_args['select'][] = 'actions_open_0_0.i AS campaign_index';
+						$query_args['groupby']  = false;
 						$query_args['open']     = $campaign->post_parent;
 						break;
 					case 3:
 						$query_args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_click_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$query_args['select'][] = 'actions_click_0_0.i AS campaign_index';
+						$query_args['groupby']  = false;
 						$query_args['click']    = $campaign->post_parent;
 						break;
 				}
@@ -584,8 +590,16 @@ class MailsterQueue {
 
 					$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
 					$timestamps     = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
+					$index          = wp_list_pluck( $subscribers, 'campaign_index' );
 
-					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15, false );
+					$priority      = 15;
+					$clear         = false;
+					$ignore_status = false;
+					$reset         = false;
+					$options       = false;
+					$tags          = false;
+
+					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, $priority, $clear, $ignore_status, $reset, $options, $tags, $index );
 
 					$timestamp = min( $timestamps );
 
@@ -1119,7 +1133,7 @@ class MailsterQueue {
 
 		$to_send = $this->size( $microtime, $campaign_id );
 
-		$queue_update_sql = "UPDATE {$wpdb->prefix}mailster_queue SET sent = %d, error = %d, priority = %d, count = %d WHERE subscriber_id = %d AND campaign_id = %d AND requeued = %d AND options = %s LIMIT 1";
+		$queue_update_sql = "UPDATE {$wpdb->prefix}mailster_queue SET sent = %d, error = %d, priority = %d, count = %d WHERE subscriber_id = %d AND campaign_id = %d AND requeued = %d AND options = %s AND i = %d LIMIT 1";
 
 		$this->cron_log( 'UTC', '<strong>' . date( 'Y-m-d H:i:s' ) . ' - ' . time() . '</strong>' );
 		$this->cron_log( 'Local Time', '<strong>' . date( 'Y-m-d H:i:s', time() + $timeoffset ) . '</strong>' );
@@ -1151,7 +1165,7 @@ class MailsterQueue {
 
 		if ( $in_timeframe && $to_send ) {
 
-			$sql = 'SELECT queue.campaign_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority, subscribers.ID AS subscriber_id, subscribers.status, subscribers.email, subscribers.rating';
+			$sql = 'SELECT queue.campaign_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority, subscribers.ID AS subscriber_id, subscribers.status, subscribers.email, subscribers.rating, queue.i AS _i';
 
 			$sql .= " FROM {$wpdb->prefix}mailster_queue AS queue";
 			$sql .= " LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id";
@@ -1259,7 +1273,7 @@ class MailsterQueue {
 
 					$mail_send_time += $took;
 
-					$wpdb->query( $wpdb->prepare( $queue_update_sql, time(), 0, $data->_priority, $data->_count, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options ) );
+					$wpdb->query( $wpdb->prepare( $queue_update_sql, time(), 0, $data->_priority, $data->_count, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options, $data->_i ) );
 
 					if ( ! $options ) {
 						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
@@ -1283,7 +1297,7 @@ class MailsterQueue {
 
 						$error = $data->_count >= $this->max_retry_after_error;
 
-						$wpdb->query( $wpdb->prepare( $queue_update_sql, 0, $data->_count, 15, $data->_count + 1, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options ) );
+						$wpdb->query( $wpdb->prepare( $queue_update_sql, 0, $data->_count, 15, $data->_count + 1, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options, $data->_i ) );
 
 						if ( $error ) {
 							do_action( 'mailster_subscriber_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
@@ -1296,7 +1310,7 @@ class MailsterQueue {
 
 							$error = $data->_count >= $this->max_retry_after_error;
 
-							$wpdb->query( $wpdb->prepare( $queue_update_sql, 0, $data->_count, 15, $data->_count + 1, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options ) );
+							$wpdb->query( $wpdb->prepare( $queue_update_sql, 0, $data->_count, 15, $data->_count + 1, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options, $data->_i ) );
 
 						if ( $error ) {
 							if ( isset( $options['template'] ) && $options['template'] ) {
@@ -1519,28 +1533,6 @@ class MailsterQueue {
 		if ( $new_status != 1 ) {
 			$this->remove_subscriber( $subscriber->ID );
 		}
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $subscriber_ids
-	 * @param unknown $lists
-	 * @param unknown $not_list
-	 */
-	public function unassign_lists( $subscriber_ids, $lists, $not_list ) {
-		$this->remove_subscriber( $subscriber_ids );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $subscriber_id
-	 */
-	public function update_subscriber( $subscriber_id ) {
-		$this->remove_subscriber( $subscriber_id );
 	}
 
 

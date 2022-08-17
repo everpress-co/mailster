@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.0  
-Stable tag: 3.1.6  
+Stable tag: 3.2.0
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -187,77 +187,91 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ## Changelog
 
+### 3.2.0
+
+-   fixed: querying subscribers do no longer return subscribers with status deleted.
+-   fixed: adding an already deleted subscriber working as expected.
+-   fixed: wrong timestamp on signups if subscriber exists.
+-   improved: support for multiple campaigns triggered by action hooks.
+-   improved: removed skeleton loader on foreign columns in overview.
+-   improved: action hook campaigns support now multiple hooks, separated with a comma.
+-   improved: database updates now run in the background (optional).
+-   improved: taxonomies dropdown now uses select2 library to better handle large taxonomy entries.
+-   new defaults strings form confirmation message.
+-   confirmation page on newsletter homepage now wrapped with `wpautop`.
+-   new filters: `mailster_editor_tags` and `mailster_notification_content`.
+
 ### 3.1.6
 
--   added: option to change tracking of campaigns once the campaign has been finished
--   improved: list counts are loaded now asynchronously to improve page load time
--   improved: embedded images are now found outside the upload folder
--   settings with "token" in the key are now hidden in the test email
+-   added: option to change tracking of campaigns once the campaign has been finished.
+-   improved: list counts are loaded now asynchronously to improve page load time.
+-   improved: embedded images are now found outside the upload folder.
+-   settings with "token" in the key are now hidden in the test email.
 
 ### 3.1.5
 
--   new: growth rates on campaign overview
--   opens, clicks, unsubscribes and bounces are now sortable
--   minimum required PHP version is now 7.2.5
--   reduced size of vendor folder
+-   new: growth rates on campaign overview.
+-   opens, clicks, unsubscribes and bounces are now sortable.
+-   minimum required PHP version is now 7.2.5.
+-   reduced size of vendor folder.
 
 ### 3.1.4.1
 
--   fixed: issue with WooCommerce 6.5.1 and third party library
+-   fixed: issue with WooCommerce 6.5.1 and third party library.
 
 ### 3.1.4
 
--   new: forms on frontend no longer requires jQuery
--   fixed: using single quotes in tags causes problems
--   fixed: PHP warning on PHP 8.1
--   improved: better handling of translations on plugin activation
+-   new: forms on frontend no longer requires jQuery.
+-   fixed: using single quotes in tags causes problems.
+-   fixed: PHP warning on PHP 8.1.
+-   improved: better handling of translations on plugin activation.
 
 ### 3.1.3
 
--   fixed: default placeholder tags where not replaced on system mails
--   fixed: security vulnerability where a logged in user can discover the profile URL from a different user. (discovered by D.Jong from patchstack.com)
--   improved: ajax operations are now checked against capabilities
--   improved: updated "Preheader text hack" from Litmus
+-   fixed: default placeholder tags where not replaced on system mails.
+-   fixed: security vulnerability where a logged in user can discover the profile URL from a different user. (discovered by D.Jong from patchstack.com).
+-   improved: ajax operations are now checked against capabilities.
+-   improved: updated "Preheader text hack" from Litmus.
 
 ### 3.1.2
 
--   fixed: CSS for WP 5.9
--   fixed: small typo in variable
--   fixed: compatibility for PHP 5.6+
+-   fixed: CSS for WP 5.9.
+-   fixed: small typo in variable.
+-   fixed: compatibility for PHP 5.6+.
 
 ### 3.1.1
 
--   fixed: time specific auto responders sent only on Sundays causes sending the following to be way in the future
--   fixed: type in test bounce message
--   fixed: typo in subscriber query causes database error
--   fixed: PHP warning of undefined variable in option bar
--   added: unsubscribe link to in mail app unsubscribe message
--   added: filter `mailster_campaign_meta_defaults` to filter default meta values
--   added: defined `wp_mail` filters are now applied if used with Mailster
+-   fixed: time specific auto responders sent only on Sundays causes sending the following to be way in the future.
+-   fixed: type in test bounce message.
+-   fixed: typo in subscriber query causes database error.
+-   fixed: PHP warning of undefined variable in option bar.
+-   added: unsubscribe link to in mail app unsubscribe message.
+-   added: filter `mailster_campaign_meta_defaults` to filter default meta values.
+-   added: defined `wp_mail` filters are now applied if used with Mailster.
 
 ### 3.1
 
--   new: Remove inactive Subscribers automatically
--   new: Relative conditions for date fields
--   new: filters in the subscriber overview
--   updated: Manage Subscribers page
+-   new: Remove inactive Subscribers automatically.
+-   new: Relative conditions for date fields.
+-   new: filters in the subscriber overview.
+-   updated: Manage Subscribers page.
 -   fixed: add trailing space to preheaders to prevent unintentional line breaks in previews.
 
 ### 3.0.4
 
--   fixed: saving template from editor messed up template header
--   fixed: bulk deletion with actions working again
--   fixed: auto responder no longer triggered if post is published in the past
--   fixed: shortcodes are now handled properly on the web version
--   added: text strings for error messages defined by the security settings page
--   improved: ajax handler
+-   fixed: saving template from editor messed up template header.
+-   fixed: bulk deletion with actions working again.
+-   fixed: auto responder no longer triggered if post is published in the past.
+-   fixed: shortcodes are now handled properly on the web version.
+-   added: text strings for error messages defined by the security settings page.
+-   improved: ajax handler.
 
 ### 3.0.3
 
--   fixed: timeframe settings spanning over midnight
--   fixed: layout issue on form/lists overview on smaller screens
--   fixed: missing dbstructure method on queue process
--   added: option to block and allow people from certain countries to signup
+-   fixed: timeframe settings spanning over midnight.
+-   fixed: layout issue on form/lists overview on smaller screens.
+-   fixed: missing dbstructure method on queue process.
+-   added: option to block and allow people from certain countries to signup.
 -   update: using `get_user_local()` instead of `get_locale()` when applicable.
 
 ### 3.0.2
@@ -271,14 +285,14 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### 3.0.1
 
--   added: editing templates on the templates page is back
--   fixed: mergetags now work correctly in image URL field if fallback is present
--   fixed: draft campaigns can now get duplicated
--   fixed: install plugins on addon page is working
--   fixed: problem if PHPMailer is loaded in another plugin
--   fixed: installed templates were not access able when no required Mailster version was set
--   improved upgrade process from 2.4.x
--   smaller bug fixes
+-   added: editing templates on the templates page is back.
+-   fixed: mergetags now work correctly in image URL field if fallback is present.
+-   fixed: draft campaigns can now get duplicated.
+-   fixed: install plugins on addon page is working.
+-   fixed: problem if PHPMailer is loaded in another plugin.
+-   fixed: installed templates were not access able when no required Mailster version was set.
+-   improved upgrade process from 2.4.x.
+-   smaller bug fixes.
 
 ### 3.0
 

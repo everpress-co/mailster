@@ -15,11 +15,13 @@ class MailsterCampaigns {
 		add_action( 'init', array( &$this, 'register_post_type' ) );
 		add_action( 'init', array( &$this, 'register_post_status' ) );
 
-		if ( $hooks = get_option( 'mailster_hooks', false ) ) {
-
-			foreach ( (array) $hooks as $campaign_id => $hook ) {
-				if ( $hook ) {
-					add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
+		$mailster_hooks = get_option( 'mailster_hooks', false );
+		if ( ! empty( $mailster_hooks ) ) {
+			foreach ( $mailster_hooks as $campaign_id => $hooks ) {
+				foreach ( (array) $hooks as $hook ) {
+					if ( $hook ) {
+						add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
+					}
 				}
 			}
 		}
@@ -137,12 +139,8 @@ class MailsterCampaigns {
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
-		$priority      = $meta['autoresponder']['priority'];
-		$clear         = false;
-		$ignore_status = false;
-		$reset         = true;
-		$options       = isset( $meta['autoresponder']['multiple'] ) ? uniqid() : false;
-		$tags          = $args;
+		$priority = $meta['autoresponder']['priority'];
+		$tags     = $args;
 
 		if ( $hook_type ) {
 
@@ -189,6 +187,17 @@ class MailsterCampaigns {
 			);
 
 		} else {
+			$clear         = false;
+			$ignore_status = false;
+			$reset         = true;
+			$options       = false;
+			if ( isset( $meta['autoresponder']['multiple'] ) ) {
+				$options = array(
+					'multiple' => true,
+					'unique'   => uniqid(),
+				);
+			}
+
 			mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, $clear, $ignore_status, $reset, $options, $tags );
 		}
 
@@ -748,9 +757,11 @@ class MailsterCampaigns {
 
 		global $post, $wp_post_statuses;
 
-		$now        = time();
-		$is_ajax    = defined( 'DOING_AJAX' ) && DOING_AJAX;
-		$timeformat = mailster( 'helper' )->timeformat();
+		if ( ! in_array( $column, array( 'status', 'total', 'open', 'click', 'unsubs', 'bounces' ) ) ) {
+			return;
+		}
+
+		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 
 		if ( ! $is_ajax && $column != 'status' && wp_script_is( 'heartbeat', 'registered' ) ) {
 			echo '<span class="skeleton-loading"></span>';
@@ -763,7 +774,9 @@ class MailsterCampaigns {
 		$error = ini_get( 'error_reporting' );
 		error_reporting( E_ERROR );
 
-		$meta = $this->meta( $post->ID );
+		$now        = time();
+		$timeformat = mailster( 'helper' )->timeformat();
+		$meta       = $this->meta( $post->ID );
 
 		switch ( $column ) {
 
@@ -1442,6 +1455,9 @@ class MailsterCampaigns {
 					wp_enqueue_script( 'editor' );
 				}
 
+				wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
+				wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 				wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
 				wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -1931,7 +1947,8 @@ class MailsterCampaigns {
 					if ( ! is_array( $hooks ) ) {
 						$hooks = array();
 					}
-					$hooks[ $post->ID ] = $autoresponder['hook'];
+
+					$hooks[ $post->ID ] = array_map( 'trim', explode( ',', $autoresponder['hook'] ) );
 					if ( ! $meta['active'] ) {
 						unset( $hooks[ $post->ID ] );
 					}
@@ -2728,7 +2745,7 @@ class MailsterCampaigns {
 				if ( ! is_array( $hooks ) ) {
 					$hooks = array();
 				}
-				$hooks[ $campaign->ID ] = $autoresponder['hook'];
+				$hooks[ $campaign->ID ] = array_map( 'trim', explode( ',', $autoresponder['hook'] ) );
 				update_option( 'mailster_hooks', $hooks );
 			}
 		}

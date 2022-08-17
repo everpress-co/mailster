@@ -640,9 +640,9 @@ class MailsterLists {
 		}
 
 		// set the status for the list from the global status from the user
-		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
+		// $sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
 
-		$success = $success && ( false !== $wpdb->query( $sql ) );
+		// $success = $success && ( false !== $wpdb->query( $sql ) );
 
 		return $success;
 

@@ -17,6 +17,7 @@ class MailsterSubscriberQuery {
 		'having'              => null,
 		'orderby'             => null,
 		'order'               => null,
+		'groupby'             => null,
 		'page'                => null,
 		'limit'               => null,
 		'offset'              => null,
@@ -137,6 +138,10 @@ class MailsterSubscriberQuery {
 			$this->args['meta'] = $this->meta_fields;
 		}
 
+		if ( is_null( $this->args['groupby'] ) ) {
+			$this->args['groupby'] = array( 'subscribers.ID' );
+		}
+
 		if ( $this->args['return_ids'] ) {
 			$this->args['select'] = array( 'subscribers.ID' );
 		} elseif ( $this->args['return_count'] ) {
@@ -144,6 +149,7 @@ class MailsterSubscriberQuery {
 			$this->args['fields']  = null;
 			$this->args['meta']    = null;
 			$this->args['actions'] = null;
+			$this->args['groupby'] = null;
 		} elseif ( empty( $this->args['fields'] ) && empty( $this->args['select'] ) ) {
 			$this->args['select'] = array( 'subscribers.*' );
 		} elseif ( is_null( $this->args['select'] ) ) {
@@ -216,6 +222,9 @@ class MailsterSubscriberQuery {
 		}
 		if ( $this->args['order'] && ! is_array( $this->args['order'] ) ) {
 			$this->args['order'] = explode( ',', $this->args['order'] );
+		}
+		if ( $this->args['groupby'] && ! is_array( $this->args['groupby'] ) ) {
+			$this->args['groupby'] = explode( ',', $this->args['groupby'] );
 		}
 		if ( $this->args['queue'] && ! is_array( $this->args['queue'] ) ) {
 			$this->args['queue'] = explode( ',', $this->args['queue'] );
@@ -972,8 +981,8 @@ class MailsterSubscriberQuery {
 		}
 
 		$group = '';
-		if ( ! $this->args['return_count'] ) {
-			$group = 'GROUP BY subscribers.ID';
+		if ( $this->args['groupby'] ) {
+			$group = 'GROUP BY ' . implode( ', ', array_unique( $this->args['groupby'] ) );
 		}
 
 		$having = '';
