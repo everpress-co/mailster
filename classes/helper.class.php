@@ -746,6 +746,37 @@ class MailsterHelper {
 	 * @param unknown $timestamp  (optional)
 	 * @return unknown
 	 */
+	public function static_map( $args, $echo = false ) {
+
+		$defaults = array(
+			'zoom'     => 5,
+			'lat'      => 43.3632,
+			'lon'      => -5.853,
+			'width'    => 300,
+			'height'   => 250,
+			'language' => get_user_locale(),
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$type = mailster_option( 'static_map' );
+
+		$hash = md5( NONCE_SALT . $type . serialize( $args ) );
+
+		set_transient( '_mailster_staticmap_' . $hash, $args, DAY_IN_SECONDS );
+
+		return get_rest_url( null, 'mailster/v1/staticmap/' . $hash );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $in_seconds (optional)
+	 * @param unknown $timestamp  (optional)
+	 * @return unknown
+	 */
 	public function gmt_offset( $in_seconds = false, $timestamp = null ) {
 
 		$offset = get_option( 'gmt_offset' );

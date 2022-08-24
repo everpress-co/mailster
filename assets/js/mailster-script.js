@@ -380,7 +380,7 @@ mailster = (function (mailster, $, window, document) {
 
 	//open externals in a new tab
 	mailster.$.document.on('click', 'a.external', function () {
-		window.open(this.href);
+		window.open(this.href, '_blank', 'noopener,noreferrer');
 		return false;
 	});
 

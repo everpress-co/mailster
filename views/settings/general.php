@@ -103,13 +103,17 @@
 		<p class="description"><?php esc_html_e( 'change Charset and encoding of your mails if you have problems with some characters', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top" class="settings-row settings-row-google-api-key">
-		<th scope="row"><?php esc_html_e( 'Google API Key', 'mailster' ); ?>
+	<tr valign="top" class="settings-row settings-static-map-service">
+		<th scope="row"><?php esc_html_e( 'Static Map Service', 'mailster' ); ?>
 		</th>
-		<td><input type="password" name="mailster_options[google_api_key]" value="<?php echo esc_attr( mailster_option( 'google_api_key' ) ); ?>" class="regular-text" autocomplete="new-password">
-		<p class="description">
-		<?php esc_html_e( 'The Google API key is used to display Maps for Mailster on the back end.', 'mailster' ); ?><br>
-		<a href="https://developers.google.com/maps/documentation/javascript/get-api-key" class="external"><?php esc_html_e( 'Get your Google API Key.', 'mailster' ); ?></a></p>
+		<td>
+		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="0" <?php checked( ! mailster_option( 'static_map' ) ); ?>> <?php esc_html_e( 'Don\'t use any static maps', 'mailster' ); ?></label></p>
+		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="osm" <?php checked( mailster_option( 'static_map' ), 'osm' ); ?>> <?php esc_html_e( 'Use OpenStreetMaps', 'mailster' ); ?></label></p>		
+		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="google" <?php checked( mailster_option( 'static_map' ), 'google' ); ?>> <?php esc_html_e( 'Use Google Maps', 'mailster' ); ?></label></p>
+		<p class="static_map_more" <?php echo mailster_option( 'static_map' ) != 'google' ? 'style="display:none"' : ''; ?>>
+			<label><?php esc_html_e( 'Google API Key', 'mailster' ); ?><br><input type="password" name="mailster_options[google_api_key]" value="<?php echo esc_attr( mailster_option( 'google_api_key' ) ); ?>" class="regular-text" autocomplete="new-password"></label><br>
+		<span class="description">
+		<a href="https://developers.google.com/maps/documentation/javascript/get-api-key" class="external"><?php esc_html_e( 'Get your Google API Key.', 'mailster' ); ?></a></span></p>
 		</td>
 	</tr>
 </table>

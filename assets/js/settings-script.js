@@ -56,6 +56,14 @@ mailster = (function (mailster, $, window, document) {
 		}
 	});
 
+	$('.static_map').on('change', function () {
+		if ($(this).val() != 'google') {
+			$('.static_map_more').hide();
+		} else {
+			$('.static_map_more').show();
+		}
+	});
+
 	$('#mailster-settings-form').on('click', 'a[href^="#"]', function () {
 		nav.find('a[href="' + $(this).attr('href') + '"]').trigger('click');
 	});

@@ -2897,7 +2897,7 @@ class MailsterSubscribers {
 			}
 
 			return mailster( 'notification' )->add(
-				$timestamp,
+				$timestamp + 360,
 				array(
 					'template'      => 'new_subscriber',
 					'subscriber_id' => $subscriber->ID,

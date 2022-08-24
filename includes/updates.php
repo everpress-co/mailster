@@ -630,6 +630,10 @@ if ( $old_version ) {
 		case '3.1.6':
 			$mailster_options['db_update_required']   = true;
 			$mailster_options['db_update_background'] = true;
+		case '3.2.0':
+			if ( ! $mailster_options['static_map'] && $mailster_options['google_api_key'] ) {
+				$mailster_options['static_map'] = 'google';
+			}
 
 		default:
 			// reset translations
