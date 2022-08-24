@@ -738,20 +738,10 @@ class MailsterHelper {
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $in_seconds (optional)
-	 * @param unknown $timestamp  (optional)
-	 * @return unknown
-	 */
-	public function static_map( $args, $echo = false ) {
+	public function static_map( $args, $cache = HOUR_IN_SECONDS ) {
 
 		$defaults = array(
 			'zoom'     => 5,
-			'lat'      => 43.3632,
-			'lon'      => -5.853,
 			'width'    => 300,
 			'height'   => 250,
 			'language' => get_user_locale(),
@@ -761,9 +751,10 @@ class MailsterHelper {
 
 		$type = mailster_option( 'static_map' );
 
+		// create hash which is hard to guess
 		$hash = md5( NONCE_SALT . $type . serialize( $args ) );
 
-		set_transient( '_mailster_staticmap_' . $hash, $args, DAY_IN_SECONDS );
+		set_transient( '_mailster_staticmap_' . $hash, $args, $cache );
 
 		return get_rest_url( null, 'mailster/v1/staticmap/' . $hash );
 

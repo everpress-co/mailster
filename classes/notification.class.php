@@ -747,8 +747,8 @@ class MailsterNotification {
 				'height' => 250,
 			);
 
-			$mapurl      = mailster( 'helper' )->static_map( $args );
-			$mapurl_zoom = mailster( 'helper' )->static_map( wp_parse_args( array( 'zoom' => 8 ), $args ) );
+			$mapurl      = mailster( 'helper' )->static_map( $args, WEEK_IN_SECONDS );
+			$mapurl_zoom = mailster( 'helper' )->static_map( wp_parse_args( array( 'zoom' => 8 ), $args ), WEEK_IN_SECONDS );
 
 			?>
 			<table style="width:100%;table-layout:fixed">
@@ -943,7 +943,8 @@ class MailsterNotification {
 						'coords'    => $coords,
 						'width'     => 600,
 						'height'    => 300,
-					)
+					),
+					WEEK_IN_SECONDS
 				);
 				?>
 

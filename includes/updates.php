@@ -639,7 +639,7 @@ if ( $old_version ) {
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
-			if ( ! $mailster_options['db_update_required'] ) {
+			if ( ! mailster_option( 'db_update_required' ) ) {
 				mailster( 'update' )->ask_for_auto_update();
 			}
 
