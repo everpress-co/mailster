@@ -376,6 +376,7 @@ class MailsterAjax {
 		$this->ajax_nonce();
 
 		$content       = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : '';
+		$plaintext     = isset( $_POST['plaintext'] ) ? stripslashes( $_POST['plaintext'] ) : '';
 		$ID            = isset( $_POST['id'] ) ? (int) $_POST['id'] : 0;
 		$subject       = isset( $_POST['subject'] ) ? stripslashes( $_POST['subject'] ) : '';
 		$preheader     = isset( $_POST['preheader'] ) ? stripslashes( $_POST['preheader'] ) : '';
@@ -450,7 +451,7 @@ class MailsterAjax {
 		$content = str_replace( '</head>', mailster( 'precheck' )->script_styles() . '</head>', $content );
 		$content = str_replace( '</body>', '<highlighterx></highlighterx><highlightery></highlightery></body>', $content );
 
-		$hash = md5( NONCE_SALT . MAILSTER_VERSION . $content );
+		$hash = md5( NONCE_SALT . MAILSTER_VERSION . $content . $plaintext );
 
 		// cache preview for 15 seconds
 		set_transient( 'mailster_p_' . $hash, $content, 15 );
@@ -460,6 +461,20 @@ class MailsterAjax {
 		$return['to']      = $to;
 		$return['hash']    = $hash;
 		$return['nonce']   = wp_create_nonce( 'mailster_nonce' );
+
+		if ( ! empty( $plaintext ) ) {
+			$placeholder->set_content( $plaintext );
+			$plaintext = $placeholder->get_content();
+			$plaintext = mailster( 'helper' )->plain_text( wpautop( $plaintext ) );
+		} else {
+			$plaintext = mailster( 'helper' )->plain_text( $content );
+		}
+
+		$plaintext = str_replace( array( '[', ']' ), array( '[ ', ' ]' ), $plaintext );
+		$plaintext = make_clickable( $plaintext );
+		$plaintext = str_replace( array( '[ ', ' ]' ), array( '[', ']' ), $plaintext );
+
+		$return['plaintext'] = $plaintext;
 
 		wp_send_json_success( $return );
 

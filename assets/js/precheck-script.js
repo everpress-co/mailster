@@ -10,6 +10,7 @@ mailster = (function (mailster, $, window, document) {
 		$authentication = $('#precheck-authentication'),
 		runbtn = $('.precheck-run-btn'),
 		strcturebtn = $('.precheck-toggle-structure'),
+		plaintextbtn = $('.precheck-toggle-plaintext'),
 		imagebtn = $('.precheck-toggle-images'),
 		$iframe = $('.mailster-preview-iframe'),
 		$iframebody,
@@ -17,7 +18,8 @@ mailster = (function (mailster, $, window, document) {
 		$hy,
 		started = 0,
 		images = true,
-		structure = false;
+		structure = false,
+		plaintext = false;
 
 	mailster.precheck = mailster.precheck || {};
 
@@ -25,6 +27,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.precheck-switch', switchPane)
 		.on('click', '.precheck-run-btn', initTest)
 		.on('click', '.precheck-toggle-images', toggleImages)
+		.on('click', '.precheck-toggle-plaintext', togglePlainText)
 		.on('click', '.precheck-toggle-structure', toggleStructure)
 		.on('mouseenter', '.assets-table tr', highlightElement)
 		.on('mouseleave', '.assets-table tr', highlightElement)
@@ -323,6 +326,9 @@ mailster = (function (mailster, $, window, document) {
 				id: mailster.campaign_id,
 				subscriber_id: $('#subscriber_id').val(),
 				content: mailster.editor.getContent(),
+				plaintext: $('#plaintext').is(':checked')
+					? null
+					: $('#excerpt').val(),
 				head: mailster.$.head.val(),
 				issue: $('#mailster_autoresponder_issue').val(),
 				subject: mailster.details.$.subject.val(),
@@ -370,6 +376,8 @@ mailster = (function (mailster, $, window, document) {
 				$('.precheck-subject').html(response.data.subject);
 				$('.precheck-subscriber').val(response.data.to);
 				$('.precheck-to').text(response.data.to);
+				$('.preview-plaintext').html(response.data.plaintext);
+
 				cb && cb();
 			},
 			function (jqXHR, textStatus, errorThrown) {
@@ -386,6 +394,16 @@ mailster = (function (mailster, $, window, document) {
 		}
 		strcturebtn.toggleClass('active');
 		structure = !structure;
+	}
+
+	function togglePlainText() {
+		if (plaintext) {
+			precheck.removeClass('precheck-plaintext-enabled');
+		} else {
+			precheck.addClass('precheck-plaintext-enabled');
+		}
+		plaintextbtn.toggleClass('active');
+		plaintext = !plaintext;
 	}
 
 	function toggleImages() {

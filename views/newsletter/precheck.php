@@ -35,6 +35,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			</ul>
 			<div class="precheck-images button-group">
 				<a class="button precheck-toggle-images mailster-icon active" title="<?php esc_attr_e( 'Toggle Images', 'mailster' ); ?>"></a>
+				<a class="button precheck-toggle-plaintext mailster-icon" title="<?php esc_attr_e( 'Toggle Plain Text', 'mailster' ); ?>"></a>
 				<a class="button precheck-toggle-structure mailster-icon" title="<?php esc_attr_e( 'Toggle Structure', 'mailster' ); ?>"></a>
 			</div>
 			<div class="precheck-resize button-group">
@@ -50,6 +51,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			<div class="device desktop">
 				<div class="desktop-body">
 					<div class="preview-body">
+						<div class="preview-plaintext"></div>
 						<iframe class="mailster-preview-iframe desktop" src="" width="100%" scrolling="auto" frameborder="0" data-no-lazy=""></iframe>
 					</div>
 				</div>

@@ -1895,12 +1895,16 @@ class MailsterHelper {
 
 			$text = trim( $htmlconverter->get_text() );
 
+			$text = preg_replace( "/\x{200c}/u", ' ', $text );
 			$text = str_replace( "\xc2\xa0", ' ', $text );
 			$text = preg_replace( '/[ \t]+/u', ' ', $text );
 			$text = preg_replace( '/^([ \t]+)/m', '', $text );
+
+			$text = str_replace( "\n\n\n\n\n", "\n\n" . str_repeat( '-', $options['width'] ) . "\n\n", trim( $text ) );
+
 			$text = preg_replace( "/([\r\n]{4,}|[\n\r]{4,}|[\n]{2,}|[\r]{2,})/", "\n\n", $text );
 
-			return trim( $text );
+			return $text;
 
 		}
 
