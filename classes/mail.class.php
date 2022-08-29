@@ -37,6 +37,7 @@ class MailsterMail {
 
 	private $campaignID   = null;
 	private $subscriberID = null;
+	private $index        = 0;
 	private $messageID    = null;
 
 	public $text = '';
@@ -132,17 +133,50 @@ class MailsterMail {
 
 		$this->send_limit = mailster_option( 'send_limit' );
 
-		$subscriber_errors       = array(
+		$default = array(
 			'SMTP Error: The following recipients failed',
 			'The following From address failed',
 			'Invalid address:',
 			'SMTP Error: Data not accepted',
 		);
-		$this->subscriber_errors = apply_filters( 'mymail_subscriber_errors', apply_filters( 'mailster_subscriber_errors', $subscriber_errors ) );
-		$system_errors           = array(
+		/**
+		 * Default subscriber errors where campaigns do not get paused or skipped
+		 *
+		 * defaults:
+		 * `SMTP Error: The following recipients failed`
+		 * `The following From address failed`
+		 * `Invalid address:`
+		 * `SMTP Error: Data not accepted`
+		 *
+		 * @param array $default default values
+		 */
+		$this->subscriber_errors = apply_filters( 'mailster_subscriber_errors', $default );
+
+		$default = array(
+			'Sender address rejected',
+		);
+		/**
+		 * Default server errors where campaigns get paused or skipped
+		 *
+		 * defaults:
+		 * `Sender address rejected`
+		 *
+		 * @param array $default default values
+		 */
+		$this->server_errors = apply_filters( 'mailster_server_errors', $default );
+
+		$default = array(
 			'Not in Time Frame',
 		);
-		$this->system_errors     = apply_filters( 'mailster_system_errors', $system_errors );
+		/**
+		 * Default System errors where campaigns get paused or skipped
+		 *
+		 * defaults:
+		 * `Not in Time Frame`
+		 *
+		 * @param array $default default values
+		 */
+		$this->server_errors = apply_filters( 'mailster_system_errors', $default );
 
 		if ( ! get_transient( '_mailster_send_period_timeout' ) ) {
 			set_transient( '_mailster_send_period_timeout', true, mailster_option( 'send_period' ) * 3600 );
@@ -528,6 +562,8 @@ class MailsterMail {
 
 		$placeholder = mailster( 'placeholder', $this->content );
 
+		$placeholder->add_defaults();
+
 		$placeholder->add(
 			array(
 				'subject'   => $this->subject,
@@ -541,7 +577,14 @@ class MailsterMail {
 
 		$this->content = $placeholder->get_content();
 		$this->content = mailster( 'helper' )->prepare_content( $this->content );
-		if ( apply_filters( 'mailster_inline_css', true ) ) {
+
+		$inline_css = true;
+		/**
+		 * Filter to skip inline CSS
+		 *
+		 * @param boolean $inline_css Whenever to enable inline styles or not
+		 */
+		if ( apply_filters( 'mailster_inline_css', $inline_css ) ) {
 			$content = mailster( 'helper' )->inline_css( $this->content );
 		}
 
@@ -710,19 +753,25 @@ class MailsterMail {
 				$this->content = $this->make_img_relative( $this->content );
 				// fix for https://github.com/PHPMailer/PHPMailer/issues/2107
 				$this->content = str_replace( array( ' src=""', ' background=""' ), '', $this->content );
-				$this->mailer->msgHTML( $this->content, trailingslashit( dirname( MAILSTER_UPLOAD_DIR ) ) );
+				$this->mailer->msgHTML( $this->content, trailingslashit( dirname( dirname( MAILSTER_UPLOAD_DIR ) ) ) );
 			} else {
 				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );
 			}
 
 			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster( 'helper' )->plain_text( $this->content ) );
 
-			( $this->bouncemail )
-				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail
-				: $this->mailer->ReturnPath = $this->mailer->Sender = $this->from;
+			if ( $this->bouncemail ) {
+				$this->mailer->Sender = $this->bouncemail;
+			} else {
+				$this->mailer->Sender = $this->from;
+			}
 
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {
+
+				if ( $this->index ) {
+					$this->baselink .= '-' . absint( $this->index );
+				}
 
 				if ( mailster( 'helper' )->using_permalinks() ) {
 
@@ -734,6 +783,8 @@ class MailsterMail {
 
 				}
 
+				$tracking_url = add_query_arg( array( 't' => time() ), $tracking_url );
+
 				$this->mailer->Body = str_replace( '</body>', '<img src="' . $tracking_url . '" alt="" width="1" height="1"></body>', $this->mailer->Body );
 
 			}
@@ -741,7 +792,7 @@ class MailsterMail {
 			$this->messageID         = uniqid();
 			$this->mailer->messageID = sprintf(
 				'<%s@%s>',
-				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '-' . mailster_option( 'ID' ),
+				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '|' . $this->index . '-' . mailster_option( 'ID' ),
 				$this->hostname
 			);
 
@@ -799,6 +850,13 @@ class MailsterMail {
 		}
 
 		$errormsg = $error->getMessage();
+
+		// check for server error so it's not a user error
+		foreach ( $this->server_errors as $server_error ) {
+			if ( stripos( $errormsg, $server_error ) !== false ) {
+				return false;
+			}
+		}
 
 		// check for subscriber error
 		foreach ( $this->subscriber_errors as $subscriber_error ) {
@@ -925,7 +983,7 @@ class MailsterMail {
 	 * @return unknown
 	 */
 	public function make_img_relative( $html ) {
-		$html = str_replace( ' src="' . trailingslashit( dirname( MAILSTER_UPLOAD_URI ) ), ' src="', $html );
+		$html = str_replace( ' src="' . trailingslashit( dirname( dirname( MAILSTER_UPLOAD_URI ) ) ), ' src="', $html );
 		return $html;
 	}
 

@@ -159,14 +159,14 @@ class MailsterTemplate {
 		$doc->formatOutput    = true;
 
 		if ( file_exists( $file ) ) {
-			$data = file_get_contents( $file );
-			$data = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $data );
+			$raw = file_get_contents( $file );
+			$raw = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
 		} else {
-			$data = '{headline}<br>{content}';
+			$raw = '{headline}<br>{content}';
 		}
 
 		$i_error = libxml_use_internal_errors( true );
-		$doc->loadHTML( $data );
+		$doc->loadHTML( $raw );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -188,10 +188,17 @@ class MailsterTemplate {
 			}
 		}
 
-		if ( $logo_id = mailster_option( 'logo' ) ) {
+		$logo_id = mailster_option( 'logo' );
+		if ( ! $logo_id ) {
+			$logo_id = get_theme_mod( 'custom_logo' );
+		}
+
+		if ( $logo_id && $metadata = wp_get_attachment_metadata( $logo_id ) ) {
 			$logos     = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo"]' );
 			$high_dpi  = mailster_option( 'high_dpi' ) ? 2 : 1;
 			$logo_link = mailster_option( 'logo_link' );
+
+			$use_height = $metadata['height'] >= $metadata['width'];
 
 			foreach ( $logos as $logo ) {
 
@@ -203,17 +210,34 @@ class MailsterTemplate {
 					continue;
 				}
 
-				$new_logo = mailster( 'helper' )->create_image( $logo_id, null, $width * $high_dpi, null, false );
+				if ( $use_height ) {
+					$new_logo = mailster( 'helper' )->create_image( $logo_id, null, null, $height * $high_dpi, false );
+				} else {
+					$new_logo = mailster( 'helper' )->create_image( $logo_id, null, $width * $high_dpi, null, false );
+				}
 
 				if ( ! $new_logo ) {
 					continue;
 				}
 				$logo->setAttribute( 'data-id', $new_logo['id'] );
-				$logo->setAttribute( 'width', $width );
-				if ( $new_logo['asp'] ) {
-					$logo->setAttribute( 'height', round( $width / $new_logo['asp'] ) );
+
+				if ( $use_height ) {
+					$logo->setAttribute( 'height', $height );
+					if ( $new_logo['asp'] ) {
+						$logo->setAttribute( 'width', round( $height * $new_logo['asp'] ) );
+					}
+				} else {
+					$logo->setAttribute( 'width', $width );
+					if ( $new_logo['asp'] ) {
+						$logo->setAttribute( 'height', round( $width / $new_logo['asp'] ) );
+					}
 				}
+
 				$logo->setAttribute( 'src', $new_logo['url'] );
+				$alt = $logo->getAttribute( 'alt' );
+				if ( empty( $alt ) ) {
+					$logo->setAttribute( 'alt', __( 'Logo', 'mailster' ) );
+				}
 
 				if ( $logo_link ) {
 					$link = $doc->createElement( 'a' );
@@ -224,7 +248,13 @@ class MailsterTemplate {
 			}
 		}
 
-		$services = mailster_option( 'services', array() );
+		$services = mailster_option(
+			'services',
+			array(
+				'twitter'  => '',
+				'facebook' => '',
+			)
+		);
 
 		$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
 
@@ -261,16 +291,19 @@ class MailsterTemplate {
 				}
 
 				$dimensions = getimagesize( $icon );
-
 				if ( ! $dimensions ) {
 					continue;
 				}
 
+				if ( ! ( $width = $buttons->item( 0 )->firstChild->getAttribute( 'width' ) ) ) {
+					$width = round( $width / $high_dpi );
+				}
+				if ( ! ( $height = $buttons->item( 0 )->firstChild->getAttribute( 'height' ) ) ) {
+					$height = round( $height / $high_dpi );
+				}
+
 				$img  = $doc->createElement( 'img' );
 				$link = $doc->createElement( 'a' );
-
-				$width  = round( $dimensions[0] / $high_dpi );
-				$height = round( $dimensions[1] / $high_dpi );
 
 				$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
 				$img->setAttribute( 'width', $width );
@@ -288,11 +321,15 @@ class MailsterTemplate {
 			}
 		}
 
-		$raw  = $doc->saveHTML();
-		$data = $this->get_template_data( $file );
-		if ( $data && $data['name'] ) {
-			$raw        = preg_replace( '#<!--(.*?)-->#s', '', $raw, 1 );
-			$this->data = $data;
+		$template_data = $this->get_template_data( $file );
+		if ( $template_data && $template_data['name'] ) {
+			$this->data = $template_data;
+		}
+
+		$raw = $doc->saveHTML();
+		if ( preg_match( '#<!--(.*?)-->#s', $raw, $match ) ) {
+			$header = $match[0];
+			$raw    = $header . "\n" . str_replace( $header, '', $raw );
 		}
 
 		$this->slug   = $slug;
@@ -386,10 +423,17 @@ class MailsterTemplate {
 			$filename = str_replace( '.html', '-' . uniqid() . '.html', $filename );
 		}
 
+		if ( preg_match( '#<!--(.*?)-->#s', $content, $match ) ) {
+			$header  = $match[0];
+			$content = str_replace( $header, '', $content );
+		}
+
 		$pre = '<!--' . "\n\n";
 
-		foreach ( $this->data as $k => $v ) {
-			$pre .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $v ) . "\n";
+		foreach ( $this->headers as $k => $v ) {
+			if ( isset( $this->data[ $k ] ) ) {
+				$pre .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $this->data[ $k ] ) . "\n";
+			}
 		}
 
 		$pre .= "\n-->\n";
@@ -410,6 +454,8 @@ class MailsterTemplate {
 
 		}
 
+		$content = trim( $content );
+
 		// remove absolute path to images from the template
 		$content = str_replace( 'src="' . $this->url . '/' . $this->slug . '/', 'src="', $content );
 
@@ -421,6 +467,7 @@ class MailsterTemplate {
 		mailster_require_filesystem();
 
 		if ( $wp_filesystem->put_contents( $this->templatepath . '/' . $filename, $pre . $content, FS_CHMOD_FILE ) ) {
+			mailster( 'templates' )->reset_query_cache();
 			return $filename;
 		}
 

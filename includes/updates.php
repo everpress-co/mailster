@@ -6,6 +6,8 @@ This runs if an update was done.
 
 global $wpdb;
 
+$wpdb->suppress_errors();
+
 $mailster_options = mailster_options();
 $mailster_texts   = mailster_texts();
 
@@ -600,13 +602,44 @@ if ( $old_version ) {
 
 		case '2.4.17':
 		case '2.4.18':
-			// move to "default" or after latests release versions
-			$mailster_options['db_update_required'] = true;
-			$mailster_options['auto_send_at_once']  = false;
+		case '2.4.19':
+		case '2.4.20':
+			$mailster_options['auto_send_at_once'] = false;
+			$mailster_options['antiflood']         = 10;
+
+			$mailster_options['db_update_required']   = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
+
+		case '3.0':
+			// beta users do not need to run the update process again
+			if ( $old_version_sanitized == '3.0' ) {
+				$mailster_options['db_update_required'] = false;
+			}
+
+		case '3.0.1':
+		case '3.0.2':
+		case '3.0.3':
+		case '3.0.4':
+			mailster( 'cron' )->unschedule();
+		case '3.1':
+		case '3.1.1':
+		case '3.1.2':
+		case '3.1.3':
+		case '3.1.4':
+		case '3.1.5':
+		case '3.1.6':
+			$mailster_options['db_update_required']   = true;
+			$mailster_options['db_update_background'] = true;
 
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
+
+			if ( ! $mailster_options['db_update_required'] ) {
+				mailster( 'update' )->ask_for_auto_update();
+			}
+
+			$texts = wp_parse_args( $texts, $default_texts );
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );

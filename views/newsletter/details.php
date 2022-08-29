@@ -57,7 +57,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 <?php else : ?>
 	<?php
 	$sent    = $this->get_sent( $post->ID );
-	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $sent;
+	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $this->get_sent( $post->ID, true );
 	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );
@@ -119,6 +119,11 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<?php
 	if ( ! in_array( $post->post_status, array( 'finished', 'autoresponder' ) ) ) :
 		echo '<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . esc_html__( 'sent', 'mailster' ) . '';
+	endif;
+	?>
+	<?php
+	if ( $sent != $totals && in_array( $post->post_status, array( 'autoresponder' ) ) ) :
+		echo '<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . esc_html__( 'receivers', 'mailster' ) . '';
 	endif;
 	?>
 	<?php

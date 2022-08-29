@@ -2,8 +2,10 @@
 
 class MailsterUserAgent {
 
-	private $string = null;
-	private $parsed = null;
+	private $string      = null;
+	private $headers     = null;
+	private $fingerprint = null;
+	private $parsed      = null;
 
 	/**
 	 *
@@ -31,11 +33,58 @@ class MailsterUserAgent {
 	/**
 	 *
 	 *
-	 * @param unknown $string (optional)
 	 * @return unknown
 	 */
-	private function get_user_agent( $string = null ) {
+	private function get_user_agent() {
 		return isset( $_SERVER['HTTP_USER_AGENT'] ) ? trim( urldecode( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function get_headers() {
+		if ( $this->headers ) {
+			return $this->headers;
+		}
+		if ( function_exists( 'getallheaders' ) ) {
+			$this->headers = getallheaders();
+			return $this->headers;
+		}
+
+		$this->headers = array();
+
+		foreach ( $_SERVER as $name => $value ) {
+			if ( substr( $name, 0, 5 ) == 'HTTP_' ) {
+				$name                   = str_replace( ' ', '-', ucwords( strtolower( str_replace( '_', ' ', substr( $name, 5 ) ) ) ) );
+				$this->headers[ $name ] = $value;
+			} elseif ( $name == 'CONTENT_TYPE' ) {
+				$this->headers['Content-Type'] = $value;
+			} elseif ( $name == 'CONTENT_LENGTH' ) {
+				$this->headers['Content-Length'] = $value;
+			}
+		}
+		return $this->headers;
+
+	}
+
+
+	private function get_fingerprint() {
+		if ( $this->fingerprint ) {
+			return $this->fingerprint;
+		}
+
+		$keys = array( 'User-Agent', 'Accept-Encoding', 'Connection', 'Accept-Language', 'Accept', 'Content-Length', 'Content-Type' );
+
+		$headers = $this->get_headers();
+
+		$values  = array_filter( array_intersect_key( $headers, array_flip( $keys ) ) );
+		$this->fingerprint    = md5( strtolower( json_encode( $values ) ) );
+
+		return $this->fingerprint;
+
 	}
 
 	/**
@@ -265,6 +314,12 @@ class MailsterUserAgent {
 				$object->version = $hit[1];
 				$object->type    = 'webmail';
 			}
+		} elseif ( 'Mozilla/5.0' == $this->string ) {
+
+			$object->client  = 'Apple Device';
+			$object->version = '';
+			$object->type    = '';
+
 		} elseif ( preg_match( '#Mozilla/([0-9a-z.]+)#i', $this->string, $hit ) ) {
 			$object->client  = 'Web Client (Mozilla based)';
 			$object->version = $hit[1];

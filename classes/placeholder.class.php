@@ -197,7 +197,7 @@ class MailsterPlaceholder {
 	 */
 	public function add_defaults( $campaign_id = null, $args = array() ) {
 
-		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
+		$time = explode( '|', date( 'Y|m|d|H|i', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
 			'email'  => '<a href="mailto:{emailaddress}">{emailaddress}</a>',
@@ -384,7 +384,7 @@ class MailsterPlaceholder {
 
 		$social = array( 'twitter', 'facebook', 'google', 'linkedin' );
 
-		$social = implode( '|', apply_filters( 'mymail_share_services', apply_filters( 'mailster_share_services', $social ) ) );
+		$social = implode( '|', apply_filters( 'mailster_share_services', $social ) );
 
 		if ( $count = preg_match_all( '#\{(share:(' . $social . ') ?([^}]+)?)\}#i', $this->content, $hits ) ) {
 
@@ -435,7 +435,7 @@ class MailsterPlaceholder {
 
 		$content = '<img alt="' . esc_attr( sprintf( esc_html__( 'Share this on %s', 'mailster' ), $this->social_services[ $service ]['name'] ) ) . '" src="' . MAILSTER_URI . 'assets/img/share/share_' . $service . '.png" style="display:inline;display:inline !important;" />';
 
-		$content = apply_filters( 'mymail_share_button_' . $service, apply_filters( 'mailster_share_button_' . $service, $content ) );
+		$content = apply_filters( 'mailster_share_button_' . $service, $content );
 
 		return '<a href="' . $_url . '" class="social">' . $content . '</a>' . "\n";
 
@@ -818,6 +818,8 @@ class MailsterPlaceholder {
 									$src = array( $src, $width, $height );
 								}
 								$org_src = $src;
+							} else {
+								$org_src = array( '{' . $query['tag'] . '}', $width, $height );
 							}
 						}
 
@@ -966,19 +968,18 @@ class MailsterPlaceholder {
 
 					$post->post_excerpt = trim( $post->post_excerpt );
 
-					if ( empty( $post->post_excerpt ) ) {
-						if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
-							$content            = explode( $matches[0], $post->post_content, 2 );
-							$post->post_excerpt = trim( $content[0] );
-						}
-						if ( ! $post->post_excerpt ) {
-							$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
-						}
+					if ( empty( $post->post_excerpt ) && preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
+						$content            = explode( $matches[0], $post->post_content, 2 );
+						$post->post_excerpt = trim( $content[0] );
 						$post->post_excerpt = mailster_remove_block_comments( $post->post_excerpt );
 					}
 
+					if ( empty( $post->post_excerpt ) ) {
+						$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
+					}
+
 					if ( $this->apply_the_excerpt_filters ) {
-						if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
+						if ( $length = apply_filters( 'mailster_excerpt_length', null ) ) {
 							$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
 						}
 						$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
@@ -1083,9 +1084,22 @@ class MailsterPlaceholder {
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
 
-					// using preview text fix from https://www.litmus.com/blog?p=4367
-					if ( $replace && '{preheader}' == $search && apply_filters( 'mailster_preview_text_fix', true ) ) {
-						$replace .= str_repeat( '&nbsp;&zwnj;', 220 - strlen( $replace ) );
+					if ( $replace && '{preheader}' == $search ) {
+
+						/**
+						 * Adds invisible characters after the preheader text also known as "preview text hack"
+						 * Read more here: https://www.litmus.com/blog?p=4367
+						 *
+						 * defaults:
+						 * `true`
+						 *
+						 * @param boolean $default default values
+						 */
+						$preview_text_fix = apply_filters( 'mailster_preview_text_fix', true );
+
+						if ( $preview_text_fix ) {
+							$replace .= str_repeat( ' &#847;', 300 - strlen( $replace ) );
+						}
 					}
 
 					// tag is a custom tag
@@ -1185,6 +1199,14 @@ class MailsterPlaceholder {
 				$categories = implode( ', ', $categories );
 			}
 			$extra = $categories;
+
+		} elseif ( false !== strpos( $what, '[' ) ) {
+			preg_match( '#(.*)\[(.*)\]#i', $what, $withformat );
+			if ( ! isset( $withformat[1] ) ) {
+				return null;
+			}
+			$what  = trim( $withformat[1] );
+			$extra = trim( $withformat[2] );
 		}
 
 		switch ( $what ) {
@@ -1247,7 +1269,7 @@ class MailsterPlaceholder {
 			case 'date_gmt':
 			case 'modified':
 			case 'modified_gmt':
-				$replace_to = date( mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date_i18n( $extra ? $extra : mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'time':
 				$what = 'date';
@@ -1257,7 +1279,7 @@ class MailsterPlaceholder {
 				$what = isset( $what ) ? $what : 'modified';
 			case 'modified_time_gmt':
 				$what       = isset( $what ) ? $what : 'modified_gmt';
-				$replace_to = date( mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date_i18n( $extra ? $extra : mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'excerpt':
 				if ( ! empty( $post->{'post_excerpt'} ) ) {

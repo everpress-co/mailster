@@ -158,7 +158,7 @@ class MailsterForms {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array(), MAILSTER_VERSION );
 
 		if ( $is_button ) {
 
@@ -652,10 +652,10 @@ class MailsterForms {
 				'style'           => '',
 				'custom_style'    => '',
 				'doubleoptin'     => true,
-				'subject'         => esc_html__( 'Please confirm', 'mailster' ),
-				'headline'        => esc_html__( 'Please confirm your Email Address', 'mailster' ),
-				'content'         => sprintf( esc_html__( 'You have to confirm your email address. Please click the link below to confirm. %s', 'mailster' ), "\n{link}" ),
-				'link'            => esc_html__( 'Click here to confirm', 'mailster' ),
+				'subject'         => sprintf( esc_html__( 'Welcome to %s! Please Confirm Your Email', 'mailster' ), '{company}' ),
+				'headline'        => esc_html__( 'Please confirm your Email', 'mailster' ),
+				'content'         => sprintf( esc_html__( 'By clicking on the following link, you are confirming your email address. %s', 'mailster' ), "\n\n{link}" ),
+				'link'            => esc_html__( 'Confirm your email address', 'mailster' ),
 				'resend'          => false,
 				'resend_count'    => 2,
 				'resend_time'     => 48,
@@ -713,11 +713,13 @@ class MailsterForms {
 			$error_msg = wp_list_pluck( $form->fields, 'error_msg' );
 			$required  = $form->required;
 			$lists     = $form->lists;
+			$tags      = $form->tags;
 
 			unset( $form->ID );
 			unset( $form->fields );
 			unset( $form->required );
 			unset( $form->lists );
+			unset( $form->tags );
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
@@ -736,6 +738,7 @@ class MailsterForms {
 			$new_id = $this->add( $form );
 			if ( ! is_wp_error( $new_id ) ) {
 				$this->assign_lists( $new_id, $lists );
+				$this->assign_tags( $new_id, $tags );
 				$this->update_fields( $new_id, $fields, $required, $error_msg );
 
 				do_action( 'mailster_form_duplicate', $id, $new_id );
@@ -1199,6 +1202,12 @@ class MailsterForms {
 
 		$sql = "SELECT lists.* FROM {$wpdb->prefix}mailster_lists AS lists LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS forms_lists ON lists.ID = forms_lists.list_id WHERE forms_lists.form_id = %d";
 
+		if ( $order_by = apply_filters( 'mailster_form_list_order', false, $id ) ) {
+			if ( in_array( $order_by, array( 'id', 'name', 'slug', 'added' ) ) ) {
+				$sql .= ' ORDER BY lists.' . esc_sql( $order_by );
+			}
+		}
+
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
@@ -1403,7 +1412,7 @@ class MailsterForms {
 
 		$button_src = MAILSTER_URI . 'assets/js/button' . $suffix . '.js';
 
-		$button_src = apply_filters( 'mymail_subscribe_button_src', apply_filters( 'mailster_subscribe_button_src', $button_src, $options ), $options );
+		$button_src = apply_filters( 'mailster_subscribe_button_src', $button_src, $options );
 
 		$options['endpoint'] = $this->url(
 			array(

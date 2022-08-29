@@ -35,7 +35,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_start">
 
-			<h2><?php esc_html_e( 'Welcome to Mailster', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Welcome to Mailster', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -45,7 +45,7 @@ $utm = array(
 
 			<p><?php esc_html_e( 'This wizard helps you to setup Mailster. All options available can be found later in the settings. You can always skip each step and adjust your settings later if you\'re not sure.', 'mailster' ); ?></p>
 
-			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 5 ); ?></p>
+			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 6 ); ?></p>
 
 			<dl>
 				<dt><?php esc_html_e( 'Basic Information', 'mailster' ); ?></dt>
@@ -88,7 +88,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_basics">
 
-			<h2><?php esc_html_e( 'Basic Information', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Basic Information', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -149,11 +149,11 @@ $utm = array(
 				</tr>
 				<tr valign="top">
 					<th scope="row"><?php esc_html_e( 'Address', 'mailster' ); ?></th>
-					<td><textarea name="mailster_options[tags][address]" class="large-text" rows="5"><?php echo esc_attr( $tags['address'] ); ?></textarea></td>
+					<td><textarea name="mailster_options[tags][address]" class="regular-text" rows="5"><?php echo esc_textarea( $tags['address'] ); ?></textarea></td>
 				</tr>
 				<tr valign="top">
 					<th scope="row"><?php esc_html_e( 'CAN-SPAM', 'mailster' ); ?></th>
-					<td><input type="text" name="mailster_options[tags][can-spam]" value="<?php echo esc_attr( $tags['can-spam'] ); ?>" class="large-text"> <p class="description"><?php esc_html_e( 'This line is required in most countries. Your subscribers need to know why and where they have subscribed.', 'mailster' ); ?></p></td>
+					<td><textarea name="mailster_options[tags][can-spam]" class="regular-text" rows="5"><?php echo esc_textarea( $tags['can-spam'] ); ?></textarea><p class="description"><?php esc_html_e( 'This line is required in most countries. Your subscribers need to know why and where they have subscribed.', 'mailster' ); ?></p></td>
 				</tr>
 
 			</table>
@@ -178,7 +178,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_homepage">
 
-			<h2><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -207,7 +207,7 @@ $utm = array(
 				<?php $url = trailingslashit( get_bloginfo( 'url' ) ); ?>
 				<label><?php echo esc_html_x( 'Location', 'the URL not the place', 'mailster' ); ?>:</label>
 				<span>
-					<a href="<?php echo $url . sanitize_title( $homepage['post_name'] ); ?>" class="external"><?php echo $url; ?><strong><?php echo sanitize_title( $homepage['post_name'] ); ?></strong>/</a>
+					<a href="<?php echo $url . sanitize_title( $homepage['post_name'] ); ?>" class="external"><?php echo esc_url( $url ); ?><strong><?php echo sanitize_title( $homepage['post_name'] ); ?></strong>/</a>
 					<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ); ?></a>
 				</span>
 				<span class="edit-slug-area">
@@ -236,9 +236,37 @@ $utm = array(
 
 		</div>
 
+		<div class="mailster-setup-step" id="step_subscribers">
+
+			<h2 class="section-title"><?php esc_html_e( 'Subscribers', 'mailster' ); ?></h2>
+
+			<div class="mailster-setup-step-body">
+
+				<p>
+					<?php esc_html_e( 'You can import your contacts right here or skip this step if you like to start fresh.', 'mailster' ); ?>
+					<?php esc_html_e( 'You can always import your lists at a later point in time.', 'mailster' ); ?>
+				</p>
+
+
+				<?php require MAILSTER_DIR . 'views/manage/import.php'; ?>
+
+			</div>
+
+			<div class="mailster-setup-step-buttons">
+
+				<span class="alignleft status"></span>
+				<i class="spinner"></i>
+
+				<a class="button button-large skip-step" href="#delivery"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
+				<a class="button button-large button-primary next-step" href="#delivery"><?php echo esc_html_e( 'Next Step', 'mailster' ); ?></a>
+
+			</div>
+
+		</div>
+
 		<div class="mailster-setup-step" id="step_delivery">
 
-			<h2><?php esc_html_e( 'Delivery', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Delivery', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -256,8 +284,8 @@ $utm = array(
 				<a class="nav-tab<?php echo 'sparkpost' == $method ? ' nav-tab-active' : ''; ?>" href="#sparkpost">SparkPost</a>
 				<a class="nav-tab<?php echo 'mailgun' == $method ? ' nav-tab-active' : ''; ?>" href="#mailgun">Mailgun</a>
 				<a class="nav-tab<?php echo 'sendgrid' == $method ? ' nav-tab-active' : ''; ?>" href="#sendgrid">SendGrid</a>
-				<a class="nav-tab<?php echo 'mandrill' == $method ? ' nav-tab-active' : ''; ?>" href="#mandrill">Mandrill</a>
-				<a class="nav-tab<?php echo 'dummymailer' == $method ? ' nav-tab-active' : ''; ?>" href="#dummymailer">DummyMailer</a>
+				<a class="nav-tab<?php echo 'mailersend' == $method ? ' nav-tab-active' : ''; ?>" href="#mailersend">MailerSend</a>
+				<a class="nav-tab<?php echo 'mailjet' == $method ? ' nav-tab-active' : ''; ?>" href="#mailjet">MailJet</a>
 			</div>
 
 			<input type="hidden" name="mailster_options[deliverymethod]" id="deliverymethod" value="<?php echo esc_attr( $method ); ?>" class="regular-text">
@@ -276,11 +304,10 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-gmail/" class="external">
-					<img src="//ps.w.org/mailster-gmail/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Gmail Integration</span>
+					<img src="https://ps.w.org/mailster-gmail/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-gmail" data-method="gmail">
+				<a class="button button-primary quick-install" data-plugin="mailster-gmail/mailster-gmail.php" data-method="gmail">
 					<?php echo in_array( 'mailster-gmail', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Gmail' ); ?>
 				</a>
 				<?php endif; ?>
@@ -293,11 +320,10 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-amazonses/" class="external">
-					<img src="//ps.w.org/mailster-amazonses/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Amazon SES Integration</span>
+					<img src="https://ps.w.org/mailster-amazonses/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-amazonses" data-method="amazonses">
+				<a class="button button-primary quick-install" data-plugin="mailster-amazonses/mailster-amazonses.php" data-method="amazonses">
 					<?php echo in_array( 'mailster-amazonses', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Amazon SES' ); ?>
 				</a>
 				<?php endif; ?>
@@ -310,11 +336,10 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-sparkpost/" class="external">
-					<img src="//ps.w.org/mailster-sparkpost/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster SparkPost Integration</span>
+					<img src="https://ps.w.org/mailster-sparkpost/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-sparkpost" data-method="sparkpost">
+				<a class="button button-primary quick-install" data-plugin="mailster-sparkpost/mailster-sparkpost.php" data-method="sparkpost">
 					<?php echo in_array( 'mailster-sparkpost', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'SparkPost' ); ?>
 				</a>
 				<?php endif; ?>
@@ -327,11 +352,10 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-mailgun/" class="external">
-					<img src="//ps.w.org/mailster-mailgun/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Mailgun Integration</span>
+					<img src="https://ps.w.org/mailster-mailgun/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-mailgun" data-method="mailgun">
+				<a class="button button-primary quick-install" data-plugin="mailster-mailgun/mailster-mailgun.php" data-method="mailgun">
 					<?php echo in_array( 'mailster-mailgun', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Mailgun' ); ?>
 				</a>
 				<?php endif; ?>
@@ -344,46 +368,43 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-sendgrid/" class="external">
-					<img src="//ps.w.org/mailster-sendgrid/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster SendGrid Integration</span>
+					<img src="https://ps.w.org/mailster-sendgrid/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-sendgrid" data-method="sendgrid">
+				<a class="button button-primary quick-install" data-plugin="mailster-sendgrid/mailster-sendgrid.php" data-method="sendgrid">
 					<?php echo in_array( 'mailster-sendgrid', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'SendGrid' ); ?>
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-mandrill"<?php echo 'mandrill' == $method ? ' style="display:block"' : ''; ?>>
+			<div class="deliverytab" id="deliverytab-mailersend"<?php echo 'mailersend' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
-				if ( in_array( 'mailster-mandrill', $active_pluginslugs ) ) :
-					do_action( 'mailster_deliverymethod_tab_mandrill' );
+				if ( in_array( 'mailster-mailersend', $active_pluginslugs ) ) :
+					do_action( 'mailster_deliverymethod_tab_mailersend' );
 				else :
 					?>
 				<div class="wp-plugin">
-				<a href="https://wordpress.org/plugins/mailster-mandrill/" class="external">
-					<img src="//ps.w.org/mailster-mandrill/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Mandrill Integration</span>
+				<a href="https://wordpress.org/plugins/mailster-mailersend/" class="external">
+					<img src="https://ps.w.org/mailster-mailersend/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-mandrill" data-method="mandrill">
-					<?php echo in_array( 'mailster-mandrill', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Mandrill' ); ?>
+				<a class="button button-primary quick-install" data-plugin="mailster-mailersend/mailster-mailersend.php" data-method="mailersend">
+					<?php echo in_array( 'mailster-mailersend', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'MailerSend' ); ?>
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-dummymailer"<?php echo 'dummymailer' == $method ? ' style="display:block"' : ''; ?>>
+			<div class="deliverytab" id="deliverytab-mailjet"<?php echo 'mailjet' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
-				if ( in_array( 'mailster-dummy-mailer', $active_pluginslugs ) ) :
-					do_action( 'mailster_deliverymethod_tab_dummymailer' );
+				if ( in_array( 'mailster-mailjet', $active_pluginslugs ) ) :
+					do_action( 'mailster_deliverymethod_tab_mailjet' );
 				else :
 					?>
 				<div class="wp-plugin">
-				<a href="https://wordpress.org/plugins/mailster-dummy-mailer/" class="external">
-					<img src="//ps.w.org/mailster-dummy-mailer/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Dummy Mailer</span>
+				<a href="https://wordpress.org/plugins/mailster-mailjet/" class="external">
+					<img src="https://ps.w.org/mailster-mailjet/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-dummy-mailer" data-method="dummymailer">
-					<?php echo in_array( 'mailster-dummy-mailer', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Dummy Mailer' ); ?>
+				<a class="button button-primary quick-install" data-plugin="mailster-mailjet/mailster-mailjet.php" data-method="mailjet">
+					<?php echo in_array( 'mailster-mailjet', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'MailJet' ); ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -406,7 +427,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_privacy">
 
-			<h2><?php esc_html_e( 'Privacy', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Privacy', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -436,7 +457,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_validation">
 
-			<h2><?php esc_html_e( 'Validation', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Validation', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -462,7 +483,7 @@ $utm = array(
 
 			<form class="mailster-setup-step-form">
 
-			<h2><?php esc_html_e( 'Great, you\'re done!', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Great, you\'re done!', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 

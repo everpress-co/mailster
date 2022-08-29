@@ -5,6 +5,8 @@ $id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 $is_new = isset( $_GET['new'] );
 
 if ( ! $is_new ) {
+	$this->maybe_update_rating( $id );
+
 	if ( ! ( $subscriber = $this->get( $id, true ) ) ) {
 		echo '<h2>' . esc_html__( 'This user does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
@@ -50,6 +52,8 @@ if ( $is_new ) {
 	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . esc_html( $nicename ) . '</strong>' );
 	if ( $subscriber->status == 4 ) {
 		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : esc_html__( 'unknown', 'mailster' ) ) . '</strong>' ) . '</p></div>';
+	} elseif ( $subscriber->status == 5 ) {
+		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber is marked as deleted and will get permanently deleted in approx. %s.', 'mailster' ), '<strong>' . human_time_diff( $subscriber->updated + strtotime( '14 days' ) - time() ) . '</strong>' ) . '</p></div>';
 	}
 	?>
 	<?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
@@ -64,9 +68,11 @@ if ( $is_new ) {
 		<?php if ( ! $is_new && $subscriber->status == 0 ) : ?>
 			<input type="submit" name="confirmation" class="button button-large" value="<?php esc_attr_e( 'Resend Confirmation', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to resend the confirmation?', 'mailster' ); ?>');">
 		<?php endif; ?>
-		<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
+		<?php if ( $subscriber->status != 5 ) : ?>
+			<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
 			<input type="submit" name="delete" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
-			<input type="submit" name="delete_actions" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber with Actions', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
+			<input type="submit" name="delete_actions" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber and Activities', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
+			<?php endif; ?>
 		<?php endif; ?>
 		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 	</span>
@@ -85,7 +91,7 @@ if ( $is_new ) {
 			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 
-				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
+				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces.', 'mailster' ); ?>&#013;&#013;<?php printf( esc_attr__( 'Last Update: %s ago.', 'mailster' ), human_time_diff( $meta->update_rating ) ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
 				<?php
 					$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
 					$full  = max( 0, min( 5, floor( $stars ) ) );
@@ -136,7 +142,7 @@ if ( $is_new ) {
 						<?php
 						$statuses = $this->get_status( null, true );
 						foreach ( $statuses as $id => $status ) :
-							if ( $id == 4 && $subscriber->status != 4 ) {
+							if ( $id >= 4 && $subscriber->status != $id ) {
 								continue;
 							}
 							?>
@@ -153,21 +159,21 @@ if ( $is_new ) {
 				<strong><?php esc_html_e( 'subscribed at', 'mailster' ); ?>:</strong>
 				  <?php
 					echo $subscriber->signup
-					? date( $timeformat, $subscriber->signup + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->signup ) )
+					? date_i18n( $timeformat, $subscriber->signup + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->signup ) )
 					: esc_html__( 'unknown', 'mailster' )
 					?>
 
 				<div><?php $this->output_referer( $subscriber->ID ); ?></div>
 
 				<?php if ( $meta->gdpr ) : ?>
-				<strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' ); ?>:</strong> <?php echo date( $timeformat, $meta->gdpr + $timeoffset ); ?>
+				<strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' ); ?>:</strong> <?php echo date_i18n( $timeformat, $meta->gdpr + $timeoffset ); ?>
 				<?php endif; ?>
 				<a class="show-more-info alignright"><?php esc_html_e( 'more', 'mailster' ); ?></a>
 				<ul class="more-info">
 					<li><strong><?php esc_html_e( 'confirmed at', 'mailster' ); ?>:</strong>
 					  <?php
 						echo $subscriber->confirm
-						? date( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( esc_html__( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
+						? date_i18n( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( esc_html__( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
 						: esc_html__( 'unknown', 'mailster' )
 						?>
 					</li>
@@ -178,7 +184,7 @@ if ( $is_new ) {
 				<strong><?php esc_html_e( 'latest updated', 'mailster' ); ?>:</strong>
 				  <?php
 					echo $subscriber->updated
-					? date( $timeformat, $subscriber->updated + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->updated ) )
+					? date_i18n( $timeformat, $subscriber->updated + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->updated ) )
 					: esc_html__( 'never', 'mailster' )
 					?>
 			</div>
@@ -226,7 +232,7 @@ if ( $is_new ) {
 
 						case 'date':
 							?>
-						<li><?php echo esc_html( $subscriber->{$field} ) ? '<p>' . date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
+						<li><?php echo esc_html( $subscriber->{$field} ) ? '<p>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
 						<li><input type="text" id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]" value="<?php echo esc_attr( $subscriber->{$field} ); ?>" class="regular-text input datepicker"></li>
 							<?php
 							break;
@@ -280,7 +286,7 @@ if ( $is_new ) {
 					echo '<li>';
 					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
 					if ( in_array( $list->ID, $checked ) ) {
-						echo '<span class="confirmation-status">' . ( isset( $confirmed[ $list->ID ] ) ? esc_html__( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : esc_html__( 'not confirmed', 'mailster' ) ) . '</span>';
+						echo '<span class="confirmation-status">' . ( isset( $confirmed[ $list->ID ] ) ? esc_html__( 'confirmed at', 'mailster' ) . ': ' . date_i18n( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : esc_html__( 'not confirmed', 'mailster' ) ) . '</span>';
 					}
 					echo '</li>';
 				endforeach;
@@ -316,7 +322,7 @@ if ( $is_new ) {
 							'size'           => '300x250',
 							'visual_refresh' => true,
 							'scale'          => 2,
-							'language'       => get_locale(),
+							'language'       => get_user_locale(),
 							'key'            => mailster_option( 'google_api_key' ),
 						),
 						'//maps.googleapis.com/maps/api/staticmap'
@@ -341,7 +347,7 @@ if ( $is_new ) {
 							'size'           => '300x250',
 							'visual_refresh' => true,
 							'scale'          => 2,
-							'language'       => get_locale(),
+							'language'       => get_user_locale(),
 							'key'            => mailster_option( 'google_api_key' ),
 						),
 						'//maps.googleapis.com/maps/api/staticmap'
@@ -356,7 +362,7 @@ if ( $is_new ) {
 					if ( ! is_null( $meta->timeoffset ) ) :
 						$t = time() + ( $meta->timeoffset * 3600 );
 						?>
-						<?php echo '<br>' . esc_html__( 'Local Time', 'mailster' ) . ': <span title="' . date( $timeformat, $t ) . '">' . date( $timeformat, $t ) . '</span>'; ?>
+						<?php echo '<br>' . esc_html__( 'Local Time', 'mailster' ) . ': <span title="' . date_i18n( $timeformat, $t ) . '">' . date_i18n( $timeformat, $t ) . '</span>'; ?>
 						<?php echo '<br>UTC ' . ( $meta->timeoffset < 0 ? '' : '+' ) . $meta->timeoffset; ?>
 					<?php endif; ?>
 				</p>
@@ -444,8 +450,8 @@ if ( ! $is_new ) :
 				</thead>
 				<tbody>
 					<?php foreach ( $activities as $i => $activity ) : ?>
-					<tr class="<?php echo ! ( $i % 2 ) ? ' alternate' : ''; ?>">
-						<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
+					<tr class="<?php echo ! ( $i % 2 ) ? ' alternate' : ''; ?>" data-id="<?php echo esc_attr( $activity->ID ); ?>">
+						<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date_i18n( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
 						<td>
 						<?php
 						switch ( $activity->type ) {
@@ -490,9 +496,13 @@ if ( ! $is_new ) :
 						?>
 
 						</td>
-						<td><a href="<?php echo admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ); ?>"><?php echo $activity->campaign_title; ?></a></td>
+						<td>
+						<?php if ( $activity->campaign_id ) : ?>
+							<a href="<?php echo admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ); ?>"><?php esc_html_e( $activity->campaign_title ); ?></a><?php echo ( $activity->i ) ? ' (#' . ( $activity->i + 1 ) . ')' : ''; ?>
+						<?php endif; ?>
+						</td>
 						<td width="50%">
-						<?php if ( $activity->campaign_status == 'trash' ) : ?>
+						<?php if ( $activity->campaign_status == 'trash' || ! $activity->campaign_id ) : ?>
 							<?php esc_html_e( 'campaign deleted', 'mailster' ); ?>
 
 						<?php elseif ( $activity->type == 'sent' && current_user_can( 'publish_newsletters' ) ) : ?>

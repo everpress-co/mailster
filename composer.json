@@ -1,0 +1,43 @@
+{
+	"require": {
+		"inlinestyle/inlinestyle": "1.*",
+		"composer/installers": "^1.12.0",
+		"php": "^7.0 || ^8.0"
+	},
+	"require-dev": {
+		"humbug/php-scoper": "^0.17.5",
+		"phpunit/phpunit": "^7.0",
+		"yoast/phpunit-polyfills": "^1.0.1",
+		"yoast/wp-test-utils": "^1.0.0",
+		"mockery/mockery": "1.2",
+		"brain/monkey": "2.*",
+		"pronamic/wp-documentor": "^1.2",
+		"wp-coding-standards/wpcs": "^2.3",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"php-parallel-lint/php-parallel-lint": "^1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Mailster\\": "."
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Mailster\\Tests\\": "./tests"
+		}
+	},
+	"scripts": {
+		"test": "phpunit --config=phpunit-unit.xml",
+		"test:wordpress": "phpunit --config=phpunit-integration.xml",
+		"fix-cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf",
+		"lint": "@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --show-deprecated --exclude vendor --exclude node_modules --exclude .git"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"composer/installers": true,
+			"php-parallel-lint/php-parallel-lint": true
+		}
+	}
+}

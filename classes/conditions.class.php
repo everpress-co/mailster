@@ -20,6 +20,10 @@ class MailsterConditions {
 
 	public function view( $conditions = array(), $inputname = null ) {
 
+		if ( empty( $conditions ) ) {
+			$conditions = array();
+		}
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -83,7 +87,6 @@ class MailsterConditions {
 				'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
 				'lastname'  => array( 'name' => mailster_text( 'lastname' ) ),
 				'rating'    => array( 'name' => esc_html__( 'Rating', 'mailster' ) ),
-				// 'tag'       => array( 'name' => esc_html__( 'Tag', 'mailster' ) ),
 			)
 		);
 
@@ -231,6 +234,13 @@ class MailsterConditions {
 			'is_smaller'       => esc_html__( 'is before', 'mailster' ),
 			'is_greater_equal' => esc_html__( 'is after or on the', 'mailster' ),
 			'is_smaller_equal' => esc_html__( 'is before or on the', 'mailster' ),
+		);
+
+	}
+	private function get_relative_date_operators() {
+		return array(
+			'is_older'   => esc_html__( 'is older than', 'mailster' ),
+			'is_younger' => esc_html__( 'is younger than', 'mailster' ),
 		);
 
 	}
@@ -435,6 +445,9 @@ class MailsterConditions {
 				if ( in_array( $field, $this->time_fields ) && isset( $this->date_operators[ $string ] ) ) {
 					return $this->date_operators[ $string ];
 				}
+				if ( in_array( $field, $this->time_fields ) && isset( $this->relative_date_operators[ $string ] ) ) {
+					return $this->relative_date_operators[ $string ];
+				}
 				if ( isset( $this->operators[ $string ] ) ) {
 					return $this->operators[ $string ];
 				}
@@ -447,8 +460,10 @@ class MailsterConditions {
 				break;
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
-					if ( $string ) {
-						return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					if ( preg_match( '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $string ) ) {
+						return date_i18n( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					} elseif ( $string ) {
+						return human_time_diff( strtotime( $string ) );
 					} else {
 						return '';
 					}

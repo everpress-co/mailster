@@ -12,7 +12,7 @@ function mailster( $subclass = null ) {
 	$args     = func_get_args();
 	$subclass = array_shift( $args );
 
-	if ( is_null( $subclass ) ) {
+	if ( is_null( $subclass ) || ! is_string( $subclass ) ) {
 		return $mailster;
 	}
 
@@ -168,7 +168,7 @@ function mailster_text( $option, $fallback = '' ) {
 
 	$string = isset( $mailster_texts[ $option ] ) ? $mailster_texts[ $option ] : $fallback;
 
-	return apply_filters( 'mymail_text', apply_filters( 'mailster_text', $string, $option, $fallback ), $option, $fallback );
+	return apply_filters( 'mailster_text', $string, $option, $fallback );
 }
 
 
@@ -499,7 +499,7 @@ function mailster_list_newsletter( $args = '' ) {
 
 	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array).
 	$exclude_array = ( $r['exclude'] ) ? explode( ',', $r['exclude'] ) : array();
-	$r['exclude']  = implode( ',', apply_filters( 'mymail_list_newsletter_excludes', apply_filters( 'mailster_list_newsletter_excludes', $exclude_array ) ) );
+	$r['exclude']  = implode( ',', apply_filters( 'mailster_list_newsletter_excludes', $exclude_array ) );
 
 	$newsletters = get_posts( $r );
 
@@ -517,7 +517,7 @@ function mailster_list_newsletter( $args = '' ) {
 		}
 	}
 
-	$output = apply_filters( 'mymail_list_newsletter', apply_filters( 'mailster_list_newsletter', $output, $r ), $r );
+	$output = apply_filters( 'mailster_list_newsletter', $output, $r );
 
 	if ( $r['echo'] ) {
 		echo $output;
@@ -547,6 +547,9 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
 			$ip = mailster_get_ip();
 		}
 
+		if ( mailster_is_local( $ip ) ) {
+			return 'unknown';
+		}
 		$ip2Country = mailster( 'geo' )->Ip2Country();
 
 		$code = $ip2Country->get( $ip, $get );
@@ -591,7 +594,7 @@ function mailster_ip2City( $ip = '', $get = null ) {
  */
 function mailster_get_ip() {
 
-	$ip = apply_filters( 'mymail_get_ip', apply_filters( 'mailster_get_ip', null ) );
+	$ip = apply_filters( 'mailster_get_ip', null );
 
 	if ( ! is_null( $ip ) ) {
 		return $ip;
@@ -617,7 +620,11 @@ function mailster_get_ip() {
  *
  * @return unknown
  */
-function mailster_is_local() {
+function mailster_is_local( $ip = null ) {
+
+	if ( is_null( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
 
 	return ! filter_var( mailster_get_ip(), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
 
@@ -630,7 +637,11 @@ function mailster_is_local() {
  * @param unknown $ip
  * @return unknown
  */
-function mailster_validate_ip( $ip ) {
+function mailster_validate_ip( $ip = null ) {
+
+	if ( is_null( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
 
 	if ( strtolower( $ip ) === 'unknown' ) {
 		return false;
@@ -662,7 +673,7 @@ function mailster_get_lang( $fallback = false ) {
  */
 function mailster_get_user_client( $string = null ) {
 
-	$client = apply_filters( 'mymail_get_user_client', apply_filters( 'mailster_get_user_client', null ) );
+	$client = apply_filters( 'mailster_get_user_client', null );
 
 	if ( ! is_null( $client ) ) {
 		return $client;
@@ -922,7 +933,7 @@ function mailster_remove_notice( $key ) {
 		return update_option( 'mailster_notices', $mailster_notices );
 	}
 
-	return false;
+	return true;
 
 }
 
@@ -1260,6 +1271,15 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	return $wp_filesystem;
 
 }
+
+if ( ! function_exists( 'get_user_locale' ) ) :
+
+	// for WP < 4.7
+	function get_user_locale() {
+		return get_locale();
+	}
+
+endif;
 
 
 if ( ! function_exists( 'http_negotiate_language' ) ) :

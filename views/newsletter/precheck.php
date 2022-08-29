@@ -111,37 +111,33 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 						<summary><?php esc_html_e( 'Authentication', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 						<div class="precheck-body">
 							<details id="precheck-spf">
-								<summary>SPF<span class="precheck-penality"></span></summary>
-								<div class="precheck-result"></div>
-							</details>
-							<details id="precheck-senderid">
-								<summary>Sender ID<span class="precheck-penality"></span></summary>
+								<summary><acronym title="Sender Policy Framework">SPF</acronym><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-dkim">
-								<summary>DKIM<span class="precheck-penality"></span></summary>
+								<summary><acronym title="DomainKeys Identified Mail">DKIM</acronym><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-dmarc">
-								<summary>DMARC<span class="precheck-penality"></span></summary>
+								<summary><acronym title="Domain-based Message Authentication, Reporting & Conformance">DMARC</acronym><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-rdns">
-								<summary>RDNS<span class="precheck-penality"></span></summary>
+								<summary><acronym title="Reverse Domain Name Server lookup">rDNS</acronym><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-mx">
-								<summary>MX<span class="precheck-penality"></span></summary>
+								<summary><acronym title="Mail Exchanger Record">MX</acronym><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-a">
-								<summary>A<span class="precheck-penality"></span></summary>
+								<summary><acronym title="Address record">A</acronym><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 						</div>
 					</details>
-					<details id="precheck-blacklist">
-						<summary>Blacklist<span class="precheck-penality"></span></summary>
+					<details id="precheck-blocklist">
+						<summary>Blocklist<span class="precheck-penality"></span></summary>
 						<div class="precheck-result"></div>
 					</details>
 

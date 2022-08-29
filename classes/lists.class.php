@@ -338,7 +338,7 @@ class MailsterLists {
 		$data    = array();
 		$list_id = null;
 
-		$entry = apply_filters( 'mymail_verify_list', apply_filters( 'mailster_verify_list', $entry ) );
+		$entry = apply_filters( 'mailster_verify_list', $entry );
 		if ( is_wp_error( $entry ) ) {
 			return $entry;
 		} elseif ( $entry === false ) {
@@ -640,9 +640,9 @@ class MailsterLists {
 		}
 
 		// set the status for the list from the global status from the user
-		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
+		// $sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
 
-		$success = $success && ( false !== $wpdb->query( $sql ) );
+		// $success = $success && ( false !== $wpdb->query( $sql ) );
 
 		return $success;
 
@@ -883,7 +883,7 @@ class MailsterLists {
 			if ( is_null( $status ) ) {
 				$status = array( 1 );
 			} elseif ( $status === false ) {
-				$status = array( 0, 1, 2, 3, 4, 5, 6 );
+				$status = array( 0, 1, 2, 3, 4 );
 			}
 			$statuses = ! is_array( $status ) ? array( $status ) : $status;
 			$statuses = array_filter( $statuses, 'is_numeric' );
@@ -1140,32 +1140,51 @@ class MailsterLists {
 	 * @param unknown $show_count (optional)
 	 * @param unknown $checked    (optional)
 	 */
-	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
+	public function return_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
 
-		if ( $lists = $this->get( $id, $status, ! ! $show_count ) ) {
+		$html = '';
+
+		if ( $lists = $this->get( $id, $status, (bool) $show_count ) ) {
 
 			if ( ! is_array( $checked ) ) {
 				$checked = array( $checked );
 			}
 
 			if ( $type == 'checkbox' ) {
-				echo '<ul>';
+				$html .= '<ul>';
 				foreach ( $lists as $list ) {
-					echo '<li><label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="' . $name . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
+					$html .= '<li data-id="' . esc_attr( $list->ID ) . '"><label title="' . esc_attr( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . esc_attr( $list->ID ) . '" name="' . esc_attr( $name ) . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . esc_attr( $list->parent_id ? ' list-parent-' . esc_attr( $list->parent_id ) : '' ) . '"> ' . esc_html( $list->name ) . ' <span class="count">' . ( $show_count ? '(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . esc_html( $show_count ) : '' ) . ')' : '&nbsp;' ) . '</span></label></li>';
 				}
-				echo '</ul>';
+				$html .= '</ul>';
 			} else {
-				echo '<select class="widefat" multiple name="' . $name . '">';
+				$html .= '<select class="widefat" multiple name="' . esc_attr( $name ) . '">';
 				foreach ( $lists as $list ) {
-					echo '<option value="' . $list->ID . '" ' . selected( in_array( $list->ID, $checked ), true, false ) . '>' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . $list->name . '' . ( $show_count ? ' (' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')' : '' ) . '</option>';
+					$html .= '<option data-id="' . esc_attr( $list->ID ) . '" value=' . esc_attr( $list->ID ) . '" ' . selected( in_array( $list->ID, $checked ), true, false ) . '>' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . esc_html( $list->name ) . ( $show_count ? ' (' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . esc_html( $show_count ) : '' ) . ')' : '' ) . '</option>';
 				}
-				echo '</select>';
+				$html .= '</select>';
 			}
 		} else {
 			if ( is_admin() ) {
-				echo '<ul><li>' . esc_html__( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . esc_html__( 'Create a List now', 'mailster' ) . '</a></li></ul>';
+				$html .= '<ul><li>' . esc_html__( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . esc_html__( 'Create a List now', 'mailster' ) . '</a></li></ul>';
 			}
 		}
+
+		return $html;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id         (optional)
+	 * @param unknown $status     (optional)
+	 * @param unknown $name       (optional)
+	 * @param unknown $show_count (optional)
+	 * @param unknown $checked    (optional)
+	 */
+	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
+
+		echo $this->return_it( $id, $status, $name, $show_count, $checked, $type );
 
 	}
 

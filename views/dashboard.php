@@ -14,18 +14,9 @@ if ( $this->update ) {
 <h1><?php esc_html_e( 'Dashboard', 'mailster' ); ?></h1>
 
 <?php if ( ! $this->verified && current_user_can( 'mailster_manage_licenses' ) ) : ?>
-	<div id="mailster-register-panel" class="welcome-panel" style="display:block !important">
-		<div class="welcome-panel-content">
-			<p class="about-description"></p>
-			<div class="welcome-panel-column-container">
-
-			<h2 class="welcome-header"><?php esc_html_e( 'Register for News, Support and Updates related to Mailster.', 'mailster' ); ?></h2>
-
-				<?php mailster( 'register' )->form(); ?>
-
-			</div>
-
-		</div>
+	<div id="mailster-register-panel" class="postbox" style="display:block !important">
+		<h2><?php esc_html_e( 'Register for News, Support and Updates related to Mailster.', 'mailster' ); ?></h2>
+		<?php mailster( 'register' )->form(); ?>
 	</div>
 <?php elseif ( ! mailster_option( 'usage_tracking' ) && mailster_option( 'ask_usage_tracking' ) && ( time() - get_option( 'mailster_updated' ) ) > HOUR_IN_SECONDS && current_user_can( 'manage_options' ) ) : ?>
 	<div class="info notice">
@@ -55,22 +46,16 @@ if ( $this->update ) {
 		</div>
 	</div>
 
-<?php $addons = mailster( 'helper' )->get_addons(); ?>
+<?php $addons = mailster( 'addons' )->get_available_addons(); ?>
 <?php if ( $addons && ! is_wp_error( $addons ) ) : ?>
-	<div id="addons-panel" class="welcome-panel">
-		<div class="welcome-panel-content">
-			<p class="about-description"></p>
-			<div class="welcome-panel-column-container">
+	<?php $templates = mailster( 'templates' )->get_available_templates(); ?>
+	<div id="addons-panel" class="postbox">
+		<h2><?php esc_html_e( 'Supercharge Mailster!', 'mailster' ); ?></h2>
+		<h3><?php printf( esc_html__( 'Mailster comes with %1$s extensions and supports %2$s premium templates. Get the most out of your email campaigns and start utilizing the vast amount of add ons.', 'mailster' ), count( $addons ), number_format_i18n( $templates ) ); ?></h3>
 
-					<h2><?php esc_html_e( 'Supercharge Mailster!', 'mailster' ); ?></h2>
-					<h3><?php printf( esc_html__( 'Mailster comes with %1$s extensions and supports %2$s premium templates. Get the most out of your email campaigns and start utilizing the vast amount of add ons.', 'mailster' ), count( $addons ), '80+' ); ?></h3>
-
-					<div class="cta-buttons">
-						<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Browse Addons', 'mailster' ); ?></a>
-						<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_templates&more"><?php esc_html_e( 'Browse Templates', 'mailster' ); ?></a>
-					</div>
-
-			</div>
+		<div class="cta-buttons">
+			<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Browse Add ons', 'mailster' ); ?></a>
+			<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_templates&browse=featured"><?php esc_html_e( 'Browse Templates', 'mailster' ); ?></a>
 		</div>
 	</div>
 <?php endif; ?>
