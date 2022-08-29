@@ -384,7 +384,8 @@ mailster = (function (mailster, $, window, document) {
 
 	var changetimeout,
 		change = false,
-		uploader = false;
+		uploader = false,
+		emojipicker;
 
 	mailster.events = mailster.events || [];
 
@@ -1162,6 +1163,35 @@ mailster = (function (mailster, $, window, document) {
 			},
 		});
 
+		if (window.EmojiButton) {
+			editor.addButton('mailster_emoji', {
+				title: mailster_mce_button.l10n.emoji.title,
+				icon: 'icon mailster-emoji-icon',
+				onclick: function (event) {
+					event.preventDefault();
+					var offset = event.currentTarget.getBoundingClientRect(),
+						iOffset = mailster.dom.iframe.getBoundingClientRect();
+					emojipicker = new EmojiButton({
+						rootElement: mailster.dom.wpbody,
+						autoFocusSearch: false,
+						emojiVersion: '3.0',
+						showVariants: false,
+						zIndex: 1000,
+					});
+
+					emojipicker.showPicker();
+					emojipicker.pickerEl.style.position = 'absolute';
+					emojipicker.pickerEl.style.top =
+						iOffset.top + mailster.util.top() + offset.top + 'px';
+					emojipicker.pickerEl.style.left =
+						iOffset.left + offset.left + 'px';
+					emojipicker.on('emoji', function (emoji) {
+						editor.insertContent(emoji + ' ');
+					});
+				},
+			});
+		}
+
 		editor
 			.on('change', function (event) {
 				var _self = this;
@@ -1186,6 +1216,9 @@ mailster = (function (mailster, $, window, document) {
 				$(event.currentTarget).prop('spellcheck', true);
 			})
 			.on('click', function (event) {
+				if (emojipicker) {
+					emojipicker.hidePicker();
+				}
 				var module = $(event.currentTarget).closest('module');
 				if (mailster.modules.selected[0] != module[0]) {
 					mailster.trigger('selectModule', module);
