@@ -46,6 +46,11 @@ class MailsterSecurity {
 		$email = $entry['email'];
 		$ip    = mailster_get_ip();
 
+		if ( ! is_email( $email ) ) {
+			// checked somewhere else
+			return $entry;
+		}
+
 		list( $user, $domain ) = explode( '@', $email );
 
 		// check for email addresses

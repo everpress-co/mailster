@@ -753,7 +753,7 @@ class MailsterMail {
 				$this->content = $this->make_img_relative( $this->content );
 				// fix for https://github.com/PHPMailer/PHPMailer/issues/2107
 				$this->content = str_replace( array( ' src=""', ' background=""' ), '', $this->content );
-				$this->mailer->msgHTML( $this->content, trailingslashit( dirname( MAILSTER_UPLOAD_DIR ) ) );
+				$this->mailer->msgHTML( $this->content, trailingslashit( dirname( dirname( MAILSTER_UPLOAD_DIR ) ) ) );
 			} else {
 				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );
 			}
@@ -983,7 +983,7 @@ class MailsterMail {
 	 * @return unknown
 	 */
 	public function make_img_relative( $html ) {
-		$html = str_replace( ' src="' . trailingslashit( dirname( MAILSTER_UPLOAD_URI ) ), ' src="', $html );
+		$html = str_replace( ' src="' . trailingslashit( dirname( dirname( MAILSTER_UPLOAD_URI ) ) ), ' src="', $html );
 		return $html;
 	}
 

@@ -49,36 +49,39 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/export.class.php';
 		require_once MAILSTER_DIR . 'classes/empty.class.php';
 
-		$this->_classes = array(
-			'settings'     => new MailsterSettings(),
-			'translations' => new MailsterTranslations(),
-			'campaigns'    => new MailsterCampaigns(),
-			'subscribers'  => new MailsterSubscribers(),
-			'statistics'   => new MailsterStatistics(),
-			'lists'        => new MailsterLists(),
-			'tags'         => new MailsterTags(),
-			'forms'        => new MailsterForms(),
-			'precheck'     => new MailsterPrecheck(),
-			'manage'       => new MailsterManage(),
-			'templates'    => new MailsterTemplates(),
-			'addons'       => new MailsterAddons(),
-			'frontpage'    => new MailsterFrontpage(),
-			'ajax'         => new MailsterAjax(),
-			'tinymce'      => new MailsterTinymce(),
-			'cron'         => new MailsterCron(),
-			'queue'        => new MailsterQueue(),
-			'actions'      => new MailsterActions(),
-			'bounce'       => new MailsterBounce(),
-			'dashboard'    => new MailsterDashboard(),
-			'update'       => new MailsterUpdate(),
-			'upgrade'      => new MailsterUpgrade(),
-			'helpmenu'     => new MailsterHelpmenu(),
-			'register'     => new MailsterRegister(),
-			'geo'          => new MailsterGeo(),
-			'privacy'      => new MailsterPrivacy(),
-			'security'     => new MailsterSecurity(),
-			'export'       => new MailsterExport(),
-			'empty'        => new MailsterEmpty(),
+		$this->_classes = apply_filters(
+			'mailster_classes',
+			array(
+				'settings'     => new MailsterSettings(),
+				'translations' => new MailsterTranslations(),
+				'campaigns'    => new MailsterCampaigns(),
+				'subscribers'  => new MailsterSubscribers(),
+				'lists'        => new MailsterLists(),
+				'tags'         => new MailsterTags(),
+				'forms'        => new MailsterForms(),
+				'precheck'     => new MailsterPrecheck(),
+				'manage'       => new MailsterManage(),
+				'templates'    => new MailsterTemplates(),
+				'addons'       => new MailsterAddons(),
+				'frontpage'    => new MailsterFrontpage(),
+				'statistics'   => new MailsterStatistics(),
+				'ajax'         => new MailsterAjax(),
+				'tinymce'      => new MailsterTinymce(),
+				'cron'         => new MailsterCron(),
+				'queue'        => new MailsterQueue(),
+				'actions'      => new MailsterActions(),
+				'bounce'       => new MailsterBounce(),
+				'dashboard'    => new MailsterDashboard(),
+				'update'       => new MailsterUpdate(),
+				'upgrade'      => new MailsterUpgrade(),
+				'helpmenu'     => new MailsterHelpmenu(),
+				'register'     => new MailsterRegister(),
+				'geo'          => new MailsterGeo(),
+				'privacy'      => new MailsterPrivacy(),
+				'security'     => new MailsterSecurity(),
+				'export'       => new MailsterExport(),
+				'empty'        => new MailsterEmpty(),
+			)
 		);
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
@@ -1934,9 +1937,10 @@ class Mailster {
                 `error` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `ignore_status` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `options` varchar(191) NOT NULL DEFAULT '',
+                `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `tags` longtext NOT NULL,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`requeued`,`options`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`requeued`,`options`,`i`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),
                 KEY `requeued` (`requeued`),
@@ -1955,7 +1959,7 @@ class Mailster {
                 `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`i`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1968,7 +1972,7 @@ class Mailster {
                 `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`i`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1982,7 +1986,7 @@ class Mailster {
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`link_id`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`link_id`,`i`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1996,7 +2000,7 @@ class Mailster {
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `text` longtext NOT NULL,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`i`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -2011,7 +2015,7 @@ class Mailster {
                 `hard` tinyint(1) NOT NULL DEFAULT 0,
                 `text` longtext NOT NULL,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`hard`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`hard`,`i`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -2025,7 +2029,7 @@ class Mailster {
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `text` longtext NOT NULL,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`i`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -2141,6 +2145,8 @@ class Mailster {
 
 		);
 
+		$table_structure = apply_filters( 'mailster_table_structure', $table_structure, $collate );
+
 		// Display width specification for integer data types was deprecated in MySQL 8.0.17 (https://stackoverflow.com/questions/60892749/mysql-8-ignoring-integer-lengths)
 		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) && version_compare( $wpdb->db_version(), '10.3', '<=' ) ) {
 			$table_structure = array_map(
@@ -2151,7 +2157,7 @@ class Mailster {
 			);
 		}
 
-		return apply_filters( 'mailster_table_structure', $table_structure, $collate );
+		return $table_structure;
 	}
 
 

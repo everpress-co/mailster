@@ -130,32 +130,44 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('change', '.dynamic_embed_options_taxonomy', function () {
 			var $this = $(this),
-				val = $this.val();
-			$this.parent().find('.button').remove();
+				val = $this.val(),
+				parent = $this.parent();
+			parent.find('.button').remove();
 			if (val != -1) {
 				if (
-					$this.parent().find('select').length <
+					parent.find('select').length <
 					$this.find('option').length - 1
 				)
 					$(
 						' <a class="button button-small add_embed_options_taxonomy">' +
 							mailster.l10n.campaigns.add +
 							'</a>'
-					).insertAfter($this);
+					).appendTo(
+						$this.closest('.dynamic_embed_options_taxonomy_wrap')
+					);
 			} else {
-				$this.parent().html('').append($this);
+				parent.find('select').select2('destroy');
+				parent.html('').append($this);
+				$this.select2();
 			}
 
 			return false;
 		})
 		.on('click', '.add_embed_options_taxonomy', function () {
 			var $this = $(this),
-				el = $this.prev().clone();
+				select = $this.prev().prev(),
+				el;
+
+			select.select2('destroy');
+
+			el = select.clone();
+			select.select2();
 
 			el.insertBefore($this).val('-1');
 			$('<span> ' + mailster.l10n.campaigns.or + ' </span>').insertBefore(
 				el
 			);
+			el.select2();
 			$this.remove();
 
 			return false;
@@ -1375,10 +1387,17 @@ mailster = (function (mailster, $, window, document) {
 					labels: false,
 					names: true,
 					posttype: $(this).val(),
+					id: mailster.campaign_id,
 				},
 				function (response) {
 					if (response.success) {
 						cats.html(response.data.html);
+						$.fn.select2 &&
+							$('#autoresponder-taxonomies')
+								.find('select')
+								.select2({
+									tags: true,
+								});
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -1579,6 +1598,8 @@ mailster = (function (mailster, $, window, document) {
 			$('.deliverydate').html($(this).val());
 			$(this).addClass('inactive');
 		});
+
+	$('#autoresponder-post_type').trigger('change');
 
 	$.datepicker &&
 		mailster.$.delivery.find('input.datepicker').datepicker({
@@ -1906,6 +1927,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.events.push('documentReady', function () {
 		mailster.trigger('enable');
+		get_list_counts();
 	});
 
 	mailster.editable &&
@@ -1996,6 +2018,24 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		return data;
+	}
+
+	function get_list_counts() {
+		var list = $('#list-checkboxes');
+		mailster.util.ajax(
+			'get_list_counts',
+			{
+				formatted: true,
+			},
+			function (response) {
+				$.each(response.data.counts, function (id, count) {
+					list.find('li[data-id="' + id + '"]')
+						.find('.count')
+						.html(mailster.util.sprintf('(%s)', count));
+				});
+			},
+			function (jqXHR, textStatus, errorThrown) {}
+		);
 	}
 
 	function loader(show, html) {

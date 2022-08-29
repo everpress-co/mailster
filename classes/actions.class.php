@@ -1243,7 +1243,7 @@ class MailsterActions {
 		$sql .= " LEFT JOIN `{$wpdb->posts}` as posts ON posts.ID = actions.campaign_id";
 		$sql .= " LEFT JOIN `{$wpdb->prefix}mailster_links` AS links ON links.ID = actions.link_id";
 
-		$sql .= ' ORDER BY actions.timestamp DESC';
+		$sql .= ' ORDER BY actions.timestamp DESC, actions.i DESC';
 
 		if ( ! is_null( $limit ) ) {
 			$sql .= ' LIMIT ' . (int) $limit;

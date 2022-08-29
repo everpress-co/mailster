@@ -815,6 +815,15 @@ label.weekday input {
 	_background: -webkit-linear-gradient(to right, #383838, #8a8a8a);
 	_background: linear-gradient(to right, #383838, #8a8a8a);
 }
+
+.select2.select2-container {
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+.wp-core-ui .button.add_embed_options_taxonomy {
+	margin-left: 0.3em;
+	margin-right: 0.3em;
+}
 /*----------------------------------------------------------------------*/
 /* Lists
 /*----------------------------------------------------------------------*/
