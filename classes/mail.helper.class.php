@@ -128,45 +128,6 @@ class mailster_mail_helper extends _mailster_mail_helper {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $html
-	 * @param unknown $advanced (optional)
-	 * @return unknown
-	 */
-	public function html2text( $html, $advanced = false ) {
-
-		preg_match( '#<body[^>]*>.*?<\/body>#is', $html, $matches );
-
-		if ( ! empty( $matches ) ) {
-			$html = $matches[0];
-		}
-
-		$text       = preg_replace( '# +#', ' ', $html );
-		$text       = str_replace( array( "\n", "\r", "\t" ), '', $text );
-		$piclinks   = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*> *< *img[^>]*> *< *\/ *a *>/Uis';
-		$style      = '#< *style(?:(?!< */ *style *>).)*< */ *style *>#isU';
-		$strikeTags = '#< *strike(?:(?!< */ *strike *>).)*< */ *strike *>#iU';
-		$headlines  = '#< *(h1|h2)[^>]*>#Ui';
-		$stars      = '#< *li[^>]*>#Ui';
-		$return1    = '#< */ *(li|td|tr|div|p)[^>]*> *< *(li|td|tr|div|p)[^>]*>#Ui';
-		$return2    = '#< */? *(br|p|h1|h2|legend|h3|li|ul|h4|h5|h6|tr|td|div)[^>]*>#Ui';
-		$links      = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*>(.*)< *\/ *a *>/Uis';
-		$text       = preg_replace( array( $piclinks, $style, $strikeTags, $headlines, $stars, $return1, $return2, $links ), array( '${1}' . "\n", '', '', "\n\n", "\n&#x25CF; ", "\n", "\n", '${2} ( ${1} )' ), $text );
-		$text       = str_replace( '&nbsp;', ' ', strip_tags( $text ) );
-		$text       = trim( @html_entity_decode( $text, ENT_QUOTES, $this->CharSet ) );
-		$text       = preg_replace( '# +#', ' ', $text );
-		$text       = preg_replace( '#\n *\n\s+#', "\n\n", $text );
-
-		return html_entity_decode(
-			$text,
-			ENT_QUOTES,
-			$this->CharSet
-		);
-
-	}
-
 
 }
 

@@ -162,7 +162,7 @@ class MailsterTemplate {
 			$raw = file_get_contents( $file );
 			$raw = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
 		} else {
-			$raw = '{headline}<br>{content}';
+			$raw = '<h1>{headline}</h1><p>{content}</p><p>{notification}</p><p>{copyright}<br>{address}</p>';
 		}
 
 		$i_error = libxml_use_internal_errors( true );
@@ -310,7 +310,7 @@ class MailsterTemplate {
 				$img->setAttribute( 'height', $height );
 				$img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
 				$img->setAttribute( 'class', 'social' );
-				$img->setAttribute( 'alt', esc_attr( sprintf( __( 'Share this on %s', 'mailster' ), ucwords( $service ) ) ) );
+				$img->setAttribute( 'alt', esc_attr( sprintf( __( 'Follow on %s', 'mailster' ), ucwords( $service ) ) ) );
 
 				$link->setAttribute( 'href', $url );
 				$link->setAttribute( 'editable', '' );

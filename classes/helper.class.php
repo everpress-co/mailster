@@ -1859,9 +1859,10 @@ class MailsterHelper {
 	 *
 	 * @param unknown $html
 	 * @param unknown $linksonly (optional)
+	 * @param unknown $options   (optional)
 	 * @return unknown
 	 */
-	public function plain_text( $html, $linksonly = false ) {
+	public function plain_text( $html, $linksonly = false, $options = null ) {
 
 		// allow to hook into this method
 		$result = apply_filters( 'mailster_plain_text', null, $html, $linksonly );
@@ -1878,20 +1879,28 @@ class MailsterHelper {
 			return trim( $text );
 
 		} else {
-			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \MailsterHtml2Text\Html2Text(
-				$html,
+
+			$options = wp_parse_args(
+				$options,
 				array(
-					'width'    => 200,
-					'do_links' => 'table',
+					'width'    => 76,
+					'do_links' => 'inline',
 				)
 			);
 
-			$text = trim( $htmlconverter->get_text() );
-			$text = preg_replace( '/\s*$^\s*/mu', "\r\n", $text );
-			$text = preg_replace( '/[ \t]+/u', ' ', $text );
+			$html = preg_replace( '/<(img)\b[^>]*[^>]*>/i', '', $html );
 
-			return $text;
+			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
+			$htmlconverter = new \MailsterHtml2Text\Html2Text( $html, $options );
+
+			$text = trim( $htmlconverter->get_text() );
+
+			$text = str_replace( "\xc2\xa0", ' ', $text );
+			$text = preg_replace( '/[ \t]+/u', ' ', $text );
+			$text = preg_replace( '/^([ \t]+)/m', '', $text );
+			$text = preg_replace( "/([\r\n]{4,}|[\n\r]{4,}|[\n]{2,}|[\r]{2,})/", "\n\n", $text );
+
+			return trim( $text );
 
 		}
 

@@ -26,6 +26,7 @@ class MailsterMail {
 	public $errors             = array();
 	public $sent               = false;
 	public $pre_send           = false;
+	public $is_html            = true;
 
 	public $mailer;
 
@@ -747,18 +748,25 @@ class MailsterMail {
 			$this->mailer->Subject = $this->subject;
 			$this->mailer->SetFrom( $this->from, $this->from_name, false );
 
-			$this->mailer->IsHTML( true );
+			$this->mailer->IsHTML( $this->is_html );
 
-			if ( $this->embed_images ) {
-				$this->content = $this->make_img_relative( $this->content );
-				// fix for https://github.com/PHPMailer/PHPMailer/issues/2107
-				$this->content = str_replace( array( ' src=""', ' background=""' ), '', $this->content );
-				$this->mailer->msgHTML( $this->content, trailingslashit( dirname( dirname( MAILSTER_UPLOAD_DIR ) ) ) );
-			} else {
-				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );
+			if ( empty( $this->plaintext ) ) {
+				$this->plaintext = mailster( 'helper' )->plain_text( $this->content );
 			}
 
-			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster( 'helper' )->plain_text( $this->content ) );
+			if ( $this->is_html ) {
+				if ( $this->embed_images ) {
+					$this->content = $this->make_img_relative( $this->content );
+					// fix for https://github.com/PHPMailer/PHPMailer/issues/2107
+					$this->content = str_replace( array( ' src=""', ' background=""' ), '', $this->content );
+					$this->mailer->msgHTML( $this->content, trailingslashit( dirname( dirname( MAILSTER_UPLOAD_DIR ) ) ) );
+				} else {
+					$this->mailer->Body = $this->content;
+				}
+				$this->mailer->AltBody = $this->mailer->normalizeBreaks( $this->plaintext );
+			} else {
+				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->plaintext );
+			}
 
 			if ( $this->bouncemail ) {
 				$this->mailer->Sender = $this->bouncemail;
@@ -985,17 +993,6 @@ class MailsterMail {
 	public function make_img_relative( $html ) {
 		$html = str_replace( ' src="' . trailingslashit( dirname( dirname( MAILSTER_UPLOAD_URI ) ) ), ' src="', $html );
 		return $html;
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $html
-	 * @return unknown
-	 */
-	public function plain_text( $html ) {
-		return $this->mailer->html2text( $html );
 	}
 
 

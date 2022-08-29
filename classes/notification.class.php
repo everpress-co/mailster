@@ -421,6 +421,8 @@ class MailsterNotification {
 
 		$this->mail = mailster( 'mail' );
 
+		$this->mail->is_html = $this->file != -1 || empty( $this->file );
+
 		$this->to = (array) $this->to;
 
 		$this->mail->to        = $this->to;
