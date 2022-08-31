@@ -19,6 +19,7 @@ class Mailster {
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
+		require_once MAILSTER_DIR . 'classes/api.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
@@ -53,6 +54,7 @@ class Mailster {
 			'mailster_classes',
 			array(
 				'settings'     => new MailsterSettings(),
+				'api'          => new MailsterApi(),
 				'translations' => new MailsterTranslations(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),

@@ -8,8 +8,7 @@ $classes = array( 'wrap', 'mailster-statistics' );
 $dateformat = mailster( 'helper' )->dateformat();
 
 $date_from = time() - WEEK_IN_SECONDS;
-$date_to   = time() - DAY_IN_SECONDS;
-
+$date_to   = time();
 
 ?>
 <div class="<?php echo implode( ' ', $classes ); ?>">
@@ -27,8 +26,8 @@ $date_to   = time() - DAY_IN_SECONDS;
 				<option value="last_12_month"><?php esc_html_e( 'Last 12 Month', 'mailster' ); ?></option>
 				<option value=""><?php esc_html_e( 'Custom Dates', 'mailster' ); ?></option>
 			</select>
-			<input type="text" class="datepicker widefat date-range-from" name="" value="<?php echo esc_attr( date( 'Y-m-d', $date_from ) ); ?>"> &ndash;
-			<input type="text" class="datepicker widefat date-range-to" name="" value="<?php echo esc_attr( date( 'Y-m-d', $date_to ) ); ?>">
+			<input type="date" class="widefat date-range-from" name="" value="<?php echo esc_attr( date( 'Y-m-d', $date_from ) ); ?>"> &ndash;
+			<input type="date" class="widefat date-range-to" name="" value="<?php echo esc_attr( date( 'Y-m-d', $date_to ) ); ?>">
 		</div>
 	</div>
 </h1>

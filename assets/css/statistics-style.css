@@ -1,50 +1,113 @@
-.mailster-statistics .postbox:before{
-	content:'';
+.mailster-statistics .postbox:before {
+	content: '';
 	display: block;
 }
-.mailster-statistics .postbox .inside{
-	min-height: 200px;
+.mailster-statistics .postbox .inside {
+	min-height: 300px;
 }
-.mailster-statistics .postbox.loading .inside{
+.mailster-statistics .postbox .inside {
+	display: flex;
+}
+.mailster-statistics .postbox .inside .metabox-chart {
+	width: 100%;
+	align-self: flex-end;
+	max-height: 100%;
+	overflow: auto;
+}
+.mailster-statistics .postbox .inside .metabox-chart table.wp-list-table {
+	border: 0;
+	margin-top: 8em;
+}
+
+.postbox .handle-order-higher.reload .order-higher-indicator::before {
+	content: '\f463';
+	color: inherit;
+}
+.mailster-statistics .postbox .inside .notfound {
+	margin: auto;
+	font-size: 24px;
+}
+
+.mailster-statistics #mailster-mb-engagements.postbox .inside {
+	min-height: 400px;
+}
+
+.mailster-statistics .postbox.loading .inside {
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-image: url(../img/loading.gif) !important;
 }
-.mailster-statistics .postbox .metabox-chart{
-	width: 100%;
-	min-height: 240px;
+.mailster-statistics .postbox .inside {
+}
+.mailster-statistics .postbox .inside aside {
+	padding: 1.5em 2em 4em;
+	background: rgb(255, 255, 255);
+	background: linear-gradient(
+		180deg,
+		rgba(255, 255, 255, 1) 0%,
+		rgba(255, 255, 255, 0.8) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	position: absolute;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	pointer-events: none;
+}
+.mailster-statistics .postbox .inside span.total {
+	font-size: 2.4em;
+	font-weight: 700;
+	display: block;
+}
+.mailster-statistics .postbox .inside span.metric {
+	font-size: 10px;
+	display: block;
+	margin: 0;
+	color: #777;
+}
+.mailster-statistics .postbox .inside span.gain {
+	font-weight: 700;
+	font-size: 20px;
+	color: #3ab61b;
+}
+.mailster-statistics .postbox .metabox-chart {
+	min-height: 200px;
+	margin: -12px;
+	padding-top: 0em;
+	position: absolute;
 }
 
-.date-range{
+.date-range {
 	font-size: 14px;
 	display: inline-block;
 	border-bottom-style: dotted;
 	border-bottom-width: 1px;
 }
-.date-range .date-range-dropdown{
+.date-range .date-range-dropdown {
 	padding: 20px;
 	width: auto;
 	position: absolute;
-	z-index: 1;
+	z-index: 100000;
 	display: none;
 }
-.date-range:hover .date-range-dropdown{
+.date-range:hover .date-range-dropdown {
 }
-.date-range:hover .date-range-dropdown{
+.date-range:hover .date-range-dropdown {
 	display: block;
 }
-.date-range .date-range-dropdown input, .date-range .date-range-dropdown select{
+.date-range .date-range-dropdown input,
+.date-range .date-range-dropdown select {
 	display: inline-block;
 	width: 100px;
 }
-
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
 	only screen and (-o-min-device-pixel-ratio: 32),
 	only screen and (min--moz-device-pixel-ratio: 1.5),
 	only screen and (min-device-pixel-ratio: 1.5) {
-
-
 	.mailster-statistics .postbox.loading .inside {
 		-webkit-background-size: 20px 20px;
 		-moz-background-size: 20px 20px;

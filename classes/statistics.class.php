@@ -19,6 +19,27 @@ class MailsterStatistics {
 	}
 
 
+	public function __call( $method, $args ) {
+		if ( substr( $method, 0, 3 ) == 'mb_' ) {
+			$file = MAILSTER_DIR . 'views/statistics/' . str_replace( '_', '-', $method ) . '.php';
+			if ( file_exists( $file ) ) {
+				include $file;
+			} else {
+				echo '<div class="notfound">' . esc_html__( 'Metabox not found', 'mailster' ) . '</div>';
+			}
+		}
+	}
+
+
+	public function get( $metric, $args ) {
+
+		require_once MAILSTER_DIR . 'classes/statistics.query.class.php';
+		$query = MailsterStatisitcsQuery::get_instance();
+		return $query->get( $metric, $args );
+
+	}
+
+
 	public function add_menu() {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Statistics', 'mailster' ), __( 'Statistics', 'mailster' ), 'mailster_statistics', 'mailster_statistics', array( &$this, 'statistics' ) );
@@ -41,15 +62,18 @@ class MailsterStatistics {
 
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $args (optional)
+	 * @return unknown
+	 */
+	public function query( $args = array() ) {
 
-	public function campaigns() {
-		include MAILSTER_DIR . 'views/statistics/mb-campaigns.php';
-	}
-	public function subscribers() {
-		include MAILSTER_DIR . 'views/statistics/mb-subscribers.php';
-	}
-	public function engagements() {
-		include MAILSTER_DIR . 'views/statistics/mb-engagements.php';
+		require_once MAILSTER_DIR . 'classes/statistics.query.class.php';
+		$query = MailsterStatisitcsQuery::get_instance();
+		return $query->run( $args );
+
 	}
 
 	public function scripts_styles() {
@@ -59,7 +83,10 @@ class MailsterStatistics {
 
 		wp_enqueue_script( 'mailster-chartjs', MAILSTER_URI . 'assets/js/libs/chart' . $suffix . '.js', array(), MAILSTER_VERSION );
 
-		wp_enqueue_script( 'mailster-statistics-script', MAILSTER_URI . 'assets/js/statistics-script' . $suffix . '.js', array( 'mailster-script', 'postbox' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-apexcharts', MAILSTER_URI . 'assets/js/libs/apexcharts/apexcharts' . $suffix . '.js', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-apexcharts', MAILSTER_URI . 'assets/js/libs/apexcharts/apexcharts.css', array(), MAILSTER_VERSION );
+
+		wp_enqueue_script( 'mailster-statistics-script', MAILSTER_URI . 'assets/js/statistics-script' . $suffix . '.js', array( 'mailster-script', 'postbox', 'wp-api-fetch' ), MAILSTER_VERSION, true );
 		wp_localize_script( 'mailster-statistics-script', 'mailsterL10n', array() );
 
 		$today           = date( 'Y-m-d' );
@@ -113,9 +140,11 @@ class MailsterStatistics {
 
 	public function register_meta_boxes() {
 
-		$this->register_meta_box( 'engagements', __( 'Engagements', 'mailster' ), array( &$this, 'engagements' ) );
-		$this->register_meta_box( 'subscribers', __( 'Subscribers', 'mailster' ), array( &$this, 'subscribers' ), 'side' );
-		$this->register_meta_box( 'campaigns', __( 'Campaigns', 'mailster' ), array( &$this, 'campaigns' ), 'side' );
+		$this->register_meta_box( 'engagements', __( 'Engagements', 'mailster' ), array( &$this, 'mb_engagements' ) );
+		$this->register_meta_box( 'subscribers', __( 'Subscribers', 'mailster' ), array( &$this, 'mb_subscribers' ), 'side' );
+		$this->register_meta_box( 'campaigns', __( 'Campaigns', 'mailster' ), array( &$this, 'mb_campaigns' ), 'side' );
+		$this->register_meta_box( 'locations', __( 'Locations', 'mailster' ), array( &$this, 'mb_locations' ), 'side' );
+		$this->register_meta_box( 'links', __( 'Links', 'mailster' ), array( &$this, 'mb_links' ), 'side' );
 
 	}
 
@@ -253,6 +282,7 @@ class MailsterStatistics {
 		$sql = "SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') AS the_date, COUNT(DISTINCT subscribers.ID) AS increase FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY the_date HAVING the_date >= '" . date( 'Y-m-d', $from ) . "' AND the_date <= '" . date( 'Y-m-d', $to ) . "'";
 
 		$increase_data = $wpdb->get_results( $sql );
+		error_log( print_r( $sql, true ) );
 
 		if ( ! empty( $increase_data ) ) {
 			$increase_data = array_combine( wp_list_pluck( $increase_data, 'the_date' ), wp_list_pluck( $increase_data, 'increase' ) );

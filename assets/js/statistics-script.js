@@ -1,100 +1,162 @@
 mailster = (function (mailster, $, window, document) {
+	'use strict';
 
-	"use strict";
-
-	if (typeof jQuery.datepicker == 'object') {
-		$('input.datepicker').datepicker({
-			dateFormat: 'yy-mm-dd',
-			maxDate: new Date(),
-			firstDay: mailsterL10n.start_of_week,
-			showWeek: true,
-			dayNames: mailsterL10n.day_names,
-			dayNamesMin: mailsterL10n.day_names_min,
-			monthNames: mailsterL10n.month_names,
-			prevText: mailsterL10n.prev,
-			nextText: mailsterL10n.next,
-			showAnim: 'fadeIn',
-			onClose: function () {
-				var date = $(this).datepicker('getDate');
-			}
-		});
-	}
+	var apiFetch = wp.apiFetch,
+		chartDefaults = {
+			chart: {
+				type: 'area',
+				toolbar: {
+					show: false,
+				},
+				sparkline: {
+					_enabled: true,
+				},
+				animations: {
+					initialAnimation: {
+						_enabled: true,
+					},
+				},
+			},
+			stroke: {
+				_curve: 'straight',
+			},
+			fill: {
+				opacity: 1,
+			},
+			grid: {
+				show: false,
+				padding: {
+					top: 20,
+					left: 0,
+					bottom: 0,
+					right: 0,
+				},
+			},
+			dataLabels: {
+				enabled: false,
+			},
+			series: [
+				{
+					name: '',
+					data: [0, 0],
+				},
+			],
+			colors: ['#2BB3E7'],
+			xaxis: {
+				type: 'datetime',
+				labels: {
+					show: true,
+				},
+			},
+			yaxis: {
+				show: false,
+			},
+		},
+		reloadBtn =
+			'<button type="button" class="handle-order-higher reload" aria-disabled="false"><span class="order-higher-indicator" aria-hidden="true"></span></button>';
 
 	window.postboxes.add_postbox_toggles('newsletter_page_mailster_statistics');
 
-	$(document)
-		.on('change', '.date-range-select', function () {
+	$(document).on('change', '.date-range-select', function () {
+		var dates = mailster.l10n.statistics[$(this).val()];
 
-			var dates = mailster.l10n.statistics[$(this).val()];
+		$('.date-range-from')[0].valueAsDate = new Date(dates[0]);
+		$('.date-range-to')[0].valueAsDate = new Date(dates[1]);
 
-			$('.date-range-from').datepicker("setDate", dates[0]);
-			$('.date-range-to').datepicker("setDate", dates[1]);
-
-		})
+		reload();
+	});
+	$(document).on('click', '.reload', function () {
+		loadMetaBox($(this).closest('.postbox'));
+	});
 
 	init();
 
 	function init() {
-
 		var boxes = $('.postbox');
 
-		$.each(boxes, function () {
-			var id = this.id;
-
-			loadMetaBox(this);
+		$.each(boxes, function (i) {
+			var self = $(this);
+			self.addClass('loading');
+			self.find('.handle-actions').prepend(reloadBtn);
+			setTimeout(() => {
+				loadMetaBox(self);
+			}, i * 300);
 		});
+	}
 
+	function getFrom() {
+		return $('.date-range-from').val();
+	}
+
+	function getTo() {
+		return $('.date-range-to').val();
 	}
 
 	function loadMetaBox(id) {
-		var el = $(id),
-			ctx;
+		var el = $(id);
 
-		el.find('.metabox-chart').each(function () {
+		el.find('.metabox-chart').each(function (j) {
 			var self = $(this),
-				chart = self.data('chart') || new Chart(self, {
-					type: self.data('type') || 'bar',
-					options: {
-						scales: {
-							yAxes: [{
-								ticks: {
-									beginAtZero: true
-								}
-							}]
-						}
-					}
-				});
+				metric = self.data('metric'),
+				settings =
+					self.data('settings') ||
+					JSON.parse(self.find('script')[0].textContent),
+				options = mergeDeep(chartDefaults, settings),
+				chart = self.data('chart');
 
-			chart.options.defaultColor = 'rgba(255, 99, 132, 0.5)';
-			chart.data.labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"];
-			chart.data.datasets = [];
-			chart.data.datasets.push({
-				label: '# of Votes',
-				data: [12, 19, 3, 5, 2, 3],
-				_backgroundColor: [
-					'rgba(255, 99, 132, 0.2)',
-				],
-				borderWidth: 1
-			});
+			var args = new URLSearchParams({ from: getFrom(), to: getTo() });
 
+			var path =
+				'mailster/v1/statistics/' + metric + '?' + args.toString();
 
-			chart.update();
+			if (!chart && self.data('apex')) {
+				chart = new ApexCharts(this, options);
+				chart.render();
+				self.data('chart', chart);
+			}
+			self.data('settings', settings);
 
-			setTimeout(function () {
-
-				chart.options.defaultColor = 'rgba(255, 99, 132, 1)';
-				chart.type = 'line';
-				el.removeClass('loading');
-				chart.data.datasets[0].data[0] = 17;
-
-				chart.update();
-
-			}, 2000)
-
+			setTimeout(() => {
+				metric &&
+					apiFetch({
+						path: path,
+						method: 'GET',
+					})
+						.then((r) => {
+							r.total && el.find('.total').html(r.total);
+							r.metric && el.find('.metric').html(r.metric);
+							r.gain && el.find('.gain').html(r.gain);
+							r.html && self.html(r.html);
+							//r.options && chart.updateOptions(d(r.options));
+							r.series && chart.updateSeries(r.series);
+						})
+						.catch((error) => {
+							console.warn(error);
+						})
+						.finally(() => {
+							el.removeClass('loading');
+						});
+			}, j * 500);
 		});
-		el.addClass('loading');
+	}
+	function isObject(item) {
+		return item && typeof item === 'object' && !Array.isArray(item);
 	}
 
+	function mergeDeep(target, source) {
+		let output = Object.assign({}, target);
+		if (isObject(target) && isObject(source)) {
+			Object.keys(source).forEach((key) => {
+				if (isObject(source[key])) {
+					if (!(key in target))
+						Object.assign(output, { [key]: source[key] });
+					else output[key] = mergeDeep(target[key], source[key]);
+				} else {
+					Object.assign(output, { [key]: source[key] });
+				}
+			});
+		}
+		return output;
+	}
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);
