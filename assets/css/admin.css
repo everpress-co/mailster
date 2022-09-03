@@ -1,3 +1,52 @@
+#wpcontent .mailster-admin-toolbar {
+	margin-left: -20px;
+	padding-left: 20px;
+}
+.mailster-admin-toolbar {
+	background: #fff;
+	_border-bottom: 1px solid #ccd0d4;
+	padding-top: 12px;
+	display: flex;
+}
+.mailster-admin-toolbar .mailster-tab.is-active {
+	border-bottom: 4px solid #2271b1;
+	padding-bottom: 9px;
+}
+.mailster-admin-toolbar .mailster-logo {
+	padding: 8px 0;
+	margin: 0 10px 0 0;
+	width: 35px;
+}
+.mailster-admin-toolbar .mailster-tab {
+	display: inline-block;
+	font-size: 14px;
+	line-height: 2.5714285714;
+	padding: 5px;
+	margin: 0 5px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.mailster-admin-toolbar .panel-tabs {
+	display: flex;
+	justify-content: flex-end;
+	flex-basis: 100px;
+	margin-left: auto;
+}
+.mailster-admin-toolbar .panel-tabs .panel-tab {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	background-color: #fff;
+	width: 100%;
+	color: #757575;
+	white-space: nowrap;
+}
 .mailster-shortcodes-icon:before,
 .mailster-tags-icon:before {
 	font: normal 16px/1 'mailster-icons' !important;

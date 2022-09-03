@@ -286,6 +286,8 @@ class Mailster {
 
 			add_action( 'load-plugins.php', array( &$this, 'deactivation_survey' ) );
 
+			add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
+
 		}
 
 		do_action( 'mailster', $this );
@@ -1216,8 +1218,24 @@ class Mailster {
 		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
-		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
+		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'manage_options', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
+
+	}
+
+
+	public function admin_header() {
+
+		$screen = get_current_screen();
+
+		if ( ! $screen ) {
+			return;
+		}
+		if ( $screen->post_type != 'newsletter' && $screen->id != 'newsletter_page_mailster_dashboard' ) {
+			return;
+		}
+
+		include MAILSTER_DIR . 'views/admin_header.php';
 
 	}
 
