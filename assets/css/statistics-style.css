@@ -3,7 +3,7 @@
 	display: block;
 }
 .mailster-statistics .postbox .inside {
-	min-height: 300px;
+	min-height: 400px;
 }
 .mailster-statistics .postbox .inside {
 	display: flex;
@@ -57,7 +57,7 @@
 	align-items: baseline;
 	pointer-events: none;
 }
-.mailster-statistics .postbox .inside span.total {
+.mailster-statistics .postbox .inside span.value {
 	font-size: 2.4em;
 	font-weight: 700;
 	display: block;
@@ -90,18 +90,23 @@
 	padding: 20px;
 	width: auto;
 	position: absolute;
-	z-index: 100000;
+	z-index: 10;
 	display: none;
 }
-.date-range:hover .date-range-dropdown {
+.date-range.is-open .date-range-dropdown {
 }
-.date-range:hover .date-range-dropdown {
-	display: block;
+.date-range.is-open .date-range-dropdown {
+	display: flex;
+	align-items: center;
+	gap: 1em;
 }
 .date-range .date-range-dropdown input,
 .date-range .date-range-dropdown select {
 	display: inline-block;
-	width: 100px;
+	width: 120px;
+}
+.date-range .date-range-dropdown select {
+	width: 160px;
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),

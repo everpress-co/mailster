@@ -1,17 +1,18 @@
 <aside>
 	<label>
-		<span class="total">0</span>
-		<span class="metric"><?php esc_html_e( 'Bounces', 'mailster' ); ?></p>
+		<span class="value">&nbsp;</span>
+		<span class="metric"><?php esc_html_e( 'Click Rate', 'mailster' ); ?></p>
 	</label>
 	<span class="gain"></span>
 </aside>
 
-<div class="metabox-chart" data-apex="true" data-metric="bounces">
+<div class="metabox-chart" data-apex="true" data-metric="click_rate">
 	<script type="application/json">
 	<?php
 	echo json_encode(
 		array(
 			'chart' => array(
+				'group' => 'sparklines',
 				'type' => 'area',
 			),
 		)

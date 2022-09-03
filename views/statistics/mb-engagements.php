@@ -1,6 +1,6 @@
 <aside>
 	<label>
-		<span class="total">&nbsp;</span>
+		<span class="value">&nbsp;</span>
 		<span class="metric"><?php esc_html_e( 'Best Time', 'mailster' ); ?></p>
 	</label>
 	<span class="gain"></span>
@@ -11,19 +11,20 @@
 	<?php
 	echo json_encode(
 		array(
-			'chart' => array(
+			'chart'  => array(
 				'type' => 'heatmap',
 			),
-			'grid'  => array(
+			'grid'   => array(
 				'padding' => array(
 					'left'  => 20,
 					'right' => 20,
 				),
 			),
-			'xaxis' => array(
+			'colors' => array( '#2BB3E7' ),
+			'xaxis'  => array(
 				'type' => 'number',
 			),
-			'yaxis' => array(
+			'yaxis'  => array(
 
 				'show' => true,
 

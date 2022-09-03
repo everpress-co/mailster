@@ -48,6 +48,8 @@ class MailsterStatisitcsQuery {
 				$this->to = $this->get_timestamp( $args['to'] ) + DAY_IN_SECONDS - 1;
 			}
 
+			$this->set_previous_timeframe();
+
 			return $this->{'do_' . $metric}();
 		}
 
@@ -71,6 +73,19 @@ class MailsterStatisitcsQuery {
 		$sql = 'SELECT cal.the_date AS x, IFNULL(metric.y,0) AS y FROM (' . $calendar_table . ') AS cal LEFT JOIN (' . $sql . ') AS metric ON cal.the_date = metric.x ORDER BY cal.the_date';
 
 		$result = $wpdb->get_results( $sql );
+
+		$sql  = "SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') AS x, COUNT(DISTINCT subscribers.ID) AS y";
+		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS subscribers";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id";
+		$sql .= ' WHERE (list_subscribers.added != 0 OR list_subscribers.added IS NULL)';
+		$sql .= $wpdb->prepare( ' AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) BETWEEN %d AND %d', $this->from, $this->to );
+		$sql .= ' GROUP BY x ORDER BY x';
+
+		$calendar_table = $this->calendar_table( $this->prev_from, $this->prev_to );
+
+		$sql = 'SELECT cal.the_date AS x, IFNULL(metric.y,0) AS y FROM (' . $calendar_table . ') AS cal LEFT JOIN (' . $sql . ') AS metric ON cal.the_date = metric.x ORDER BY cal.the_date';
+
+		$prev = $wpdb->get_results( $sql );
 
 		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT subscribers.ID) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $this->from ) );
 
@@ -100,43 +115,145 @@ class MailsterStatisitcsQuery {
 	}
 
 
-	private function do_bounces() {
-
+	private function get_action_data( $action ) {
 		global $wpdb;
 
-		$sql  = "SELECT FROM_UNIXTIME(bounces.timestamp, '%Y-%m-%d') AS x, COUNT(DISTINCT bounces.subscriber_id) AS y";
-		$sql .= " FROM {$wpdb->prefix}mailster_action_bounces AS bounces";
-		$sql .= ' WHERE 1';
-		$sql .= $wpdb->prepare( ' AND bounces.timestamp BETWEEN %d AND %d', $this->from, $this->to );
-		$sql .= ' GROUP BY x ORDER BY x';
+		// only allow certain tables
+		if ( ! in_array( $action, array( 'bounces', 'sent', 'clicks' ) ) ) {
+			return array();
+		}
 
-		$calendar_table = $this->calendar_table( $this->from, $this->to );
+		$sql  = 'SELECT FROM_UNIXTIME(t.timestamp, %s) AS x, COUNT(*) AS y';
+		$sql .= " FROM {$wpdb->prefix}mailster_action_{$action} AS t";
+		$sql .= ' WHERE 1';
+		$sql .= ' AND FROM_UNIXTIME(t.timestamp, %s) BETWEEN %d AND %d';
+		$sql .= ' GROUP BY x ORDER BY x';
+		$sql  = $wpdb->prepare( $sql, '%Y-%m-%d', '%Y-%m-%d', date( 'Y-m-d', $this->prev_from ), date( 'Y-m-d', $this->to ) );
+
+		$calendar_table = $this->calendar_table( $this->prev_from, $this->to );
 
 		$sql = 'SELECT cal.the_date AS x, IFNULL(metric.y,0) AS y FROM (' . $calendar_table . ') AS cal LEFT JOIN (' . $sql . ') AS metric ON cal.the_date = metric.x ORDER BY cal.the_date';
 
 		$result = $wpdb->get_results( $sql );
+		return $result;
+	}
 
-		$total = 1;
+	private function p_merge( $a, $b ) {
 
-		$start = $total;
-		foreach ( $result as $i => $entry ) {
-			$total          += $result[ $i ]->y;
-			$result[ $i ]->y = $total;
+		$list_a = wp_list_pluck( $a, 'y', 'x' );
+		$list_b = wp_list_pluck( $b, 'y', 'x' );
+
+		$new_list = array();
+
+		foreach ( $list_b as $date => $value ) {
+			$p          = ( $value ) ? ( ( $list_a[ $date ] / $value ) * 100 ) : null;
+			$new_list[] = (object) array(
+				'x' => $date,
+				'y' => $p,
+			);
 		}
-		$delta      = $total - $start;
-		$percantage = $delta / $start;
-		$increase   = $delta >= 0;
+
+		return $new_list;
+	}
+
+
+	private function do_p( $a, $b ) {
+
+		$a = $this->get_action_data( $a );
+		$b = $this->get_action_data( $b );
+
+		$merged = $this->p_merge( $a, $b );
+		$days   = count( $merged );
+		$chunks = array_chunk( $merged, $days / 2 );
+
+		$series     = array();
+		$data       = array();
+		$prev_data  = array();
+		$total      = 0;
+		$prev_total = 0;
+		$percantage = null;
+
+		foreach ( $chunks[1] as $i => $entry ) {
+			$data[ $i ]      = array(
+				'x' => $entry->x,
+				'y' => $entry->y,
+			);
+			$total          += $entry->y;
+			$prev_data[ $i ] = array(
+				'x' => $entry->x,
+				'y' => $chunks[0][ $i ]->y,
+			);
+			$prev_total     += $chunks[0][ $i ]->y;
+		}
+
+		$sum = array_column( $data, 'y' );
+		// remove all null values (but keep 0)
+		$sum       = array_filter( $sum, 'strlen' );
+		$sum_count = count( $sum );
+		$sum       = array_sum( $sum );
+
+		$sum = $sum_count ? $sum / $sum_count : 0;
+
+		$sum_prev = array_column( $prev_data, 'y' );
+		// remove all null values (but keep 0)
+		$sum_prev       = array_filter( $sum_prev, 'strlen' );
+		$sum_prev_count = count( $sum_prev );
+		$sum_prev       = array_sum( $sum_prev );
+		$sum_prev       = $sum_prev_count ? $sum_prev / $sum_prev_count : 0;
+
+		$delta = $sum_prev - $sum;
+
+		$percantage = $sum_prev ? $delta / $sum_prev : null;
+		$return     = (object) array(
+			'gain'        => $percantage,
+			'delta'       => $delta,
+			'value'       => $sum,
+			'is_increase' => $delta >= 0,
+			'has_prev'    => ! ! $sum_prev_count,
+			'data'        => $data,
+			'prev_data'   => $prev_data,
+		);
+
+		return $return;
+
+	}
+
+
+	private function do_click_rate() {
+
+		$data = $this->do_p( 'clicks', 'sent' );
+
+		return $this->prepare_data( $data );
+
+	}
+
+	private function do_bounce_rate() {
+
+		$data = $this->do_p( 'bounces', 'sent' );
+
+		return $this->prepare_data( $data );
+
+	}
+
+
+	private function prepare_data( $data ) {
+
+		$series[] = array(
+			'name' => __( 'Current Period', 'mailster' ),
+			'data' => $data->data,
+		);
+
+		if ( $data->has_prev ) {
+			$series[] = array(
+				'name' => __( 'Previous Period', 'mailster' ),
+				'data' => $data->prev_data,
+			);
+		}
 
 		$return = array(
-			'gain'   => sprintf( '%s %s%%', ( $increase ? '+' : '-' ), number_format_i18n( round( $percantage * 100 ) ) ),
-			'delta'  => number_format_i18n( $delta ),
-			'total'  => number_format_i18n( $total ),
-			'series' => array(
-				array(
-					'name' => __( 'Bounces', 'mailster' ),
-					'data' => $result,
-				),
-			),
+			'gain'   => ! is_null( $data->gain ) ? sprintf( '%s %s%%', ( $data->is_increase ? '+' : '-' ), number_format_i18n( abs( $data->gain * 100 ) ) ) : '',
+			'value'  => number_format_i18n( $data->value, 2 ) . '%',
+			'series' => $series,
 		);
 
 		return $return;
@@ -207,6 +324,13 @@ class MailsterStatisitcsQuery {
 
 		$sql = "SELECT SUBSTRING_INDEX(meta_value, '|', 1) AS code, COUNT(*) AS count FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = 'geo' GROUP BY SUBSTRING_INDEX(meta_value, '|', 1) ORDER BY count DESC";
 
+		$sql  = "SELECT SUBSTRING_INDEX(meta_value, '|', 1) AS code, COUNT(*) AS count FROM `{$wpdb->prefix}mailster_subscriber_meta` AS meta";
+		$sql .= ' LEFT JOIN (SELECT subscribers.ID FROM wp_mailster_subscribers AS subscribers LEFT JOIN wp_mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id';
+		$sql .= ' WHERE (list_subscribers.added != 0 OR list_subscribers.added IS NULL) ';
+		$sql .= $wpdb->prepare( ' AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) BETWEEN %d AND %d)', $this->from, $this->to );
+		$sql .= '  AS subscribers ON subscribers.ID = meta.subscriber_id';
+		$sql .= "  WHERE subscribers.ID IS NOT NULL AND meta.meta_key = 'geo' GROUP BY SUBSTRING_INDEX(meta_value, '|', 1) ORDER BY count DESC";
+
 		$result = $wpdb->get_results( $sql );
 
 		$data = array();
@@ -243,6 +367,12 @@ class MailsterStatisitcsQuery {
 		global $wpdb,$wp_locale;
 
 		$sql = 'SELECT COUNT(*) AS count, links.link FROM `wp_mailster_action_clicks` AS clicks LEFT JOIN `wp_mailster_links` AS links ON links.ID = clicks.link_id GROUP BY link ORDER BY count DESC';
+
+		$sql  = 'SELECT links.link, COUNT(*) AS count FROM `wp_mailster_action_clicks` AS clicks';
+		$sql .= ' LEFT JOIN `wp_mailster_links` AS links ON links.ID = clicks.link_id';
+		$sql .= " LEFT JOIN `wp_postmeta` AS meta ON meta.post_id = clicks.campaign_id AND meta.meta_key = '_mailster_timestamp'";
+		$sql .= $wpdb->prepare( ' WHERE meta.meta_value BETWEEN %d AND %d', $this->from, $this->to );
+		$sql .= ' GROUP BY links.link ORDER BY count DESC';
 
 		$result = $wpdb->get_results( $sql );
 
@@ -302,7 +432,7 @@ class MailsterStatisitcsQuery {
 		global $wpdb;
 
 		if ( is_null( $from ) ) {
-			$from = $this->fro;
+			$from = $this->from;
 		}
 		if ( is_null( $to ) ) {
 			$to = $this->to;
@@ -326,6 +456,16 @@ class MailsterStatisitcsQuery {
 		$sql = 'SELECT LPAD(c.number, 3, 0) AS %s FROM (SELECT s + t number FROM ( SELECT 0 s UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT  10 UNION ALL SELECT  11 UNION ALL SELECT  12  UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 ) s JOIN (SELECT 0 t UNION ALL SELECT 100 UNION ALL SELECT 200 UNION ALL SELECT 300 UNION ALL SELECT 400 UNION ALL SELECT 500 UNION ALL SELECT 600 ) t ORDER BY number ASC) c WHERE c.number BETWEEN 0 and 623';
 
 		return $wpdb->prepare( $sql, $colname );
+
+	}
+
+
+	private function set_previous_timeframe() {
+
+		$diff = $this->to - $this->from;
+
+		$this->prev_from = $this->from - $diff - 1;
+		$this->prev_to   = $this->from - 1;
 
 	}
 

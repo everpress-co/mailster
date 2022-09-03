@@ -1,7 +1,7 @@
 <aside>
 	<label>
-		<span class="total"><?php esc_html_e( 'Top Locations', 'mailster' ); ?></span>
-		<span class="metric"></p>
+		<span class="value"><?php esc_html_e( 'Top Locations', 'mailster' ); ?></span>
+		<span class="metric"><?php esc_html_e( 'of your latest signups', 'mailster' ); ?></p>
 	</label>
 	<span class="gain"></span>
 </aside>

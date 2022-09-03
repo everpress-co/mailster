@@ -56,8 +56,6 @@ class MailsterStatistics {
 	 */
 	public function statistics() {
 
-		$this->screen = get_current_screen();
-
 		include MAILSTER_DIR . 'views/statistics.php';
 
 	}
@@ -141,10 +139,11 @@ class MailsterStatistics {
 	public function register_meta_boxes() {
 
 		$this->register_meta_box( 'engagements', __( 'Engagements', 'mailster' ), array( &$this, 'mb_engagements' ) );
-		$this->register_meta_box( 'subscribers', __( 'Subscribers', 'mailster' ), array( &$this, 'mb_subscribers' ), 'side' );
-		$this->register_meta_box( 'campaigns', __( 'Campaigns', 'mailster' ), array( &$this, 'mb_campaigns' ), 'side' );
-		$this->register_meta_box( 'locations', __( 'Locations', 'mailster' ), array( &$this, 'mb_locations' ), 'side' );
-		$this->register_meta_box( 'links', __( 'Links', 'mailster' ), array( &$this, 'mb_links' ), 'side' );
+		// $this->register_meta_box( 'subscribers', __( 'Subscribers', 'mailster' ), array( &$this, 'mb_subscribers' ), 'side' );
+		$this->register_meta_box( 'bounce_rate', __( 'Bounce Rate', 'mailster' ), array( &$this, 'mb_bounce_rate' ), 'side' );
+		$this->register_meta_box( 'click_rate', __( 'Click Rate', 'mailster' ), array( &$this, 'mb_click_rate' ), 'side' );
+		// $this->register_meta_box( 'locations', __( 'Locations', 'mailster' ), array( &$this, 'mb_locations' ), 'side' );
+		// $this->register_meta_box( 'links', __( 'Links', 'mailster' ), array( &$this, 'mb_links' ), 'side' );
 
 	}
 

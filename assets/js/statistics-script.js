@@ -12,16 +12,18 @@ mailster = (function (mailster, $, window, document) {
 					_enabled: true,
 				},
 				animations: {
+					enabled: false,
 					initialAnimation: {
-						_enabled: true,
+						enabled: false,
 					},
 				},
 			},
-			stroke: {
-				_curve: 'straight',
-			},
+
 			fill: {
 				opacity: 1,
+			},
+			stroke: {
+				curve: 'smooth',
 			},
 			grid: {
 				show: false,
@@ -35,13 +37,17 @@ mailster = (function (mailster, $, window, document) {
 			dataLabels: {
 				enabled: false,
 			},
+			tooltip: { shared: true, x: { show: false } },
 			series: [
 				{
 					name: '',
 					data: [0, 0],
 				},
 			],
-			colors: ['#2BB3E7'],
+			legend: {
+				show: false,
+			},
+			colors: ['rgba(43, 179, 231, 0.9)', 'rgba(58, 182, 27, .2)'],
 			xaxis: {
 				type: 'datetime',
 				labels: {
@@ -50,6 +56,14 @@ mailster = (function (mailster, $, window, document) {
 			},
 			yaxis: {
 				show: false,
+				labels: {
+					formatter: function (value) {
+						if (!value || isNaN(value)) {
+							return value;
+						}
+						return value.toFixed(2).toLocaleString() + ' %';
+					},
+				},
 			},
 		},
 		reloadBtn =
@@ -57,29 +71,81 @@ mailster = (function (mailster, $, window, document) {
 
 	window.postboxes.add_postbox_toggles('newsletter_page_mailster_statistics');
 
-	$(document).on('change', '.date-range-select', function () {
-		var dates = mailster.l10n.statistics[$(this).val()];
-
-		$('.date-range-from')[0].valueAsDate = new Date(dates[0]);
-		$('.date-range-to')[0].valueAsDate = new Date(dates[1]);
-
-		reload();
+	$(window).on('popstate', function (event) {
+		var args = new URLSearchParams(window.location.search);
+		changeDates(args.get('from'), args.get('to'));
 	});
-	$(document).on('click', '.reload', function () {
-		loadMetaBox($(this).closest('.postbox'));
-	});
+
+	$(document)
+		.on('change', '.date-range-select', function () {
+			var val = $(this).val();
+
+			if (val != 'custom') {
+				var dates = $(this).val().split('_');
+				changeDatesDebounced(dates[0], dates[1]);
+			}
+		})
+		.on('click', '.date-range', function () {
+			$(this).addClass('is-open');
+		})
+		.on('click', '.reload', function () {
+			changeDatesDebounced(null, null);
+		})
+		.on('change', '.date-range-from', function () {
+			changeDatesDebounced(this.value, null);
+		})
+		.on('change', '.date-range-to', function () {
+			changeDatesDebounced(null, this.value);
+		});
 
 	init();
 
+	function changeDates(from, to) {
+		from = from || $('.date-range-from').val();
+		to = to || $('.date-range-to').val();
+		var args = new URLSearchParams(window.location.search);
+		args.set('from', from);
+		args.set('to', to);
+		window.history.pushState(
+			'',
+			'',
+			window.location.pathname + '?' + args.toString()
+		);
+
+		$('.date-range-from')[0].valueAsDate = new Date(from);
+		$('.date-range-to')[0].valueAsDate = new Date(to);
+
+		if (
+			$('.date-range-select option[value="' + from + '_' + to + '"]')
+				.length
+		) {
+			$('.date-range-select').val(from + '_' + to);
+		} else {
+			$('.date-range-select').val('custom');
+		}
+
+		$('.date-range-wording').html('from ' + from + ' to ' + to);
+
+		reload();
+	}
+
+	var changeDatesDebounced = mailster.util.debounce(changeDates, 1000);
+
 	function init() {
+		var boxes = $('.postbox');
+		boxes.find('.handle-actions').prepend(reloadBtn);
+		var args = new URLSearchParams(window.location.search);
+		changeDates(args.get('from'), args.get('to'));
+	}
+	function reload() {
 		var boxes = $('.postbox');
 
 		$.each(boxes, function (i) {
 			var self = $(this);
 			self.addClass('loading');
-			self.find('.handle-actions').prepend(reloadBtn);
+
 			setTimeout(() => {
-				loadMetaBox(self);
+				loadMetaBox(self, this.id);
 			}, i * 300);
 		});
 	}
@@ -92,9 +158,7 @@ mailster = (function (mailster, $, window, document) {
 		return $('.date-range-to').val();
 	}
 
-	function loadMetaBox(id) {
-		var el = $(id);
-
+	function loadMetaBox(el, id) {
 		el.find('.metabox-chart').each(function (j) {
 			var self = $(this),
 				metric = self.data('metric'),
@@ -110,6 +174,7 @@ mailster = (function (mailster, $, window, document) {
 				'mailster/v1/statistics/' + metric + '?' + args.toString();
 
 			if (!chart && self.data('apex')) {
+				options.chart.id = 'chart-' + id + '-' + j;
 				chart = new ApexCharts(this, options);
 				chart.render();
 				self.data('chart', chart);
@@ -123,7 +188,7 @@ mailster = (function (mailster, $, window, document) {
 						method: 'GET',
 					})
 						.then((r) => {
-							r.total && el.find('.total').html(r.total);
+							r.value && el.find('.value').html(r.value);
 							r.metric && el.find('.metric').html(r.metric);
 							r.gain && el.find('.gain').html(r.gain);
 							r.html && self.html(r.html);
