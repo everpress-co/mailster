@@ -1,0 +1,82 @@
+.mailster-admin-toolbar {
+	margin-left: -20px;
+	padding-left: 20px;
+	position: relative;
+	z-index: 1001;
+	background: #fff;
+	border-bottom: 1px solid #c3c4c4;
+	padding-top: 12px;
+	display: flex;
+}
+#mailster-admin-help {
+	width: 40px;
+}
+.mailster-admin-toolbar .mailster-tab.is-active {
+	border-bottom: 4px solid #2271b1;
+	padding-bottom: 9px;
+}
+.mailster-admin-toolbar .mailster-logo {
+	padding: 2px 0;
+	margin: 0 10px 0 0;
+	width: 35px;
+}
+.mailster-admin-toolbar .mailster-tab {
+	display: inline-block;
+	font-size: 14px;
+	line-height: 2em;
+	padding: 5px;
+	margin: 0 5px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.mailster-admin-toolbar .panel-tabs {
+	display: flex;
+	justify-content: flex-end;
+	flex-basis: 100px;
+	margin-left: auto;
+}
+.mailster-admin-toolbar .panel-tabs .panel-tab {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	background-color: #fff;
+	width: 100%;
+	color: #757575;
+	white-space: nowrap;
+}
+.mailster-offscreen-canvas {
+	width: 370px;
+	padding: 1.6em;
+	padding-top: 100px;
+	background: #fff;
+	position: absolute;
+
+	position: fixed;
+	right: 0;
+	height: 100vh;
+	right: 0;
+	top: 0;
+	/* top: 100%; */
+	z-index: 1000;
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	transform: translateX(100%);
+	transition-property: transform box-shadow;
+	transition-duration: 0.3s;
+	transition-timing-function: ease-in-out;
+
+	_background: #fafafa;
+	border-left: 1px solid #d6d6d6;
+	_box-shadow: 0 2px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 5%);
+	_border-radius: 4px;
+}
+.mailster-offscreen-canvas.is-open {
+	transform: none;
+}

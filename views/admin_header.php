@@ -2,53 +2,44 @@
 
 global $submenu, $parent_file, $submenu_file, $plugin_page, $pagenow;
 
-// Vars.
-$parent_slug = 'edit.php?post_type=newsletter';
+$slug = 'edit.php?post_type=newsletter';
 
-// Generate array of navigation items.
-$tabs = array();
-if ( isset( $submenu[ $parent_slug ] ) ) {
-
-	foreach ( $submenu[ $parent_slug ] as $i => $sub_item ) {
-
-		// Check user can access page.
-		if ( ! current_user_can( $sub_item[1] ) ) {
-			continue;
-		}
-
-
-		if ( in_array( $sub_item[1], array( 'mailster_dashboard', 'mailster_tests', 'mailster_manage_templates', 'mailster_manage_addons' ) ) ) {
-			continue;
-		}
-
-		// Ignore "Add New".
-		if ( $i === 10 ) {
-			continue;
-		}
-
-		// Define tab.
-		$tab = array(
-			'text' => $sub_item[0],
-			'url'  => $sub_item[2],
-		);
-
-
-		// Convert submenu slug "test" to "$parent_slug&page=test".
-		if ( ! strpos( $sub_item[2], '.php' ) ) {
-			$tab['url'] = add_query_arg( array( 'page' => $sub_item[2] ), $parent_slug );
-		}
-
-		// Detect active state.
-		if ( $submenu_file === $sub_item[2] || $plugin_page === $sub_item[2] ) {
-			$tab['is_active'] = true;
-		}
-		// Special case for "Add New" page.
-		if ( $i === 10 && $submenu_file === 'edit.php?post_type=newsletter' ) {
-			$tab['is_active'] = true;
-		}
-		$tabs[] = $tab;
-	}
+if ( ! isset( $submenu[ $slug ] ) ) {
+	return;
 }
+$tabs = array();
+foreach ( $submenu[ $slug ] as $i => $sub_item ) {
+
+	// Check user can access page.
+	if ( ! current_user_can( $sub_item[1] ) ) {
+		continue;
+	}
+	if ( in_array( $sub_item[1], array( 'mailster_dashboard', 'mailster_tests', 'mailster_manage_templates', 'mailster_manage_addons' ) ) ) {
+		continue;
+	}
+	if ( $i === 10 ) {
+		continue;
+	}
+
+	$tab = array(
+		'text' => $sub_item[0],
+		'url'  => $sub_item[2],
+	);
+
+	if ( ! strpos( $sub_item[2], '.php' ) ) {
+		$tab['url'] = add_query_arg( array( 'page' => $sub_item[2] ), $slug );
+	}
+	if ( $submenu_file === $sub_item[2] || $plugin_page === $sub_item[2] ) {
+		$tab['is_active'] = true;
+	}
+
+	if ( $i === 10 && $submenu_file === 'edit.php?post_type=newsletter' ) {
+		$tab['is_active'] = true;
+	}
+	$tabs[] = $tab;
+}
+
+$tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 
 ?>
 <div class="mailster-admin-toolbar">
@@ -57,15 +48,22 @@ if ( isset( $submenu[ $parent_slug ] ) ) {
 	 viewBox="0 0 692.8 611.9" style="enable-background:new 0 0 692.8 611.9;" xml:space="preserve">
 <path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/>
 </svg></a>
-
 	<?php
 	foreach ( $tabs as $tab ) {
 		printf( '<a class="mailster-tab%s" href="%s">%s</a>', ! empty( $tab['is_active'] ) ? ' is-active' : '', esc_url( $tab['url'] ), esc_html( $tab['text'] ) );
 	}
 	?>
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
-		<button type="button" role="tab" aria-selected="false" aria-controls="activity-panel-help" id="activity-panel-tab-help" class="components-button panel-tab">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M12 4.75a7.25 7.25 0 100 14.5 7.25 7.25 0 000-14.5zM3.25 12a8.75 8.75 0 1117.5 0 8.75 8.75 0 01-17.5 0zM12 8.75a1.5 1.5 0 01.167 2.99c-.465.052-.917.44-.917 1.01V14h1.5v-.845A3 3 0 109 10.25h1.5a1.5 1.5 0 011.5-1.5zM11.25 15v1.5h1.5V15h-1.5z"></path></svg>
+		<button type="button" role="tab" aria-selected="false" aria-controls="activity-panel-help" id="mailster-admin-help" class="panel-tab">
+			<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0,0h24v24h-24Z"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.56,7.119c1.92,2.97 1.919,6.794 0.001,9.763"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.5476,8.45245c1.95926,1.95926 1.95926,5.13585 0,7.09511c-1.95926,1.95926 -5.13585,1.95926 -7.09511,0c-1.95926,-1.95926 -1.95926,-5.13585 0,-7.09511c1.95926,-1.95926 5.13585,-1.95926 7.09511,0"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.321,7.551l2.584,-3.139c0.376,-0.457 1.064,-0.49 1.483,-0.072l1.273,1.273c0.419,0.419 0.385,1.107 -0.072,1.483l-3.139,2.584"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.679,16.449l-2.584,3.139c-0.376,0.457 -1.064,0.49 -1.483,0.072l-1.273,-1.273c-0.419,-0.419 -0.385,-1.107 0.072,-1.483l3.139,-2.584"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.551,9.679l-3.14,-2.584c-0.457,-0.376 -0.49,-1.064 -0.072,-1.483l1.273,-1.273c0.419,-0.419 1.107,-0.385 1.483,0.072l2.584,3.139"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.449,14.321l3.139,2.584c0.457,0.376 0.49,1.064 0.072,1.483l-1.273,1.273c-0.419,0.419 -1.107,0.385 -1.483,-0.072l-2.584,-3.139"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.882,19.561c-2.969,1.918 -6.794,1.919 -9.763,-0.001"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.439,7.118c-1.918,2.969 -1.919,6.793 0.001,9.763"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.881,4.44c-2.97,-1.92 -6.794,-1.919 -9.763,-0.001"></path></g></svg>
 			Help
-		</button></div>
+		</button>
+	</div>
+</div>
+<div class="mailster-offscreen-canvas">
+	<h2>Welcome</h2>
+	<p>This is a subline</p>
+
+	<input type="search" class="widefat" placeholder="Search Knowledgebase">
+
 </div>

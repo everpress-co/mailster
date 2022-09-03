@@ -286,7 +286,7 @@ class Mailster {
 
 			add_action( 'load-plugins.php', array( &$this, 'deactivation_survey' ) );
 
-			add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
+			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
 
 		}
 
@@ -1224,19 +1224,27 @@ class Mailster {
 	}
 
 
-	public function admin_header() {
+	public function maybe_add_admin_header() {
 
 		$screen = get_current_screen();
 
 		if ( ! $screen ) {
 			return;
 		}
-		if ( $screen->post_type != 'newsletter' && $screen->id != 'newsletter_page_mailster_dashboard' ) {
+		if ( ( $screen->post_type != 'newsletter' && $screen->post_type != 'newsletter_form' ) && $screen->id != 'newsletter_page_mailster_dashboard' ) {
 			return;
 		}
 
-		include MAILSTER_DIR . 'views/admin_header.php';
+		wp_enqueue_style( 'mailster-admin-header' );
+		wp_enqueue_script( 'mailster-admin-header' );
 
+		add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
+
+	}
+
+
+	public function admin_header() {
+		include MAILSTER_DIR . 'views/admin_header.php';
 	}
 
 
@@ -1290,6 +1298,9 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-icons', MAILSTER_URI . 'assets/css/icons' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-admin', MAILSTER_URI . 'assets/css/admin' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
+
+		wp_register_style( 'mailster-admin-header', MAILSTER_URI . 'assets/css/admin-header-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_script( 'mailster-admin-header', MAILSTER_URI . 'assets/js/admin-header-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		wp_register_script( 'mailster-script', MAILSTER_URI . 'assets/js/mailster-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
