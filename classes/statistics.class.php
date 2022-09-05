@@ -144,7 +144,6 @@ class MailsterStatistics {
 		$this->register_meta_box( 'click_rate', __( 'Click Rate', 'mailster' ), array( &$this, 'mb_click_rate' ), 'side' );
 		// $this->register_meta_box( 'locations', __( 'Locations', 'mailster' ), array( &$this, 'mb_locations' ), 'side' );
 		// $this->register_meta_box( 'links', __( 'Links', 'mailster' ), array( &$this, 'mb_links' ), 'side' );
-
 	}
 
 	/**

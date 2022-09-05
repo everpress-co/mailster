@@ -115,7 +115,7 @@ class MailsterStatisitcsQuery {
 	}
 
 
-	private function get_action_data( $action ) {
+	private function get_action_data( $action, $prev = 0 ) {
 		global $wpdb;
 
 		// only allow certain tables
@@ -123,10 +123,11 @@ class MailsterStatisitcsQuery {
 			return array();
 		}
 
-		$sql  = 'SELECT FROM_UNIXTIME(t.timestamp, %s) AS x, COUNT(*) AS y';
+		$sql  = 'SELECT FROM_UNIXTIME(t.timestamp, %s) AS x, COUNT(DISTINCT t.subscriber_id, t.campaign_id) AS y';
 		$sql .= " FROM {$wpdb->prefix}mailster_action_{$action} AS t";
 		$sql .= ' WHERE 1';
-		$sql .= ' AND FROM_UNIXTIME(t.timestamp, %s) BETWEEN %d AND %d';
+		// $sql .= ' AND t.campaign_id IS NOT NULL';
+		$sql .= ' AND FROM_UNIXTIME(t.timestamp, %s) BETWEEN %s AND %s';
 		$sql .= ' GROUP BY x ORDER BY x';
 		$sql  = $wpdb->prepare( $sql, '%Y-%m-%d', '%Y-%m-%d', date( 'Y-m-d', $this->prev_from ), date( 'Y-m-d', $this->to ) );
 
@@ -135,7 +136,41 @@ class MailsterStatisitcsQuery {
 		$sql = 'SELECT cal.the_date AS x, IFNULL(metric.y,0) AS y FROM (' . $calendar_table . ') AS cal LEFT JOIN (' . $sql . ') AS metric ON cal.the_date = metric.x ORDER BY cal.the_date';
 
 		$result = $wpdb->get_results( $sql );
-		return $result;
+
+		$days   = count( $result );
+		$chunks = array_chunk( $result, $days / 2 );
+
+		$series     = array();
+		$data       = array();
+		$prev_data  = array();
+		$total      = 0;
+		$prev_total = 0;
+		$percantage = null;
+
+		foreach ( $chunks[1] as $i => $entry ) {
+
+			$data[ $i ]      = array(
+				'x' => $entry->x,
+				'y' => $entry->y + $prev,
+			);
+			$total          += $entry->y;
+			$prev_data[ $i ] = array(
+				'x' => $entry->x,
+				'y' => $chunks[0][ $i ]->y + $prev,
+			);
+			$prev_total     += $chunks[0][ $i ]->y;
+
+			$prev += $entry->y;
+		}
+
+		$return = (object) array(
+			'data'       => $data,
+			'total'      => $total,
+			'prev'       => $prev_data,
+			'prev_total' => $prev_total,
+		);
+
+		return $return;
 	}
 
 	private function p_merge( $a, $b ) {
@@ -157,84 +192,78 @@ class MailsterStatisitcsQuery {
 	}
 
 
-	private function do_p( $a, $b ) {
-
-		$a = $this->get_action_data( $a );
-		$b = $this->get_action_data( $b );
-
-		$merged = $this->p_merge( $a, $b );
-		$days   = count( $merged );
-		$chunks = array_chunk( $merged, $days / 2 );
-
-		$series     = array();
-		$data       = array();
-		$prev_data  = array();
-		$total      = 0;
-		$prev_total = 0;
-		$percantage = null;
-
-		foreach ( $chunks[1] as $i => $entry ) {
-			$data[ $i ]      = array(
-				'x' => $entry->x,
-				'y' => $entry->y,
-			);
-			$total          += $entry->y;
-			$prev_data[ $i ] = array(
-				'x' => $entry->x,
-				'y' => $chunks[0][ $i ]->y,
-			);
-			$prev_total     += $chunks[0][ $i ]->y;
-		}
-
-		$sum = array_column( $data, 'y' );
-		// remove all null values (but keep 0)
-		$sum       = array_filter( $sum, 'strlen' );
-		$sum_count = count( $sum );
-		$sum       = array_sum( $sum );
-
-		$sum = $sum_count ? $sum / $sum_count : 0;
-
-		$sum_prev = array_column( $prev_data, 'y' );
-		// remove all null values (but keep 0)
-		$sum_prev       = array_filter( $sum_prev, 'strlen' );
-		$sum_prev_count = count( $sum_prev );
-		$sum_prev       = array_sum( $sum_prev );
-		$sum_prev       = $sum_prev_count ? $sum_prev / $sum_prev_count : 0;
-
-		$delta = $sum_prev - $sum;
-
-		$percantage = $sum_prev ? $delta / $sum_prev : null;
-		$return     = (object) array(
-			'gain'        => $percantage,
-			'delta'       => $delta,
-			'value'       => $sum,
-			'is_increase' => $delta >= 0,
-			'has_prev'    => ! ! $sum_prev_count,
-			'data'        => $data,
-			'prev_data'   => $prev_data,
-		);
-
-		return $return;
-
-	}
-
-
 	private function do_click_rate() {
 
-		$data = $this->do_p( 'clicks', 'sent' );
-
-		return $this->prepare_data( $data );
+		return $this->do_rate( 'clicks', 'sent' );
 
 	}
+
 
 	private function do_bounce_rate() {
 
-		$data = $this->do_p( 'bounces', 'sent' );
-
-		return $this->prepare_data( $data );
+		return $this->do_rate( 'bounces', 'sent' );
 
 	}
 
+	private function do_rate( $a, $b ) {
+
+		$current_a = $this->get_data( $a, $this->to );
+		$prev_a    = $this->get_data( $a, $this->prev_to );
+
+		$current_b = $this->get_data( $b, $this->to );
+		$prev_b    = $this->get_data( $b, $this->prev_to );
+
+		$current_rate = $current_b ? $current_a / $current_b : 0;
+		$prev_rate    = $prev_b ? $prev_a / $prev_b : 0;
+
+		$delta_a = $current_a - $prev_a;
+		$delta_b = $current_b - $prev_b;
+
+		$gain = ( $current_rate - $prev_rate );
+
+		$value = $current_rate * 100;
+
+		$a_data = $this->get_action_data( $a, $prev_a );
+		$b_data = $this->get_action_data( $b, $prev_b );
+
+		$current_click_rate_data = $this->p_merge( $a_data->data, $b_data->data );
+		$prev_click_rate_data    = $this->p_merge( $a_data->prev, $b_data->prev );
+
+		$return = (object) array(
+			'gain'      => $gain ? $gain : null,
+			'value'     => $value,
+			'data'      => $current_click_rate_data,
+			'prev_data' => $prev_click_rate_data,
+		);
+
+		error_log( ' ' );
+		error_log( 'current_' . $a . ': ' . $current_a );
+		error_log( 'prev_' . $a . ': ' . $prev_a );
+
+		error_log( 'current_' . $b . ': ' . $current_b );
+		error_log( 'prev_' . $b . ': ' . $prev_b );
+
+		error_log( 'current_rate: ' . $current_rate );
+		error_log( 'prev_rate: ' . $prev_rate );
+		error_log( 'gain: ' . $gain );
+
+		error_log( 'delta_' . $a . ': ' . $delta_a );
+		error_log( 'delta_' . $b . ': ' . $delta_b );
+
+		return $this->prepare_data( $return );
+
+	}
+
+
+	private function get_data( $action, $to ) {
+
+		global $wpdb;
+
+		$data = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT subscriber_id, campaign_id) AS count FROM {$wpdb->prefix}mailster_action_{$action} AS t WHERE FROM_UNIXTIME(t.timestamp, %s) < %s", '%Y-%m-%d', date( 'Y-m-d', $to ) ) );
+
+		return $data;
+
+	}
 
 	private function prepare_data( $data ) {
 
@@ -243,7 +272,7 @@ class MailsterStatisitcsQuery {
 			'data' => $data->data,
 		);
 
-		if ( $data->has_prev ) {
+		if ( ! empty( $data->prev_data ) ) {
 			$series[] = array(
 				'name' => __( 'Previous Period', 'mailster' ),
 				'data' => $data->prev_data,
@@ -251,7 +280,7 @@ class MailsterStatisitcsQuery {
 		}
 
 		$return = array(
-			'gain'   => ! is_null( $data->gain ) ? sprintf( '%s %s%%', ( $data->is_increase ? '+' : '-' ), number_format_i18n( abs( $data->gain * 100 ) ) ) : '',
+			'gain'   => ! is_null( $data->gain ) ? sprintf( '%s %s%%', ( $data->gain >= 0 ? '+' : '-' ), number_format_i18n( abs( $data->gain * 100 ), 2 ) ) : '',
 			'value'  => number_format_i18n( $data->value, 2 ) . '%',
 			'series' => $series,
 		);

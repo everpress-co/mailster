@@ -13,7 +13,7 @@
 		array(
 			'chart' => array(
 				'group' => 'sparklines',
-				'type' => 'area',
+				'type'  => 'area',
 			),
 			'xaxis' => array(
 				'type' => 'datetime',
