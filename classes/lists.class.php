@@ -633,7 +633,7 @@ class MailsterLists {
 
 			$sql .= ' ' . implode( ',', $insert );
 
-			$sql .= ' ON DUPLICATE KEY UPDATE list_id = values(list_id), subscriber_id = values(subscriber_id)';
+			$sql .= ' ON DUPLICATE KEY UPDATE list_id = values(list_id), subscriber_id = values(subscriber_id), added = values(added)';
 
 			$success = $success && ( false !== $wpdb->query( $sql ) );
 

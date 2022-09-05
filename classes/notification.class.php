@@ -448,6 +448,8 @@ class MailsterNotification {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->set_subscriber( $subscriber->ID );
+			$placeholder->set_hash( $subscriber->hash );
+			$placeholder->add_custom();
 			$placeholder->add( $userdata );
 			$placeholder->add(
 				array(
