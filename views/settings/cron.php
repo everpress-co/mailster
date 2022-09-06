@@ -81,15 +81,16 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			?>
 			<li>IP:
 			<?php
-			echo $last_hit['ip'];
+			echo esc_html( $last_hit['ip'] );
 			if ( $last_hit['ip'] == mailster_get_ip() ) {
-				echo ' (' . esc_html__( 'probably you', 'mailster' ) . ')'; }
+				echo ' (' . esc_html__( 'probably you', 'mailster' ) . ')';
+			}
 			?>
 			</li>
-			<li><?php echo $last_hit['user']; ?></li>
+			<li><?php echo esc_html( $last_hit['user'] ); ?></li>
 			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>'; ?></li>
-			<?php if ( $interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 ) ) : ?>
-			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . esc_html_x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
+			<?php if ( $interv = ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) ) : ?>
+			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . human_time_diff( time() - $interv ) . '</strong>'; ?></li>
 			<?php endif; ?>
 			<?php if ( $last_hit['mail'] ) : ?>
 				<?php $mails_per_sec = round( 1 / $last_hit['mail'], 2 ); ?>

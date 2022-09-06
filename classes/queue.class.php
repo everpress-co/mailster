@@ -1093,7 +1093,7 @@ class MailsterQueue {
 
 		if ( empty( $last_hit ) ) {
 			$last_hit = array(
-				'timestamp' => $microtime,
+				'timestamp' => (int) $microtime,
 				'time'      => 0,
 				'timemax'   => 0,
 				'mail'      => 0,
@@ -1102,7 +1102,7 @@ class MailsterQueue {
 
 		$last_hit = array(
 			'ip'           => mailster_get_ip(),
-			'timestamp'    => $microtime,
+			'timestamp'    => (int) $microtime,
 			'user'         => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : 'unknown',
 			'oldtimestamp' => $last_hit['timestamp'],
 			'time'         => $last_hit['timemax'],
