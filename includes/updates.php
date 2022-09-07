@@ -631,7 +631,17 @@ if ( $old_version ) {
 			$mailster_options['db_update_required']   = true;
 			$mailster_options['db_update_background'] = true;
 
+		case '3.2.0':
+			if ( ! in_array( 'mailster-block-forms/mailster-block-forms.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+				$msg  = '<h2>Create Signup Forms for Mailster</h2>';
+				$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.</p>';
+				$msg .= '<p><a href="' . admin_url( 'plugin-install.php?s=mailsterblockforms&tab=search&type=tag' ) . '" class="button button-primary">' . esc_html__( 'Install Mailster Block Forms' ) . '</a> or <a href="https://docs.mailster.co/#/block-forms-overview" class="button button-link external">Check out our guide</a></p>';
+				mailster_notice( $msg, 'info', false, 'mailster_block_form_notice', true );
+			}
+
 		default:
+
+
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
