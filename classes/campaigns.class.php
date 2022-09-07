@@ -347,6 +347,7 @@ class MailsterCampaigns {
 
 		if ( 'notification' != $post->post_status ) {
 			add_meta_box( 'mailster_delivery', esc_html__( 'Delivery', 'mailster' ), array( &$this, 'newsletter_delivery' ), 'newsletter', 'side', 'high' );
+			add_meta_box( 'mailster_goal', esc_html__( 'Goal', 'mailster' ), array( &$this, 'newsletter_goal' ), 'newsletter', 'side', 'high' );
 			add_meta_box( 'mailster_receivers', esc_html__( 'Receivers', 'mailster' ), array( &$this, 'newsletter_receivers' ), 'newsletter', 'side', 'high' );
 		}
 
@@ -408,6 +409,13 @@ class MailsterCampaigns {
 		global $post;
 		global $post_id;
 		include MAILSTER_DIR . 'views/newsletter/delivery.php';
+	}
+
+
+	public function newsletter_goal() {
+		global $post;
+		global $post_id;
+		include MAILSTER_DIR . 'views/newsletter/goal.php';
 	}
 
 
@@ -1800,6 +1808,7 @@ class MailsterCampaigns {
 			$meta['webversion']   = isset( $postdata['webversion'] );
 			$meta['track_opens']  = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
+			$meta['goal']         = (string) $postdata['goal'];
 
 			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
 
@@ -2345,6 +2354,7 @@ class MailsterCampaigns {
 			'autoplaintext'       => true,
 			'webversion'          => true,
 			'auto_post_thumbnail' => false,
+			'goal'                => false,
 			'tags'                => array(),
 			'attachments'         => array(),
 		);
