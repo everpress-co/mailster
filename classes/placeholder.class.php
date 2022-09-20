@@ -367,7 +367,12 @@ class MailsterPlaceholder {
 			}
 		}
 
-		return $this->content;
+		/**
+		 * Filters the replaced content
+		 *
+		 * @param string $content
+		 */
+		return apply_filters( 'mailster_do_placeholder', $this->content );
 
 	}
 

@@ -125,3 +125,10 @@ function mailster_jetpack_sharing_show( $show ) {
 	return $show;
 
 }
+
+
+// replace any Google fonts with LGF
+add_filter( 'mailster_do_placeholder', 'mailster_maybe_use_lgf' );
+function mailster_maybe_use_lgf( $content ) {
+	return apply_filters( 'local_google_fonts_replace_in_content', $content );
+}
