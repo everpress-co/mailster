@@ -513,7 +513,7 @@ class Mailster {
 	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function get_unsubscribe_link( $campaign_id = '', $hash = '', $index = null ) {
+	public function get_unsubscribe_link( $campaign_id = null, $hash = null, $index = null ) {
 
 		$is_permalink = mailster( 'helper' )->using_permalinks();
 
@@ -569,10 +569,10 @@ class Mailster {
 		$slug  = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
 		$path  = $slug;
 		if ( ! empty( $hash ) ) {
-			$path .= '/' . $hash;
+			$path .= '/' . (string) $hash;
 		}
 		if ( ! empty( $campaign_id ) ) {
-			$path .= '/' . $campaign_id;
+			$path .= '/' . (string) $campaign_id;
 		}
 
 		$url = $is_permalink

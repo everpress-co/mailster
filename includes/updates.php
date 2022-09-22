@@ -631,13 +631,17 @@ if ( $old_version ) {
 			$mailster_options['db_update_required']   = true;
 			$mailster_options['db_update_background'] = true;
 
+		case '3.2.0':
+			mailster( 'forms' )->block_forms_message( null, false, null );
+
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
-			if ( ! $mailster_options['db_update_required'] ) {
-				mailster( 'update' )->ask_for_auto_update();
-			}
+			// if ( ! $mailster_options['db_update_required'] ) {
+			// mailster( 'update' )->ask_for_auto_update();
+			// }
 
 			$texts = wp_parse_args( $texts, $default_texts );
 

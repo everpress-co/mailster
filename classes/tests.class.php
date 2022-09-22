@@ -130,6 +130,9 @@ class MailsterTests {
 	}
 
 	public function nicename( $test ) {
+		if ( empty( $test ) ) {
+			return $test;
+		}
 		$test = ucwords( str_replace( array( 'test_', '_' ), array( '', ' ' ), $test ) );
 		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail', 'Wpmail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail', 'wpmail()' ), $test );
 		return $test;

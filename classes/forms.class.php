@@ -201,6 +201,7 @@ class MailsterForms {
 
 			add_action( 'load-' . $page, array( &$this, 'bulk_actions' ), 99 );
 			add_action( 'load-' . $page, array( &$this, 'screen_options' ) );
+			add_action( 'load-' . $page, array( &$this, 'block_forms_message' ) );
 			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
 		endif;
@@ -532,6 +533,19 @@ class MailsterForms {
 
 	}
 
+
+	public function block_forms_message( $hook = null, $once = true, $page = 'newsletter_page_mailster_forms' ) {
+
+		if ( ! in_array( 'mailster-block-forms/mailster-block-forms.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+			$msg  = '<h2>' . esc_html__( 'A new way to create forms for Mailster is coming!', 'mailster' ) . '</h2>';
+			$msg .= '<p>' . esc_html__( 'Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.', 'mailster' ) . '</p>';
+			$msg .= '<p><a href="' . admin_url( 'plugin-install.php?s=mailsterblockforms&tab=search&type=tag' ) . '" class="button button-primary">' . esc_html__( 'Install Mailster Block Forms', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="https://docs.mailster.co/#/block-forms-overview" class="button button-link external">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
+
+			mailster_notice( $msg, 'info', $once, 'mailster_block_form_notice', true, $page );
+
+		}
+
+	}
 
 	/**
 	 *

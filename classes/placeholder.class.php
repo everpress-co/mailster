@@ -200,12 +200,14 @@ class MailsterPlaceholder {
 		$time = explode( '|', date( 'Y|m|d|H|i', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
-			'email'  => '<a href="mailto:{emailaddress}">{emailaddress}</a>',
-			'year'   => $time[0],
-			'month'  => $time[1],
-			'day'    => $time[2],
-			'hour'   => $time[3],
-			'minute' => $time[4],
+			'email'   => '<a href="mailto:{emailaddress}">{emailaddress}</a>',
+			'year'    => $time[0],
+			'month'   => $time[1],
+			'day'     => $time[2],
+			'hour'    => $time[3],
+			'minute'  => $time[4],
+			'unsub'   => '<a href="{unsublink}">{unsublinktext}</a>',
+			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
 		);
 
 		if ( $campaign_id ) {
@@ -219,9 +221,7 @@ class MailsterPlaceholder {
 					'preheader'      => $meta['preheader'],
 					'subject'        => $meta['subject'],
 					'webversion'     => '<a href="{webversionlink}">{webversionlinktext}</a>',
-					'unsub'          => '<a href="{unsublink}">{unsublinktext}</a>',
 					'forward'        => '<a href="{forwardlink}">{forwardlinktext}</a>',
-					'profile'        => '<a href="{profilelink}">{profilelinktext}</a>',
 					'webversionlink' => get_permalink( $campaign_id ),
 					'lists'          => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 				),
@@ -245,11 +245,11 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
-	 * @param unknown $campaign_id
-	 * @param unknown $args    (optional)
+	 * @param unknown $campaign_id (optional)
+	 * @param unknown $args        (optional)
 	 * @return unknown
 	 */
-	public function add_custom( $campaign_id, $args = array() ) {
+	public function add_custom( $campaign_id = null, $args = array() ) {
 
 		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id, $this->subscriberHash );
 		$forwardlink     = mailster()->get_forward_link( $campaign_id );
@@ -367,7 +367,12 @@ class MailsterPlaceholder {
 			}
 		}
 
-		return $this->content;
+		/**
+		 * Filters the replaced content
+		 *
+		 * @param string $content
+		 */
+		return apply_filters( 'mailster_do_placeholder', $this->content );
 
 	}
 

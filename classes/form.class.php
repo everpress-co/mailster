@@ -1136,6 +1136,12 @@ class MailsterForm {
 							$entry['ip']         = $ip;
 							$entry['ip_confirm'] = $ip;
 						}
+
+						// user is pending and updates their profile
+						if ( $subscriber->status === 0 && $status === 1 ) {
+							mailster( 'lists' )->assign_subscribers( $this->object['lists'], $subscriber->ID, false, true );
+						}
+
 						$entry = wp_parse_args(
 							array(
 								'status' => $status,

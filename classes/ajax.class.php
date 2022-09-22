@@ -1714,7 +1714,7 @@ class MailsterAjax {
 		$post_type   = $_POST['posttype'];
 		$labels      = isset( $_POST['labels'] ) ? ( $_POST['labels'] == 'true' ) : false;
 		$names       = isset( $_POST['names'] ) ? $_POST['names'] : false;
-		$campaign_id = isset( $_POST['id'] ) ? (int) $_POST['names'] : false;
+		$campaign_id = isset( $_POST['id'] ) ? (int) $_POST['id'] : false;
 		$values      = null;
 
 		if ( $campaign_id ) {

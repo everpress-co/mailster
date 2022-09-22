@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.0  
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,16 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ## Changelog
+
+### 3.2.1
+
+-   fixed: issue where taxonomies in campaigns are not stored correctly.
+-   improved: `{unsub}` and `{profile}` tags can now be used in confirmation messages.
+-   added: message for block form plugin
+-   support for [Local Google Fonts](https://wordpress.org/plugins/local-google-fonts/)
+-   new filter: `mailster_do_placeholder` which filters the replaced content
+-   fixed: Jetpack no longer includes sharing button in content or excerpt
+-   fixed: some error notices on PHP 8.1
 
 ### 3.2.0
 

@@ -113,3 +113,22 @@ function mailster_fix_for_as3cf( $as3cf ) {
 	);
 
 }
+
+// do not add share buttons from jetpack in the content
+add_action( 'sharing_show', 'mailster_jetpack_sharing_show' );
+function mailster_jetpack_sharing_show( $show ) {
+
+	if ( defined( 'MAILSTER_DOING_CRON' ) ) {
+		return false;
+	}
+
+	return $show;
+
+}
+
+
+// replace any Google fonts with LGF
+add_filter( 'mailster_do_placeholder', 'mailster_maybe_use_lgf' );
+function mailster_maybe_use_lgf( $content ) {
+	return apply_filters( 'local_google_fonts_replace_in_content', $content );
+}
