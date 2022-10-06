@@ -480,7 +480,7 @@ class Mailster {
 			return;
 		}
 
-		wp_redirect( 'admin.php?page=' . $page, 302 );
+		mailster_redirect( 'admin.php?page=' . $page, 302 );
 		exit;
 
 	}
@@ -1345,7 +1345,7 @@ class Mailster {
 			}
 			deactivate_plugins( MAILSTER_SLUG );
 
-			wp_redirect( remove_query_arg( 'mailster_deactivation_survey', add_query_arg( 'deactivate', true ) ) );
+			mailster_redirect( remove_query_arg( 'mailster_deactivation_survey', add_query_arg( 'deactivate', true ) ) );
 			exit;
 
 		}
@@ -2239,7 +2239,7 @@ class Mailster {
 			return;
 		}
 
-		wp_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
+		mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
 
 		exit;
 

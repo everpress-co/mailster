@@ -804,7 +804,7 @@ class MailsterTemplates {
 			}
 		}
 
-		wp_redirect( $redirect );
+		mailster_redirect( $redirect );
 		exit;
 
 	}

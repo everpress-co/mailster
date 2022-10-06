@@ -32,7 +32,7 @@ class MailsterSettings {
 			if ( $homepage = mailster_option( 'homepage' ) ) {
 
 				mailster_notice( esc_html__( 'Homepage already created!', 'mailster' ), '', true );
-				wp_redirect( 'post.php?post=' . $homepage . '&action=edit' );
+				mailster_redirect( 'post.php?post=' . $homepage . '&action=edit' );
 				exit;
 
 			} else {
@@ -44,7 +44,7 @@ class MailsterSettings {
 					mailster_update_option( 'homepage', $id );
 					mailster_remove_notice( 'no_homepage' );
 					mailster_remove_notice( 'wrong_homepage_status' );
-					wp_redirect( 'post.php?post=' . $id . '&action=edit&message=10' );
+					mailster_redirect( 'post.php?post=' . $id . '&action=edit&message=10' );
 					exit;
 				}
 			}
@@ -491,7 +491,7 @@ class MailsterSettings {
 			}
 
 			if ( $redirect ) {
-				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings' );
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings' );
 				exit;
 			}
 		}
@@ -513,7 +513,7 @@ class MailsterSettings {
 		mailster_remove_notice( 'dailylimit' );
 
 		if ( $redirect ) {
-			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' );
+			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' );
 			exit;
 		}
 
@@ -533,7 +533,7 @@ class MailsterSettings {
 			$this->set_capabilities();
 
 			if ( $redirect ) {
-				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#capabilities' );
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#capabilities' );
 				exit;
 			}
 		}
@@ -545,7 +545,7 @@ class MailsterSettings {
 
 		mailster( 'cron' )->unlock();
 		if ( $redirect ) {
-			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
 		}
 
@@ -555,7 +555,7 @@ class MailsterSettings {
 
 		update_option( 'mailster_cron_lasthit', array() );
 		if ( $redirect ) {
-			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
 		}
 

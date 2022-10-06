@@ -2510,7 +2510,7 @@ class MailsterAjax {
 			$url
 		);
 
-		wp_redirect( $location );
+		mailster_redirect( $location );
 		exit;
 
 	}
@@ -2756,7 +2756,7 @@ class MailsterAjax {
 				$url
 			);
 
-			wp_redirect( $url );
+			mailster_redirect( $url );
 			exit;
 		}
 
