@@ -1063,8 +1063,11 @@ endforeach;
 			if ( $i >= $limit ) {
 				break;
 			}
-			$subscriber = mailster( 'subscribers' )->get( $subscriber->ID, true );
-			$link       = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+			$subscriber = mailster( 'subscribers' )->get( $subscriber, true );
+			if ( ! $subscriber ) {
+				continue;
+			}
+			$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 			?>
 
 		<table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">

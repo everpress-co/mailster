@@ -1189,12 +1189,22 @@ function mailster_update_notice( $text ) {
  */
 function mailster_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
 
-	// @since 5.1.0
-	if ( function_exists( 'human_readable_duration' ) ) {
-		return wp_redirect( $location, $status, $x_redirect_by );
-	}
+	return wp_redirect( $location, $status, $x_redirect_by );
 
-	return wp_redirect( $location, $status );
+}
+
+
+/**
+ *
+ *
+ * @param unknown $location
+ * @param unknown $status        (optional)
+ * @param unknown $x_redirect_by (optional)
+ * @return unknown
+ */
+function mailster_safe_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
+
+	return wp_safe_redirect( $location, $status, $x_redirect_by );
 
 }
 
