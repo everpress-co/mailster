@@ -7,6 +7,8 @@ class MailsterUpdate {
 
 	public function __construct() {
 
+		return;
+
 		add_filter( 'plugins_loaded', array( &$this, 'init' ) );
 
 		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
