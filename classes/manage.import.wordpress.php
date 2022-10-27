@@ -129,7 +129,6 @@ class MailsterImportWordPress extends MailsterImport {
 		}
 
 		$query_args['role__in'] = (array) $args['roles'];
-		
 
 		$user_query = new WP_User_Query( $query_args );
 		$user_ids   = $user_query->get_results();
