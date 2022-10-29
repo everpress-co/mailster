@@ -393,8 +393,14 @@ mailster = (function (mailster, $, window, document) {
 		});
 	};
 
+	mailster.util.tb_show = function (caption, url, imageGroup) {
+		var tb_position = window.tb_position;
+		window.tb_position = mailster.util.tb_position;
+		tb_show(caption, url, imageGroup);
+		window.tb_position = tb_position;
+	};
+
 	mailster.events.push('documentReady', function () {
-		//window.tb_position = mailster.util.tb_position;
 		for (var i in mailster.$) {
 			mailster.dom[i] = mailster.$[i][0];
 		}
