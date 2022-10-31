@@ -248,6 +248,11 @@ class MailsterAjax {
 		$file        = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 
+		global $post, $post_id;
+		$post = get_post( $id, OBJECT );
+		setup_postdata( $post );
+		$post_id = $post->ID;
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -1614,6 +1619,8 @@ class MailsterAjax {
 					'image'   => $image,
 					'button'  => esc_html__( 'Read More', 'mailster' ),
 				);
+
+				error_log( print_r($data, true) );
 
 				foreach ( $expects as $expect ) {
 					if ( isset( $data[ $expect ] ) ) {
