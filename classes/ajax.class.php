@@ -1620,8 +1620,6 @@ class MailsterAjax {
 					'button'  => esc_html__( 'Read More', 'mailster' ),
 				);
 
-				error_log( print_r($data, true) );
-
 				foreach ( $expects as $expect ) {
 					if ( isset( $data[ $expect ] ) ) {
 						continue;
