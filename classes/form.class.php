@@ -1290,7 +1290,7 @@ class MailsterForm {
 
 		}
 
-		wp_redirect( $target );
+		mailster_redirect( $target );
 		exit;
 
 	}

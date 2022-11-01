@@ -315,7 +315,7 @@ class UpdateCenterPlugin {
 
 			if ( isset( $data->admin_notices ) ) {
 				foreach ( $data->admin_notices as $version => $notice ) {
-					if ( version_compare( $version, $data->version, '<=' ) ) {
+					if ( version_compare( $version, $data->version, '<=' ) || empty( $notice ) ) {
 						continue;
 					}
 

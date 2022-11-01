@@ -414,7 +414,7 @@ class MailsterSubscribers {
 
 		} else {
 
-			wp_redirect( $redirect );
+			mailster_redirect( $redirect );
 			exit;
 
 		}
@@ -439,13 +439,13 @@ class MailsterSubscribers {
 			if ( is_wp_error( $subscriber_id ) ) {
 
 				mailster_notice( __( $subscriber_id->get_error_message(), 'mailster' ), 'error', true );
-				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
 
 			} else {
 
 				mailster_notice( esc_html__( 'Subscriber added', 'mailster' ), 'success', true );
 				do_action( 'mailster_subscriber_save', $subscriber_id );
-				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber_id );
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber_id );
 				exit;
 
 			}
@@ -550,7 +550,7 @@ class MailsterSubscribers {
 
 					mailster_notice( $is_new ? esc_html__( 'Subscriber added', 'mailster' ) : esc_html__( 'Subscriber saved', 'mailster' ), 'success', true );
 					do_action( 'mailster_subscriber_save', $subscriber->ID );
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 					exit;
 
 				} elseif ( isset( $_POST['delete'] ) || isset( $_POST['delete_actions'] ) ) :
@@ -571,7 +571,7 @@ class MailsterSubscribers {
 							do_action( 'mailster_subscriber_delete', $subscriber->ID, $subscriber->email );
 						}
 
-						wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
+						mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
 						exit;
 
 					};
@@ -582,7 +582,7 @@ class MailsterSubscribers {
 					if ( $this->send_confirmations( $subscriber->ID, true, true ) ) {
 						mailster_notice( esc_html__( 'Confirmation has been sent', 'mailster' ), 'success', true );
 					}
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 					exit;
 				};
 
@@ -604,7 +604,7 @@ class MailsterSubscribers {
 
 				if ( $campaign && mailster( 'campaigns' )->send( $campaign_id, $subscriber_id, true, true ) ) {
 					mailster_notice( sprintf( esc_html__( 'Campaign %s has been sent', 'mailster' ), '<strong>&quot;' . $campaign->post_title . '&quot;</strong>' ), 'success', true );
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber_id );
+					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber_id );
 					exit;
 				}
 			}
@@ -3127,16 +3127,17 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $ID            (optional)
-	 * @param unknown $custom_fields (optional)
+	 * @param unknown $ID              (optional)
+	 * @param unknown $custom_fields   (optional)
+	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
-	public function get( $ID, $custom_fields = false ) {
+	public function get( $ID, $custom_fields = false, $include_deleted = false ) {
 
 		global $wpdb;
 
 		if ( is_numeric( $ID ) ) {
-			return $this->get_by_type( 'ID', $ID, $custom_fields );
+			return $this->get_by_type( 'ID', $ID, $custom_fields, $include_deleted );
 		}
 
 	}

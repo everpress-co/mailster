@@ -7,7 +7,7 @@ $is_new = isset( $_GET['new'] );
 if ( ! $is_new ) {
 	$this->maybe_update_rating( $id );
 
-	if ( ! ( $subscriber = $this->get( $id, true ) ) ) {
+	if ( ! ( $subscriber = $this->get( $id, true, true ) ) ) {
 		echo '<h2>' . esc_html__( 'This user does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
 	}

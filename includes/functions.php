@@ -1182,6 +1182,36 @@ function mailster_update_notice( $text ) {
 /**
  *
  *
+ * @param unknown $location
+ * @param unknown $status        (optional)
+ * @param unknown $x_redirect_by (optional)
+ * @return unknown
+ */
+function mailster_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
+
+	return wp_redirect( $location, $status, $x_redirect_by );
+
+}
+
+
+/**
+ *
+ *
+ * @param unknown $location
+ * @param unknown $status        (optional)
+ * @param unknown $x_redirect_by (optional)
+ * @return unknown
+ */
+function mailster_safe_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
+
+	return wp_safe_redirect( $location, $status, $x_redirect_by );
+
+}
+
+
+/**
+ *
+ *
  * @param unknown $post_id (optional)
  * @return unknown
  */

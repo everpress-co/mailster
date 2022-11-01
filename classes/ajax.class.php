@@ -248,6 +248,11 @@ class MailsterAjax {
 		$file        = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 
+		global $post, $post_id;
+		$post = get_post( $id, OBJECT );
+		setup_postdata( $post );
+		$post_id = $post->ID;
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -2510,7 +2515,7 @@ class MailsterAjax {
 			$url
 		);
 
-		wp_redirect( $location );
+		mailster_redirect( $location );
 		exit;
 
 	}
@@ -2756,7 +2761,7 @@ class MailsterAjax {
 				$url
 			);
 
-			wp_redirect( $url );
+			mailster_redirect( $url );
 			exit;
 		}
 

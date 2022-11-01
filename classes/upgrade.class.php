@@ -83,10 +83,10 @@ class MailsterUpgrade {
 					}
 				} elseif ( ! mailster_option( 'db_update_background' ) ) {
 					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
-						wp_redirect( $redirectto );
+						mailster_redirect( $redirectto );
 						exit;
 					} elseif ( ! is_network_admin() && isset( $_GET['page'] ) && 0 === strpos( $_GET['page'], 'mailster_' ) ) {
-						wp_redirect( $redirectto );
+						mailster_redirect( $redirectto );
 						exit;
 					} else {
 						mailster_remove_notice( 'no_homepage' );
@@ -116,14 +116,14 @@ class MailsterUpgrade {
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_setup' != $_GET['page'] ) ) {
-				wp_redirect( 'admin.php?page=mailster_setup', 302 );
+				mailster_redirect( 'admin.php?page=mailster_setup', 302 );
 				exit;
 			}
 		} elseif ( mailster_option( 'welcome' ) ) {
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_welcome' != $_GET['page'] ) ) {
-				wp_redirect( 'admin.php?page=mailster_welcome', 302 );
+				mailster_redirect( 'admin.php?page=mailster_welcome', 302 );
 				exit;
 			}
 		}

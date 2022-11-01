@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.0  
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,15 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ## Changelog
+
+### 3.2.2
+
+-   added: native Advanced Custom Fields support.
+-   fixed: import of WordPress roles wasn't working in some cases.
+-   fixed: force hard reload on cron page if opened in browser.
+-   improved: handling of thickbox modal if other plugins interfere.
+-   added: `X-Redirect-By` header on all Mailster related redirects.
+-   added: set the global post inside the template editor.
 
 ### 3.2.1
 

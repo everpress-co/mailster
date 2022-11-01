@@ -323,7 +323,7 @@ class MailsterForms {
 						mailster_notice( sprintf( esc_html__( '%d forms have been removed', 'mailster' ), count( $_POST['forms'] ) ), 'error', true );
 					}
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 
 				}
@@ -349,8 +349,8 @@ class MailsterForms {
 
 			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
 				( isset( $_GET['ID'] ) )
-					? wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
-					: wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+					? mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
+					: mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
 				exit;
 			}
 		}
@@ -448,17 +448,17 @@ class MailsterForms {
 
 			if ( isset( $_POST['design'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'design' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'design' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['settings'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'settings' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'settings' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['structure'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'structure' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'structure' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['delete'] ) ) :
@@ -473,14 +473,14 @@ class MailsterForms {
 						do_action( 'mailster_form_delete', $form->ID );
 					}
 
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
 					exit;
 
 				};
 
 			endif;
 
-			wp_redirect( $redirect );
+			mailster_redirect( $redirect );
 			exit;
 
 		}

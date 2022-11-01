@@ -132,3 +132,42 @@ add_filter( 'mailster_do_placeholder', 'mailster_maybe_use_lgf' );
 function mailster_maybe_use_lgf( $content ) {
 	return apply_filters( 'local_google_fonts_replace_in_content', $content );
 }
+
+
+// stuff for Advanced Custom Fields
+if ( class_exists( 'ACF' ) ) {
+	add_filter( 'mailster_editor_tags', 'mailster_add_acf_tags' );
+	// replace Advanced Custom Fields
+	add_filter( 'mailster_replace_acf', 'mailster_replace_acf', 10, 5 );
+}
+
+function mailster_replace_acf( $replace_to, $selector, $fallback, $campaign_id, $subscriber_id ) {
+	$object = get_field_object( $selector, $campaign_id );
+
+	if ( $object['value'] == '' ) {
+		return $fallback;
+	}
+
+	return $object['value'];
+}
+function mailster_add_acf_tags( $tags ) {
+
+	global $post_id;
+
+	$fields = get_field_objects( $post_id, false, false );
+
+	if ( empty( $fields ) ) {
+		return $tags;
+	}
+
+	$tags['acf'] = array(
+		'name' => esc_html__( 'Advanced Custom Fields', 'mailster' ),
+		'tags' => array(),
+	);
+
+	foreach ( $fields as $key => $field ) {
+		$tags['acf']['tags'][ 'acf:' . $key ] = $field['label'];
+	}
+
+	return $tags;
+}

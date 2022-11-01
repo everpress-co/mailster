@@ -524,8 +524,8 @@ class MailsterCampaigns {
 			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
 				$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
 				( isset( $_GET['edit'] ) )
-					? wp_redirect( 'post.php?post=' . $id . '&action=edit' )
-					: wp_redirect( 'edit.php?post_type=newsletter' . $status );
+					? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
+					: mailster_redirect( 'edit.php?post_type=newsletter' . $status );
 				exit;
 			}
 

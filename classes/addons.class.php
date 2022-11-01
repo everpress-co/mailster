@@ -327,7 +327,7 @@ class MailsterAddons {
 			}
 		}
 
-		wp_redirect( $redirect );
+		mailster_redirect( $redirect );
 		exit;
 
 	}
