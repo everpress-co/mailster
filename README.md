@@ -187,6 +187,15 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ## Changelog
 
+### 3.2.2
+
+-   added: native Advanced Custom Fields support.
+-   fixed: import of WordPress roles wasn't working in some cases.
+-   fixed: force hard reload on cron page if opened in browser.
+-   improved: handling of thickbox modal if other plugins interfere.
+-   added: `X-Redirect-By` header on all Mailster related redirects.
+-   added: set the global post inside the template editor.
+
 ### 3.2.1
 
 -   fixed: issue where taxonomies in campaigns are not stored correctly.
