@@ -15,6 +15,7 @@ class MailsterPlaceholder {
 	private $index_offset        = 0;
 	private $subscriberHash      = null;
 	private $progress_conditions = false;
+	private $progress_loop       = true;
 	private $remove_modules      = true;
 	private $replace_custom      = true;
 	private $social_services;
@@ -305,6 +306,15 @@ class MailsterPlaceholder {
 	 *
 	 * @param unknown $bool (optional)
 	 */
+	public function do_loop( $bool = true ) {
+		$this->progress_loop = (bool) $bool;
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $bool (optional)
+	 */
 	public function do_remove_modules( $bool = true ) {
 		$this->remove_modules = (bool) $bool;
 	}
@@ -329,6 +339,7 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
+		$this->loop();
 		$this->rss();
 		$this->conditions();
 		$this->remove_modules();
@@ -458,6 +469,71 @@ class MailsterPlaceholder {
 		}
 
 		$this->rss_timestamp = $timestamp;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function loop() {
+
+		if ( ! $this->progress_loop ) {
+			return;
+		}
+
+		if ( preg_match_all( '#<module[^>]*?data-loop="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+
+			$pts = implode( '|', $this->post_types );
+
+			foreach ( $modules[0] as $i => $html ) {
+
+				$search = $modules[0][ $i ];
+				$loop   = $modules[1][ $i ];
+
+				// doesn't make sense so continue with the next module
+				if ( $loop < 2 ) {
+					continue;
+				}
+
+				// all dynamic post type tags to calculate the the count of different dynamic tags
+				if ( $count = preg_match_all( '#\{(!)?((' . $pts . ')_([^}]+):(-|~)?([\d]+)(;([0-9;,-]+))?)\}#i', $search, $hits ) ) {
+					// faster array_unique
+					$diff = count( array_keys( array_flip( $hits[6] ) ) );
+				}
+
+				// always use the very first module
+				$replace = $search;
+				// and start with the second
+				for ( $i = 1; $i < $loop; $i++ ) {
+
+					// use the initial module
+					$new_module = $search;
+
+					foreach ( $hits[0] as $j => $hit ) {
+						$encode         = $hits[1][ $j ];
+						$post_or_offset = $hits[6][ $j ];
+						$post_type      = $hits[3][ $j ];
+						$what           = $hits[4][ $j ];
+						$type           = $hits[5][ $j ];
+						$term_ids       = $hits[8][ $j ];
+						$is_random      = '~' == $type;
+						$offset         = $post_or_offset + ( $diff * $i );
+
+						$new_tag = '{' . $encode . $post_type . '_' . $what . ':' . $type . $offset . $term_ids . '}';
+
+						$new_module = str_replace( $hit, '{' . $encode . $post_type . '_' . $what . ':' . $type . $offset . $term_ids . '}', $new_module );
+
+					}
+					$replace .= $new_module;
+
+				}
+
+				$this->content = str_replace( $search, $replace, $this->content );
+			}
+		}
+
 	}
 
 

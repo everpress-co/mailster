@@ -2577,6 +2577,7 @@ class MailsterCampaigns {
 		$placeholder = mailster( 'placeholder' );
 
 		$placeholder->do_conditions( false );
+		$placeholder->do_loop( false );
 		$placeholder->do_remove_modules( true );
 
 		$placeholder->clear_placeholder();
