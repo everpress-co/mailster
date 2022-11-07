@@ -1671,8 +1671,9 @@ class Mailster {
 				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
 				update_option( 'mailster_updated', time() );
-				update_option( 'mailster_license', '' );
-				update_option( 'mailster_username', '' );
+				update_option( 'mailster_license', $this->license() );
+				update_option( 'mailster_email', $this->email() );
+				update_option( 'mailster_username', $this->username() );
 				update_option( 'mailster_hooks', '' );
 				update_option( 'mailster_version_first', MAILSTER_VERSION );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
@@ -2776,7 +2777,7 @@ class Mailster {
 			$license_user = $this->username();
 		}
 
-		if ( ! $license || ! $license_email || ! $license_user ) {
+		if ( ! $license || ! $license_email ) {
 			return false;
 		}
 
