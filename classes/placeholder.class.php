@@ -487,6 +487,9 @@ class MailsterPlaceholder {
 
 			$pts = implode( '|', $this->post_types );
 
+			// rss can be handled as well;
+			$pts .= '|rss';
+
 			foreach ( $modules[0] as $i => $html ) {
 
 				$search = $modules[0][ $i ];
@@ -517,13 +520,19 @@ class MailsterPlaceholder {
 						$post_type      = $hits[3][ $j ];
 						$what           = $hits[4][ $j ];
 						$type           = $hits[5][ $j ];
-						$term_ids       = $hits[8][ $j ];
+						$term_ids       = ! empty( $hits[8][ $j ] ) ? ';' . trim( $hits[8][ $i ] ) : '';
 						$is_random      = '~' == $type;
 						$offset         = $post_or_offset + ( $diff * $i );
 
-						$new_tag = '{' . $encode . $post_type . '_' . $what . ':' . $type . $offset . $term_ids . '}';
+						$old_tag = $hits[2][ $j ];
+						$new_tag = $encode . $post_type . '_' . $what . ':' . $type . $offset . $term_ids;
 
-						$new_module = str_replace( $hit, '{' . $encode . $post_type . '_' . $what . ':' . $type . $offset . $term_ids . '}', $new_module );
+						// replace tags
+						$new_module = str_replace( '{' . $old_tag . '}', '{' . $new_tag . '}', $new_module );
+						// replace image placeholders
+						$new_module = str_replace( 'tag=' . $post_type . '_image:' . $type . $post_or_offset . $term_ids . '&', 'tag=' . $post_type . '_image:' . $type . $offset . $term_ids . '&', $new_module );
+						// replace data-tag in module
+						$new_module = str_replace( 'data-tag="{' . $post_type . ':' . $type . $post_or_offset . $term_ids . '}"', 'data-tag="{' . $post_type . ':' . $type . $offset . $term_ids . '}"', $new_module );
 
 					}
 					$replace .= $new_module;

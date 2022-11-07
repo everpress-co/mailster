@@ -285,6 +285,8 @@ img[editable][label]:before,
 a[editable][label]:before,
 td[background][label]:before,
 th[background][label]:before,
+module[data-loop]:after,
+module[data-loop][active]:after,
 module[data-rss]:after,
 module[data-rss][active]:after {
 	content: attr(label);
@@ -326,6 +328,8 @@ th[background][label]:before {
 [mailster-is-rtl] a[editable][label]:before,
 [mailster-is-rtl] td[background][label]:before,
 [mailster-is-rtl] th[background][label]:before,
+[mailster-is-rtl] module[data-loop]:before,
+[mailster-is-rtl] module[data-loop][active]:before,
 [mailster-is-rtl] module[data-rss]:before,
 [mailster-is-rtl] module[data-rss][active]:before,
 [mailster-is-rtl] multi[data-rss]:before,
@@ -345,6 +349,15 @@ module[data-rss][active]:after {
 	top: 18px;
 	z-index: 100;
 }
+module[data-loop]:after,
+module[data-loop][active]:after {
+	content: 'Repeater: ' attr(data-loop);
+	top: unset;
+	bottom: -1px;
+	z-index: 100;
+	background-color: #dc3232;
+}
+
 module[label]:hover:before,
 module[label][active]:before,
 multi[label]:hover:before,
@@ -353,6 +366,8 @@ img[editable][label]:hover:before,
 a[editable][label]:hover:before,
 td[background][label]:hover:before,
 th[background][label]:hover:before,
+module[data-loop]:hover:after,
+module[data-loop][active]:after,
 module[data-rss]:hover:after,
 module[data-rss][active]:after {
 	-webkit-transform: translate(-2px, -17px);
@@ -368,6 +383,8 @@ module[data-rss][active]:after {
 [mailster-is-rtl] a[editable][label]:hover:before,
 [mailster-is-rtl] td[background][label]:hover:before,
 [mailster-is-rtl] th[background][label]:hover:before,
+[mailster-is-rtl] module[data-loop]:hover:after,
+[mailster-is-rtl] module[data-loop][active]:after,
 [mailster-is-rtl] module[data-rss]:hover:after,
 [mailster-is-rtl] module[data-rss][active]:after {
 	-webkit-transform: translate(2px, -17px);
@@ -375,6 +392,7 @@ module[data-rss][active]:after {
 	transform: translate(2px, -17px);
 }
 module[label]:before,
+module[data-loop]:after,
 module[data-rss]:after {
 	-webkit-transform: translate(-6px, -1px);
 	-ms-transform: translate(-6px, -1px);
@@ -388,6 +406,8 @@ module[data-rss]:after {
 }
 module[label]:hover:before,
 module[label][active]:before,
+module[data-loop]:hover:after,
+module[data-loop][active]:after,
 module[data-rss]:hover:after,
 module[data-rss][active]:after {
 	opacity: 0.9;
@@ -397,6 +417,8 @@ module[data-rss][active]:after {
 }
 [mailster-is-rtl] module[label]:hover:before,
 [mailster-is-rtl] module[label][active]:before,
+[mailster-is-rtl] module[data-loop]:hover:after,
+[mailster-is-rtl] module[data-loop][active]:after,
 [mailster-is-rtl] module[data-rss]:hover:after,
 [mailster-is-rtl] module[data-rss][active]:after {
 	-webkit-transform: translate(1px, -1px);

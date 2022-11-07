@@ -789,16 +789,22 @@ mailster = (function (mailster, $, window, document) {
 				contenttype,
 				images = [],
 				post_type,
+				loop,
 				rss_url;
 
 			current.element
-				.removeAttr('data-tag data-rss')
+				.removeAttr('data-tag data-rss data-loop')
 				.removeData('tag')
-				.removeData('data-rss');
+				.removeData('rss')
+				.removeData('loop');
 
 			if ('dynamic' == insertmethod) {
 				contenttype = bar.find('#dynamic_embed_options_content').val();
 				post_type = bar.find('#dynamic_embed_options_post_type').val();
+				loop = Math.max(
+					0,
+					bar.find('#dynamic_embed_options_loop').val() || 0
+				);
 				rss_url = $('#dynamic_rss_url').val();
 
 				currenttext.content = currenttext[contenttype];
@@ -806,6 +812,11 @@ mailster = (function (mailster, $, window, document) {
 				current.element
 					.attr('data-tag', currenttext.tag)
 					.data('tag', currenttext.tag);
+
+				loop &&
+					current.element.attr('data-loop', loop).data('loop', loop);
+
+				current.loop = loop;
 
 				if ('rss' == post_type) {
 					current.element
@@ -1431,6 +1442,10 @@ mailster = (function (mailster, $, window, document) {
 				true
 			);
 			searchstring = mailster.util.trim(postsearch.val());
+
+			$('#dynamic_embed_options_loop').val(
+				Math.max(0, module.data('loop') || 0)
+			);
 
 			if (currenttag) {
 				var parts = currenttag

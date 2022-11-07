@@ -312,6 +312,14 @@
 				<div class="left">
 					<div id="dynamic_embed_options_cats"></div>
 				</div>
+				
+				<div class="clear">
+					<p>
+						<?php $input = '<input type="number" class="small-text" value="0" min="0" id="dynamic_embed_options_loop" />'; ?>
+						<?php printf( esc_html__( 'Repeat module with this settings %s times.', 'mailster' ), $input ); ?>
+					</p>
+				</div>
+				
 				<div class="editbar-description">
 					<p class="description clear">
 						<?php esc_html_e( 'Dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements.', 'mailster' ); ?>
