@@ -559,10 +559,10 @@ class MailsterTests {
 		if ( is_wp_error( $cron_status ) ) {
 			switch ( $cron_status->get_error_code() ) {
 				case 'cron_error':
-					$this->error( $cron_status->get_error_message(), 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+					$this->error( $cron_status->get_error_message(), mailster_url( 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/', 'utm_term=mailster_tests' ) );
 					break;
 				default:
-					$this->warning( $cron_status->get_error_message(), 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+					$this->warning( $cron_status->get_error_message(), mailster_url( 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/', 'utm_term=mailster_tests' ) );
 					break;
 			}
 		} else {
@@ -577,7 +577,7 @@ class MailsterTests {
 		mailster( 'cron' )->lock();
 
 		if ( ! mailster( 'cron' )->is_locked() ) {
-			$this->warning( 'Cron Lock mechanism is not working with the current method.', 'https://kb.mailster.co/what-is-a-cron-lock/' );
+			$this->warning( 'Cron Lock mechanism is not working with the current method.', mailster_url( 'https://kb.mailster.co/what-is-a-cron-lock/', 'utm_term=mailster_tests' ) );
 		} else {
 			$this->success( 'No Cron Lock in place!' );
 		}
@@ -594,9 +594,9 @@ class MailsterTests {
 			$mails_per_sec = sprintf( esc_html__( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ) ), $mails_per_sec );
 
 			if ( $last_hit['mail'] > 1 ) {
-				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', mailster_url( 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/', 'utm_term=mailster_tests' ) );
 			} else {
-				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', mailster_url( 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/', 'utm_term=mailster_tests' ) );
 			}
 		}
 	}
@@ -606,12 +606,12 @@ class MailsterTests {
 
 		if ( ! $hp || $hp->post_status == 'trash' ) {
 
-			$this->error( sprintf( esc_html__( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . esc_html__( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) . '">' . esc_html__( 'create it right now', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			$this->error( sprintf( esc_html__( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . esc_html__( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) . '">' . esc_html__( 'create it right now', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 			return;
 
 		} elseif ( $hp->post_status != 'publish' ) {
 
-			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 
 		}
 
@@ -620,14 +620,14 @@ class MailsterTests {
 			|| ! preg_match( '#\[newsletter_confirm\]#', $hp->post_content )
 			|| ! preg_match( '#\[newsletter_unsubscribe\]#', $hp->post_content ) ) {
 
-			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 
 		}
 
 		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $hp->post_content, $matches ) ) {
 			$form_id = (int) $matches[1];
 			if ( ! mailster( 'forms' )->get( $form_id ) ) {
-				$this->error( sprintf( esc_html__( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+				$this->error( sprintf( esc_html__( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 			}
 		}
 
@@ -728,9 +728,9 @@ class MailsterTests {
 			$msg           = 'You are not able to send mails with the current delivery settings!';
 
 			if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
-				$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );
+				$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/', 'utm_term=mailster_tests' ) );
 			} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
-				$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-data-not-accepted/' );
+				$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-data-not-accepted/', 'utm_term=mailster_tests' ) );
 			} else {
 				$this->error( $msg . '<br>' . $error_message );
 			}
@@ -763,9 +763,9 @@ class MailsterTests {
 		$msg           = 'You are not able to use <code>wp_mail()</code> with Mailster';
 
 		if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
-			$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );
+			$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/', 'utm_term=mailster_tests' ) );
 		} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
-			$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-data-not-accepted/' );
+			$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-data-not-accepted/', 'utm_term=mailster_tests' ) );
 		} else {
 			$this->error( $msg . '<br>' . $error_message );
 		}

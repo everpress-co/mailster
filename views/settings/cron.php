@@ -49,7 +49,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			</ul>
 			<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' ); ?></p>
 			<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' ); ?></p>
-			<p class="description"><?php printf( esc_html__( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
+			<p class="description"><?php printf( esc_html__( 'You can also find additional help on our %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/how-can-i-setup-a-cron-job/' ) . '" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
 		</td>
 	</tr>
 	<?php $last_hit = get_option( 'mailster_cron_lasthit' ); ?>
@@ -58,7 +58,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		<td>
 			<?php if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked() ) : ?>
 				<div class="error inline">
-				<p><?php printf( esc_html__( 'Looks like your Cron Lock is still in place after %1$s! Read more about why this can happen %2$s.', 'mailster' ), '<strong>' . human_time_diff( $last_hit['timestamp'] ) . '</strong>', '<a href="https://kb.mailster.co/what-is-a-cron-lock/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
+				<p><?php printf( esc_html__( 'Looks like your Cron Lock is still in place after %1$s! Read more about why this can happen %2$s.', 'mailster' ), '<strong>' . human_time_diff( $last_hit['timestamp'] ) . '</strong>', '<a href="' . mailster_url( 'https://kb.mailster.co/what-is-a-cron-lock/' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
 				</div>
 			<?php endif; ?>
 			<?php $cron_lock = mailster_option( 'cron_lock' ); ?>
@@ -107,7 +107,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			<li><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-lasthit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-lasthit' ); ?>"><?php esc_html_e( 'Reset', 'mailster' ); ?></a></li>
 		<?php else : ?>
 			<li><strong><?php esc_html_e( 'never', 'mailster' ); ?></strong>
-			(<a href="https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/" class="external"><?php esc_html_e( 'why?', 'mailster' ); ?></a>)</li>
+			(<a href="<?php echo mailster_url( 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' ); ?>" class="external"><?php esc_html_e( 'why?', 'mailster' ); ?></a>)</li>
 		<?php endif; ?>
 		</ul>
 		</td>

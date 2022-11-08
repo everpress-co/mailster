@@ -4734,7 +4734,7 @@ class MailsterCampaigns {
 		}
 
 		if ( mailster_option( 'mailster_branding' ) ) {
-			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center"><a href="https://mailster.co" title="Sent with Mailster"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
+			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center"><a href="' . mailster_url( 'https://mailster.co', 'utm_medium=email&utm_term=mailster_branding' ) . '" title="' . esc_attr__( 'Sent with Mailster', 'mailster' ) . '"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
 		}
 
 		if ( $track ) {
