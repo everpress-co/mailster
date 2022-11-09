@@ -20,6 +20,7 @@ class Mailster {
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
+		require_once MAILSTER_DIR . 'classes/logs.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
@@ -54,6 +55,7 @@ class Mailster {
 			array(
 				'settings'     => new MailsterSettings(),
 				'translations' => new MailsterTranslations(),
+				'logs'         => new MailsterLogs(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
 				'lists'        => new MailsterLists(),
@@ -2141,6 +2143,13 @@ class Mailster {
                 UNIQUE KEY `id` (`form_id`,`tag_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`tag_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_logs (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `i` tinyint(1) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`)
             ) $collate;",
 
 		);
