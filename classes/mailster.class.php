@@ -2147,8 +2147,15 @@ class Mailster {
 
 			"CREATE TABLE {$wpdb->prefix}mailster_logs (
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
-                `i` tinyint(1) unsigned NOT NULL,
+                `subject` longtext NOT NULL,
+                `to` longtext NOT NULL,
+                `html` longtext NOT NULL,
+                `text` longtext NOT NULL,
+                `raw` longtext NOT NULL,
+                `message_id` varchar(191) NOT NULL DEFAULT '',
                 PRIMARY KEY  (`ID`)
             ) $collate;",
 

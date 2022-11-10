@@ -93,7 +93,8 @@ class Mailster_Logs_Table extends WP_List_Table {
 	 * @return unknown
 	 */
 	public function get_columns() {
-		return array();
+		return mailster( 'logs' )->get_columns();
+
 	}
 
 
@@ -108,11 +109,22 @@ class Mailster_Logs_Table extends WP_List_Table {
 
 		switch ( $column_name ) {
 
-			case 'name':
-				return 'name';
+			case 'timestamp':
+				$timeoffset = mailster( 'helper' )->gmt_offset( true );
+				return '<strong><code>' . date_i18n( 'Y-m-d H:i:s', $item->{'timestamp'} + $timeoffset ) . '</code></strong>';
+
+			case 'subscriber':
+				return ( $item->{'subscriber_id'} );
+
+			case 'campaign':
+				return '<a href="' . admin_url( 'post.php?post=' . $item->{'campaign_id'} . '&action=edit' ) . '"><strong>' . esc_html( get_the_title( $item->{'campaign_id'} ) ) . '</strong></a>';
+
+			case 'subject':
+				return '<a href="' . add_query_arg( array( 'ID' => $item->ID ) ) . '" title="' . esc_attr( $item->{'subject'} ) . '"><strong>' . esc_html( $item->{'subject'} ) . '</strong></a>';
+				// return mailster('helper')->get_excerpt( $item->{'message'} );
 
 			default:
-				return print_r( $item, true ); // Show the whole array for troubleshooting purposes
+				// return print_r( $item, true ); // Show the whole array for troubleshooting purposes
 		}
 	}
 
@@ -191,7 +203,7 @@ class Mailster_Logs_Table extends WP_List_Table {
 
 		// How many to display per page?
 		if ( ! ( $this->per_page = (int) get_user_option( 'mailster_logs_per_page' ) ) ) {
-			$this->per_page = 50;
+			$this->per_page = 200;
 		}
 
 		$offset = $this->paged * $this->per_page;
@@ -199,9 +211,12 @@ class Mailster_Logs_Table extends WP_List_Table {
 		$orderby = $this->orderby;
 		$order   = $this->order;
 
-		$sql = "SELECT * FROM {$wpdb->prefix}mailster_logs";
+		$max_entries = mailster_option( 'logging-max' );
+		$max_days    = mailster_option( 'logging-max' );
 
-		$items = $wpdb->get_results( $sql );
+		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, subscriber_id, campaign_id, timestamp, subject FROM {$wpdb->prefix}mailster_logs ORDER BY timestamp DESC, ID DESC LIMIT %d, %d";
+
+		$items = $wpdb->get_results( $wpdb->prepare( $sql, $offset, $this->per_page ) );
 
 		$this->items       = $items;
 		$this->total_items = $wpdb->get_var( 'SELECT FOUND_ROWS();' );

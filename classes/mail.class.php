@@ -634,6 +634,7 @@ class MailsterMail {
 		}
 
 		if ( $this->sent ) {
+			mailster( 'logs' )->add( $this );
 			return $this->messageID;
 		} else {
 			return false;
