@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.1  
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
