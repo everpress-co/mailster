@@ -67,6 +67,10 @@ class Ip2Country {
 			$ip = '::' . $ip;
 		}
 
+		if(!$this->gi){
+			return false;
+		}
+
 		// prevent some errors
 		$error = ini_get( 'error_reporting' );
 		error_reporting( E_ERROR );
