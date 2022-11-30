@@ -67,7 +67,7 @@ class Ip2Country {
 			$ip = '::' . $ip;
 		}
 
-		if(!$this->gi){
+		if ( ! $this->gi ) {
 			return false;
 		}
 
