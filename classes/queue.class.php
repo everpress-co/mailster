@@ -1256,7 +1256,8 @@ class MailsterQueue {
 				} elseif ( $data->_options ) {
 
 					if ( $options = maybe_unserialize( $data->_options ) ) {
-						$result = mailster( 'notification' )->send( $data->subscriber_id, $options );
+						$options = wp_parse_args( $options, array( 'template' => '' ) );
+						$result  = mailster( 'notification' )->send( $data->subscriber_id, $options );
 					} else {
 						continue;
 					}
