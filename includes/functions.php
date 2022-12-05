@@ -574,6 +574,22 @@ function mailster_ip2City( $ip = '', $get = null, $local = null ) {
 
 }
 
+/**
+ *
+ *
+ * @param unknown $ip  (optional)
+ * @return unknown
+ */
+function mailster_get_geo( $ip = '' ) {
+
+	if ( empty( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
+
+	return mailster( 'geo' )->get_record( $ip );
+
+}
+
 
 /**
  *
@@ -603,6 +619,27 @@ function mailster_get_ip() {
 	return $ip;
 }
 
+function mailster_get_public_ip() {
+	$endpoint = 'https://api.redirect.li/v1/ip/';
+
+	if ( false === ( $result = get_transient( '_mailster_public_ip' ) ) ) {
+		$response = wp_remote_get( $endpoint, array( 'user-agent' => 'Mozilla/5.0' ) );
+		$code     = wp_remote_retrieve_response_code( $response );
+		if ( $code !== 200 ) {
+			return mailster_get_ip();
+		}
+		$response = wp_remote_retrieve_body( $response );
+		$result   = json_decode( $response );
+		set_transient( '_mailster_public_ip', $result, WEEK_IN_SECONDS );
+	}
+
+	if ( isset( $result->ip ) ) {
+		return $result->ip;
+	}
+
+	return mailster_get_ip();
+
+}
 
 /**
  *
@@ -615,7 +652,7 @@ function mailster_is_local( $ip = null ) {
 		$ip = mailster_get_ip();
 	}
 
-	return ! filter_var( mailster_get_ip(), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+	return ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
 
 }
 

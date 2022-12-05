@@ -626,14 +626,13 @@ class MailsterFrontpage {
 						'lang'       => mailster_get_lang(),
 					);
 
-					if ( 'unknown' !== ( $geo = mailster_ip2City() ) ) {
+					if ( 'unknown' !== ( $geo = mailster_get_geo() ) ) {
 
-						$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
-						if ( $geo->city ) {
-							$user_meta['coords'] = (float) $geo->latitude . ',' . (float) $geo->longitude;
-						}
+						$user_meta['geo']        = $geo->country->isoCode . '|' . $geo->city->name;
+						$user_meta['coords']     = (float) $geo->location->latitude . ',' . (float) $geo->location->longitude;
+						$user_meta['timeoffset'] = (int) mailster( 'helper' )->get_timezone_offset_by_string( $geo->location->timeZone );
+
 					}
-
 					if ( $subscriber_id = mailster( 'subscribers' )->update( $user_meta, true, false, true ) ) {
 
 						if ( ! is_wp_error( $subscriber_id ) ) {

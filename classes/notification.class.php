@@ -748,12 +748,12 @@ class MailsterNotification {
 			</tr>
 		</table>
 
-		<?php if ( ( $loc = mailster_ip2City() ) != 'unknown' ) : ?>
+		<?php if ( ( 'unknown' !== ( $geo = mailster_get_geo() ) ) : ?>
 
 			<?php
 			$mapurl = add_query_arg(
 				array(
-					'markers'        => $loc->latitude . ',' . $loc->longitude,
+					'markers'        => $geo->location->latitude . ',' . $geo->location->longitude,
 					'zoom'           => 4,
 					'size'           => '276x200',
 					'visual_refresh' => true,

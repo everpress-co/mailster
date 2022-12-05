@@ -37,7 +37,7 @@ class MailsterGeo {
 
 		if ( mailster_option( 'track_location' ) ) {
 			if ( mailster_option( 'track_location_update' ) ) {
-				$this->set_cron( 'daily' );
+				$this->set_cron( 'weekly' );
 			}
 		} else {
 			$this->clear_cron();
@@ -45,7 +45,7 @@ class MailsterGeo {
 
 	}
 
-	private function get_record( $ip ) {
+	public function get_record( $ip ) {
 
 		if ( ! $this->reader ) {
 			$file = $this->get_file_path();
@@ -88,6 +88,7 @@ class MailsterGeo {
 	}
 
 
+
 	public function get_city_for_ip( $ip ) {
 
 		$record = $this->get_record( $ip );
@@ -109,8 +110,8 @@ class MailsterGeo {
 			case 'single':
 				wp_schedule_single_event( time(), 'mailster_location_update' );
 				break;
-			case 'daily':
-				wp_schedule_event( time(), 'daily', 'mailster_location_update' );
+			case 'weekly':
+				wp_schedule_event( time(), 'weekly', 'mailster_location_update' );
 				break;
 		}
 	}
@@ -315,7 +316,6 @@ class MailsterGeo {
 		return array();
 
 	}
-
 
 
 }

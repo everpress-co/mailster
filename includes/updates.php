@@ -635,6 +635,13 @@ if ( $old_version ) {
 			mailster( 'forms' )->block_forms_message( null, false, null );
 
 
+		case '3.2.1':
+		case '3.2.2':
+		case '3.2.3':
+			mailster( 'geo' )->clear_cron();
+			mailster( 'geo' )->set_cron( 'single' );
+
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
