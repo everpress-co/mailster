@@ -5,29 +5,24 @@
 		<p><label><input type="hidden" name="mailster_options[track_opens]" value=""><input type="checkbox" name="mailster_options[track_opens]" value="1" <?php checked( mailster_option( 'track_opens' ) ); ?>> <?php esc_html_e( 'Track opens in your campaigns', 'mailster' ); ?></label></p>
 		<p><label><input type="hidden" name="mailster_options[track_clicks]" value=""><input type="checkbox" name="mailster_options[track_clicks]" value="1" <?php checked( mailster_option( 'track_clicks' ) ); ?>> <?php esc_html_e( 'Track clicks in your campaigns', 'mailster' ); ?></label></p>
 
-		<?php
-			$geoip                 = isset( $_GET['nogeo'] ) ? false : mailster_option( 'track_location' );
-			$geo_db_file_countries = mailster( 'geo' )->get_file_path( 'country' );
-			$geo_db_file_cities    = mailster( 'geo' )->get_file_path( 'city' );
-		?>
+		<?php $geoip = isset( $_GET['nogeo'] ) ? false : mailster_option( 'track_location' ); ?>
+		<?php $geodb_file = mailster( 'geo' )->get_file_path(); ?>
 
 		<p><label><input type="hidden" name="mailster_options[track_location]" value=""><input type="checkbox" id="mailster_geoip" name="mailster_options[track_location]" value="1" <?php checked( $geoip ); ?>> <?php esc_html_e( 'Track location in campaigns', 'mailster' ); ?>*</label>
 			<br>&nbsp;&#x2514;&nbsp;<label><input type="hidden" name="mailster_options[track_location_update]" value=""><input type="checkbox" name="mailster_options[track_location_update]" value="1" <?php checked( mailster_option( 'track_location_update' ) ); ?>> <?php esc_html_e( 'Update location database automatically', 'mailster' ); ?></label>
 		</p>
 
-	<?php if ( ! mailster()->is( 'setup' ) && $geoip && is_file( $geo_db_file_cities ) ) : ?>
+	<?php if ( ! mailster()->is( 'setup' ) && $geoip && file_exists( $geodb_file ) ) : ?>
 		<p class="description"><?php esc_html_e( 'If you don\'t find your country down below the geo database is missing or corrupt', 'mailster' ); ?></p>
 		<p>
 	<strong><?php esc_html_e( 'Your IP', 'mailster' ); ?>:</strong> <?php echo mailster_get_ip(); ?><?php if ( mailster_is_local() ) : ?>
 	<strong><?php esc_html_e( 'Geolocation is not available on localhost!', 'mailster' ); ?></strong>
 	<?php endif; ?><br>
 		<strong><?php esc_html_e( 'Your country', 'mailster' ); ?>:</strong> <?php echo mailster_ip2Country( '', 'name' ); ?><br>
-		<?php if ( is_file( $geo_db_file_cities ) ) : ?>
 		<strong><?php esc_html_e( 'Your city', 'mailster' ); ?>:</strong> <?php echo mailster_ip2City( '', 'city' ); ?>
-	<?php endif; ?>
 		</p>
 		<p><button id="load_location_db" class="button-primary" <?php disabled( ! $geoip ); ?>><?php esc_html_e( 'Update Location Database', 'mailster' ); ?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
-			<em id="location_last_update"><?php esc_html_e( 'Last update', 'mailster' ); ?>: <?php printf( esc_html__( '%s ago', 'mailster' ), human_time_diff( filemtime( $geo_db_file_cities ) ) ); ?></em>
+			<em id="location_last_update"><?php esc_html_e( 'Last update', 'mailster' ); ?>: <?php printf( esc_html__( '%s ago', 'mailster' ), human_time_diff( filemtime( $geodb_file ) ) ); ?></em>
 		</p>
 	<?php elseif ( $geoip ) : ?>
 		<div class="error inline"><p><?php esc_html_e( 'Looks like the location database hasn\'t been loaded yet!', 'mailster' ); ?></p></div>

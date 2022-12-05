@@ -502,11 +502,8 @@ class MailsterTests {
 
 			$warnings = array();
 
-			if ( ! file_exists( $path = $geo->get_file_path( 'country' ) ) ) {
-				$warnings[] = sprintf( 'The Country Database was not found in %s', $path );
-			}
-			if ( ! file_exists( $path = $geo->get_file_path( 'city' ) ) ) {
-				$warnings[] = sprintf( 'The City Database was not found in %s', $path );
+			if ( ! file_exists( $path = $geo->get_file_path(  ) ) ) {
+				$warnings[] = sprintf( 'The Geo Database was not found in %s', dirname($path) );
 			}
 
 			if ( ! empty( $warnings ) ) {

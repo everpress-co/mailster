@@ -531,37 +531,26 @@ function mailster_list_newsletter( $args = '' ) {
 /**
  *
  *
- * @param unknown $ip  (optional)
- * @param unknown $get (optional)
+ * @param unknown $ip     (optional)
+ * @param unknown $get    (optional)
+ * @param unknown $locale (optional)
  * @return unknown
  */
-function mailster_ip2Country( $ip = '', $get = 'code' ) {
+function mailster_ip2Country( $ip = '', $get = 'code', $local = null ) {
 
 	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
-	try {
-
-		if ( empty( $ip ) ) {
-			$ip = mailster_get_ip();
-		}
-
-		if ( mailster_is_local( $ip ) ) {
-			return 'unknown';
-		}
-		$ip2Country = mailster( 'geo' )->Ip2Country();
-
-		$code = $ip2Country->get( $ip, $get );
-
-		if ( ! $code ) {
-			$code = mailster_ip2City( $ip, $get ? 'country_' . $get : null );
-		}
-		return ( $code ) ? $code : 'unknown';
-
-	} catch ( Exception $e ) {
-		return 'error';
+	if ( empty( $ip ) ) {
+		$ip = mailster_get_ip();
 	}
+	if ( empty( $local ) ) {
+		$local = get_locale();
+	}
+
+	return mailster( 'geo' )->get_country_for_ip( $ip, $local );
+
 }
 
 
@@ -572,17 +561,16 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
  * @param unknown $get (optional)
  * @return unknown
  */
-function mailster_ip2City( $ip = '', $get = null ) {
+function mailster_ip2City( $ip = '', $get = null, $local = null ) {
 
-	if ( ! mailster_option( 'track_location' ) ) {
-		return 'unknown';
+	if ( empty( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
+	if ( empty( $local ) ) {
+		$local = get_locale();
 	}
 
-	$geo = mailster( 'geo' );
-
-	$code = $geo->get_city_by_ip( $ip, $get );
-
-	return ( $code ) ? $code : 'unknown';
+	return mailster( 'geo' )->get_city_for_ip( $ip, $local );
 
 }
 
@@ -611,6 +599,7 @@ function mailster_get_ip() {
 			}
 		}
 	}
+
 	return $ip;
 }
 
@@ -1342,109 +1331,3 @@ if ( ! function_exists( 'get_user_locale' ) ) :
 
 endif;
 
-
-if ( ! function_exists( 'http_negotiate_language' ) ) :
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $supported
-	 * @param unknown $http_accept_language (optional)
-	 * @return unknown
-	 */
-	function http_negotiate_language( $supported, $http_accept_language = 'auto' ) {
-
-		if ( $http_accept_language == 'auto' ) {
-			$http_accept_language = isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '';
-		}
-
-		preg_match_all(
-			'/([[:alpha:]]{1,8})(-([[:alpha:]|-]{1,8}))?' .
-			'(\s*;\s*q\s*=\s*(1\.0{0,3}|0\.\d{0,3}))?\s*(,|$)/i',
-			$http_accept_language,
-			$hits,
-			PREG_SET_ORDER
-		);
-
-		// default language (in case of no hits) is the first in the array
-		$bestlang = $supported[0];
-		$bestqval = 0;
-
-		foreach ( $hits as $arr ) {
-			// read data from the array of this hit
-			$langprefix = strtolower( $arr[1] );
-			if ( ! empty( $arr[3] ) ) {
-				$langrange = strtolower( $arr[3] );
-				$language  = $langprefix . '-' . $langrange;
-			} else {
-				$language = $langprefix;
-			}
-
-			$qvalue = 1.0;
-			if ( ! empty( $arr[5] ) ) {
-				$qvalue = (float) $arr[5];
-			}
-
-			// find q-maximal language
-			if ( in_array( $language, $supported ) && ( $qvalue > $bestqval ) ) {
-				$bestlang = $language;
-				$bestqval = $qvalue;
-			} // if no direct hit, try the prefix only but decrease q-value by 10% (as http_negotiate_language does)
-			elseif ( in_array( $langprefix, $supported ) && ( ( $qvalue * 0.9 ) > $bestqval ) ) {
-				$bestlang = $langprefix;
-				$bestqval = $qvalue * 0.9;
-			}
-		}
-
-		return $bestlang;
-
-	}
-
-
-endif;
-
-if ( ! function_exists( 'inet_pton' ) ) :
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $ip
-	 * @return unknown
-	 */
-	function inet_pton( $ip ) {
-		// ipv4
-		if ( strpos( $ip, '.' ) !== false ) {
-			if ( strpos( $ip, ':' ) === false ) {
-				$ip = pack( 'N', ip2long( $ip ) );
-			} else {
-				$ip = explode( ':', $ip );
-				$ip = pack( 'N', ip2long( $ip[ count( $ip ) - 1 ] ) );
-			}
-		} // ipv6
-		elseif ( strpos( $ip, ':' ) !== false ) {
-			$ip       = explode( ':', $ip );
-			$parts    = 8 - count( $ip );
-			$res      = '';
-			$replaced = 0;
-			foreach ( $ip as $seg ) {
-				if ( $seg != '' ) {
-					$res .= str_pad( $seg, 4, '0', STR_PAD_LEFT );
-				} elseif ( $replaced == 0 ) {
-					for ( $i = 0; $i <= $parts; $i++ ) {
-						$res .= '0000';
-					}
-
-					$replaced = 1;
-				} elseif ( $replaced == 1 ) {
-					$res .= '0000';
-				}
-			}
-			$ip = pack( 'H' . strlen( $res ), $res );
-		}
-		return $ip;
-	}
-
-
-endif;
