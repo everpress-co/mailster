@@ -187,6 +187,16 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ## Changelog
 
+### 3.2.3
+
+-   fixed: E_ERROR on Geo location class in PHP 8.1
+-   added enhancement issue template
+-   check if option from queue has template element
+-   fixed: footer branding
+-   fixed: Uncaught TypeError: in notifications.class.php
+-   standardize outgoing URLs
+-   tested up to 6.1
+
 ### 3.2.2
 
 -   added: native Advanced Custom Fields support.
