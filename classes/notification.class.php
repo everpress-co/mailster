@@ -367,7 +367,7 @@ class MailsterNotification {
 	 */
 	public function send( $subscriber_id, $options ) {
 
-		$template = $options['template'];
+		$template = isset( $options['template'] ) ? $options['template'] : '';
 
 		$this->apply_options( $options );
 		if ( $subscriber_id && $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) {
