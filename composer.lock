@@ -697,16 +697,16 @@
         },
         {
             "name": "fidry/console",
-            "version": "0.5.3",
+            "version": "0.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/theofidry/console.git",
-                "reference": "16d1993ecde7c4db2b3fe46896e491b079188dc5"
+                "reference": "bc1fe03f600c63f12ec0a39c6b746c1a1fb77bf7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theofidry/console/zipball/16d1993ecde7c4db2b3fe46896e491b079188dc5",
-                "reference": "16d1993ecde7c4db2b3fe46896e491b079188dc5",
+                "url": "https://api.github.com/repos/theofidry/console/zipball/bc1fe03f600c63f12ec0a39c6b746c1a1fb77bf7",
+                "reference": "bc1fe03f600c63f12ec0a39c6b746c1a1fb77bf7",
                 "shasum": ""
             },
             "require": {
@@ -762,9 +762,14 @@
                 }
             ],
             "description": "Library to create CLI applications",
+            "keywords": [
+                "cli",
+                "console",
+                "symfony"
+            ],
             "support": {
                 "issues": "https://github.com/theofidry/console/issues",
-                "source": "https://github.com/theofidry/console/tree/0.5.3"
+                "source": "https://github.com/theofidry/console/tree/0.5.5"
             },
             "funding": [
                 {
@@ -772,7 +777,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-11-03T07:52:24+00:00"
+            "time": "2022-12-18T10:49:34+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -908,16 +913,16 @@
         },
         {
             "name": "jetbrains/phpstorm-stubs",
-            "version": "v2022.2",
+            "version": "v2022.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JetBrains/phpstorm-stubs.git",
-                "reference": "01006d9854679672fc8b85c6d5063ea6f25226ac"
+                "reference": "6b568c153cea002dc6fad96285c3063d07cab18d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/01006d9854679672fc8b85c6d5063ea6f25226ac",
-                "reference": "01006d9854679672fc8b85c6d5063ea6f25226ac",
+                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/6b568c153cea002dc6fad96285c3063d07cab18d",
+                "reference": "6b568c153cea002dc6fad96285c3063d07cab18d",
                 "shasum": ""
             },
             "require-dev": {
@@ -950,9 +955,9 @@
                 "type"
             ],
             "support": {
-                "source": "https://github.com/JetBrains/phpstorm-stubs/tree/v2022.2"
+                "source": "https://github.com/JetBrains/phpstorm-stubs/tree/v2022.3"
             },
-            "time": "2022-07-25T13:18:36+00:00"
+            "time": "2022-10-17T09:21:37+00:00"
         },
         {
             "name": "mockery/mockery",

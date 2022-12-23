@@ -1813,6 +1813,10 @@ class Mailster {
 				$error_msg = $short ? esc_html__( 'Code in use!', 'mailster' ) : esc_html__( 'Your purchase code is already in use and can only be used for one site.', 'mailster' );
 				break;
 
+			case 681: // Download canceled
+				$error_msg = $short ? esc_html__( 'Download canceled', 'mailster' ) : esc_html__( 'Download canceled. Please upgrade your license to get automatic updates.', 'mailster' ) . '<br/><a href="' . mailster_url( 'https://kb.mailster.co/no-longer-able-to-access-your-download-heres-what-to-do/' ) . '" target="_blank">' . esc_html__( 'Learn more', 'mailster' ) . '</a>';
+				break;
+
 			case 500: // Internal Server Error
 			case 503: // Service Unavailable
 			case 'http_err':
