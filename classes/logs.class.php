@@ -18,7 +18,7 @@ class MailsterLogs {
 	public function init() {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 55 );
-		add_action( 'mailster_cron', array( &$this, 'cleanup' ), 100 );
+		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ), 100 );
 
 	}
 
@@ -193,15 +193,14 @@ class MailsterLogs {
 
 		$entries = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs" );
 
+		if ( $entries <= $max_entries ) {
+			return;
+		}
 		if ( $max_entries ) {
-			if ( $entries > $max_entries ) {
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE ID NOT IN ( SELECT ID FROM ( SELECT ID FROM {$wpdb->prefix}mailster_logs ORDER BY ID DESC LIMIT %d  ) x ) ", $max_entries ) );
-			}
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE ID NOT IN ( SELECT ID FROM ( SELECT ID FROM {$wpdb->prefix}mailster_logs ORDER BY ID DESC LIMIT %d  ) x ) ", $max_entries ) );
 		}
 		if ( $max_days ) {
-			if ( $entries > $max_entries ) {
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE timestamp < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY)) ) x ) ", $max_days ) );
-			}
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE timestamp < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL %d DAY ) ) ", $max_days ) );
 		}
 
 	}
