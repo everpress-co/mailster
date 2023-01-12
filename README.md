@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.1  
-Stable tag: 3.2.2
+Stable tag: 3.2.4
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,16 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ## Changelog
+
+### 3.2.3
+
+-   fixed: E_ERROR on Geo location class in PHP 8.1
+-   added enhancement issue template
+-   check if option from queue has template element
+-   fixed: footer branding
+-   fixed: Uncaught TypeError: in notifications.class.php
+-   standardize outgoing URLs
+-   tested up to 6.1
 
 ### 3.2.2
 
