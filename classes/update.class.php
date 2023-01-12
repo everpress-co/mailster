@@ -15,6 +15,8 @@ class MailsterUpdate {
 
 		add_action( 'install_plugins_pre_plugin-information', array( &$this, 'add_css_for_information_screen' ) );
 
+		add_action( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
+
 	}
 
 
@@ -247,6 +249,22 @@ class MailsterUpdate {
 
 		return $actions;
 
+	}
+
+
+	public function plugins_api_result( $res, $action, $args ) {
+
+		if ( is_wp_error( $res ) || ! $res || $res->slug !== 'mailster' ) {
+			return $res;
+		}
+
+		foreach ( $res->sections as $i => $section ) {
+			$res->sections[ $i ] = mailster_links_add_args( $section );
+		}
+
+		$res->homepage = mailster_url( $res->homepage );
+
+		return $res;
 	}
 
 
