@@ -1637,13 +1637,12 @@ class MailsterHelper {
 
 				$post_content = $rss_item->get_content();
 				$post_excerpt = $rss_item->get_description();
+				$post_image   = null;
 
-				preg_match_all( '/<img[^>]*src="(.*?(?:\.png|\.jpg|\.gif))"[^>]*>/i', $post_content . $post_excerpt, $images );
-				if ( ! empty( $images[0] ) ) {
+				if ( preg_match_all( '/<img[^>]*src="(.*?(?:\.png|\.jpg|\.gif))"[^>]*>/i', $post_content . $post_excerpt, $images ) ) {
 					$post_image = $images[1][0];
-				} else {
-					$post_image = null;
 				}
+
 				$author    = $rss_item->get_author();
 				$category  = $rss_item->get_categories();
 				$permalink = $rss_item->get_permalink();
@@ -1693,7 +1692,15 @@ class MailsterHelper {
 		}
 
 		if ( ! is_null( $item ) ) {
-			return isset( $posts[ $item ] ) ? $posts[ $item ] : new WP_Error( 'no_item', sprintf( esc_html__( 'Feed item #%d does not exist', 'mailster' ), $item ) );
+			if ( ! isset( $posts[ $item ] ) ) {
+				new WP_Error( 'no_item', sprintf( esc_html__( 'Feed item #%d does not exist', 'mailster' ), $item ) );
+			}
+			// try to load an image if it's missing
+			if ( empty( $posts[ $item ]->post_image ) ) {
+				$posts[ $item ]->post_image = $this->get_meta_tags_from_url( $posts[ $item ]->post_permalink, array( 'image', 'og:image', 'twitter:image' ) );
+			}
+
+			return $posts[ $item ];
 		}
 
 		return $posts;
@@ -1780,7 +1787,7 @@ class MailsterHelper {
 				}
 			}
 
-			set_transient( $cache_key, $tags, DAY_IN_SECONDS );
+			set_transient( $cache_key, $tags, HOUR_IN_SECONDS * 6 );
 
 		}
 
