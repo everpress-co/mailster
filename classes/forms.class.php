@@ -1323,7 +1323,7 @@ class MailsterForms {
 
 			$occurrence = array();
 
-			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit') AND post_type NOT IN ('newsletter', 'attachment')";
+			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit', 'auto-draft') AND post_type NOT IN ('newsletter', 'attachment')";
 
 			$result = $wpdb->get_results( $sql );
 
