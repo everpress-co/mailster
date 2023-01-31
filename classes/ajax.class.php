@@ -1355,7 +1355,7 @@ class MailsterAjax {
 				$args = wp_parse_args(
 					array(
 						'post_type'   => $post_types,
-						'post_status' => array( 'publish', 'future', 'draft' ),
+						'post_status' => array( 'publish', 'future', 'draft', 'private' ),
 					),
 					$defaults
 				);
