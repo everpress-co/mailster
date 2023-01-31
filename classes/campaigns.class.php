@@ -1708,6 +1708,8 @@ class MailsterCampaigns {
 
 		// sanitize the content and remove all content filters
 		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], isset( $postdata['head'] ) ? $postdata['head'] : null );
+		// remove any tinyMCE tag from the content
+		$post['post_content'] = preg_replace( '/ data-mce-([a-z-]+)=\\\"(.*?)\\\"/i', '', $post['post_content'] );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
 			? mailster( 'helper' )->plain_text( $post['post_content'] )

@@ -1016,6 +1016,25 @@ function mailster_url( $url, $args = array() ) {
 /**
  *
  *
+ * @param unknown $content
+ * @param unknown $args (optional)
+ * @return unknown
+ */
+function mailster_links_add_args( $content, $args = array() ) {
+
+	if ( preg_match_all( '/"(https:\/\/(.*?)mailster\.co(.*?))"/i', $content, $links ) ) {
+		foreach ( $links[1] as $link ) {
+			$content = str_replace( $link, mailster_url( $link, $args ), $content );
+		}
+	}
+
+	return $content;
+
+}
+
+/**
+ *
+ *
  * @param unknown $id_email_or_hash
  * @param unknown $type             (optional)
  * @return unknown
