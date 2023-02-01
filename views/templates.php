@@ -1,156 +1,89 @@
-<?php
-
-$t = mailster( 'templates' );
-
-$templates          = $t->get_templates();
-$mailster_templates = $t->get_mailster_templates();
-
-$notice  = false;
-$default = mailster_option( 'default_template', 'mymail' );
-if ( ! isset( $templates[ $default ] ) ) {
-	$default = 'mymail';
-	mailster_update_option( 'default_template', 'mymail' );
-	$notice[] = sprintf( esc_html__( 'Template %s is missing or broken. Reset to default', 'mailster' ), '"' . $default . '"' );
-
-	// mymail template is missing => redownload it.
-	if ( ! isset( $templates[ $default ] ) ) {
-		$result = $t->renew_default_template();
-		if ( is_wp_error( $result ) ) {
-			echo '<div class="error"><h3>' . esc_html__( 'There was a problem loading the templates', 'mailster' ) . '</h3><p>' . $result->get_error_message() . '</p></div>';
-			return;
-		}
-		$templates = $t->get_templates();
-	}
-}
-if ( $updates = $t->get_updates() ) : ?>
-<div class="notice notice-warning update-nag below-h2">
-	<?php printf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ); ?>
-</div>
-<?php endif; ?>
 <div class="wrap">
-<div id="mailster_templates">
-<?php $template = $templates[ $default ]; ?>
+<h1><?php esc_html_e( 'Templates', 'mailster' ); ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Upload Template', 'mailster' ); ?> </a></h1>
 
-<?php if ( ! isset( $_GET['more'] ) ) : ?>
+<div class="upload-field"><?php mailster( 'templates' )->media_upload_form(); ?></div>
 
-<ul>
-<li id="templateeditor">
-	<h3></h3>
-	<input type="hidden" id="slug">
-	<input type="hidden" id="file">
+<h2 class="screen-reader-text hide-if-no-js"><?php esc_html_e( 'Filter template list', 'mailster' ); ?></h2>
+<div class="wp-filter hide-if-no-js">
+	<div class="filter-count">
+		<span class="count theme-count"></span>
+	</div>
 
-		<div class="inner">
-			<div class="template-file-selector">
-				<label><?php esc_html_e( 'Select template file', 'mailster' ); ?>:</label> <span></span>
+	<ul class="filter-links">
+		<li><a href="#" data-sort="installed"><?php _ex( 'Installed', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="free"><?php _ex( 'Free', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="featured"><?php _ex( 'Featured', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="popular"><?php _ex( 'Popular', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="new"><?php _ex( 'Latest', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="updated"><?php _ex( 'Recently Updated', 'templates', 'mailster' ); ?></a></li>
+	</ul>
+
+	<form class="search-form" method="get">
+		<input type="hidden" name="tab" value="search">
+		<label class="screen-reader-text" for="typeselector"><?php esc_html_e( 'Search Templates by', 'mailster' ); ?>:</label>
+		<select name="type" id="typeselector">
+			<option value="term" selected="selected"><?php esc_html_e( 'Keyword', 'mailster' ); ?></option>
+			<option value="author"><?php esc_html_e( 'Author', 'mailster' ); ?></option>
+			<option value="tag"><?php esc_html_e( 'Tag', 'mailster' ); ?></option>
+			<option value="slug"><?php esc_html_e( 'Slug', 'mailster' ); ?></option>
+		</select>
+		<label class="screen-reader-text" for="search-templates"><?php esc_html_e( 'Search Templates', 'mailster' ); ?></label>
+		<input type="search" name="s" id="search-templates" value="" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search templates', 'mailster' ); ?>..." aria-describedby="live-search-desc">
+		<input type="submit" id="search-submit" class="button hide-if-js" value="<?php esc_attr_e( 'Search Templates', 'mailster' ); ?>">
+	</form>
+
+</div>
+
+<div class="notice notice-success notice-alt inline"></div>
+<div class="notice notice-alt notice-large inline theme-notice-free"></div>
+<div class="notice notice-alt notice-large inline theme-notice-popular"></div>
+<div class="notice notice-alt notice-large inline theme-notice-updated"></div>
+
+<h2 class="screen-reader-text hide-if-no-js"><?php esc_html_e( 'Template list', 'mailster' ); ?></h2>
+<div class="theme-browser content-filterable _single-theme rendered"></div>
+
+<div class="theme-overlay hidden" tabindex="0" role="dialog" aria-label="Theme Details">
+	<div class="theme-backdrop"></div>
+	<div class="theme-wrap wp-clearfix" role="document">
+		<div class="theme-header">
+			<button class="left dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Show previous template', 'mailster' ); ?></span></button>
+			<button class="right dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Show next template', 'mailster' ); ?></span></button>
+			<button class="close dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Close details dialog', 'mailster' ); ?></span></button>
+		</div>
+		<div class="theme-about wp-clearfix">
+			<div class="theme-screenshots">
+				<div class="theme-files nav-tab-wrapper nav-tab-small hide-if-no-js"></div>
+				<div class="screenshot">
+					<div class="codeeditor">
+						<h3></h3>
+						<textarea></textarea>
+					</div>
+					<img src="" alt="">
+					<iframe src="" allowTransparency="true" frameBorder="0" sandbox="allow-presentation"></iframe>
+				</div>
 			</div>
-			<div class="edit-buttons">
-				<span class="spinner template-ajax-loading"></span>
-				<span class="message"></span>
-				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
-				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ); ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ); ?>
-				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
-			</div>
-				<textarea class="editor"></textarea>
-			<div class="edit-buttons">
-				<span class="message"></span>
-				<span class="spinner template-ajax-loading"></span>
-				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
-				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ); ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ); ?>
-				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
+			<div class="theme-info">
+				<h2 class="theme-name"></h2>
+				<p class="theme-author"></p>
+				<p class="theme-description"></p>
+				<p class="theme-tags"></p>
 			</div>
 		</div>
-	<br class="clear">
-</li>
-</ul>
-<h1><?php esc_html_e( 'Templates', 'mailster' ); ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Add New', 'mailster' ); ?> </a></h1>
-	<?php
-	wp_nonce_field( 'mailster_nonce' );
-	if ( $notice ) {
-		foreach ( $notice as $note ) {
-			?>
-		<div class="updated below-h2"><p><?php echo $note; ?></p></div>
-			<?php
-		}
-	}
-	?>
-<div class="upload-field"><?php $t->media_upload_form(); ?></div>
-<ul id="installed-templates">
-	<?php
-	$i = 0;
-	unset( $templates[ $default ] );
 
-	$new = isset( $_GET['new'] ) && isset( $templates[ $_GET['new'] ] ) ? esc_attr( $_GET['new'] ) : null;
-
-	if ( $new ) {
-		$new_template = $templates[ $new ];
-		unset( $templates[ $new ] );
-		$templates = array( $new => $new_template ) + $templates;
-	}
-	$templates = array( $default => $template ) + $templates;
-
-
-	foreach ( $templates as $slug => $data ) {
-
-		include MAILSTER_DIR . 'views/templates/installed-template.php';
-
-	}
-
-	if ( current_user_can( 'mailster_upload_templates' ) ) :
-		?>
-	<li class="mailster-box more-templates-field">
-		<div><a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="button button-primary button-hero"> <?php esc_html_e( 'More Templates', 'mailster' ); ?></a></div>
-	</li>
-	<?php endif; ?>
-
-</ul>
-
-<?php else : ?>
-
-<h1><?php esc_html_e( 'More Templates', 'mailster' ); ?></h1>
-
-	<?php
-
-	if ( empty( $mailster_templates ) ) :
-
-		echo '<div class="error below-h2"><p>' . esc_html__( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
-
-	else :
-
-		?>
-<ul id="available-templates">
-	<li class="mailster-box more-templates-field">
-		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' ); ?></a></div>
-	</li>
-		<?php
-
-		$existing = @array_intersect_assoc( $mailster_templates, $templates );
-		$others   = @array_diff_assoc( $mailster_templates, $existing );
-		$author   = isset( $_GET['from'] ) ? trim( strtolower( $_GET['from'] ) ) : null;
-
-		$mailster_templates = $existing + $others;
-
-
-		foreach ( $mailster_templates as $slug => $data ) {
-
-			if ( $author && strtolower( $data['author'] ) != $author ) {
-				continue;
-			}
-
-			include MAILSTER_DIR . 'views/templates/available-template.php';
-
-		}
-		?>
-</ul>
-<div class="clear affiliate-note">
-	Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.
+		<div class="theme-actions">
+			<div>
+				<a href="" class="button default"><?php esc_html_e( 'Use as default', 'mailster' ); ?></a>
+				<a href="" class="button button-primary save"><?php esc_html_e( 'Save File', 'mailster' ); ?></a>
+				<a href="" class="button edit"><?php esc_html_e( 'Edit File', 'mailster' ); ?></a>
+				<a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary campaign"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
+			</div>
+			<a class="button delete-theme"><?php esc_html_e( 'Delete', 'mailster' ); ?></a>
+		</div>
+	</div>
 </div>
-<?php endif; ?>
 
-<?php endif; ?>
-<div id="thickboxbox">
-	<ul class="thickbox-filelist"></ul>
-	<iframe class="thickbox-iframe" src="" data-no-lazy=""></iframe>
-</div>
-<div id="ajax-response"></div>
-<br class="clear">
+<p class="no-themes"><?php esc_html_e( 'No templates found. Try a different search.', 'mailster' ); ?></p>
+<span class="spinner"></span>
+
+<p class="clear disclosure description"><?php esc_html_e( 'Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.', 'mailster' ); ?></p>
 </div>

@@ -9,8 +9,8 @@
 	$description = wp_trim_words( mailster( 'campaigns' )->get_excerpt( $post_id ), 55, '...' );
 	$permalink   = get_permalink();
 	$blogname    = get_bloginfo( 'name' );
-	$logo_link   = apply_filters( 'mymail_frontpage_logo_link', apply_filters( 'mailster_frontpage_logo_link', get_bloginfo( 'url' ) ) );
-	$logo        = apply_filters( 'mymail_frontpage_logo', apply_filters( 'mailster_frontpage_logo', $blogname ) );
+	$logo_link   = apply_filters( 'mailster_frontpage_logo_link', get_bloginfo( 'url' ) );
+	$logo        = apply_filters( 'mailster_frontpage_logo', $blogname );
 
 	if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 
@@ -41,8 +41,8 @@
 	<meta property="og:image:height" content="<?php echo (int) $image[2]; ?>" />
 <?php endif; ?>
 
-	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card', apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
-	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailster' ) ) ); ?>"/>
+	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ); ?>"/>
+	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mailster_frontpage_twitter_username', 'mailster' ) ); ?>"/>
 	<meta name="twitter:title" content="<?php echo esc_attr( $title ); ?>" />
 	<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>"/>
 
@@ -87,17 +87,13 @@
 							<div>
 								<ul class="social-services">
 								<?php foreach ( $services as $service ) : ?>
-									<?php
-									if ( ! isset( $social_services[ $service ] ) ) {
-										continue;
-									}
-
-									?>
-								<li>
-									<a title="<?php printf( esc_html__( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ); ?>" class="<?php echo $service; ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650; ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405; ?>" >
-									<?php echo esc_html( $social_services[ $service ]['name'] ); ?>
-									</a>
-								</li>
+									<?php if ( isset( $social_services[ $service ] ) ) : ?>
+									<li>
+										<a style="background-image: url('data:image/svg+xml;base64,<?php echo base64_encode( $social_services[ $service ]['icon'] ); ?>');" title="<?php printf( esc_html__( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ); ?>" class="<?php echo $service; ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650; ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405; ?>" >
+											<?php echo esc_html( $social_services[ $service ]['name'] ); ?>
+										</a>
+									</li>
+									<?php endif; ?>
 								<?php endforeach; ?>
 								</ul>
 							</div>
@@ -138,7 +134,7 @@
 						<div>
 							<input type="text" value="<?php echo esc_attr( $permalink ); ?>" onclick="this.select()">
 							<?php if ( ! apply_filters( 'mailster_hide_poweredby', false ) ) : ?>
-							<div class="powered-by">powered by <a href="https://mailster.co">Mailster</a></div>
+							<div class="powered-by">powered by <a href="<?php echo mailster_url( 'https://mailster.co' ); ?>">Mailster Newsletter Plugin</a></div>
 							<?php endif; ?>
 						</div>
 					</li>

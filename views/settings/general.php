@@ -5,7 +5,7 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-from-email">
 		<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> *</th>
-		<td><input type="text" name="mailster_options[from]" value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The sender email address. Force your receivers to whitelabel this email address.', 'mailster' ); ?></span></td>
+		<td><input type="text" name="mailster_options[from]" value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The sender email address. Ask your subscribers to white label this email address.', 'mailster' ); ?></span></td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-reply-to-email">
 		<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> *</th>
@@ -34,27 +34,8 @@
 		<th scope="row"><?php esc_html_e( 'Post List Count', 'mailster' ); ?></th>
 		<td><input type="text" name="mailster_options[post_count]" value="<?php echo esc_attr( mailster_option( 'post_count' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'Number of posts or images displayed at once in the editbar.', 'mailster' ); ?></span></td>
 	</tr>
-	<tr valign="top" class="settings-row settings-row-auto-update">
-		<th scope="row"><?php esc_html_e( 'Auto Update', 'mailster' ); ?></th>
-		<td>
-		<?php
-		$is    = mailster_option( 'autoupdate', 'minor' );
-		$types = array(
-			'1'     => esc_html__( 'enabled', 'mailster' ),
-			'0'     => esc_html__( 'disabled', 'mailster' ),
-			'minor' => esc_html__( 'only minor updates', 'mailster' ),
-		);
-		?>
-		<select name="mailster_options[autoupdate]">
-			<?php foreach ( $types as $value => $name ) : ?>
-			<option value="<?php echo $value; ?>" <?php selected( $is == $value ); ?>><?php echo esc_html( $name ); ?></option>
-			<?php endforeach; ?>
-		</select>
-		<p class="description"><?php esc_html_e( 'auto updates are recommended for important fixes.', 'mailster' ); ?></p>
-		</td>
-	</tr>
 	<tr valign="top" class="settings-row settings-row-system-mails">
-		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ); ?><a class="infolink external" href="https://kb.mailster.co/how-can-i-use-mailster-with-the-wp_mail-function/"></a>
+		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ); ?><a class="infolink external" href="<?php echo mailster_url( 'https://kb.mailster.co/how-can-i-use-mailster-with-the-wp_mail-function/' ); ?>"></a>
 		<p class="description"><?php esc_html_e( 'Decide how Mailster uses the wp_mail function.', 'mailster' ); ?></p>
 		</th>
 		<td>

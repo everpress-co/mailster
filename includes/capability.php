@@ -83,6 +83,11 @@ $mailster_capabilities = array(
 		'roles' => array( 'editor' ),
 	),
 
+	'mailster_restore_subscribers'        => array(
+		'title' => esc_html__( 'restore subscribers', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
 	'mailster_edit_forms'                 => array(
 		'title' => esc_html__( 'edit forms', 'mailster' ),
 		'roles' => array( 'editor' ),
@@ -136,6 +141,21 @@ $mailster_capabilities = array(
 
 	'mailster_delete_lists'               => array(
 		'title' => esc_html__( 'delete lists', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_add_tags'                   => array(
+		'title' => __( 'add tags', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_edit_tags'                  => array(
+		'title' => __( 'edit tags', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_delete_tags'                => array(
+		'title' => __( 'delete tags', 'mailster' ),
 		'roles' => array( 'editor' ),
 	),
 
@@ -194,4 +214,4 @@ $mailster_capabilities = array(
 
 );
 
-$mailster_capabilities = apply_filters( 'mymail_capabilities', apply_filters( 'mailster_capabilities', $mailster_capabilities ) );
+$mailster_capabilities = apply_filters( 'mailster_capabilities', $mailster_capabilities );

@@ -130,8 +130,11 @@ class MailsterTests {
 	}
 
 	public function nicename( $test ) {
+		if ( empty( $test ) ) {
+			return $test;
+		}
 		$test = ucwords( str_replace( array( 'test_', '_' ), array( '', ' ' ), $test ) );
-		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail' ), $test );
+		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail', 'Wpmail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail', 'wpmail()' ), $test );
 		return $test;
 	}
 
@@ -292,6 +295,66 @@ class MailsterTests {
 
 		}
 	}
+	private function test_database_structure() {
+
+		global $wpdb;
+
+		$set_charset = true;
+		$result      = mailster()->dbstructure( false, true, $set_charset, false );
+
+		if ( false !== strpos( $result, 'Duplicate key name \'id\'' ) ) {
+			mailster( 'upgrade' )->maybe_fix_indexes();
+			mailster()->dbstructure();
+			return false;
+		}
+
+		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
+			$set_charset = false;
+			$result      = mailster()->dbstructure( false, true, $set_charset, false );
+		}
+
+		if ( false !== strpos( $result, 'Key column \'ID\' doesn\'t exist in table' ) ) {
+			if ( $text = mailster( 'upgrade' )->create_primary_keys() ) {
+				$this->notice( $text );
+				$result = mailster()->dbstructure( false, true, $set_charset, false );
+			}
+		}
+
+		if ( true !== $result ) {
+			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
+			if ( $result === $second_result ) {
+				$this->error( $result );
+			} else {
+				$this->notice( $result );
+			}
+		}
+
+		if ( false === mailster( 'subscribers' )->wp_id() ) {
+			$status = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLE STATUS LIKE %s', $wpdb->users ) );
+			if ( isset( $status->Collation ) ) {
+				$tables = mailster()->get_tables( true );
+
+				foreach ( $tables as $table ) {
+					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
+					if ( false !== $wpdb->query( $sql ) ) {
+						$this->notice( "'$table' converted to {$status->Collation}" );
+					}
+				}
+			}
+		}
+
+		// reset auto increments
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_subscribers AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
+
+		// remove temp table
+		delete_option( 'mailster_bulk_import' );
+		delete_option( 'mailster_bulk_import_errors' );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
+
+	}
 	private function test_verfied_installation() {
 
 		if ( ! mailster()->is_verified() ) {
@@ -335,7 +398,7 @@ class MailsterTests {
 	}
 	private function test_default_template() {
 
-		$default      = 'mymail';
+		$default      = 'mailster';
 		$template     = mailster_option( 'default_template' );
 		$template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $template;
 
@@ -407,7 +470,7 @@ class MailsterTests {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)", $hash ) );
 			if ( $user ) {
 				$this->warning( sprintf( 'Please remove any unused support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
 			}
@@ -427,7 +490,7 @@ class MailsterTests {
 
 	}
 	private function test_custom_language() {
-		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
+		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_user_locale() . '.mo' ) ) {
 			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
 		}
 	}
@@ -453,7 +516,9 @@ class MailsterTests {
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->failure( ( mailster_is_local() ? 'notice' : 'warning' ), 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			if ( function_exists( 'wp_get_environment_type' ) && 'production' == wp_get_environment_type() ) {
+				$this->failure( ( mailster_is_local() ? 'notice' : 'warning' ), 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			}
 		}
 	}
 	private function test_dom_document_extension() {
@@ -466,55 +531,9 @@ class MailsterTests {
 			$this->warning( 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank" rel="noopener">fsockopen</a>.' );
 		}
 	}
-	private function test_database_structure() {
 
-		global $wpdb;
-
-		$set_charset = true;
-		$result      = mailster()->dbstructure( false, true, $set_charset, false );
-
-		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
-			$set_charset = false;
-			$result      = mailster()->dbstructure( false, true, $set_charset, false );
-		}
-
-		if ( true !== $result ) {
-			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
-			if ( $result === $second_result ) {
-				$this->error( $result );
-			} else {
-				$this->notice( $result );
-			}
-		}
-
-		if ( false === mailster( 'subscribers' )->wp_id() ) {
-			$status = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLE STATUS LIKE %s', $wpdb->users ) );
-			if ( isset( $status->Collation ) ) {
-				$tables = mailster()->get_tables( true );
-
-				foreach ( $tables as $table ) {
-					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
-					if ( false !== $wpdb->query( $sql ) ) {
-						$this->notice( "'$table' converted to {$status->Collation}" );
-					}
-				}
-			}
-		}
-
-		// reset auto increments
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_subscribers AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
-
-		// remove temp table
-		delete_option( 'mailster_bulk_import' );
-		delete_option( 'mailster_bulk_import_errors' );
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
-
-	}
 	private function test_memory_limit() {
-		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
 		if ( $max < 128 ) {
 			$this->warning( 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
@@ -540,10 +559,10 @@ class MailsterTests {
 		if ( is_wp_error( $cron_status ) ) {
 			switch ( $cron_status->get_error_code() ) {
 				case 'cron_error':
-					$this->error( $cron_status->get_error_message(), 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+					$this->error( $cron_status->get_error_message(), mailster_url( 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/', 'utm_term=mailster_tests' ) );
 					break;
 				default:
-					$this->warning( $cron_status->get_error_message(), 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+					$this->warning( $cron_status->get_error_message(), mailster_url( 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/', 'utm_term=mailster_tests' ) );
 					break;
 			}
 		} else {
@@ -558,7 +577,7 @@ class MailsterTests {
 		mailster( 'cron' )->lock();
 
 		if ( ! mailster( 'cron' )->is_locked() ) {
-			$this->warning( 'Cron Lock mechanism is not working with the current method.', 'https://kb.mailster.co/what-is-a-cron-lock/' );
+			$this->warning( 'Cron Lock mechanism is not working with the current method.', mailster_url( 'https://kb.mailster.co/what-is-a-cron-lock/', 'utm_term=mailster_tests' ) );
 		} else {
 			$this->success( 'No Cron Lock in place!' );
 		}
@@ -575,9 +594,9 @@ class MailsterTests {
 			$mails_per_sec = sprintf( esc_html__( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ) ), $mails_per_sec );
 
 			if ( $last_hit['mail'] > 1 ) {
-				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', mailster_url( 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/', 'utm_term=mailster_tests' ) );
 			} else {
-				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', mailster_url( 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/', 'utm_term=mailster_tests' ) );
 			}
 		}
 	}
@@ -587,12 +606,12 @@ class MailsterTests {
 
 		if ( ! $hp || $hp->post_status == 'trash' ) {
 
-			$this->error( sprintf( esc_html__( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . esc_html__( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) . '">' . esc_html__( 'create it right now', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			$this->error( sprintf( esc_html__( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . esc_html__( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) . '">' . esc_html__( 'create it right now', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 			return;
 
 		} elseif ( $hp->post_status != 'publish' ) {
 
-			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 
 		}
 
@@ -601,14 +620,14 @@ class MailsterTests {
 			|| ! preg_match( '#\[newsletter_confirm\]#', $hp->post_content )
 			|| ! preg_match( '#\[newsletter_unsubscribe\]#', $hp->post_content ) ) {
 
-			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 
 		}
 
 		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $hp->post_content, $matches ) ) {
 			$form_id = (int) $matches[1];
 			if ( ! mailster( 'forms' )->get( $form_id ) ) {
-				$this->error( sprintf( esc_html__( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+				$this->error( sprintf( esc_html__( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
 			}
 		}
 
@@ -669,31 +688,64 @@ class MailsterTests {
 		}
 
 	}
-	private function test_mailfunction() {
+	private function get_test_mail_data() {
 
-		$to      = 'deadend@newsletter-plugin.com';
-		$subject = 'This is a test mail from the Mailster Test page';
-		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
+		$user = wp_get_current_user();
+
+		if ( ! $user ) {
+			$this->error( 'No current user found for test mail.' );
+			return;
+		}
+		if ( ! is_email( $user->user_email ) ) {
+			$this->error( 'The current user doesn\'t have a valid email address to send a test mail.' );
+			return;
+		}
+
+		$return = array(
+			'to'      => $user->user_email,
+			'subject' => 'This is a test mail from the Mailster Test page',
+			'message' => sprintf( "This message has been sent from\n\n%s\n\n to ensure Mailster can send mails with your current delivery method.\n\nYou can delete this message.", admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) ),
+		);
+
+		return $return;
+
+	}
+	private function test_mail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		$mail          = mailster( 'mail' );
 		$mail->to      = $to;
 		$mail->subject = $subject;
 		$mail->debug();
 
-		if ( ! $mail->send_notification( 'Sendtest', $message, array( 'notification' => '' ), false ) ) {
+		if ( ! $mail->send_notification( wpautop( $message ), $subject, array( 'notification' => '' ), false ) ) {
 			$error_message = strip_tags( $mail->get_errors() );
 			$msg           = 'You are not able to send mails with the current delivery settings!';
 
 			if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
-				$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );
+				$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/', 'utm_term=mailster_tests' ) );
 			} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
-				$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-data-not-accepted/' );
+				$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-data-not-accepted/', 'utm_term=mailster_tests' ) );
 			} else {
 				$this->error( $msg . '<br>' . $error_message );
 			}
 		} else {
 			$this->success( 'Email was successfully delivery to ' . $to );
 		}
+
+	}
+	private function test_wpmail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		if ( mailster_option( 'system_mail' ) ) {
 
@@ -711,9 +763,9 @@ class MailsterTests {
 		$msg           = 'You are not able to use <code>wp_mail()</code> with Mailster';
 
 		if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
-			$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );
+			$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/', 'utm_term=mailster_tests' ) );
 		} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
-			$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-data-not-accepted/' );
+			$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-data-not-accepted/', 'utm_term=mailster_tests' ) );
 		} else {
 			$this->error( $msg . '<br>' . $error_message );
 		}

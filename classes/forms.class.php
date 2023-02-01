@@ -158,7 +158,7 @@ class MailsterForms {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array(), MAILSTER_VERSION );
 
 		if ( $is_button ) {
 
@@ -201,6 +201,7 @@ class MailsterForms {
 
 			add_action( 'load-' . $page, array( &$this, 'bulk_actions' ), 99 );
 			add_action( 'load-' . $page, array( &$this, 'screen_options' ) );
+			add_action( 'load-' . $page, array( &$this, 'block_forms_message' ) );
 			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
 		endif;
@@ -225,6 +226,10 @@ class MailsterForms {
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 
+			wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array( 'mailster-select2-theme' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 			wp_enqueue_style( 'form-button-style', MAILSTER_URI . 'assets/css/button-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_style( 'form-button-default-style', MAILSTER_URI . 'assets/css/button-default-style' . $suffix . '.css', array( 'form-button-style' ), MAILSTER_VERSION );
@@ -243,6 +248,7 @@ class MailsterForms {
 				'form',
 				array(
 					'require_save' => esc_html__( 'The changes you made will be lost if you navigate away from this page.', 'mailster' ),
+					'choose_tags'  => esc_html__( 'Choose your tags.', 'mailster' ),
 					'not_saved'    => esc_html__( 'You haven\'t saved your recent changes on this form!', 'mailster' ),
 					'prev'         => esc_html__( 'prev', 'mailster' ),
 					'useit'        => esc_html__( 'Use your form as', 'mailster' ) . '&hellip;',
@@ -317,7 +323,7 @@ class MailsterForms {
 						mailster_notice( sprintf( esc_html__( '%d forms have been removed', 'mailster' ), count( $_POST['forms'] ) ), 'error', true );
 					}
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 
 				}
@@ -343,8 +349,8 @@ class MailsterForms {
 
 			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
 				( isset( $_GET['ID'] ) )
-					? wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
-					: wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+					? mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
+					: mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
 				exit;
 			}
 		}
@@ -424,23 +430,35 @@ class MailsterForms {
 
 				}
 
+				if ( isset( $_POST['mailster_tags'] ) ) {
+					$tags     = array_filter( $_POST['mailster_tags'], 'is_numeric' );
+					$new_tags = array_values( array_diff( $_POST['mailster_tags'], $tags ) );
+					foreach ( $new_tags as $tagname ) {
+						$tags[] = mailster( 'tags' )->add( $tagname );
+					}
+				} else {
+					$tags = array();
+				}
+
+				$this->assign_tags( $id, $tags, true );
+
 				mailster_notice( isset( $urlparams['new'] ) ? esc_html__( 'Form added', 'mailster' ) : esc_html__( 'Form updated', 'mailster' ), 'success', true );
 
 			endif;
 
 			if ( isset( $_POST['design'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'design' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'design' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['settings'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'settings' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'settings' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['structure'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'structure' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'structure' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['delete'] ) ) :
@@ -455,14 +473,14 @@ class MailsterForms {
 						do_action( 'mailster_form_delete', $form->ID );
 					}
 
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
 					exit;
 
 				};
 
 			endif;
 
-			wp_redirect( $redirect );
+			mailster_redirect( $redirect );
 			exit;
 
 		}
@@ -515,6 +533,19 @@ class MailsterForms {
 
 	}
 
+
+	public function block_forms_message( $hook = null, $once = true, $page = 'newsletter_page_mailster_forms' ) {
+
+		if ( ! in_array( 'mailster-block-forms/mailster-block-forms.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+			$msg  = '<h2>' . esc_html__( 'A new way to create forms for Mailster is coming!', 'mailster' ) . '</h2>';
+			$msg .= '<p>' . esc_html__( 'Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.', 'mailster' ) . '</p>';
+			$msg .= '<p><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_addons&search=mailster-block-forms&type=slug' ) . '" class="button button-primary">' . esc_html__( 'Install Mailster Block Forms', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://docs.mailster.co/#/block-forms-overview' ) . '" class="button button-link external">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
+
+			mailster_notice( $msg, 'info', $once, 'mailster_block_form_notice', true, $page );
+
+		}
+
+	}
 
 	/**
 	 *
@@ -635,10 +666,10 @@ class MailsterForms {
 				'style'           => '',
 				'custom_style'    => '',
 				'doubleoptin'     => true,
-				'subject'         => esc_html__( 'Please confirm', 'mailster' ),
-				'headline'        => esc_html__( 'Please confirm your Email Address', 'mailster' ),
-				'content'         => sprintf( esc_html__( 'You have to confirm your email address. Please click the link below to confirm. %s', 'mailster' ), "\n{link}" ),
-				'link'            => esc_html__( 'Click here to confirm', 'mailster' ),
+				'subject'         => sprintf( esc_html__( 'Welcome to %s! Please Confirm Your Email', 'mailster' ), '{company}' ),
+				'headline'        => esc_html__( 'Please confirm your Email', 'mailster' ),
+				'content'         => sprintf( esc_html__( 'By clicking on the following link, you are confirming your email address. %s', 'mailster' ), "\n\n{link}" ),
+				'link'            => esc_html__( 'Confirm your email address', 'mailster' ),
 				'resend'          => false,
 				'resend_count'    => 2,
 				'resend_time'     => 48,
@@ -696,11 +727,13 @@ class MailsterForms {
 			$error_msg = wp_list_pluck( $form->fields, 'error_msg' );
 			$required  = $form->required;
 			$lists     = $form->lists;
+			$tags      = $form->tags;
 
 			unset( $form->ID );
 			unset( $form->fields );
 			unset( $form->required );
 			unset( $form->lists );
+			unset( $form->tags );
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
@@ -719,6 +752,7 @@ class MailsterForms {
 			$new_id = $this->add( $form );
 			if ( ! is_wp_error( $new_id ) ) {
 				$this->assign_lists( $new_id, $lists );
+				$this->assign_tags( $new_id, $tags );
 				$this->update_fields( $new_id, $fields, $required, $error_msg );
 
 				do_action( 'mailster_form_duplicate', $id, $new_id );
@@ -822,6 +856,104 @@ class MailsterForms {
 		if ( false !== $wpdb->query( $sql ) ) {
 
 			do_action( 'mailster_unassign_form_lists', $form_ids, $lists, $not_list );
+
+			return true;
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $form_ids
+	 * @param unknown $tags
+	 * @param unknown $remove_old (optional)
+	 * @return unknown
+	 */
+	public function assign_tags( $form_ids, $tags, $remove_old = false ) {
+
+		global $wpdb;
+
+		if ( ! is_array( $form_ids ) ) {
+			$form_ids = array( $form_ids );
+		}
+
+		if ( ! is_array( $tags ) ) {
+			$tags = array( $tags );
+		}
+
+		$now = time();
+
+		$inserts = array();
+		foreach ( $tags as $tag_id ) {
+			foreach ( $form_ids as $form_id ) {
+				$inserts[] = "($tag_id, $form_id, $now)";
+			}
+		}
+
+		if ( empty( $inserts ) ) {
+			return true;
+		}
+
+		$chunks = array_chunk( $inserts, 200 );
+
+		$success = true;
+
+		if ( $remove_old ) {
+			$this->unassign_tags( $form_ids, null, $tags );
+		}
+
+		foreach ( $chunks as $insert ) {
+
+			$sql  = "INSERT INTO {$wpdb->prefix}mailster_forms_tags (tag_id, form_id, added) VALUES ";
+			$sql .= ' ' . implode( ',', $insert );
+			$sql .= ' ON DUPLICATE KEY UPDATE tag_id = values(tag_id), form_id = values(form_id)';
+
+			$success = $success && ( false !== $wpdb->query( $sql ) );
+
+		}
+		return $success;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $form_ids
+	 * @param unknown $tags    (optional)
+	 * @param unknown $not_tag (optional)
+	 * @return unknown
+	 */
+	public function unassign_tags( $form_ids, $tags = null, $not_tag = null ) {
+
+		global $wpdb;
+
+		$form_ids = ! is_array( $form_ids ) ? array( (int) $form_ids ) : array_filter( $form_ids, 'is_numeric' );
+
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_forms_tags WHERE form_id IN (" . implode( ', ', $form_ids ) . ')';
+
+		if ( ! is_null( $tags ) && ! empty( $tags ) ) {
+			if ( ! is_array( $tags ) ) {
+				$tags = array( $tags );
+			}
+
+			$sql .= ' AND tag_id IN (' . implode( ', ', array_filter( $tags, 'is_numeric' ) ) . ')';
+		}
+		if ( ! is_null( $not_tag ) && ! empty( $not_tag ) ) {
+			if ( ! is_array( $not_tag ) ) {
+				$not_tag = array( $not_tag );
+			}
+
+			$sql .= ' AND tag_id NOT IN (' . implode( ', ', array_filter( $not_tag, 'is_numeric' ) ) . ')';
+		}
+
+		if ( false !== $wpdb->query( $sql ) ) {
+
+			do_action( 'mailster_unassign_form_tags', $form_ids, $tags, $not_tag );
 
 			return true;
 		}
@@ -962,9 +1094,10 @@ class MailsterForms {
 	 * @param unknown $ID
 	 * @param unknown $fields (optional)
 	 * @param unknown $lists  (optional)
+	 * @param unknown $tags   (optional)
 	 * @return unknown
 	 */
-	public function get( $ID = null, $fields = true, $lists = true ) {
+	public function get( $ID = null, $fields = true, $lists = true, $tags = true ) {
 
 		global $wpdb;
 
@@ -978,7 +1111,7 @@ class MailsterForms {
 		}
 
 		if ( ! ( $forms = $wpdb->get_results( $sql ) ) ) {
-			return false;
+			return array();
 		}
 
 		foreach ( $forms as $i => $form ) {
@@ -996,6 +1129,10 @@ class MailsterForms {
 
 			if ( $lists ) {
 				$forms[ $i ]->lists = $this->get_lists( $forms[ $i ]->ID, true );
+			}
+
+			if ( $tags ) {
+				$forms[ $i ]->tags = $this->get_tags( $forms[ $i ]->ID, true );
 			}
 
 			$forms[ $i ]->style      = ( $forms[ $i ]->style ) ? json_decode( $forms[ $i ]->style ) : array();
@@ -1079,9 +1216,39 @@ class MailsterForms {
 
 		$sql = "SELECT lists.* FROM {$wpdb->prefix}mailster_lists AS lists LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS forms_lists ON lists.ID = forms_lists.list_id WHERE forms_lists.form_id = %d";
 
+		if ( $order_by = apply_filters( 'mailster_form_list_order', false, $id ) ) {
+			if ( in_array( $order_by, array( 'id', 'name', 'slug', 'added' ) ) ) {
+				$sql .= ' ORDER BY lists.' . esc_sql( $order_by );
+			}
+		}
+
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @param unknown $ids_only (optional)
+	 * @return unknown
+	 */
+	public function get_tags( $id, $ids_only = false ) {
+
+		global $wpdb;
+
+		$cache = mailster_cache_get( 'forms_tags' );
+		if ( isset( $cache[ $id ] ) ) {
+			return $cache[ $id ];
+		}
+
+		$sql = "SELECT tags.* FROM {$wpdb->prefix}mailster_tags AS tags LEFT JOIN {$wpdb->prefix}mailster_forms_tags AS forms_tags ON tags.ID = forms_tags.tag_id WHERE forms_tags.form_id = %d";
+
+		$tags = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
+
+		return $ids_only ? wp_list_pluck( $tags, 'ID' ) : $tags;
 
 	}
 
@@ -1156,7 +1323,7 @@ class MailsterForms {
 
 			$occurrence = array();
 
-			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit') AND post_type NOT IN ('newsletter', 'attachment')";
+			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit', 'auto-draft') AND post_type NOT IN ('newsletter', 'attachment')";
 
 			$result = $wpdb->get_results( $sql );
 
@@ -1259,7 +1426,7 @@ class MailsterForms {
 
 		$button_src = MAILSTER_URI . 'assets/js/button' . $suffix . '.js';
 
-		$button_src = apply_filters( 'mymail_subscribe_button_src', apply_filters( 'mailster_subscribe_button_src', $button_src, $options ), $options );
+		$button_src = apply_filters( 'mailster_subscribe_button_src', $button_src, $options );
 
 		$options['endpoint'] = $this->url(
 			array(

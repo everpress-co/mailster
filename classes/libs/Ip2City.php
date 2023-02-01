@@ -2,8 +2,7 @@
 
 class Ip2City {
 
-	// maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
-	public $zip = 'https://static.mailster.co/GeoIPCity.zip';
+	public $zip = 'https://static.mailster.co/geo/CityDB.zip';
 	private $dbfile;
 	public $gi;
 	private $renew = false;
@@ -12,7 +11,7 @@ class Ip2City {
 
 		require_once MAILSTER_DIR . 'classes/libs/geoipcity.inc.php';
 
-		$this->dbfile = MAILSTER_UPLOAD_DIR . '/GeoIPCity.dat';
+		$this->dbfile = MAILSTER_UPLOAD_DIR . '/CityDB.dat';
 		$this->dbfile = $dbfile;
 
 		if ( file_exists( $this->dbfile ) ) {
@@ -39,14 +38,16 @@ class Ip2City {
 	 */
 	public function get_countries() {
 
-		$rawcountries = $this->gi->GEOIP_COUNTRY_NAMES;
 		$countries = array();
-		foreach ( $rawcountries as $key => $country ) {
-			if ( ! $key ) {
-				continue;
-			}
+		if ( $this->gi ) {
+			$rawcountries = $this->gi->GEOIP_COUNTRY_NAMES;
+			foreach ( $rawcountries as $key => $country ) {
+				if ( ! $key ) {
+					continue;
+				}
 
-			$countries[ $this->gi->GEOIP_COUNTRY_CODES[ $key ] ] = $country;
+				$countries[ $this->gi->GEOIP_COUNTRY_CODES[ $key ] ] = $country;
+			}
 		}
 
 		return $countries;
@@ -70,12 +71,12 @@ class Ip2City {
 
 		if ( is_null( $part ) ) {
 			if ( isset( $record->city ) ) {
-				$record->city = utf8_encode( trim( $record->city ) );
+				$record->city = ( trim( $record->city ) );
 			}
 
 			return $record;
 		} else {
-			return isset( $record->{$part} ) ? utf8_encode( $record->{$part} ) : false;
+			return isset( $record->{$part} ) ? ( $record->{$part} ) : false;
 		}
 
 	}
@@ -96,7 +97,7 @@ class Ip2City {
 		if ( ! $filemtime || $force || $this->renew ) {
 			$do_renew = true;
 		} else {
-			$r = wp_remote_get( $this->zip, array( 'method' => 'HEAD' ) );
+			$r       = wp_remote_get( $this->zip, array( 'method' => 'HEAD' ) );
 			$headers = wp_remote_retrieve_headers( $r );
 			// check header
 			if ( ! isset( $headers['content-type'] ) || $headers['content-type'] != 'application/zip' ) {
@@ -104,13 +105,13 @@ class Ip2City {
 			}
 
 			$lastmodified = strtotime( $headers['last-modified'] );
-			$do_renew = $lastmodified - $filemtime > 0;
+			$do_renew     = $lastmodified - $filemtime > 0;
 		}
 
 		if ( $do_renew ) {
 
 			mailster_require_filesystem();
-			@set_time_limit( 120 );
+			set_time_limit( 120 );
 
 			if ( ! function_exists( 'download_url' ) ) {
 				include ABSPATH . 'wp-admin/includes/file.php';
@@ -118,6 +119,10 @@ class Ip2City {
 
 			// download
 			$tempfile = download_url( $this->zip );
+
+			if ( is_wp_error( $tempfile ) ) {
+				return $tempfile;
+			}
 
 			// create directory
 			if ( ! is_dir( dirname( $this->dbfile ) ) ) {

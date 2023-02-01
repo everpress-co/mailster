@@ -139,6 +139,13 @@ class MailsterTinymce {
 			),
 		);
 
+		/**
+		* Modify displayed tags in the editbar
+		*
+		* @param array $tags available tags
+		*/
+		$tags = apply_filters( 'mailster_editor_tags', $tags );
+
 		echo '<script type="text/javascript">';
 		echo 'mailster_mce_button = ' . json_encode(
 			array(
@@ -149,7 +156,7 @@ class MailsterTinymce {
 						'tags'  => esc_html__( 'Tags', 'mailster' ),
 					),
 					'remove' => array(
-						'title' => esc_html__( 'Remove Block', 'mailster' ),
+						'title' => esc_html__( 'Remove Element', 'mailster' ),
 					),
 				),
 				'tags' => $tags,

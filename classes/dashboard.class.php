@@ -29,7 +29,7 @@ class MailsterDashboard {
 			if ( ! get_option( 'mailster_setup' ) ) {
 				update_option( 'mailster_setup', time() );
 			}
-			wp_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
+			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
 			exit;
 
 		}
@@ -45,12 +45,17 @@ class MailsterDashboard {
 				mailster_notice( esc_html__( 'Your License has been reset!', 'mailster' ), '', true );
 			}
 
-			wp_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
+			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
 			exit;
 		}
 
 		if ( ! get_option( 'mailster_setup' ) ) {
-			wp_redirect( admin_url( 'admin.php?page=mailster_setup' ) );
+			mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ) );
+			exit;
+		}
+
+		if ( get_option( 'mailster_dbversion' ) != MAILSTER_DBVERSION && ! mailster_option( 'db_update_background' ) ) {
+			mailster_redirect( admin_url( 'admin.php?page=mailster_update' ) );
 			exit;
 		}
 

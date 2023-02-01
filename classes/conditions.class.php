@@ -20,6 +20,10 @@ class MailsterConditions {
 
 	public function view( $conditions = array(), $inputname = null ) {
 
+		if ( empty( $conditions ) ) {
+			$conditions = array();
+		}
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -167,12 +171,19 @@ class MailsterConditions {
 		);
 
 	}
+	private function get_tag_related() {
+		return array(
+			'_tags__in'     => esc_html__( 'has Tag', 'mailster' ),
+			'_tags__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
+		);
+
+	}
 	private function get_operators() {
 		return array(
 			'is'               => esc_html__( 'is', 'mailster' ),
 			'is_not'           => esc_html__( 'is not', 'mailster' ),
 			'contains'         => esc_html__( 'contains', 'mailster' ),
-			'contains_not'     => esc_html__( 'contains not', 'mailster' ),
+			'contains_not'     => esc_html__( 'doesn\'t contain', 'mailster' ),
 			'begin_with'       => esc_html__( 'begins with', 'mailster' ),
 			'end_with'         => esc_html__( 'ends with', 'mailster' ),
 			'is_greater'       => esc_html__( 'is greater', 'mailster' ),
@@ -180,7 +191,7 @@ class MailsterConditions {
 			'is_greater_equal' => esc_html__( 'is greater or equal', 'mailster' ),
 			'is_smaller_equal' => esc_html__( 'is smaller or equal', 'mailster' ),
 			'pattern'          => esc_html__( 'match regex pattern', 'mailster' ),
-			'not_pattern'      => esc_html__( 'does not match regex pattern', 'mailster' ),
+			'not_pattern'      => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
 		);
 
 	}
@@ -200,11 +211,11 @@ class MailsterConditions {
 			'is'           => esc_html__( 'is', 'mailster' ),
 			'is_not'       => esc_html__( 'is not', 'mailster' ),
 			'contains'     => esc_html__( 'contains', 'mailster' ),
-			'contains_not' => esc_html__( 'contains not', 'mailster' ),
+			'contains_not' => esc_html__( 'doesn\'t contain', 'mailster' ),
 			'begin_with'   => esc_html__( 'begins with', 'mailster' ),
 			'end_with'     => esc_html__( 'ends with', 'mailster' ),
 			'pattern'      => esc_html__( 'match regex pattern', 'mailster' ),
-			'not_pattern'  => esc_html__( 'does not match regex pattern', 'mailster' ),
+			'not_pattern'  => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
 		);
 
 	}
@@ -223,6 +234,13 @@ class MailsterConditions {
 			'is_smaller'       => esc_html__( 'is before', 'mailster' ),
 			'is_greater_equal' => esc_html__( 'is after or on the', 'mailster' ),
 			'is_smaller_equal' => esc_html__( 'is before or on the', 'mailster' ),
+		);
+
+	}
+	private function get_relative_date_operators() {
+		return array(
+			'is_older'   => esc_html__( 'is older than', 'mailster' ),
+			'is_younger' => esc_html__( 'is younger than', 'mailster' ),
 		);
 
 	}
@@ -313,6 +331,11 @@ class MailsterConditions {
 				$value = array( $value );
 			}
 			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_list_title' ), $value ) ) . $closing_quote;
+		} elseif ( isset( $this->tag_related[ $field ] ) ) {
+			if ( ! is_array( $value ) ) {
+				$value = array( $value );
+			}
+			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_tag_title' ), $value ) ) . $closing_quote;
 		} elseif ( 'geo' == $field ) {
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
@@ -378,6 +401,14 @@ class MailsterConditions {
 		return $list_id;
 	}
 
+	public function get_tag_title( $tag_id ) {
+
+		if ( $tag = mailster( 'tags' )->get( $tag_id ) ) {
+			return $tag->name;
+		}
+		return $tag_id;
+	}
+
 	public function get_country_name( $code ) {
 
 		return mailster( 'geo' )->code2Country( $code );
@@ -400,6 +431,9 @@ class MailsterConditions {
 				if ( isset( $this->list_related[ $string ] ) ) {
 					return $this->list_related[ $string ];
 				}
+				if ( isset( $this->tag_related[ $string ] ) ) {
+					return $this->tag_related[ $string ];
+				}
 				if ( isset( $this->meta_fields[ $string ] ) ) {
 					return $this->meta_fields[ $string ];
 				}
@@ -410,6 +444,9 @@ class MailsterConditions {
 			case 'operator':
 				if ( in_array( $field, $this->time_fields ) && isset( $this->date_operators[ $string ] ) ) {
 					return $this->date_operators[ $string ];
+				}
+				if ( in_array( $field, $this->time_fields ) && isset( $this->relative_date_operators[ $string ] ) ) {
+					return $this->relative_date_operators[ $string ];
 				}
 				if ( isset( $this->operators[ $string ] ) ) {
 					return $this->operators[ $string ];
@@ -423,8 +460,10 @@ class MailsterConditions {
 				break;
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
-					if ( $string ) {
-						return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					if ( preg_match( '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $string ) ) {
+						return date_i18n( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					} elseif ( $string ) {
+						return human_time_diff( strtotime( $string ) );
 					} else {
 						return '';
 					}

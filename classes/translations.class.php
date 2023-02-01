@@ -140,7 +140,6 @@ class MailsterTranslations {
 				'set'     => null,
 			);
 
-			// $object['expires'] = $now + 20;
 			$file    = 'mailster-' . $locale;
 			$url     = $this->endpoint . '/api/projects/mailster';
 			$package = $this->endpoint . '/api/get/mailster/' . $locale;
@@ -225,6 +224,14 @@ class MailsterTranslations {
 		try {
 			$this->download_language();
 			mailster( 'settings' )->define_texts( true );
+
+			// convert some settings with text
+			$default_settings = mailster( 'settings' )->get_defaults();
+			foreach ( array( 'slugs', 'tags' ) as $key ) {
+				if ( isset( $default_settings[ $key ] ) ) {
+					mailster_update_option( $key, $default_settings[ $key ] );
+				}
+			}
 		} catch ( Exception $e ) {
 		}
 

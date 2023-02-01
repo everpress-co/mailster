@@ -2,8 +2,8 @@
 /*
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
-Description: The Ultimate Newsletter Plugin.
-Version: 2.4.15
+Description: Send Beautiful Email Newsletters in WordPress.
+Version: 3.2.5
 Author: EverPress
 Author URI: https://everpress.co
 Text Domain: mailster
@@ -13,9 +13,9 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '2.4.15' );
+define( 'MAILSTER_VERSION', '3.2.5' );
 define( 'MAILSTER_BUILT', 0000000000 );
-define( 'MAILSTER_DBVERSION', 20200910 );
+define( 'MAILSTER_DBVERSION', 20220727 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
 define( 'MAILSTER_FILE', __FILE__ );
@@ -30,6 +30,7 @@ if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
 	define( 'MAILSTER_UPLOAD_URI', trailingslashit( $upload_folder['baseurl'] ) . 'mailster' );
 }
 
+require_once MAILSTER_DIR . 'vendor/autoload.php';
 require_once MAILSTER_DIR . 'includes/check.php';
 require_once MAILSTER_DIR . 'includes/functions.php';
 require_once MAILSTER_DIR . 'includes/deprecated.php';
@@ -38,7 +39,7 @@ require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
 global $mailster;
 
-$mailster = new mailster();
+$mailster = new Mailster();
 
 if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 

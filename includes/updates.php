@@ -6,6 +6,8 @@ This runs if an update was done.
 
 global $wpdb;
 
+$wpdb->suppress_errors();
+
 $mailster_options = mailster_options();
 $mailster_texts   = mailster_texts();
 
@@ -382,7 +384,7 @@ if ( $old_version ) {
 			$t = mailster( 'translations' )->get_translation_data();
 
 			if ( ! empty( $t ) ) {
-				mailster_notice( sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ), '', false, 'mailstertranslation' );
+				mailster_notice( sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', mailster_url( 'https://kb.mailster.co/translations-in-mailster/' ) ), '', false, 'mailstertranslation' );
 			}
 
 			unset( $mailster_options['texts'] );
@@ -566,7 +568,7 @@ if ( $old_version ) {
 			delete_option( 'mailster_recent_feeds' );
 
 		case '2.4.10':
-			$options['mail_opt_out'] = isset( $options['bounce'] ) && $options['bounce'];
+			$mailster_options['mail_opt_out'] = isset( $mailster_options['bounce'] ) && $mailster_options['bounce'];
 
 			if ( ! is_plugin_active( 'mailster-gmail/mailster-gmail.php' ) && 'gmail' == $mailster_options['deliverymethod'] ) {
 
@@ -583,19 +585,69 @@ if ( $old_version ) {
 
 				}
 
-				mailster_notice( sprintf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="https://kb.mailster.co/send-your-newsletters-via-gmail/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'gmail_deprecated' );
+				mailster_notice( sprintf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="' . mailster_url( 'https://kb.mailster.co/send-your-newsletters-via-gmail/' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'gmail_deprecated' );
 			}
 
 		case '2.4.11':
 		case '2.4.12':
 			delete_transient( 'mailster_verified' );
 
+		case '2.4.13':
+		case '2.4.14':
+		case '2.4.15':
+		case '2.4.16':
+			if ( $mailster_options['track_location'] && $mailster_options['track_location_update'] ) {
+				mailster( 'geo' )->update();
+			}
+
+		case '2.4.17':
+		case '2.4.18':
+		case '2.4.19':
+		case '2.4.20':
+			$mailster_options['auto_send_at_once'] = false;
+			$mailster_options['antiflood']         = 10;
+
+			$mailster_options['db_update_required']   = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
+
+		case '3.0':
+			// beta users do not need to run the update process again
+			if ( $old_version_sanitized == '3.0' ) {
+				$mailster_options['db_update_required'] = false;
+			}
+
+		case '3.0.1':
+		case '3.0.2':
+		case '3.0.3':
+		case '3.0.4':
+			mailster( 'cron' )->unschedule();
+		case '3.1':
+		case '3.1.1':
+		case '3.1.2':
+		case '3.1.3':
+		case '3.1.4':
+		case '3.1.5':
+		case '3.1.6':
+			$mailster_options['db_update_required']   = true;
+			$mailster_options['db_update_background'] = true;
+
+		case '3.2.0':
+			mailster( 'forms' )->block_forms_message( null, false, null );
+
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
+			// if ( ! $mailster_options['db_update_required'] ) {
+			// mailster( 'update' )->ask_for_auto_update();
+			// }
+
+			$texts = wp_parse_args( $texts, $default_texts );
+
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
+
 
 	}
 

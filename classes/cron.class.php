@@ -91,6 +91,34 @@ class MailsterCron {
 
 	/**
 	 *
+	 * Run cron in a given interval
+	 *
+	 * @param unknown $hourly_only (optional)
+	 * @return unknown
+	 */
+	public function run( $action, $interval = 0 ) {
+
+		if ( is_string( $interval ) ) {
+			$schedules = wp_get_schedules();
+			if ( isset( $schedules[ $interval ] ) ) {
+				$interval = $schedules[ $interval ]['interval'];
+			}
+		}
+
+		if ( ! $interval || false === get_transient( 'mailster_cron_' . $action ) ) {
+
+			do_action( $action );
+
+			if ( $interval ) {
+				set_transient( 'mailster_cron_' . $action, true, $interval );
+			}
+		}
+
+	}
+
+
+	/**
+	 *
 	 *
 	 * @param unknown $hourly_only (optional)
 	 * @return unknown
@@ -137,7 +165,7 @@ class MailsterCron {
 			wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_worker' );
 		}
 		if ( ! wp_next_scheduled( 'mailster_cron_cleanup' ) ) {
-			wp_schedule_event( strtotime( 'midnight' ) - 180, 'hourly', 'mailster_cron_cleanup' );
+			wp_schedule_event( strtotime( 'midnight' ) - 180, 'daily', 'mailster_cron_cleanup' );
 		}
 	}
 
@@ -185,10 +213,11 @@ class MailsterCron {
 
 		global $wpdb;
 
-		$now          = time();
-		$cron_service = mailster_option( 'cron_service' );
+		$now                     = time();
+		$cron_service            = mailster_option( 'cron_service' );
+		$db_structure_up_to_date = MAILSTER_DBVERSION == get_option( 'mailster_dbversion' );
 
-		if ( ! mailster( 'queue' )->size() && ! $strict ) :
+		if ( ( ! mailster( 'queue' )->size() && ! $strict ) || ! $db_structure_up_to_date ) :
 
 			mailster_remove_notice( 'check_cron' );
 
@@ -249,7 +278,11 @@ class MailsterCron {
 				}
 			}
 
-			$this->pid = @getmypid();
+			if ( function_exists( 'getmypid' ) ) {
+				$this->pid = getmypid();
+			} else {
+				$this->pid = uniqid();
+			}
 			update_option( 'mailster_cron_lock_' . $key, $this->pid, false );
 			return true;
 
@@ -266,7 +299,11 @@ class MailsterCron {
 				}
 			}
 
-			$this->pid = @getmypid();
+			if ( function_exists( 'getmypid' ) ) {
+				$this->pid = getmypid();
+			} else {
+				$this->pid = uniqid();
+			}
 			register_shutdown_function( array( $this, 'unlock' ), $key );
 			file_put_contents( $lockfile, $this->pid );
 			return true;

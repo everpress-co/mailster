@@ -1,7 +1,10 @@
 <?php
 
-$template = $this->get_template();
-$file     = $this->get_file();
+$templates = mailster( 'templates' )->get_templates();
+$all_files = mailster( 'templates' )->get_all_files();
+$template  = $this->get_template();
+$file      = $this->get_file();
+$current   = $template . '/' . $file;
 
 ?>
 <div id="optionbar" class="optionbar">
@@ -17,7 +20,7 @@ $file     = $this->get_file();
 		<?php if ( current_user_can( 'mailster_change_plaintext' ) ) : ?>
 		<li><a class="mailster-icon plaintext" title="<?php esc_attr_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
-		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_attr_e( 'preview', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'preview', 'mailster' ); ?>">&nbsp;</a></li>
+		<li class="no-border-right"><a class="mailster-icon precheck" title="<?php esc_attr_e( 'Precheck your campaign', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Precheck your campaign', 'mailster' ); ?>">&nbsp;</a></li>
 	</ul>
 	<ul class="alignright">
 		<li><a class="mailster-icon dfw" title="<?php esc_attr_e( 'Distraction-free edit mode', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Distraction-free edit mode', 'mailster' ); ?>">&nbsp;</a></li>
@@ -25,7 +28,7 @@ $file     = $this->get_file();
 		<li><a class="mailster-icon save-template" title="<?php esc_attr_e( 'save template', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'save template', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php
-		if ( $templates && current_user_can( 'mailster_change_template' ) ) :
+		if ( $templates && isset( $templates[ $template ] ) && current_user_can( 'mailster_change_template' ) ) :
 			$single          = count( $templates ) == 1;
 			$currenttemplate = array( $template => $templates[ $template ] );
 			unset( $templates[ $template ] );
@@ -41,7 +44,6 @@ $file     = $this->get_file();
 					<div class="inner">
 						<h4><?php esc_html_e( 'Change Template', 'mailster' ); ?></h4>
 						<ul>
-							<?php $current = $template . '/' . $file; ?>
 							<?php foreach ( $templates as $slug => $data ) : ?>
 								<li>
 								<?php if ( ! $single ) : ?>
@@ -77,35 +79,39 @@ $file     = $this->get_file();
 	<div class="mailster_template_save">
 			<div class="inner">
 				<p>
-					<label><?php esc_html_e( 'Name', 'mailster' ); ?><br><input type="text" class="widefat" id="new_template_name" placeholder="<?php esc_attr_e( 'template name', 'mailster' ); ?>" value="<?php echo $all_files[ $template ][ $file ]['label']; ?>"></label>
+					<label><?php esc_html_e( 'Name', 'mailster' ); ?><br><input type="text" class="widefat" id="new_template_name" placeholder="<?php esc_attr_e( 'template name', 'mailster' ); ?>" value="<?php echo isset( $all_files[ $template ] ) ? $all_files[ $template ][ $file ]['label'] : ''; ?>"></label>
 				</p>
 				<p>
 					<label><input type="radio" name="new_template_overwrite" checked value="0"> <?php esc_html_e( 'save as a new template file', 'mailster' ); ?></label><br>
+					<?php if ( isset( $all_files[ $template ] ) ) : ?>
 					<label><input type="radio" name="new_template_overwrite" value="1"> <?php esc_html_e( 'overwrite', 'mailster' ); ?>
 					<select id="new_template_saveas_dropdown">
-					<?php
-					$options = '';
-					foreach ( $all_files[ $template ] as $name => $data ) {
-						$value    = $template . '/' . $name;
-						$options .= '<option value="' . esc_attr( $value ) . '" ' . selected( $current, $value, false ) . '>' . esc_attr( $data['label'] . ' (' . $name . ')' ) . '</option>';
-					}
-					echo $options;
-					?>
+						<?php
+						$options = '';
+						foreach ( $all_files[ $template ] as $name => $data ) {
+							$value    = $template . '/' . $name;
+							$options .= '<option value="' . esc_attr( $value ) . '" ' . selected( $current, $value, false ) . '>' . esc_attr( $data['label'] . ' (' . $name . ')' ) . '</option>';
+						}
+						echo $options;
+						?>
 					</select>
 					</label>
+				<?php endif; ?>
 				</p>
 				<?php if ( ! empty( $module_list ) ) : ?>
 				<p>
 					<label><input type="checkbox" id="new_template_modules" value="1"> <?php printf( esc_html__( 'include original modules from %s', 'mailster' ), '&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;' ); ?></label>
 					<span class="help" title="<?php esc_attr_e( 'will append the existing modules to your custom ones', 'mailster' ); ?>">(?)</span><br>
-					<label><input type="checkbox" id="new_template_active_modules" value="1"> <?php esc_html_e( 'show custom modules by default', 'mailster' ); ?></label><br>
+					<label><input type="checkbox" id="new_template_active_modules" value="1" checked> <?php esc_html_e( 'show custom modules by default', 'mailster' ); ?></label><br>
 				</p>
 				<?php endif; ?>
 
 			</div>
 			<div class="foot">
+					<?php if ( isset( $all_files[ $template ] ) ) : ?>
 				<p class="description alignleft">&nbsp;<?php printf( esc_html__( 'based on %1$s from %2$s', 'mailster' ), '<strong>&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;</strong>', '<strong>&quot;' . $all_files[ $template ][ $file ]['name'] . '&quot;</strong>' ); ?>
 				</p>
+			<?php endif; ?>
 				<button class="button button-primary save-template"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
 				<button class="button save-template-cancel"><?php esc_html_e( 'Cancel', 'mailster' ); ?></button>
 				<span class="spinner" id="new_template-ajax-loading"></span>

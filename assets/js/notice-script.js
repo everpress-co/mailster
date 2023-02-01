@@ -1,14 +1,14 @@
 mailster = (function (mailster, $, window, document) {
-
-	"use strict";
+	'use strict';
 
 	mailster.notices = mailster.notices || {};
 
 	mailster.notices.$ = $('.mailster-notice');
 
-	mailster.$.document
-		.on('click', '.mailster-notice .notice-dismiss, .mailster-notice .dismiss', function (event) {
-
+	mailster.$.document.on(
+		'click',
+		'.mailster-notice .notice-dismiss, .mailster-notice .dismiss',
+		function (event) {
 			event.preventDefault();
 
 			var el = $(this).closest('.mailster-notice'),
@@ -18,17 +18,27 @@ mailster = (function (mailster, $, window, document) {
 			if (event.altKey) el = mailster.notices.$;
 
 			if (id) {
-				mailster.util.ajax(type, {
-					id: id
-				});
-				el.fadeTo(100, 0, function () {
-					el.slideUp(100, function () {
-						el.remove();
-					});
-				})
+				el.addClass('idle');
+				mailster.util.ajax(
+					type,
+					{
+						id: id,
+					},
+					function (response) {
+						if (response.success) {
+							el.fadeTo(100, 0, function () {
+								el.slideUp(100, function () {
+									el.remove();
+								});
+							});
+						} else {
+							el.removeClass('idle');
+						}
+					}
+				);
 			}
-		});
+		}
+	);
 
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);

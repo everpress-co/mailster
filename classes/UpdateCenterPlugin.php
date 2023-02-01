@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.8
+// Version 4.1
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -49,8 +49,6 @@ class UpdateCenterPlugin {
 
 		self::$plugin_data[ $plugin_data->slug ] = $plugin_data;
 
-		add_filter( 'updatecenter_verify', array( 'UpdateCenterPlugin', 'verify' ), 10, 2 );
-
 		register_deactivation_hook( $plugin_data->plugin, array( 'UpdateCenterPlugin', 'deactivate' ) );
 
 		return self::$_instance;
@@ -75,8 +73,6 @@ class UpdateCenterPlugin {
 		add_action( 'wp_update_plugins', array( &$this, 'check_periodic_updates' ), 99 );
 		add_action( 'updatecenterplugin_check', array( &$this, 'check_periodic_updates' ) );
 		add_filter( 'upgrader_post_install', array( &$this, 'upgrader_post_install' ), 99, 3 );
-
-		add_filter( 'auto_update_plugin', array( &$this, 'auto_update' ), 10, 2 );
 
 		add_filter( 'http_request_args', array( &$this, 'http_request_args' ), 100, 2 );
 
@@ -305,7 +301,11 @@ class UpdateCenterPlugin {
 
 		global $pagenow;
 
-		if ( ! current_user_can( 'update_plugins' ) || $pagenow == 'update.php' ) {
+		if ( 'update-core.php' == $pagenow || 'update.php' == $pagenow ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'update_plugins' ) ) {
 			return;
 		}
 
@@ -315,7 +315,7 @@ class UpdateCenterPlugin {
 
 			if ( isset( $data->admin_notices ) ) {
 				foreach ( $data->admin_notices as $version => $notice ) {
-					if ( version_compare( $version, $data->version, '<=' ) ) {
+					if ( version_compare( $version, $data->version, '<=' ) || empty( $notice ) ) {
 						continue;
 					}
 
@@ -339,44 +339,12 @@ class UpdateCenterPlugin {
 				);
 			}
 
-			echo '<div class="update-nag update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
+			echo '<div class="update-nag notice notice-warning inline update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
 
 		}
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $update
-	 * @param unknown $item
-	 * @return unknown
-	 */
-	public function auto_update( $update, $item ) {
-
-		// explicit
-		if ( $update ) {
-			return true;
-		}
-
-		if ( ! isset( self::$plugin_data[ $item->slug ] ) ) {
-			return $update;
-		}
-
-		// return default if not set
-		if ( ! isset( self::$plugin_data[ $item->slug ]->autoupdate ) ) {
-			return $update;
-		}
-
-		// if only "minor" updates
-		if ( self::$plugin_data[ $item->slug ]->autoupdate === 'minor' ) {
-			return $this->version_compare( self::$plugins[ $item->slug ]->new_version, self::$plugins[ $item->slug ]->version, true );
-		}
-
-		return ! ! ( self::$plugin_data[ $item->slug ]->autoupdate );
-
-	}
 
 
 	/**
@@ -714,7 +682,7 @@ class UpdateCenterPlugin {
 	 */
 	public static function check_collection( $remote_url, $plugins ) {
 
-		$body = http_build_query( array( 'updatecenter_data' => array_values( $plugins ) ), null, '&' );
+		$body = build_query( array( 'updatecenter_data' => urlencode_deep( array_values( $plugins ) ) ) );
 
 		$response = self::save_response(
 			add_query_arg(
@@ -763,7 +731,7 @@ class UpdateCenterPlugin {
 		if ( ! empty( $data ) ) {
 			$body = wp_parse_args( array( 'data' => $data ), $body );
 		}
-		$body = http_build_query( $body, null, '&' );
+		$body = build_query( urlencode_deep( $body ) );
 
 		$response = self::save_response(
 			add_query_arg(
@@ -844,7 +812,7 @@ class UpdateCenterPlugin {
 	 */
 	public function update_plugins_filter( $value ) {
 
-		if ( empty( self::$plugins ) ) {
+		if ( empty( self::$plugins ) || ! $value ) {
 			return $value;
 		}
 

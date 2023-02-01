@@ -6,7 +6,7 @@ $request_url = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null
 if ( $request_url ) {
 	header( 'Refresh: 15;url=' . $request_url, true );
 }
-@ini_set( 'display_errors', true );
+ini_set( 'display_errors', true );
 
 if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 	define( 'DISABLE_WP_CRON', true );
@@ -50,8 +50,8 @@ if ( ! defined( 'MAILSTER_VERSION' ) ) {
 }
 
 $interval = isset( $_GET['interval'] ) ? (int) $_GET['interval'] : mailster_option( 'interval', 5 ) * 60;
-if ( $request_url ) {
-	@header( "Refresh: $interval;url=" . $request_url, true );
+if ( $request_url && ! headers_sent() ) {
+	header( "Refresh: $interval;url=" . $request_url, true );
 }
 
 $text_direction = function_exists( 'is_rtl' ) && is_rtl() ? 'rtl' : 'ltr';
@@ -111,19 +111,19 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 			$worker = get_query_var( '_mailster_extra' );
 		}
 		if ( empty( $worker ) ) {
-			do_action( 'mailster_cron_autoresponder' );
-			do_action( 'mailster_cron_worker' );
-			do_action( 'mailster_cron_bounce' );
-			do_action( 'mailster_cron_cleanup' );
+			mailster( 'cron' )->run( 'mailster_cron_autoresponder' );
+			mailster( 'cron' )->run( 'mailster_cron_worker' );
+			mailster( 'cron' )->run( 'mailster_cron_bounce', 'mailster_cron_interval' );
+			mailster( 'cron' )->run( 'mailster_cron_cleanup', 'daily' );
 		} elseif ( in_array( $worker, apply_filters( 'mailster_cron_workers', array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) ) {
 			echo '<h2>' . esc_html__( 'Single Cron', 'mailster' ) . ': ' . ucwords( $worker ) . '</h2>';
-			do_action( 'mailster_cron_' . $worker );
+			mailster( 'cron' )->run( 'mailster_cron_' . $worker );
 		} else {
 			echo '<h2>' . esc_html__( 'Invalid Cron Worker!', 'mailster' ) . '</h2>';
 		}
 		?>
 	<p>
-		<a onclick="location.reload();clearInterval(i);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>
+		<a onclick="location.reload();clearInterval(f);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>
 	</p>
 	<p>
 		<small><?php echo $time = round( microtime( true ) - $time, 4 ); ?> <?php esc_html_e( 'sec', 'mailster' ); ?>.</small>
@@ -135,10 +135,9 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 <?php else : ?>
 	<h2><?php esc_html_e( 'The Secret is missing or wrong!', 'mailster' ); ?></h2>
 <?php endif; ?>
-
 </div>
 <script type="text/javascript">
-var a = <?php echo floor( $interval ); ?>,
+var a = <?php echo max( 1, ceil( $interval - $time ) ); ?>,
 	b = document.getElementById('button'),
 	c = document.title,
 	d = b.innerHTML,
@@ -156,6 +155,7 @@ var a = <?php echo floor( $interval ); ?>,
 			o = '&#x27F2;';
 			p = '<?php esc_html_e( 'progressing', 'mailster' ); ?>';
 			clearInterval(f);
+			location.reload(true);
 		}
 	document.title = p+' '+c;
 	b.innerHTML = d+' ('+o+')';

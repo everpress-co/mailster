@@ -1,6 +1,5 @@
 jQuery(document).ready(function ($) {
-
-	"use strict"
+	'use strict';
 
 	var l10n = mailster_mce_button.l10n,
 		tags = mailster_mce_button.tags,
@@ -21,27 +20,36 @@ jQuery(document).ready(function ($) {
 							onclick: function () {
 								var poststuff = '';
 								switch (tag) {
-								case 'webversion':
-								case 'unsub':
-								case 'forward':
-								case 'profile':
-									poststuff = 'link';
-								case 'homepage':
-									if (selection = editor.selection.getContent({
-											format: "text"
-										})) {
-										editor.insertContent('<a href="{' + tag + poststuff + '}">' + selection + '</a>');
-										break;
-									}
-								default:
-									editor.insertContent('{' + tag + '} ');
+									case 'webversion':
+									case 'unsub':
+									case 'forward':
+									case 'profile':
+										poststuff = 'link';
+									case 'homepage':
+										if (
+											(selection =
+												editor.selection.getContent({
+													format: 'text',
+												}))
+										) {
+											editor.insertContent(
+												'<a href="{' +
+													tag +
+													poststuff +
+													'}">' +
+													selection +
+													'</a>'
+											);
+											break;
+										}
+									default:
+										editor.insertContent('{' + tag + '} ');
 								}
-							}
+							},
 						};
-
-					})
+					}),
 				};
-			})
+			}),
 		});
 	});
 });

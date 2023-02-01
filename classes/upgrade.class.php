@@ -4,6 +4,7 @@ class MailsterUpgrade {
 
 	private $performance = 1;
 	private $starttime;
+	private $stop_process = false;
 
 
 	public function __construct() {
@@ -11,8 +12,24 @@ class MailsterUpgrade {
 		add_action( 'admin_init', array( &$this, 'init' ) );
 		add_action( 'wp_ajax_mailster_batch_update', array( &$this, 'run_update' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
+		add_action( 'mailster_background_update', array( &$this, 'background_update' ) );
 
 		register_activation_hook( 'myMail/myMail.php', array( &$this, 'maybe_deactivate_mymail' ) );
+
+	}
+
+	public function __call( $method, $args ) {
+
+		if ( method_exists( $this, 'do_' . $method ) ) {
+			ob_start();
+			$return = call_user_func_array( array( &$this, 'do_' . $method ), $args );
+			$output = ob_get_contents();
+			ob_end_clean();
+			if ( ! empty( $output ) ) {
+				error_log( $output );
+			}
+			return $return;
+		}
 
 	}
 
@@ -29,18 +46,24 @@ class MailsterUpgrade {
 				$old_version = get_option( 'mymail_version' );
 			}
 
-			// update db structure
-			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
-				mailster()->dbstructure();
+			if ( version_compare( $old_version, MAILSTER_VERSION, '<' ) ) {
+				include MAILSTER_DIR . 'includes/updates.php';
 			}
+
+			update_option( 'mailster_version', MAILSTER_VERSION );
 		}
 
 		if ( mailster_option( 'db_update_required' ) ) {
 
-			$db_version = get_option( 'mailster_dbversion' );
+			$current_url = home_url( $_SERVER['REQUEST_URI'] );
 
-			$redirectto = admin_url( 'admin.php?page=mailster_update' );
-			$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
+			$db_version = $this->get_db_version();
+
+			$redirectto  = add_query_arg( 'redirect_to', $current_url, admin_url( 'admin.php?page=mailster_update' ) );
+			$update_msg  = '<h2>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</h2>';
+			$update_msg .= '<p>' . esc_html__( 'To continue using Mailster we need some update on the database structure. Depending on the size of your database this can take a couple of minutes.', 'mailster' ) . '</p>';
+			$update_msg .= '<p>' . esc_html__( 'Please continue by clicking the button.', 'mailster' ) . '</p>';
+			$update_msg .= '<p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a></p>';
 
 			if ( 'update.php' == $pagenow ) {
 
@@ -54,40 +77,78 @@ class MailsterUpgrade {
 			} else {
 
 				if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
-				} else {
+
+					if ( $timestamp = wp_next_scheduled( 'mailster_background_update' ) ) {
+						wp_clear_scheduled_hook( 'mailster_background_update' );
+					}
+				} elseif ( ! mailster_option( 'db_update_background' ) ) {
 					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
-						wp_redirect( $redirectto );
+						mailster_redirect( $redirectto );
+						exit;
+					} elseif ( ! is_network_admin() && isset( $_GET['page'] ) && 0 === strpos( $_GET['page'], 'mailster_' ) ) {
+						mailster_redirect( $redirectto );
 						exit;
 					} else {
 						mailster_remove_notice( 'no_homepage' );
 						mailster_notice( $update_msg, 'error', true, 'db_update_required' );
 					}
+				} else {
+					$update_msg  = '<h2>' . esc_html__( 'Mailster database update in progress', 'mailster' ) . '</h2>';
+					$update_msg .= '<p>' . esc_html__( 'Mailster is updating the database in the background. The database update process may take a little while, so please be patient.', 'mailster' ) . '</p>';
+					$update_msg .= '<p><a class="button" href="' . $redirectto . '" target="_top">' . esc_html__( 'View progress →', 'mailster' ) . '</a></p>';
+					mailster_notice( $update_msg, 'info', false, 'background_update' );
+
+					if ( ! wp_next_scheduled( 'mailster_background_update' ) ) {
+						wp_schedule_single_event( time() + 10, 'mailster_background_update' );
+					}
 				}
 			}
 		} elseif ( ! $version_match ) {
 
-			if ( version_compare( $old_version, MAILSTER_VERSION, '<' ) ) {
-				include MAILSTER_DIR . 'includes/updates.php';
+			// update db structure
+			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
+				mailster()->dbstructure();
 			}
 
-			update_option( 'mailster_version', MAILSTER_VERSION );
 			update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 		} elseif ( mailster_option( 'setup' ) ) {
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_setup' != $_GET['page'] ) ) {
-				wp_redirect( 'admin.php?page=mailster_setup', 302 );
+				mailster_redirect( 'admin.php?page=mailster_setup', 302 );
 				exit;
 			}
 		} elseif ( mailster_option( 'welcome' ) ) {
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_welcome' != $_GET['page'] ) ) {
-				wp_redirect( 'admin.php?page=mailster_welcome', 302 );
+				mailster_redirect( 'admin.php?page=mailster_welcome', 302 );
 				exit;
 			}
 		}
+
+	}
+
+
+	public function background_update() {
+
+		$actions = $this->get_actions();
+
+		if ( empty( $actions ) ) {
+			return;
+		}
+
+		foreach ( $actions as $method => $name ) {
+			$r = $this->{$method}();
+			if ( $r === false ) {
+				return;
+			}
+		}
+
+		$update_msg  = '<h2>' . esc_html__( 'Update finished.', 'mailster' ) . '</h2>';
+		$update_msg .= '<p>' . esc_html__( 'Mailster database update complete. Thank you for updating to the latest version!', 'mailster' ) . '</p>';
+		mailster_notice( $update_msg, 'info', 20, 'background_update' );
 
 	}
 
@@ -116,30 +177,33 @@ class MailsterUpgrade {
 
 		global $mailster_batch_update_output;
 
-		$this->starttime = microtime();
-
-		$return['success'] = false;
+		$this->starttime = microtime( true );
 
 		$id                = $_POST['id'];
 		$this->performance = isset( $_POST['performance'] ) ? (int) $_POST['performance'] : $this->performance;
 
+		$actions = $this->get_actions();
+
 		if ( method_exists( $this, 'do_' . $id ) ) {
-			$return['success'] = true;
 			ob_start();
 			$return[ $id ] = $this->{'do_' . $id}();
 			$output        = ob_get_contents();
 			ob_end_clean();
 			if ( ! empty( $output ) ) {
-				$return['output']  = "===========================================================\n";
-				$return['output'] .= "* OUTPUT for $id (" . date( 'H:i:s', current_time( 'timestamp' ) ) . ') - ' . size_format( memory_get_peak_usage( true ), 2 ) . "\n";
-				$return['output'] .= "===========================================================\n";
-				$return['output'] .= strip_tags( $output ) . "\n";
+				$return['output']  = '' . "\n";
+				$return['output'] .= str_repeat( '―', 80 ) . "\n";
+				$return['output'] .= "\"{$actions[$id]}\" (" . number_format( microtime( true ) - $this->starttime, 2 ) . ' sec. - ' . size_format( memory_get_peak_usage( true ), 2 ) . " usage)\n";
+				$return['output'] .= str_repeat( '·', 80 ) . "\n";
+				$return['output'] .= trim( strip_tags( $output ) ) . "\n\n";
+				// $return['output']  .= str_repeat('―', 80)."\n";
+
+			}
+			if ( $this->stop_process ) {
+				wp_send_json_error( $return );
 			}
 		}
 
-		@header( 'Content-type: application/json' );
-		echo json_encode( $return );
-		exit;
+		wp_send_json_success( $return );
 
 	}
 
@@ -156,23 +220,16 @@ class MailsterUpgrade {
 
 	}
 
-	public function scripts_styles() {
+	private function get_actions() {
 
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-		$db_version = get_option( 'mailster_dbversion', MAILSTER_DBVERSION );
-
-		$autostart = true;
+		$db_version = $this->get_db_version();
 
 		$actions = array();
 
 		// pre - Mailster time
 		if ( get_option( 'mymail' ) || isset( $_GET['mymail'] ) ) {
 
-			$autostart = false;
-			$actions   = wp_parse_args(
+			$actions = wp_parse_args(
 				array(
 					'pre_mailster_updateslug'      => 'Update Plugin Slug',
 					'pre_mailster_backuptables'    => 'Backup old Tables',
@@ -219,7 +276,7 @@ class MailsterUpgrade {
 			$db_version = 0;
 		}
 
-		if ( $db_version < 20140924 || false ) {
+		if ( $db_version < 20140924 ) {
 			$actions = wp_parse_args(
 				array(
 					'update_lists'           => 'updating Lists',
@@ -236,7 +293,7 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20150924 || false ) {
+		if ( $db_version < 20150924 ) {
 			$actions = wp_parse_args(
 				array(
 					'update_forms' => 'updating Forms',
@@ -245,7 +302,7 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20151218 || false ) {
+		if ( $db_version < 20151218 ) {
 			$actions = wp_parse_args(
 				array(
 					'update_db_structure' => 'Changes in DB structure',
@@ -254,7 +311,7 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20160105 || false ) {
+		if ( $db_version < 20160105 ) {
 			$actions = wp_parse_args(
 				array(
 					'remove_old_data' => 'Removing MyMail 1.x data',
@@ -263,8 +320,40 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20170201 || false ) {
+		if ( $db_version < 20170201 ) {
 			$actions = wp_parse_args( array(), $actions );
+		}
+
+		if ( $db_version < 20210901 ) {
+			unset( $actions['db_structure'] );
+			$actions = wp_parse_args(
+				array(
+					'legacy_cleanup'                 => 'Legacy Table cleanup',
+					'create_primary_keys'            => 'Create primary keys',
+					'db_structure'                   => 'Checking DB structure',
+					'update_action_table_sent'       => 'Update Action Table - Sent',
+					'update_action_table_opens'      => 'Update Action Table - Opens',
+					'update_action_table_clicks'     => 'Update Action Table - Clicks',
+					'update_action_table_unsubs'     => 'Update Action Table - Unsubscribes',
+					'update_action_table_unsubs_msg' => 'Update Unsubscribes Messages',
+					'update_action_table_bounces'    => 'Update Action Table - Bounces',
+					'update_action_table_bounce_msg' => 'Update Bounce Messages',
+					'update_action_table_errors'     => 'Update Action Table - Errors',
+					'update_action_table_errors_msg' => 'Update Errors Messages',
+					'maybe_fix_indexes'              => 'Fix indexes',
+				),
+				$actions
+			);
+		}
+
+		if ( $db_version < 20220727 ) {
+			$actions = wp_parse_args(
+				array(
+					'maybe_fix_indexes' => 'Fix indexes',
+					'db_structure'      => 'Checking DB structure',
+				),
+				$actions
+			);
 		}
 
 		$actions = wp_parse_args(
@@ -274,6 +363,34 @@ class MailsterUpgrade {
 			),
 			$actions
 		);
+
+		return array_unique( $actions );
+	}
+
+	private function get_db_version() {
+		$db_version = get_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+		// overwrite if set
+		if ( isset( $_GET['dbversion'] ) ) {
+			$db_version = (int) $_GET['dbversion'];
+			update_option( 'mailster_dbversion', $db_version );
+		}
+		return $db_version;
+	}
+
+	public function scripts_styles() {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mailster-update-style', MAILSTER_URI . 'assets/css/upgrade-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		$autostart = true;
+
+		$db_version = $this->get_db_version();
+		if ( $db_version < 20210131 ) {
+			$autostart = false;
+		}
+		$actions = $this->get_actions();
 
 		wp_localize_script( 'mailster-update-script', 'mailster_updates', $actions );
 		wp_localize_script(
@@ -292,22 +409,39 @@ class MailsterUpgrade {
 
 	public function page() {
 
+		global $wpdb;
+
 		?>
 	<div class="wrap">
-		<h2>Mailster Batch Update</h2>
+		<h1>Mailster Batch Update</h1>
 		<?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
 
-		<p><strong>Some additional updates are required! Please keep this browser tab open until all updates are finished!</strong></p>
+		<h3>Some additional updates are required! Please keep this browser tab open until all updates are finished!</h3>
+		<p>Your campaigns will continue once the update is finished.</p>
+		<hr>
 		<div id="mailster-update-info" style="display: none;">
-			<div class="notice-error error inline"><p>Make sure to create a backup before upgrading MyMail to Mailster. If you experience any issues upgrading please reach out to us via our member area <a href="https://mailster.co/go/register" class="external">here</a>.<br>
+			<div class="notice-error error inline"><p>Make sure to create a backup before run the Mailster Batch Update. If you experience any issues upgrading please reach out to us via our member area <a href="<?php echo mailster_url( 'https://mailster.co/go/register' ); ?>" class="external">here</a>.<br>
 			<strong>Important: No data can get lost thanks to our smart upgrade process.</strong></p></div>
+			<p>Built: <?php echo date_i18n( 'Y-m-d H:i:s', MAILSTER_BUILT ); ?></p>
+			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_actions" ) ) : ?>
+			<p>Action Table: <?php echo number_format( $count ); ?> entries</p>
+			<?php endif; ?>
+			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers" ) ) : ?>
+			<p>Subscribers Table: <?php echo number_format( $count ); ?> entries</p>
+			<?php endif; ?>
+			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscriber_meta" ) ) : ?>
+			<p>Subscriber Meta Table: <?php echo number_format( $count ); ?> entries</p>
+			<?php endif; ?>
 			<p>
 				<a class="button button-primary button-hero" id="mailster-start-upgrade">Ok, I've got a backup. Start the Update Process</a>
 			</p>
 		</div>
-		<div id="mailster-update-process" style="display: none;">
+		<div id="mailster-update-process" style="display:none;">
+		<p>If you encounter any problem please get in touch with us by open up a ticket:</p>
+		<p><a class="button button-primary" href="<?php echo mailster_url( 'https://mailster.co/support/' ); ?>" target="_blank">Get Support</a></p>
 
 			<div class="alignleft" style="width:54%">
+
 				<div id="output"></div>
 				<div id="error-list"></div>
 				<form id="mailster-post-upgrade" action="" method="get" style="display: none;">
@@ -318,7 +452,7 @@ class MailsterUpgrade {
 			</div>
 
 			<div class="alignright" style="width:45%">
-				<textarea id="textoutput" class="widefat" rows="30" style="width:100%;font-size:12px;font-family:monospace;background:none"></textarea>
+				<textarea id="textoutput" class="widefat" rows="30"></textarea>
 			</div>
 
 		</div>
@@ -328,11 +462,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_remove_db_structure() {
 
 		global $wpdb;
@@ -347,61 +476,56 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_remove_old_data() {
 
 		global $wpdb;
 
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = 'mailster-campaign' LIMIT 1000" ) ) {
-			echo 'old Campaign Data removed' . "\n";
+			echo 'old Campaign Data removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = 'mailster-campaigns' LIMIT 1000" ) ) {
-			echo 'old Campaign related User Data removed' . "\n";
+			echo 'old Campaign related User Data removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = 'mailster-userdata' LIMIT 10000" ) ) {
-			echo 'old User Data removed' . "\n";
+			echo 'old User Data removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = 'mailster-data' LIMIT 1000" ) ) {
-			echo 'old User Data removed' . "\n";
+			echo 'old User Data removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE m FROM {$wpdb->posts} AS p LEFT JOIN {$wpdb->postmeta} AS m ON p.ID = m.post_id WHERE p.post_type = 'subscriber' AND m.post_id" ) ) {
-			echo 'old User related data removed' . "\n";
+			echo 'old User related data removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE a,b,c FROM {$wpdb->term_taxonomy} AS a LEFT JOIN {$wpdb->terms} AS b ON b.term_id = a.term_id JOIN {$wpdb->term_taxonomy} AS c ON c.term_taxonomy_id = a.term_taxonomy_id WHERE a.taxonomy = 'newsletter_lists'" ) ) {
-			echo 'old Lists removed' . "\n";
+			echo 'old Lists removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type = 'subscriber' LIMIT 10000" ) ) {
-			echo $count . ' old User removed' . "\n";
+			echo $count . ' old User removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name = 'mailster_confirms'" ) ) {
-			echo $count . ' old Pending User removed' . "\n";
+			echo $count . ' old Pending User removed.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name = 'mailster_autoresponders'" ) ) {
-			echo $count . ' old Autoresponder Data' . "\n";
+			echo $count . ' old Autoresponder Data.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name = 'mailster_subscribers_count'" ) ) {
-			echo $count . ' old Cache' . "\n";
+			echo $count . ' old Cache.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'mailster_bulk_%'" ) ) {
-			echo $count . ' old import data' . "\n";
+			echo $count . ' old import data.' . "\n";
 			return false;
 		}
 		if ( $count = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name IN ('mailster_countries', 'mailster_cities')" ) ) {
-			echo $count . ' old data' . "\n";
+			echo $count . ' old data.' . "\n";
 			return false;
 		}
 
@@ -410,11 +534,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_updateslug() {
 
 		$this->deactivate_mymail( false );
@@ -434,14 +553,14 @@ class MailsterUpgrade {
 		$new_location = MAILSTER_DIR . '/mailster.php';
 
 		if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
-			@rename( $old_location, $new_location );
+			rename( $old_location, $new_location );
 		}
 
 		$old_location = MAILSTER_DIR;
 		$new_location = dirname( MAILSTER_DIR ) . '/mailster';
 
 		if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
-			@rename( $old_location, $new_location );
+			rename( $old_location, $new_location );
 		}
 
 		deactivate_plugins( array( MAILSTER_SLUG ), false, true );
@@ -458,11 +577,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_form_prepare() {
 
 		global $wpdb;
@@ -477,16 +591,11 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_options() {
 
 		global $wpdb;
 
-		echo 'Converting Options' . "\n";
+		echo 'Converting Options.' . "\n";
 
 		$options = $wpdb->get_results( "SELECT option_name, option_value, autoload FROM {$wpdb->options} WHERE option_name LIKE '%mymail%'" );
 
@@ -525,17 +634,12 @@ class MailsterUpgrade {
 			mailster_notice( $post_notice, 'error', false, 'update_post_notice' );
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_backuptables() {
 
 		global $wpdb;
@@ -547,25 +651,20 @@ class MailsterUpgrade {
 			if ( ! $this->table_exists( "{$wpdb->prefix}mymail_bak_{$table}" ) ) {
 
 				if ( $count = $wpdb->query( "CREATE TABLE {$wpdb->prefix}mymail_bak_{$table} LIKE {$wpdb->prefix}mymail_{$table}" ) ) {
-					echo 'Backup table ' . $table . '' . "\n";
+					echo 'Backup table ' . $table . '.' . "\n";
 					if ( $count = $wpdb->query( "INSERT {$wpdb->prefix}mymail_bak_{$table} SELECT * FROM {$wpdb->prefix}mymail_{$table}" ) ) {
-						echo 'Backup data ' . $table . '' . "\n";
+						echo 'Backup data ' . $table . '.' . "\n";
 					}
 					return false;
 				}
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_copytables() {
 
 		global $wpdb;
@@ -580,29 +679,24 @@ class MailsterUpgrade {
 
 				if ( ! $this->table_exists( "{$wpdb->prefix}mailster_{$table}" ) ) {
 					if ( $count = $wpdb->query( "CREATE TABLE {$wpdb->prefix}mailster_{$table} LIKE {$wpdb->prefix}mymail_{$table}" ) ) {
-						echo 'Copy table structure ' . $table . '' . "\n";
+						echo 'Copy table structure ' . $table . '.' . "\n";
 						return false;
 					}
 				}
 				if ( $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}mailster_{$table}" ) ) {
-					echo 'Clean ' . $table . '' . "\n";
+					echo 'Clean ' . $table . '.' . "\n";
 				}
 				if ( $wpdb->query( "INSERT {$wpdb->prefix}mailster_{$table} SELECT * FROM {$wpdb->prefix}mymail_{$table}" ) ) {
-					echo 'Copy data ' . $table . '' . "\n";
+					echo 'Copy data ' . $table . '.' . "\n";
 				}
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_updatedpostmeta() {
 
 		global $wpdb;
@@ -647,11 +741,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_movefiles() {
 
 		global $wpdb, $wp_filesystem;
@@ -663,14 +752,14 @@ class MailsterUpgrade {
 
 		if ( is_dir( $new_location ) ) {
 			if ( ! $wp_filesystem->move( $new_location, $new_location . '_bak', true ) ) {
-				@rename( $new_location, $new_location . '_bak' );
+				rename( $new_location, $new_location . '_bak' );
 			}
 		}
 
 		if ( is_dir( $old_location ) && ! is_dir( $new_location ) ) {
 
 			if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
-				@rename( $old_location, $new_location );
+				rename( $old_location, $new_location );
 			}
 		}
 
@@ -692,7 +781,7 @@ class MailsterUpgrade {
 		$to_copy = list_files( $old_location, 1 );
 		foreach ( $to_copy as $file ) {
 			if ( ! $wp_filesystem->copy( $file, $new_location . basename( $file ), false ) ) {
-				@copy( $file, $new_location . basename( $file ) );
+				copy( $file, $new_location . basename( $file ) );
 			}
 		}
 
@@ -703,11 +792,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_removeoldtables() {
 
 		global $wpdb;
@@ -719,23 +803,18 @@ class MailsterUpgrade {
 			if ( $this->table_exists( "{$wpdb->prefix}mymail_{$table}" ) ) {
 
 				if ( $count = $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mymail_{$table}" ) ) ) {
-					echo 'old ' . $table . ' table removed' . "\n";
+					echo 'old ' . $table . ' table removed.' . "\n";
 					return false;
 				}
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_removebackup() {
 
 		global $wpdb;
@@ -747,23 +826,18 @@ class MailsterUpgrade {
 			if ( $this->table_exists( "{$wpdb->prefix}mymail_bak_{$table}" ) ) {
 
 				if ( $count = $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mymail_bak_{$table}" ) ) ) {
-					echo 'Backup table ' . $table . ' removed' . "\n";
+					echo 'Backup table ' . $table . ' removed.' . "\n";
 					return false;
 				}
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_removemymail() {
 
 		global $wpdb;
@@ -776,17 +850,12 @@ class MailsterUpgrade {
 		$wpdb->query( "DELETE FROM `$wpdb->options` WHERE `$wpdb->options`.`option_name` LIKE 'mymail_%'" );
 		$wpdb->query( "DELETE FROM `$wpdb->options` WHERE `$wpdb->options`.`option_name` = 'mymail'" );
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_legacy() {
 
 		global $wp_filesystem;
@@ -802,17 +871,17 @@ class MailsterUpgrade {
 		$to   = WP_PLUGIN_DIR . '/myMail/form.php';
 
 		if ( ! $wp_filesystem->copy( $from, $to, true ) ) {
-			@copy( $from, $to );
+			copy( $from, $to );
 		}
 
 		$from = MAILSTER_DIR . '/cron.php';
 		$to   = WP_PLUGIN_DIR . '/myMail/cron.php';
 
 		if ( ! $wp_filesystem->copy( $from, $to, true ) ) {
-			@copy( $from, $to );
+			copy( $from, $to );
 		}
 
-		$content = "<?php\n/*\nPlugin Name: MyMail Legacy Code Helper\nDescription: Helper for legacy external forms and cron of Mailster (former MyMail). You can delete this 'plugin' if you have no external forms or subscriber buttons or you have update them already to the new version.\n */\ndie('There\'s no need to activate this plugin! If you experience any issues upgrading please reach out to us via our member area <a href=\"https://mailster.co/go/register\" target=\"_blank\">here</a>.');\n";
+		$content = "<?php\n/*\nPlugin Name: MyMail Legacy Code Helper\nDescription: Helper for legacy external forms and cron of Mailster (former MyMail). You can delete this 'plugin' if you have no external forms or subscriber buttons or you have update them already to the new version.\n */\ndie('There\'s no need to activate this plugin! If you experience any issues upgrading please reach out to us via our member area <a href=\"" . mailster_url( 'https://mailster.co/go/register' ) . "\" target=\"_blank\">here</a>.');\n";
 
 		if ( ! $wp_filesystem->put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content, FS_CHMOD_FILE ) ) {
 			mailster( 'helper' )->file_put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content );
@@ -824,17 +893,12 @@ class MailsterUpgrade {
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_pre_mailster_checkhooks() {
 
 		global $wp_filter;
@@ -843,7 +907,7 @@ class MailsterUpgrade {
 		if ( ! empty( $hooks ) ) {
 			$msg = '<p>Following deprecated MyMail hooks were found and should get replaced:</p><ul>';
 			foreach ( $hooks as $hook ) {
-				echo 'Hook ' . $hook . ' found!' . "\n";
+				echo 'Hook ' . $hook . ' found.' . "\n";
 				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code></li>';
 			}
 			$msg .= '</ul>';
@@ -852,7 +916,7 @@ class MailsterUpgrade {
 
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -860,32 +924,18 @@ class MailsterUpgrade {
 
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_maybe_install() {
 		mailster()->install();
 		return true;
 	}
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_db_structure() {
+
 		mailster()->dbstructure( true, true, true, true );
 		return true;
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_db_check() {
 
 		global $wpdb;
@@ -913,7 +963,7 @@ class MailsterUpgrade {
 		}
 
 		if ( ! $output ) {
-			echo 'No DB structure problem found' . "\n";
+			echo 'No DB structure problem found.' . "\n";
 		}
 
 		if ( function_exists( 'maybe_convert_table_to_utf8mb4' ) ) {
@@ -929,11 +979,536 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
+	private function do_legacy_cleanup() {
+
+		global $wpdb;
+
+		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE campaign_id IS NULL" ) ) {
+				echo 'Removed ' . number_format( $count ) . " actions where's no campaign\n";
+				return false;
+
+			}
+			if ( $campaing_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'newsletter'" ) ) {
+				if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE campaign_id NOT IN (" . implode( ',', $campaing_ids ) . ')' ) ) {
+					echo 'Removed ' . number_format( $count ) . " actions where's no campaign\n";
+					return false;
+
+				}
+			}
+		}
+
+		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.meta_value = '' OR a.subscriber_id = 0" ) ) {
+			echo 'Removed ' . number_format( $count ) . " rows of unassigned subscriber meta\n";
+			return false;
+		}
+
+		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE campaign_id IS NULL AND subscriber_id IS NULL " ) ) {
+			echo 'Removed ' . number_format( $count ) . " actions where's no campaign or subscriber\n";
+			return false;
+		}
+
+		return true;
+	}
+
+
+	public function create_primary_keys( $tables = null ) {
+
+		$return = '';
+
+		ob_start();
+		while ( ! $this->do_create_primary_keys( $tables ) ) {
+		}
+		$return .= ob_get_contents();
+		ob_end_clean();
+
+		return $return;
+
+	}
+
+
+	private function do_create_primary_keys( $tables = null ) {
+
+		global $wpdb;
+
+		if ( is_null( $tables ) ) {
+			$tables = mailster()->get_tables();
+		}
+		$tables = (array) $tables;
+
+		foreach ( $tables as $table ) {
+			$tablename = $wpdb->prefix . 'mailster_' . $table;
+			if ( 'lists_subscribers' == $table ) {
+				continue;
+			}
+			if ( 'tags_subscribers' == $table ) {
+				continue;
+			}
+			if ( 'forms_lists' == $table ) {
+				continue;
+			}
+			if ( 'forms_tags' == $table ) {
+				continue;
+			}
+			if ( ! $this->table_exists( $tablename ) ) {
+				continue;
+			}
+			if ( $wpdb->get_var( "SHOW INDEXES FROM {$tablename} WHERE Key_name = 'PRIMARY'" ) ) {
+				continue;
+			}
+
+			if ( ! $this->create_primary_key( $tablename ) ) {
+				return false;
+			}
+
+			usleep( 1000 );
+
+			if ( ! $this->column_exists( 'ID', $tablename ) ) {
+				echo 'Not able to create primary Key for  "' . $tablename . '".' . "\n";
+			} else {
+				echo 'Primary Key for "' . $tablename . '" created.' . "\n";
+			}
+			return false;
+		}
+
+		return true;
+
+	}
+
+
+	private function create_primary_key( $table ) {
+
+		global $wpdb;
+
+		if ( $wpdb->get_var( "SHOW INDEXES FROM {$table} WHERE Key_name = 'PRIMARY'" ) ) {
+			return true;
+		}
+
+		if ( ! ( $method = get_transient( 'mailster_create_primary_key_method_' . $table ) ) ) {
+			$method = 1;
+			set_transient( 'mailster_create_primary_key_method_' . $table, $method, HOUR_IN_SECONDS );
+		}
+
+		switch ( $method ) {
+			case 1:
+				if ( ! $this->column_exists( 'ID', $table ) ) {
+					$wpdb->query( "ALTER TABLE {$table} ADD `ID` bigint(20) unsigned NOT NULL FIRST" );
+					if ( $wpdb->last_error ) {
+						echo $wpdb->last_error . "\n";
+						set_transient( 'mailster_create_primary_key_method_' . $table, 2, HOUR_IN_SECONDS );
+						return false;
+					}
+				}
+				$wpdb->query( 'SET @a = 0;' );
+				$wpdb->query( "UPDATE {$table} SET ID = @a:=@a+1;" );
+				$wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY" );
+				break;
+
+			case 2:
+				if ( ! $this->column_exists( 'ID', $table ) ) {
+					$wpdb->query( "ALTER TABLE {$table} ADD `ID` bigint(20) unsigned NOT NULL FIRST" );
+					if ( $wpdb->last_error ) {
+						echo $wpdb->last_error . "\n";
+						set_transient( 'mailster_create_primary_key_method_' . $table, 3, MINUTE_IN_SECONDS );
+						return false;
+					}
+				}
+				$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE ID = 0" );
+
+				if ( $count ) {
+
+					$limit = max( 1000, min( 500000, round( $count / 3 ) ) );
+
+					$wpdb->query( "SELECT @a := max(ID) FROM {$table}" );
+					$wpdb->query( "UPDATE {$table} SET ID = @a:=@a+1 WHERE ID = 0 LIMIT {$limit};" );
+
+					return false;
+				}
+
+				$wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY" );
+				break;
+
+			case 3:
+				$temp_table = $table . '_temp';
+
+				echo '# Not able to create primary keys.' . "\n";
+				echo "# Please use this SQL statement to do it manually via phpMyAdmin and come back here once it's finished." . "\n";
+				echo '# Contact support if you still have issue: https://mailster.co/support.' . "\n\n";
+				echo "CREATE TABLE {$temp_table} LIKE {$table};" . "\n";
+				echo "ALTER TABLE {$temp_table} ADD `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;" . "\n";
+				echo "INSERT INTO {$temp_table} SELECT NULL, a.* FROM {$table} AS a;" . "\n";
+				echo "RENAME TABLE {$table} TO {$table}_old, {$temp_table} TO {$table};" . "\n";
+
+				// echo "DROP TABLE {$table}_old;" . "\n";
+
+				$this->please_die();
+				return false;
+		}
+
+		return $wpdb->get_var( "SHOW INDEXES FROM {$table} WHERE Key_name = 'PRIMARY'" );
+
+	}
+
+
+	private function do_maybe_fix_indexes() {
+
+		global $wpdb;
+
+		$tables = mailster()->get_table_structure();
+
+		foreach ( $tables as $table ) {
+			if ( preg_match_all( '/UNIQUE KEY `(\w+)` \(([a-z_ ,`]+)\)/', $table, $unique_keys, PREG_SET_ORDER ) ) {
+				$table_name = preg_replace( '/(.*?)CREATE TABLE (' . preg_quote( $wpdb->prefix . 'mailster_' ) . '[a-z_]+)(.*)/s', '$2', $table );
+				foreach ( $unique_keys as $unique_key ) {
+					$index     = $unique_key[1];
+					$fields    = array_map( 'trim', explode( ',', str_replace( '`', '', $unique_key[2] ) ) );
+					$rows      = $wpdb->get_results( $wpdb->prepare( "SHOW INDEX IN `{$table_name}` WHERE Key_name = %s", $index ) );
+					$col_names = wp_list_pluck( $rows, 'Column_name' );
+					$diff      = array_diff( $fields, $col_names );
+					if ( ! empty( $diff ) ) {
+						echo 'Remove index for "' . $table_name . '".' . "\n";
+						$wpdb->query( "ALTER TABLE `{$table_name}` DROP INDEX {$index}" );
+					}
+				}
+			}
+		}
+
+		return true;
+
+	}
+
+
+	private function do_update_action_table_sent() {
+		return $this->update_action_table( 'sent' );
+	}
+	private function do_update_action_table_opens() {
+		return $this->update_action_table( 'opens' );
+	}
+	private function do_update_action_table_clicks() {
+		return $this->update_action_table( 'clicks', array( 'link_id' ) );
+	}
+	private function do_update_action_table_unsubs() {
+		return $this->update_action_table( 'unsubs' );
+	}
+	private function do_update_action_table_bounces() {
+		return $this->update_action_table( 'bounces' );
+	}
+	private function do_update_action_table_errors() {
+		return $this->update_action_table( 'errors' );
+	}
+
+	private function update_action_table( $table, $fields = array() ) {
+
+		global $wpdb;
+
+		$types = array(
+			'sent'    => 1,
+			'opens'   => 2,
+			'clicks'  => 3,
+			'unsubs'  => 4,
+			'bounces' => array( 5, 6 ),
+			'errors'  => 7,
+		);
+
+		if ( ! isset( $types[ $table ] ) ) {
+			return true;
+		}
+
+		$type = implode( ', ', (array) $types[ $table ] );
+
+		$fields        = array_merge( array( 'subscriber_id', 'campaign_id', 'timestamp', 'count' ), $fields );
+		$fields_string = implode( ', ', $fields );
+		$legacy_fields = implode( ', ', $fields );
+		$select_string = implode( ', ', $fields );
+
+		if ( 'bounces' == $table ) {
+			$fields_string .= ', hard';
+			$select_string .= ', IF(a.type = 5, 0, 1)';
+		}
+
+		if ( ! $limit = get_transient( 'mailster_update_action_table_' . $table ) ) {
+			$limit = 100;
+		}
+
+		if ( ! ( $method = get_transient( 'mailster_update_action_table_method_' . $table ) ) ) {
+			$method = 1;
+			set_transient( 'mailster_update_action_table_method_' . $table, $method, HOUR_IN_SECONDS );
+		}
+
+		if ( ! ( $start_id = get_transient( 'mailster_update_action_table_start_id_' . $method . $table ) ) ) {
+			$start_id = 0;
+		}
+		if ( ! ( $total = get_transient( 'mailster_update_action_table_total_' . $table ) ) ) {
+			$total = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.type IN($type)" );
+			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table`" );
+			if ( $moved >= $total ) {
+				echo 'Table "' . $table . '" finished.' . "\n";
+				return true;
+			}
+			set_transient( 'mailster_update_action_table_total_' . $table, $total, HOUR_IN_SECONDS );
+		}
+		if ( ! ( $total_actions = get_transient( 'mailster_update_action_table_total' ) ) ) {
+			$total_actions = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_actions`" );
+			set_transient( 'mailster_update_action_table_total', $total_actions, HOUR_IN_SECONDS );
+		}
+
+		$count = 0;
+
+		if ( $total ) {
+
+			switch ( $method ) {
+
+				// method #1 faster with less entries
+				case 1:
+					$legacy_select = 'NULL, ' . str_replace( ', count', ", '0', count", $select_string );
+					if ( 'unsubs' == $table || 'bounces' == $table || 'errors' == $table ) {
+						$legacy_select .= ", ''";
+					}
+
+					$sql   = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_{$table}` SELECT {$legacy_select} FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.type IN ({$type});";
+					$count = $wpdb->query( $sql );
+
+					break;
+
+				// method #2 faster with less entries
+				case 2:
+					if ( ! $this->column_exists( 'ID', "{$wpdb->prefix}mailster_actions" ) ) {
+						$this->create_primary_key( "{$wpdb->prefix}mailster_actions" );
+						return false;
+					}
+
+					$compare = '';
+					foreach ( $fields as $field ) {
+						$compare .= ' AND a.' . $field . ' <=> b.' . $field;
+					}
+
+					$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON 1 {$compare} WHERE b.ID IS NULL AND a.type IN ($type) AND a.ID > %d ORDER BY a.ID ASC LIMIT 1";
+
+					// get first missing primary key
+					if ( $key = $wpdb->get_var( $wpdb->prepare( $sql, $start_id ) ) ) {
+
+						$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) SELECT $select_string FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.ID >= %d AND a.type IN ($type) ORDER BY a.ID ASC LIMIT %d;";
+
+						$sql = $wpdb->prepare( $sql, $key, $limit );
+
+						$count = $wpdb->query( $sql );
+
+						set_transient( 'mailster_update_action_table_start_id_' . $method . $table, $key );
+
+					}
+					break;
+
+				// method #3 more reliable with more entries
+				case 3:
+					if ( ! $this->column_exists( 'ID', "{$wpdb->prefix}mailster_actions" ) ) {
+						$this->create_primary_key( "{$wpdb->prefix}mailster_actions" );
+						return false;
+					}
+
+					// get old data
+					$old_data = $wpdb->get_results( $wpdb->prepare( "SELECT ID, type, $legacy_fields FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.ID > %d AND a.type IN ($type) ORDER BY a.ID ASC LIMIT %d", $start_id, $limit ), ARRAY_A );
+
+					$insert_data = array();
+
+					// insert old data and remember last ID for the next start ID
+					foreach ( $old_data as $data ) {
+						$start_id = $data['ID'];
+						unset( $data['ID'] );
+						if ( $data['type'] == 5 ) {
+							$data['hard'] = 0;
+						} elseif ( $data['type'] == 6 ) {
+							$data['hard'] = 1;
+						}
+						unset( $data['type'] );
+
+						$string = "('" . implode( "', '", array_values( $data ) ) . "')";
+						$string = str_replace( "''", 'NULL', $string );
+
+						$insert_data[] = $string;
+
+					}
+
+					$chunks = array_chunk( $insert_data, 5000 );
+
+					foreach ( $chunks as $insert ) {
+						$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) VALUES";
+
+						$sql .= ' ' . implode( ',', $insert );
+
+						if ( false !== ( $c = $wpdb->query( $sql ) ) ) {
+							$count += $c;
+						}
+					}
+
+					set_transient( 'mailster_update_action_table_start_id_' . $method . $table, $start_id );
+
+					break;
+
+				// method #4 like #3 with timestamp (no primary key)
+				case 4:
+					// get old data
+					$old_data = $wpdb->get_results( $wpdb->prepare( "SELECT type, $legacy_fields FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.timestamp >= %d AND a.type IN ($type) ORDER BY a.timestamp ASC LIMIT %d", $start_id, $limit ), ARRAY_A );
+
+					$insert_data = array();
+
+					foreach ( $old_data as $data ) {
+						$start_id = $data['timestamp'];
+						if ( $data['type'] == 5 ) {
+							$data['hard'] = 0;
+						} elseif ( $data['type'] == 6 ) {
+							$data['hard'] = 1;
+						}
+						unset( $data['type'] );
+
+						$string = "('" . implode( "', '", array_values( $data ) ) . "')";
+						$string = str_replace( "''", 'NULL', $string );
+
+						$insert_data[] = $string;
+
+					}
+
+					$chunks = array_chunk( $insert_data, 5000 );
+
+					foreach ( $chunks as $insert ) {
+						$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) VALUES";
+
+						$sql .= ' ' . implode( ',', $insert );
+
+						if ( false !== ( $c = $wpdb->query( $sql ) ) ) {
+							$count += $c;
+						}
+					}
+
+					set_transient( 'mailster_update_action_table_start_id_' . $method . $table, $start_id );
+
+					break;
+
+				// method #5  backup for tables with more entries
+				case 5:
+					if ( ! $this->column_exists( 'exported', "{$wpdb->prefix}mailster_actions" ) ) {
+						$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions ADD `exported` bigint(20) unsigned NULL FIRST" );
+						return false;
+					}
+
+					$old_data = $wpdb->get_results( $wpdb->prepare( "SELECT $select_string FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.exported IS NULL AND a.type IN ($type) ORDER by a.timestamp ASC LIMIT %d", $limit ), ARRAY_A );
+
+					foreach ( $old_data as $data ) {
+
+						$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) VALUES ('" . implode( "', '", array_values( $data ) ) . "')";
+
+						$update_sql = $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_actions` SET exported = %d WHERE type IN ($type)", time() );
+						foreach ( $data as $key => $value ) {
+							$update_sql .= " AND $key = '$value'";
+						}
+						if ( $wpdb->query( $sql ) && $wpdb->query( $update_sql ) ) {
+							$count++;
+						}
+					}
+					break;
+
+				default:
+					echo 'Method invalid.' . "\n";
+					usleep( 5000 );
+
+					return false;
+					break;
+			}
+
+			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table`" );
+			$moved = min( $moved, $total );
+
+			$p = min( 1, $moved / $total );
+
+			echo number_format( $count ) . ' moved.' . "\n";
+			echo number_format( $moved ) . ' of ' . number_format( $total ) . ' (' . number_format( $p * 100, 2 ) . '%) in total from table ' . $table . ".\n";
+			if ( $moved < $total ) {
+				// get the limit from the 10th of the total within a range
+				$limit = max( 1000, min( 50000, round( $total / 10 ) ) );
+				set_transient( 'mailster_update_action_table_' . $table, $limit );
+				return false;
+			}
+
+			delete_transient( 'mailster_update_action_table_start_id_' . $method . $table );
+			delete_transient( 'mailster_update_action_table_method_' . $table );
+			delete_transient( 'mailster_update_action_table_' . $table );
+
+		}
+		echo 'Table "' . $table . '" finished.' . "\n";
+		usleep( 200 );
+
+		return true;
+	}
+
+	private function do_update_action_table_unsubs_msg() {
+		return $this->do_update_action_table_msg( 'unsubscribe' );
+	}
+
+	private function do_update_action_table_bounce_msg() {
+		return $this->do_update_action_table_msg( 'bounce' );
+	}
+
+	private function do_update_action_table_errors_msg() {
+		return $this->do_update_action_table_msg( 'error' );
+
+	}
+
+	private function do_update_action_table_msg( $type ) {
+		global $wpdb;
+
+		$types = array(
+			'error'       => 'errors',
+			'bounce'      => 'bounces',
+			'unsubscribe' => 'unsubs',
+		);
+
+		if ( ! isset( $types[ $type ] ) ) {
+			return true;
+		}
+
+		$table = $types[ $type ];
+
+		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = %s AND b.timestamp IS NOT NULL AND a.meta_value != b.text LIMIT 1000";
+
+		$result = $wpdb->get_results( $wpdb->prepare( $sql, $type ) );
+
+		$count = count( $result );
+
+		if ( ! $count ) {
+			echo 'Moving ' . $type . ' messages finished.' . "\n";
+			$wpdb->query( $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = %s", $type ) );
+			return true;
+		}
+
+		foreach ( $result as $entry ) {
+			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_$table` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
+		}
+
+		echo number_format( $count ) . " messages moved to table $table.\n";
+		usleep( 1000 );
+		return false;
+
+	}
+
+
+	private function do_delete_legacy_action_table() {
+		global $wpdb;
+
+		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
+
+			$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE timestamp > %d", time() - YEAR_IN_SECONDS );
+
+			if ( $wpdb->get_var( $sql ) ) {
+				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
+					echo "removed legacy action table\n";
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+
 	private function do_update_db_structure() {
 
 		global $wpdb;
@@ -946,11 +1521,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_lists() {
 
 		global $wpdb;
@@ -961,7 +1531,7 @@ class MailsterUpgrade {
 
 		$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->terms} AS a LEFT JOIN {$wpdb->term_taxonomy} as b ON b.term_id = a.term_id LEFT JOIN {$wpdb->prefix}mailster_lists AS c ON c.ID = a.term_id WHERE b.taxonomy = 'newsletter_lists' AND c.ID IS NULL" );
 
-		echo $count . ' lists left' . "\n";
+		echo $count . ' lists left.' . "\n";
 
 		$sql = "SELECT a.term_id AS ID, a.name, a.slug, b.description FROM {$wpdb->terms} AS a LEFT JOIN {$wpdb->term_taxonomy} as b ON b.term_id = a.term_id LEFT JOIN {$wpdb->prefix}mailster_lists AS c ON c.ID = a.term_id WHERE b.taxonomy = 'newsletter_lists' AND c.ID IS NULL LIMIT $limit";
 
@@ -983,11 +1553,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_forms() {
 
 		global $wpdb;
@@ -1046,11 +1611,6 @@ class MailsterUpgrade {
 
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_campaign() {
 
 		global $wpdb;
@@ -1061,7 +1621,7 @@ class MailsterUpgrade {
 
 		$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->postmeta} AS m LEFT JOIN {$wpdb->posts} AS p ON p.ID = m.post_id LEFT JOIN {$wpdb->postmeta} AS c ON p.ID = c.post_id LEFT JOIN {$wpdb->postmeta} AS b ON b.post_id = p.ID AND b.meta_key = '_mailster_timestamp' WHERE m.meta_key = 'mailster-data' AND c.meta_key = 'mailster-campaign' AND p.post_type = 'newsletter' AND b.meta_key IS NULL" );
 
-		echo $count . ' campaigns left' . "\n";
+		echo $count . ' campaigns left.' . "\n";
 
 		$sql = "SELECT p.ID, p.post_title, p.post_status, m.meta_value as meta, c.meta_value AS campaign FROM {$wpdb->postmeta} AS m LEFT JOIN {$wpdb->posts} AS p ON p.ID = m.post_id LEFT JOIN {$wpdb->postmeta} AS c ON p.ID = c.post_id LEFT JOIN {$wpdb->postmeta} AS b ON b.post_id = p.ID AND b.meta_key = '_mailster_timestamp' WHERE m.meta_key = 'mailster-data' AND c.meta_key = 'mailster-campaign' AND p.post_type = 'newsletter' AND b.meta_key IS NULL LIMIT $limit";
 
@@ -1143,11 +1703,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_subscriber() {
 
 		global $wpdb;
@@ -1222,11 +1777,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_list_subscriber() {
 
 		global $wpdb;
@@ -1324,11 +1874,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_customfields() {
 
 		global $wpdb;
@@ -1395,11 +1940,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_actions() {
 
 		global $wpdb;
@@ -1557,11 +2097,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_pending() {
 
 		global $wpdb;
@@ -1637,11 +2172,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_autoresponder() {
 
 		global $wpdb;
@@ -1689,11 +2219,6 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_update_settings() {
 
 		global $wpdb;
@@ -1743,54 +2268,59 @@ class MailsterUpgrade {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
 	private function do_cleanup() {
 
 		global $wpdb;
 
-		delete_transient( 'mailster_cron_lock' );
+		$action_tables = array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors' );
 
-		update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
-		mailster_update_option( 'db_update_required', false );
+		foreach ( $action_tables as $table ) {
 
-		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_actions AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
-			echo "removed actions where's no campaign\n";
-			return false;
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_action_{$table} AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
+				echo 'Removed ' . number_format( $count ) . " actions where's no campaign in $table\n";
+				return false;
+			}
 		}
 
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->postmeta} AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.post_id WHERE p.ID IS NULL AND a.meta_key LIKE '_mailster_%'" ) ) {
-			echo "removed meta where's no campaign\n";
+			echo 'Removed ' . number_format( $count ) . " rows of meta where's no campaign\n";
 			return false;
 		}
 
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.meta_value = '' OR a.subscriber_id = 0" ) ) {
-			echo "removed unassigned subscriber meta\n";
+			echo 'Removed ' . number_format( $count ) . " rows of unassigned subscriber meta\n";
 			return false;
 		}
 
 		if ( $count = mailster( 'subscribers' )->wp_id() ) {
-			echo "assign $count WP users\n";
+			echo 'Assign ' . number_format( $count ) . " WP users\n";
 			return false;
 		}
 
 		if ( $this->table_exists( "{$wpdb->prefix}mailster_temp_import" ) ) {
 			if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" ) ) {
-				echo "removed temporary import table\n";
+				echo "Removed temporary import table\n";
 				return false;
 			}
 		}
 
-		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->options} AS a WHERE a.option_name LIKE 'mailster_bulk_import%'" ) ) {
-			echo "removed temporary import data\n";
+		if ( $wpdb->query( "DELETE a FROM {$wpdb->options} AS a WHERE a.option_name LIKE 'mailster_bulk_import%'" ) ) {
+			echo "Removed temporary import data\n";
 			return false;
 		}
 
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_signup = '' WHERE ip_signup = 0" );
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_confirm = '' WHERE ip_confirm = 0" );
+
+		$this->do_delete_legacy_action_table();
+
+		delete_transient( 'mailster_cron_lock' );
+
+		update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+		mailster_update_option( 'db_update_required', false );
+		mailster_update_option( 'db_update_background', false );
+		mailster_remove_notice( 'db_update_required' );
+		mailster_remove_notice( 'background_update' );
 
 		delete_option( 'updatecenter_plugins' );
 		do_action( 'updatecenterplugin_check' );
@@ -1812,6 +2342,19 @@ class MailsterUpgrade {
 		return $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $column
+	 * @param unknown $table
+	 * @return unknown
+	 */
+	private function column_exists( $column, $table ) {
+
+		global $wpdb;
+		return $wpdb->query( $wpdb->prepare( "SHOW COLUMNS FROM {$table} LIKE %s", $column ) );
+	}
+
 
 	/**
 	 *
@@ -1823,6 +2366,12 @@ class MailsterUpgrade {
 		global $mailster_batch_update_output;
 
 		$mailster_batch_update_output[] = $content;
+
+	}
+
+	private function please_die() {
+
+		$this->stop_process = true;
 
 	}
 

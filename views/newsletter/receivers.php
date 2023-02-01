@@ -32,7 +32,7 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 			<?php $checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] ); ?>
 
 			<div id="list-checkboxes"<?php echo $ignore_lists ? ' style="display:none"' : ''; ?>>
-				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked ); ?>
+				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', false, $checked ); ?>
 				<label><input type="checkbox" id="all_lists"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label>
 			</div>
 			<ul>
@@ -119,3 +119,15 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 		</p>
 	</div>
 <?php endif; ?>
+
+<div id="mailster_totals_lists" style="display:none;">
+	<div class="mailster-receivers-thickbox">
+			<div class="inner">
+			</div>
+			<div class="foot">
+				<p class="description alignleft"></p>
+				<button class="button button-primary total-lists-close"><?php esc_html_e( 'Close', 'mailster' ); ?></button>
+				<span class="spinner" id="snew_template-ajax-loading"></span>
+			</div>
+	</div>
+</div>

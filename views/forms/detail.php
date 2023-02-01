@@ -59,7 +59,7 @@ if ( $customfields ) {
 <?php if ( $currentpage != 'use' ) : ?>
 <p class="alignright">
 	<?php if ( ! $is_new && current_user_can( 'mailster_delete_forms' ) ) : ?>
-		<input type="submit" name="delete" class="button button-large" value="<?php esc_attr_e( 'Delete Form', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this form?', 'mailster' ); ?>');">
+		<input type="submit" name="delete" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Form', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this form?', 'mailster' ); ?>');">
 	<?php endif; ?>
 	<input type="submit" name="save" class="button button-primary" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 </p>
@@ -357,6 +357,17 @@ else :
 				<p><label><input type="hidden" name="mailster_data[addlists]" value="0"><input type="checkbox" name="mailster_data[addlists]" value="1" <?php checked( $form->addlists ); ?>> <?php esc_html_e( 'Assign new lists automatically to this form', 'mailster' ); ?></label>
 				</p>
 
+		</fieldset>
+
+		<fieldset>
+			<legend><?php esc_html_e( 'Tags Options', 'mailster' ); ?></legend>
+				<p><?php esc_html_e( 'Assign following tags to subscribers who signup via this form.', 'mailster' ); ?></p>
+				<select multiple name="mailster_tags[]" class="tags-input hide-if-js">
+					 <option></option>
+				<?php foreach ( mailster( 'tags' )->get() as $tag ) : ?>
+					<option value="<?php echo esc_attr( $tag->ID ); ?>" <?php selected( in_array( $tag->ID, $form->tags ) ); ?>><?php echo esc_html( $tag->name ); ?></option>
+				<?php endforeach; ?>
+				</select>
 		</fieldset>
 
 		<fieldset>
