@@ -384,7 +384,7 @@ if ( $old_version ) {
 			$t = mailster( 'translations' )->get_translation_data();
 
 			if ( ! empty( $t ) ) {
-				mailster_notice( sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ), '', false, 'mailstertranslation' );
+				mailster_notice( sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', mailster_url( 'https://kb.mailster.co/translations-in-mailster/' ) ), '', false, 'mailstertranslation' );
 			}
 
 			unset( $mailster_options['texts'] );
@@ -585,7 +585,7 @@ if ( $old_version ) {
 
 				}
 
-				mailster_notice( sprintf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="https://kb.mailster.co/send-your-newsletters-via-gmail/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'gmail_deprecated' );
+				mailster_notice( sprintf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="' . mailster_url( 'https://kb.mailster.co/send-your-newsletters-via-gmail/' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'gmail_deprecated' );
 			}
 
 		case '2.4.11':

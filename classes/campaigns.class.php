@@ -1708,6 +1708,8 @@ class MailsterCampaigns {
 
 		// sanitize the content and remove all content filters
 		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], isset( $postdata['head'] ) ? $postdata['head'] : null );
+		// remove any tinyMCE tag from the content
+		$post['post_content'] = preg_replace( '/ data-mce-([a-z-]+)=\\\"(.*?)\\\"/i', '', $post['post_content'] );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
 			? mailster( 'helper' )->plain_text( $post['post_content'] )
@@ -4734,7 +4736,7 @@ class MailsterCampaigns {
 		}
 
 		if ( mailster_option( 'mailster_branding' ) ) {
-			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center"><a href="https://mailster.co" title="Sent with Mailster"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
+			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center" width="130"><a href="' . mailster_url( 'https://mailster.co', 'utm_medium=email&utm_term=mailster_branding' ) . '" title="' . esc_attr__( 'Sent with Mailster', 'mailster' ) . '"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33" style="max-width:130px;width:130px;"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
 		}
 
 		if ( $track ) {

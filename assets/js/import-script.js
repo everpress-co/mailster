@@ -104,13 +104,21 @@ mailster = (function (mailster, $, window, document) {
 		.on('change', '#signup', function () {
 			$('#signupdate').prop('disabled', !$(this).is(':checked'));
 		})
-		.on('change', '.list-toggle', function () {
+		.on('change', '.wordpress-user-roles .list-toggle', function () {
+			$('.no-role-cb').prop('checked', false);
+		})
+		.on('change', 'ul.roles input', function () {
+			$('.no-role-cb').prop('checked', false);
+		})
+		.on('change', '.no-role-cb', function () {
 			$(this)
 				.parent()
 				.parent()
 				.parent()
-				.find('ul input')
-				.prop('checked', $(this).prop('checked'));
+				.parent()
+				.find('ul.roles input')
+				.add('.wordpress-user-roles .list-toggle')
+				.prop('checked', false);
 		})
 		.on('click', '.do-import', function () {
 			var data = $('#subscriber-table').serialize();

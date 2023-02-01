@@ -21,6 +21,7 @@ class MailsterPlaceholder {
 	private $apply_the_excerpt_filters = true;
 	private $last_post_args            = null;
 	private $errors                    = array();
+	private static $global_rss_tag     = null;
 
 	/**
 	 *
@@ -333,11 +334,10 @@ class MailsterPlaceholder {
 		$this->conditions();
 		$this->remove_modules();
 
-		$k = 0;
-
 		// as long there are tags in the content.
 		while ( false !== strpos( $this->content, '{' ) ) {
 
+			$initial_content = $this->content;
 			// temporary remove style blocks if exists
 			if ( strpos( $this->content, '<style' ) !== false && preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
 				foreach ( $styles[0] as $style ) {
@@ -345,12 +345,14 @@ class MailsterPlaceholder {
 					$this->styles[] = $style;
 				}
 			}
+
+			$this->rss( false ); // once more without modules
 			$this->replace_images( $relative_to_absolute );
 			$this->replace_dynamic( $relative_to_absolute );
 			$this->replace_static( $removeunused );
 
-			// just in case to prevent infinity loops,
-			if ( ++$k >= 10 ) {
+			// if content hasn't changed in this loop => break;
+			if ( $initial_content == $this->content ) {
 				break;
 			}
 		}
@@ -466,49 +468,50 @@ class MailsterPlaceholder {
 	 *
 	 * @return unknown
 	 */
-	private function rss() {
+	private function rss( $do_modules = true ) {
 
-		if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+		if ( $do_modules ) {
+			if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
-			$first = null;
-			foreach ( $modules[0] as $i => $html ) {
+				foreach ( $modules[0] as $i => $html ) {
 
-				$search   = $modules[0][ $i ];
-				$feed_url = $modules[1][ $i ];
+					$search   = $modules[0][ $i ];
+					$feed_url = $modules[1][ $i ];
 
-				// $last_feed_timestamp = mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url );
-				$feeds = mailster( 'helper' )->get_feed_since( $this->rss_timestamp, $feed_url );
+					// $last_feed_timestamp = mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url );
+					$feeds = mailster( 'helper' )->get_feed_since( $this->rss_timestamp, $feed_url );
 
-				if ( ! empty( $feeds ) ) {
-					$replace        = '';
-					$id             = md5( $feed_url );
-					$temp_post_type = 'mailster_rss_' . $id;
+					if ( ! empty( $feeds ) ) {
+						$replace        = '';
+						$id             = md5( $feed_url );
+						$temp_post_type = 'mailster_rss_' . $id;
 
-					if ( ! isset( $this->rss[ $id ] ) ) {
-						$this->rss[ 'mailster_get_last_post_' . $temp_post_type ] = $feed_url;
-						add_filter( 'mailster_get_last_post_' . $temp_post_type, array( &$this, 'rss_replace' ), 5, 6 );
-						if ( $i == 0 ) {
-							$first = $temp_post_type;
+						if ( ! isset( $this->rss[ $id ] ) ) {
+							$this->rss[ 'mailster_get_last_post_' . $temp_post_type ] = $feed_url;
+							add_filter( 'mailster_get_last_post_' . $temp_post_type, array( &$this, 'rss_replace' ), 5, 6 );
+							if ( $i === 0 ) {
+								self::$global_rss_tag = $temp_post_type;
+							}
 						}
+
+						$this->post_types[] = $temp_post_type;
+						$replace            = str_replace( '{rss', '{' . $temp_post_type, $search );
+						$replace            = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
+						$replace            = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $temp_post_type, $replace );
+
+					} else {
+						$replace = '';
 					}
 
-					$this->post_types[] = $temp_post_type;
-					$replace            = str_replace( '{rss', '{' . $temp_post_type, $search );
-					$replace            = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
-					$replace            = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $temp_post_type, $replace );
-
-				} else {
-					$replace = '';
+					$this->content = str_replace( $search, $replace, $this->content );
 				}
-
-				$this->content = str_replace( $search, $replace, $this->content );
 			}
-
+		} else {
 			// replace all tags outside the scope
-			if ( $first ) {
-				$this->content = str_replace( '{rss', '{' . $first, $this->content );
-				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $first, $this->content );
-				$this->content = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $first, $this->content );
+			if ( self::$global_rss_tag ) {
+				$this->content = str_replace( '{rss', '{' . self::$global_rss_tag, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . self::$global_rss_tag, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . self::$global_rss_tag, $this->content );
 			}
 		}
 
@@ -842,13 +845,13 @@ class MailsterPlaceholder {
 									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 								}
 
-								if ( empty( $org_src ) && isset( $post->post_image ) ) {
+								if ( empty( $org_src ) ) {
 									if ( is_numeric( $post->post_image ) ) {
 										$org_src = wp_get_attachment_image_src( $post->post_image, 'full' );
 									} elseif ( empty( $post->post_image ) ) {
 
 										// get image from sites meta tags
-										if ( $src = mailster( 'helper' )->get_meta_tags_from_url( $post->post_permalink, array( 'mailster:image', 'thumbnail', 'og:image', 'twitter:image' ) ) ) {
+										if ( $src = mailster( 'helper' )->get_meta_tags_from_url( $post->post_permalink, array( 'mailster:image', 'thumbnail', 'image', 'og:image', 'twitter:image' ) ) ) {
 											$org_src = array( $src, 0, 0, false );
 										}
 									} else {

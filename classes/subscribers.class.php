@@ -3127,16 +3127,17 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $ID            (optional)
-	 * @param unknown $custom_fields (optional)
+	 * @param unknown $ID              (optional)
+	 * @param unknown $custom_fields   (optional)
+	 * @param unknown $include_deleted (optional)
 	 * @return unknown
 	 */
-	public function get( $ID, $custom_fields = false ) {
+	public function get( $ID, $custom_fields = false, $include_deleted = false ) {
 
 		global $wpdb;
 
 		if ( is_numeric( $ID ) ) {
-			return $this->get_by_type( 'ID', $ID, $custom_fields );
+			return $this->get_by_type( 'ID', $ID, $custom_fields, $include_deleted );
 		}
 
 	}

@@ -985,6 +985,56 @@ function mailster_is_email( $email ) {
 /**
  *
  *
+ * @param unknown $url
+ * @param unknown $args (optional)
+ * @return unknown
+ */
+function mailster_url( $url, $args = array() ) {
+
+	$utms = array(
+		'utm_campaign' => 'plugin',
+		'utm_medium'   => 'link',
+		'utm_source'   => 'Mailster Plugin',
+	);
+
+	if ( function_exists( 'get_current_screen' ) ) {
+		$screen = get_current_screen();
+		if ( $screen && $screen->id ) {
+			$term             = str_replace( array( 'admin_page_', 'newsletter_page_' ), '', $screen->id );
+			$utms['utm_term'] = $term;
+		}
+	}
+
+	$args = wp_parse_args( $args, $utms );
+
+	$url = add_query_arg( $args, $url );
+
+	return esc_url_raw( $url );
+
+}
+
+/**
+ *
+ *
+ * @param unknown $content
+ * @param unknown $args (optional)
+ * @return unknown
+ */
+function mailster_links_add_args( $content, $args = array() ) {
+
+	if ( preg_match_all( '/"(https:\/\/(.*?)mailster\.co(.*?))"/i', $content, $links ) ) {
+		foreach ( $links[1] as $link ) {
+			$content = str_replace( $link, mailster_url( $link, $args ), $content );
+		}
+	}
+
+	return $content;
+
+}
+
+/**
+ *
+ *
  * @param unknown $id_email_or_hash
  * @param unknown $type             (optional)
  * @return unknown

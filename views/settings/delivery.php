@@ -3,7 +3,7 @@
 		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ); ?></th>
 		<td>
 			<p><?php printf( esc_html__( 'Send max %s emails in one batch.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text" ' . disabled( mailster_option( 'auto_send_at_once' ), true, false ) . '>' ); ?></p>
-			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label> <a class="infolink external" href="https://kb.mailster.co/send-your-emails-as-fast-as-possible/" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></p>
+			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label> <a class="infolink external" href="<?php echo mailster_url( 'https://kb.mailster.co/send-your-emails-as-fast-as-possible/' ); ?>" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></p>
 			<p>
 		</td>
 	</tr>
@@ -19,7 +19,7 @@
 				<option value="<?php echo $v; ?>" <?php selected( mailster_option( 'warmup' ), $v ); ?>><?php printf( esc_html__( _n( '%d day', '%d days', $i, 'mailster' ) ), $i ); ?> - <?php echo ceil( 100 * ( 1 - $i / 60 ) + 1 ) . '%'; ?></option>
 			<?php endfor; ?>
 			</select>
-			 <a class="infolink external" href="https://kb.mailster.co/warm-up-your-email-delivery-method/" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></p>
+			 <a class="infolink external" href="<?php echo mailster_url( 'https://kb.mailster.co/warm-up-your-email-delivery-method/' ); ?>" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></p>
 
 			<p class="description"><?php esc_html_e( 'Mailster can "warmup" your current delivery method. It will gradually increase your sending volume over the defined time frame. This will help you getting started with a new domain or if you have recently switched your email provider.', 'mailster' ); ?></p>
 		</td>

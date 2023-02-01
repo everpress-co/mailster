@@ -248,6 +248,11 @@ class MailsterAjax {
 		$file        = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 
+		global $post, $post_id;
+		$post = get_post( $id, OBJECT );
+		setup_postdata( $post );
+		$post_id = $post->ID;
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -1350,7 +1355,7 @@ class MailsterAjax {
 				$args = wp_parse_args(
 					array(
 						'post_type'   => $post_types,
-						'post_status' => array( 'publish', 'future', 'draft' ),
+						'post_status' => array( 'publish', 'future', 'draft', 'private' ),
 					),
 					$defaults
 				);

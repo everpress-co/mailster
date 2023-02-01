@@ -1742,7 +1742,7 @@ mailster = (function (mailster, $, window, document) {
 			mailster.trigger('updateCount');
 		})
 		.on('click', '.edit-conditions', function () {
-			tb_show(
+			mailster.util.tb_show(
 				mailster.l10n.campaigns.edit_conditions,
 				'#TB_inline?x=1&width=720&height=520&inlineId=receivers-dialog',
 				null
@@ -1855,7 +1855,7 @@ mailster = (function (mailster, $, window, document) {
 					mailster.receivers.$.receiverslist
 						.find('.inner')
 						.html(response.data.html);
-					tb_show(
+					mailster.util.tb_show(
 						title
 							? mailster.util.sprintf(
 									mailster.l10n.campaigns.receivers,
