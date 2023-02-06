@@ -1817,10 +1817,9 @@ class MailsterAjax {
 
 		} else {
 
-			global $wp_filesystem;
-			mailster_require_filesystem();
-			$path = mailster( 'templates', $return['slug'] )->get_path();
-			$file = $path . '/' . $return['slug'] . '/' . $return['file'];
+			$wp_filesystem = mailster_require_filesystem();
+			$path          = mailster( 'templates', $return['slug'] )->get_path();
+			$file          = $path . '/' . $return['slug'] . '/' . $return['file'];
 
 			$content = mailster()->sanitize_content( $content, null, true );
 
@@ -2452,9 +2451,7 @@ class MailsterAjax {
 		$file = $path . '/' . esc_attr( $_POST['file'] );
 
 		if ( file_exists( $file ) && current_user_can( 'mailster_delete_templates' ) ) {
-			mailster_require_filesystem();
-
-			global $wp_filesystem;
+			$wp_filesystem = mailster_require_filesystem();
 
 			if ( ! $wp_filesystem->delete( $file ) ) {
 				wp_send_json_error();

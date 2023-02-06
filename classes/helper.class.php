@@ -1350,7 +1350,7 @@ class MailsterHelper {
 	 */
 	public function file_put_contents( $filename, $data = '', $flags = 'w' ) {
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		if ( ! is_dir( dirname( $filename ) ) ) {
 			wp_mkdir_p( dirname( $filename ) );
@@ -1375,7 +1375,7 @@ class MailsterHelper {
 	 */
 	public function mkdir( $folder = '', $prevent_access = true ) {
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$upload_dir = wp_upload_dir();
 

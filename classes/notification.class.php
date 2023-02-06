@@ -251,11 +251,9 @@ class MailsterNotification {
 				$form = $this->get_form_options( $options['form'], $subscriber );
 				if ( $form->vcard ) {
 
-					global $wp_filesystem;
+					$wp_filesystem = mailster_require_filesystem();
 
-					mailster_require_filesystem();
-
-					if ( $wp_filesystem->put_contents( MAILSTER_UPLOAD_DIR . '/vCard.vcf', $form->vcard_content, FS_CHMOD_FILE ) ) {
+					if ( $wp_filesystem && $wp_filesystem->put_contents( MAILSTER_UPLOAD_DIR . '/vCard.vcf', $form->vcard_content, FS_CHMOD_FILE ) ) {
 						$content[] = MAILSTER_UPLOAD_DIR . '/vCard.vcf';
 					}
 				}

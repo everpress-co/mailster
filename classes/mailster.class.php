@@ -1563,9 +1563,9 @@ class Mailster {
 		if ( $remove_files ) {
 
 			// remove folder in the upload directory
-			if ( $filesystem = mailster_require_filesystem() ) {
+			if ( $wp_filesystem  = mailster_require_filesystem() ) {
 				$upload_folder = wp_upload_dir();
-				$filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
+				$wp_filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
 			}
 		}
 

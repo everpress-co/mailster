@@ -1334,7 +1334,7 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	}
 
 	if ( ! $showform ) {
-		return false;
+		return $wp_filesystem;
 	}
 
 	if ( ! WP_Filesystem( $credentials ) ) {
