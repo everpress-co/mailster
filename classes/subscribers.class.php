@@ -3134,8 +3134,6 @@ class MailsterSubscribers {
 	 */
 	public function get( $ID, $custom_fields = false, $include_deleted = false ) {
 
-		global $wpdb;
-
 		if ( is_numeric( $ID ) ) {
 			return $this->get_by_type( 'ID', $ID, $custom_fields, $include_deleted );
 		}
@@ -4103,7 +4101,7 @@ class MailsterSubscribers {
 
 		foreach ( $subscriber_ids as $subscriber_id ) {
 
-			$subscriber = $this->get( $subscriber_id );
+			$subscriber = $this->get( $subscriber_id, false, true );
 
 			if ( ! is_numeric( $new_status ) ) {
 				$new_status = $this->get_status_by_name( $new_status );
