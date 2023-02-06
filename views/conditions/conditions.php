@@ -245,7 +245,7 @@
 						<div class="mailster-conditions-value-field-multiselect">
 							<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
 							<select name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value][]" class="condition-value" disabled>
-								<option value="0">--</option>
+								<option value="0"><?php esc_html_e( 'Any Campaign', 'mailster' ); ?></option>
 								<optgroup label="<?php esc_attr_e( 'Aggregate Campaigns', 'mailster' ); ?>">
 								<?php
 								foreach ( $this->special_campaigns as $key => $name ) :
