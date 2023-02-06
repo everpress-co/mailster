@@ -118,14 +118,16 @@ mailster = (function (mailster, $, window, document) {
 
 				if (!value_field.length) {
 					value_field = condition
-						.find('div.mailster-conditions-value-field-default')
+						.find('div.mailster-conditions-value-field')
+						.eq(0)
 						.addClass('active')
 						.find('.condition-value')
 						.prop('disabled', false);
 				}
 				if (!operator_field.length) {
 					operator_field = condition
-						.find('div.mailster-conditions-operator-field-default')
+						.find('div.mailster-conditions-operator-field')
+						.eq(0)
 						.addClass('active')
 						.find('.condition-operator')
 						.prop('disabled', false);
@@ -149,29 +151,33 @@ mailster = (function (mailster, $, window, document) {
 			.on('change', '.condition-operator', function () {
 				mailster.trigger('updateCount');
 			})
-			.on('change', '.condition-operator-time', function () {
-				var operator = $(this).val(),
-					is_relative = /(is_older|is_younger)/.test(operator),
-					input = $(this)
-						.closest('.mailster-condition')
-						.toggleClass('is-relative', is_relative)
-						.find('.mailster-conditions-value-field.active')
-						.find('.condition-value'),
-					val = input.val();
+			.on(
+				'change',
+				'.mailster-conditions-operator-field-date_operators .condition-operator',
+				function () {
+					var operator = $(this).val(),
+						is_relative = /(is_older|is_younger)/.test(operator),
+						input = $(this)
+							.closest('.mailster-condition')
+							.toggleClass('is-relative', is_relative)
+							.find('.mailster-conditions-value-field.active')
+							.find('.condition-value'),
+						val = input.val();
 
-				if (is_relative) {
-					var values = get_relative_values(val);
-					input
-						.next('input.relative-datepicker')
-						.val(values[0])
-						.next('select.relative-datepicker')
-						.val(values[1])
-						.trigger('change');
-				} else {
-					if (!val.match(/^(\d{4})-(\d{2})-(\d{2})$/))
-						input.val(new Date().toISOString().slice(0, 10));
+					if (is_relative) {
+						var values = get_relative_values(val);
+						input
+							.next('input.relative-datepicker')
+							.val(values[0])
+							.next('select.relative-datepicker')
+							.val(values[1])
+							.trigger('change');
+					} else {
+						if (!val.match(/^(\d{4})-(\d{2})-(\d{2})$/))
+							input.val(new Date().toISOString().slice(0, 10));
+					}
 				}
-			})
+			)
 			.on('change', '.condition-value', function () {
 				mailster.trigger('updateCount');
 			})
