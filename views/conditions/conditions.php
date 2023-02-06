@@ -58,43 +58,42 @@
 					<?php endforeach ?>
 
 				</select>
-				</div>
+			</div>
 
-				<div class="mailster-conditions-operator-fields">
+			<div class="mailster-conditions-operator-fields">
 
-					<?php foreach ( $all_operators as $type => $operators ) : ?>
-					<div class="mailster-conditions-operator-field mailster-conditions-operator-field-<?php echo esc_attr( $type ); ?>" data-fields=",<?php echo implode( ',', $this->get_operator_fields( $type ) ); ?>,">
-						<select name="<?php echo esc_attr( $inputname ); ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
-						<?php if ( count( $operators ) == 1 ) : ?>
+				<?php foreach ( $all_operators as $type => $operators ) : ?>
+				<div class="mailster-conditions-operator-field mailster-conditions-operator-field-<?php echo esc_attr( $type ); ?>" data-fields=",<?php echo implode( ',', $this->get_operator_fields( $type ) ); ?>,">
+					<select name="<?php echo esc_attr( $inputname ); ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
+					<?php if ( count( $operators ) == 1 ) : ?>
 
+						<?php
+						foreach ( $operators[0] as $key => $name ) :
+							echo '<option value="' . esc_attr( $key ) . '"' . selected( $field_operator, $key, false ) . '>' . esc_html( $name ) . '</option>';
+						endforeach;
+						?>
+
+					<?php else : ?>
+
+						<?php foreach ( $operators as $label => $operator ) : ?>
+							<optgroup label="<?php echo esc_attr( $label ); ?>">
 							<?php
-							foreach ( $operators[0] as $key => $name ) :
+							foreach ( $operator as $key => $name ) :
 								echo '<option value="' . esc_attr( $key ) . '"' . selected( $field_operator, $key, false ) . '>' . esc_html( $name ) . '</option>';
 							endforeach;
 							?>
+							</optgroup>
+						<?php endforeach; ?>
 
-						<?php else : ?>
-
-							<?php foreach ( $operators as $label => $operator ) : ?>
-								<optgroup label="<?php echo esc_attr( $label ); ?>">
-								<?php
-								foreach ( $operator as $key => $name ) :
-									echo '<option value="' . esc_attr( $key ) . '"' . selected( $field_operator, $key, false ) . '>' . esc_html( $name ) . '</option>';
-								endforeach;
-								?>
-								</optgroup>
-							<?php endforeach; ?>
-
-						<?php endif; ?>
-						</select>
-					</div>
-					<?php endforeach ?>
-
-					<div class="mailster-conditions-operator-field" data-fields=",<?php echo implode( ',', $this->get_operator_fields( 'hidden' ) ); ?>,">
-						<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled value="is">
-					</div>
+					<?php endif; ?>
+					</select>
 				</div>
+				<?php endforeach ?>
 
+				<div class="mailster-conditions-operator-field" data-fields=",<?php echo implode( ',', $this->get_operator_fields( 'hidden' ) ); ?>,">
+					<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled value="is">
+				</div>
+			</div>
 
 
 			<div class="mailster-conditions-value-fields">
@@ -110,8 +109,8 @@
 			</div><?php endforeach; ?>
 		</div><?php endforeach; ?>
 	</div>
-		<a class="button add-condition"><?php esc_html_e( 'Add Condition', 'mailster' ); ?></a>
+	
+	<a class="button add-condition"><?php esc_html_e( 'Add Condition', 'mailster' ); ?></a>
 
-	<div class="mailster-condition-empty">
-	</div>
+	<div class="mailster-condition-empty"></div>
 </div>
