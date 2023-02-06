@@ -126,7 +126,6 @@ class MailsterSubscriberQuery {
 		$name_order = mailster_option( 'name_order' );
 		$joins      = array();
 		$wheres     = array();
-		$orders     = array();
 
 		if ( 'all' == $this->args['fields'] ) {
 			$this->args['fields'] = $this->custom_fields;
@@ -931,6 +930,7 @@ class MailsterSubscriberQuery {
 		if ( $this->args['orderby'] && ! $this->args['return_count'] ) {
 
 			$ordering = isset( $this->args['order'][0] ) ? strtoupper( $this->args['order'][0] ) : 'ASC';
+			$orders   = array();
 			if ( ! empty( $search_orders ) ) {
 				$orders[] = '(CASE ' . implode( ' ', $search_orders ) . ' ELSE 10 END)';
 			}
@@ -970,32 +970,27 @@ class MailsterSubscriberQuery {
 
 		$from = "FROM {$wpdb->prefix}mailster_subscribers AS subscribers";
 
-		$join  = '';
-		$joins = apply_filters( 'mailster_subscriber_query_sql_joins', $joins, $this->args, $campaign_id );
+		$join = '';
 		if ( ! empty( $joins ) ) {
 			$join = implode( "\n ", array_unique( $joins ) );
 		}
 
-		$where  = '';
-		$wheres = apply_filters( 'mailster_subscriber_query_sql_wheres', $wheres, $this->args, $campaign_id );
+		$where = '';
 		if ( ! empty( $wheres ) ) {
 			$where = 'WHERE 1=1 ' . implode( "\n  ", array_unique( $wheres ) );
 		}
 
-		$group   = '';
-		$groupby = apply_filters( 'mailster_subscriber_query_sql_groupby', $this->args['groupby'], $this->args, $campaign_id );
-		if ( $groupby ) {
-			$group = 'GROUP BY ' . implode( ', ', array_unique( $groupby ) );
+		$group = '';
+		if ( $this->args['groupby'] ) {
+			$group = 'GROUP BY ' . implode( ', ', array_unique( $this->args['groupby'] ) );
 		}
 
-		$having  = '';
-		$havings = apply_filters( 'mailster_subscriber_query_sql_havings', $this->args['having'], $this->args, $campaign_id );
-		if ( $havings ) {
-			$having = 'HAVING ' . implode( ' AND ', array_unique( $havings ) );
+		$having = '';
+		if ( $this->args['having'] ) {
+			$having = 'HAVING ' . implode( ' AND ', array_unique( $this->args['having'] ) );
 		}
 
-		$order  = '';
-		$orders = apply_filters( 'mailster_subscriber_query_sql_orders', $orders, $this->args, $campaign_id );
+		$order = '';
 		if ( ! empty( $orders ) ) {
 			$order = 'ORDER BY ' . implode( ', ', array_unique( $orders ) );
 		}
@@ -1122,7 +1117,6 @@ class MailsterSubscriberQuery {
 		$extra    = '';
 		$positive = false;
 		$f        = false;
-		$c        = null;
 
 		if ( ! is_null( $table ) ) {
 			$f = $table;
@@ -1178,14 +1172,11 @@ class MailsterSubscriberQuery {
 					}
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
-				} elseif ( in_array( $field, $this->fields ) ) {
-					$f = "`subscribers`.$field";
+				} else {
+					$f = "subscribers.$field";
 					if ( in_array( $field, $this->time_fields ) ) {
 						$value = $this->get_timestamp( $value );
 					}
-				} else {
-					$f = apply_filters( 'mailster_get_condition_field', $field );
-					return null;
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
@@ -1200,6 +1191,7 @@ class MailsterSubscriberQuery {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
+				return $c;
 				break;
 
 			case '<>':
@@ -1222,10 +1214,8 @@ class MailsterSubscriberQuery {
 					$f = "`meta_wp_$field`.meta_value";
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
-				} elseif ( in_array( $field, $this->fields ) ) {
-					$f = "`subscribers`.$field";
 				} else {
-					break;
+					$f = "subscribers.$field";
 				}
 
 				$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . " $value";
@@ -1233,6 +1223,7 @@ class MailsterSubscriberQuery {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
+				return $c;
 				break;
 
 			case '^':
@@ -1252,14 +1243,13 @@ class MailsterSubscriberQuery {
 					$f = "`meta_wp_$field`.meta_value";
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
-				} elseif ( in_array( $field, $this->fields ) ) {
-					$f = "`subscribers`.$field";
 				} else {
-					break;
+					$f = "subscribers.$field";
 				}
 
 				$c = $f . " LIKE $value";
 
+				return $c;
 				break;
 
 			case '$':
@@ -1280,14 +1270,13 @@ class MailsterSubscriberQuery {
 					$f = "`meta_wp_$field`.meta_value";
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
-				} elseif ( in_array( $field, $this->fields ) ) {
-					$f = "`subscribers`.$field";
 				} else {
-					break;
+					$f = "subscribers.$field";
 				}
 
 				$c = $f . " LIKE $value";
 
+				return $c;
 				break;
 
 			case '>=':
@@ -1328,15 +1317,13 @@ class MailsterSubscriberQuery {
 					}
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
-				} elseif ( in_array( $field, $this->fields ) ) {
-					$f = "`subscribers`.$field";
+				} else {
+					$f = "subscribers.$field";
 					if ( in_array( $field, $this->time_fields ) ) {
 						$value = $this->get_timestamp( $value );
 					} else {
 						$value = (float) $value;
 					}
-				} else {
-					break;
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
@@ -1347,6 +1334,7 @@ class MailsterSubscriberQuery {
 
 				$c = $f . ' ' . ( in_array( $operator, array( 'is_greater', 'is_greater_equal', 'is_younger', '<~', '>', '>=' ) ) ? '>' . $extra : '<' . $extra ) . " $value";
 
+				return $c;
 				break;
 
 			case '%':
@@ -1363,14 +1351,12 @@ class MailsterSubscriberQuery {
 					$f = "`meta_wp_$field`.meta_value";
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
-				} elseif ( in_array( $field, $this->fields ) ) {
-					$f = "`subscribers`.$field";
+				} else {
+					$f = "subscribers.$field";
 					if ( $field == 'wp_capabilities' ) {
 						$value = "'NOTPOSSIBLE'";
 						break;
 					}
-				} else {
-					break;
 				}
 				if ( $is_empty ) {
 					$value = '.';
@@ -1385,11 +1371,10 @@ class MailsterSubscriberQuery {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
+				return $c;
 				break;
 
 		}
-
-		return $c;
 
 	}
 
