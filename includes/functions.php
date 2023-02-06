@@ -1037,29 +1037,31 @@ function mailster_links_add_args( $content, $args = array() ) {
  *
  * @param unknown $id_email_or_hash
  * @param unknown $type             (optional)
+ * @param unknown $include_deleted  (optional)
  * @return unknown
  */
-function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
+function mailster_get_subscriber( $id_email_or_hash, $type = null, $include_deleted = false ) {
 
 	$id_email_or_hash = trim( $id_email_or_hash );
 
 	if ( ! is_null( $type ) ) {
 		if ( $type == 'id' ) {
-			return mailster( 'subscribers' )->get( $id_email_or_hash );
+			return mailster( 'subscribers' )->get( $id_email_or_hash, false, $include_deleted );
 		} elseif ( $type == 'email' ) {
-			return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash );
+			return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash, false, $include_deleted );
 		} elseif ( $type == 'hash' ) {
-			return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash );
+			return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash, false, $include_deleted );
 		}
 	}
 
 	if ( is_numeric( $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get( $id_email_or_hash );
+		return mailster( 'subscribers' )->get( $id_email_or_hash, false, $include_deleted );
 	} elseif ( preg_match( '#[0-9a-f]{32}#', $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash );
+		return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash, false, $include_deleted );
 	} elseif ( mailster_is_email( $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash );
+		return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash, false, $include_deleted );
 	}
+
 	return false;
 }
 

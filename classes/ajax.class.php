@@ -396,7 +396,7 @@ class MailsterAjax {
 
 		if ( $subscriber_id ) {
 
-			if ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) {
+			if ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) {
 
 				$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
 
@@ -746,8 +746,8 @@ class MailsterAjax {
 				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
 
 				// check for subscriber by mail
-				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) ) {
-					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
+				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) ) {
+					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true, true );
 				}
 
 				if ( $subscriber ) {
