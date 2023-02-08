@@ -187,6 +187,11 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.2.5
+
+-   fixed: Campaign related conditions for "Any Campaign" now work as expected.
+-   fixed: restoring of deleted subscribers working again.
+
 ### 3.2.4
 
 -   Do not show form occurrences from auto draft posts

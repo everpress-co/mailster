@@ -591,7 +591,7 @@ class MailsterPlaceholder {
 
 		if ( preg_match_all( '#<(module|single|multi)[^>]*?condition="([a-z0-9-_]+)([=!GLTE\^$]+)(.*?)".*?</(\\1)>#ms', $this->content, $conditions ) ) {
 
-			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true ) : false;
+			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true, true ) : false;
 
 			foreach ( $conditions[0] as $i => $html ) {
 				$key      = $conditions[2][ $i ];
@@ -636,7 +636,7 @@ class MailsterPlaceholder {
 
 		if ( preg_match_all( '#<if field="([a-z0-9-_]+)" operator="([a-z_]+)+" value="(.*?)">(.*?)</if>#s', $this->content, $if_conditions ) ) {
 
-			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true ) : false;
+			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true, true ) : false;
 
 			foreach ( $if_conditions[0] as $i => $ifhtml ) {
 

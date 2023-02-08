@@ -334,7 +334,7 @@ class MailsterSubscribers {
 				$verfied = $unverfied = 0;
 
 				foreach ( $subscriber_ids as $subscriber_id ) {
-					$subscriber = $this->get( $subscriber_id, true );
+					$subscriber = $this->get( $subscriber_id, true, true );
 					$subscriber = $this->verify( $subscriber );
 					if ( is_wp_error( $subscriber ) ) {
 						$this->change_status( $subscriber_id, $this->get_status_by_name( 'error' ) );
@@ -459,7 +459,7 @@ class MailsterSubscribers {
 
 				$is_new = isset( $urlparams['new'] );
 
-				$old_subscriber_data = $this->get( (int) $_POST['mailster_data']['ID'], true );
+				$old_subscriber_data = $this->get( (int) $_POST['mailster_data']['ID'], true, true );
 
 				if ( $is_new && ! current_user_can( 'mailster_add_subscribers' ) ) {
 					wp_die( esc_html__( 'You are not allowed to add subscribers!', 'mailster' ) );
@@ -501,7 +501,7 @@ class MailsterSubscribers {
 
 				} else {
 
-					$subscriber = $this->get( $subscriber_id, true );
+					$subscriber = $this->get( $subscriber_id, true, true );
 
 					if ( isset( $_POST['mailster_lists'] ) ) {
 						$lists = array_filter( $_POST['mailster_lists'], 'is_numeric' );
@@ -561,7 +561,7 @@ class MailsterSubscribers {
 
 					$remove_actions = isset( $_POST['delete_actions'] );
 
-					if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true ) ) {
+					if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true, true ) ) {
 						$success = $this->remove( $subscriber->ID, null, $remove_actions );
 						if ( ! $success ) {
 							mailster_notice( esc_html__( 'There was an error while deleting subscribers!', 'mailster' ), 'error', true );
@@ -663,7 +663,7 @@ class MailsterSubscribers {
 
 		// delete cache
 		mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
-		$subscriber = $this->get( $subscriber_id, true );
+		$subscriber = $this->get( $subscriber_id, true, true );
 
 		if ( ! $subscriber->wp_id ) {
 			return;
@@ -837,7 +837,7 @@ class MailsterSubscribers {
 	 */
 	public function output_referer( $id ) {
 
-		$subscriber = $this->get( $id );
+		$subscriber = $this->get( $id, false, true );
 		if ( ! $subscriber ) {
 			return;
 		}
@@ -991,7 +991,7 @@ class MailsterSubscribers {
 	public function verify( $entry, $new_subscriber = false ) {
 
 		if ( is_numeric( $entry ) ) {
-			$entry = $this->get( $entry, true );
+			$entry = $this->get( $entry, true, true );
 		}
 
 		if ( $new_subscriber ) {
@@ -2803,16 +2803,16 @@ class MailsterSubscribers {
 
 		switch ( $type ) {
 			case 'id':
-				$subscriber = $this->get( (int) $value, false );
+				$subscriber = $this->get( (int) $value, false, true );
 				break;
 			case 'hash':
-				$subscriber = $this->get_by_hash( $value, false );
+				$subscriber = $this->get_by_hash( $value, false, true );
 				break;
 			case 'md5':
-				$subscriber = $this->get_by_md5( $value, false );
+				$subscriber = $this->get_by_md5( $value, false, true );
 				break;
 			case 'email':
-				$subscriber = $this->get_by_mail( $value, false );
+				$subscriber = $this->get_by_mail( $value, false, true );
 				break;
 		}
 
@@ -3134,8 +3134,6 @@ class MailsterSubscribers {
 	 */
 	public function get( $ID, $custom_fields = false, $include_deleted = false ) {
 
-		global $wpdb;
-
 		if ( is_numeric( $ID ) ) {
 			return $this->get_by_type( 'ID', $ID, $custom_fields, $include_deleted );
 		}
@@ -3433,7 +3431,7 @@ class MailsterSubscribers {
 	 */
 	public function get_confirm_link( $id, $form_id = null, $list_ids = null ) {
 
-		$subscriber = $this->get( $id );
+		$subscriber = $this->get( $id, false, true );
 		if ( ! $subscriber ) {
 			return '';
 		}
@@ -3488,7 +3486,7 @@ class MailsterSubscribers {
 	 */
 	public function get_recipient_detail( $id, $campaign_id, $index = null ) {
 
-		$subscriber = $this->get( $id, true );
+		$subscriber = $this->get( $id, true, true );
 
 		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
@@ -3825,7 +3823,7 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$subscriber = $this->get( $subscriber_id, false );
+		$subscriber = $this->get( $subscriber_id, false, true );
 		if ( ! $subscriber ) {
 			return false;
 		}
@@ -3902,7 +3900,7 @@ class MailsterSubscribers {
 	 */
 	public function get_gravatar( $id, $size = 120 ) {
 
-		$subscriber = $this->get( $id );
+		$subscriber = $this->get( $id, false, true );
 		return $this->get_gravatar_uri( $subscriber->email, $size );
 
 	}
@@ -4103,7 +4101,7 @@ class MailsterSubscribers {
 
 		foreach ( $subscriber_ids as $subscriber_id ) {
 
-			$subscriber = $this->get( $subscriber_id );
+			$subscriber = $this->get( $subscriber_id, false, true );
 
 			if ( ! is_numeric( $new_status ) ) {
 				$new_status = $this->get_status_by_name( $new_status );

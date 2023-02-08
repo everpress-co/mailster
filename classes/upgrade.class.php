@@ -546,8 +546,7 @@ class MailsterUpgrade {
 			return true;
 		}
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$old_location = MAILSTER_DIR . '/myMail.php';
 		$new_location = MAILSTER_DIR . '/mailster.php';
@@ -743,9 +742,9 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_movefiles() {
 
-		global $wpdb, $wp_filesystem;
+		global $wpdb;
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$new_location = MAILSTER_UPLOAD_DIR;
 		$old_location = dirname( MAILSTER_UPLOAD_DIR ) . '/myMail';
@@ -858,8 +857,7 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_legacy() {
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$this->deactivate_mymail( false );
 

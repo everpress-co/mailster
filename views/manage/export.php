@@ -1,8 +1,8 @@
 <?php
+if ( mailster( 'subscribers' )->get_count_by_status( false ) ) :
 
 	$lists   = mailster( 'lists' )->get( null, false );
 	$no_list = mailster( 'lists' )->count( false );
-	$counts  = mailster( 'subscribers' )->get_count_by_status( null );
 
 	$user_settings = wp_parse_args(
 		get_user_option( 'mailster_export_settings' ),
@@ -28,9 +28,8 @@
 		$user_settings['lists'] = (array) $_GET['lists'];
 	}
 
-	if ( $counts ) :
-		?>
-<h2><?php echo esc_html__( 'Which subscribers do you like to export?', 'mailster' ); ?></h2>
+	?>
+<h2><?php esc_html_e( 'Which subscribers do you like to export?', 'mailster' ); ?></h2>
 
 <form method="post" id="export-subscribers">
 		<?php wp_nonce_field( 'mailster_nonce' ); ?>
@@ -46,7 +45,7 @@
 	<?php endif; ?>
 		<?php if ( $no_list ) : ?>
 	<ul>
-		<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1" <?php checked( $user_settings['nolists'] ); ?>> <?php echo esc_html__( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>'; ?></label></li>
+		<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1" <?php checked( $user_settings['nolists'] ); ?>> <?php esc_html_e( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>'; ?></label></li>
 	</ul>
 	<?php endif; ?>
 </section>
@@ -112,7 +111,7 @@
 		?>
 	<div class="export-order-wrap">
 		<ul class="export-order unselected striped">
-			<?php foreach ( $fields as $id => $data ) : ?>
+		<?php foreach ( $fields as $id => $data ) : ?>
 				<?php if ( ! in_array( $id, $user_settings['column'] ) ) : ?>
 				<li><input type="checkbox" name="column[]" value="<?php echo esc_attr( $id ); ?>"> <?php echo esc_html( strip_tags( $data ) ); ?></li>
 				<?php endif; ?>
@@ -208,7 +207,7 @@
 		);
 		?>
 		<select name="encoding">
-			<?php foreach ( $charsets as $code => $region ) { ?>
+		<?php foreach ( $charsets as $code => $region ) { ?>
 			<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $user_settings['encoding'], $code ); ?>><?php echo $code; ?> - <?php echo $region; ?></option>
 			<?php } ?>
 		</select>
