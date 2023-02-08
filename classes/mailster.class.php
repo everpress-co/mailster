@@ -2770,6 +2770,8 @@ class Mailster {
 	 */
 	public function maybe_register( $license = null, $license_email = null, $license_user = null ) {
 
+		return;
+
 		if ( ! $license ) {
 			$license = $this->license();
 		}
@@ -2823,6 +2825,8 @@ class Mailster {
 	 */
 	public function reset_license( $license = null ) {
 
+		return true;
+
 		if ( ! $license ) {
 			$license = $this->license();
 		}
@@ -2839,14 +2843,22 @@ class Mailster {
 
 	public function is_verified( $force = false ) {
 
-		$verified = $this->get_verfied_object( $force );
+		if ( ! function_exists( 'mailster_freemius' ) ) {
+			return false;
+		}
 
-		return is_array( $verified );
+		return mailster_freemius()->is_registered();
 
 	}
 
 
 	public function is_email_verified( $force = false ) {
+
+		if ( ! function_exists( 'mailster_freemius' ) ) {
+			return false;
+		}
+
+		return mailster_freemius()->is_registered();
 
 		$verified = $this->get_verfied_object( $force );
 
@@ -2856,49 +2868,6 @@ class Mailster {
 
 		return true;
 
-	}
-
-	private function get_verfied_object( $force = false ) {
-
-		$old = get_option( '_transient_mailster_verified', array() );
-
-		if ( false === ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
-
-			$license       = $this->license();
-			$license_email = $this->email();
-			$license_user  = $this->username();
-			if ( ! $license || ! $license_email || ! $license_user ) {
-				return false;
-			}
-
-			$verified = null;
-			$recheck  = DAY_IN_SECONDS;
-
-			$result = UpdateCenterPlugin::verify( 'mailster' );
-			if ( ! is_wp_error( $result ) ) {
-				$verified = $result;
-			} else {
-				switch ( $result->get_error_code() ) {
-					case 500: // Internal Server Error
-					case 503: // Service Unavailable
-					case 'http_err':
-						$recheck  = 900;
-						$verified = $old;
-						break;
-					case 681: // no user assigned
-						break;
-				}
-			}
-
-			if ( null !== $verified ) {
-				mailster_remove_notice( 'verify' );
-			}
-
-			set_transient( 'mailster_verified', $verified, $recheck );
-
-		}
-
-		return $verified;
 	}
 
 	public function has_update( $force = false ) {

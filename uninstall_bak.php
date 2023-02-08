@@ -26,19 +26,19 @@ foreach ( $blogids as $blog_id ) {
 
 	require WP_PLUGIN_DIR . '/' . WP_UNINSTALL_PLUGIN;
 
-	if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
-		require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
-	}
+	// if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
+	// require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
+	// }
 
-	UpdateCenterPlugin::add(
-		array(
-			'licensecode' => mailster()->license(),
-			'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
-			'plugin'      => MAILSTER_SLUG,
-			'slug'        => 'mailster',
-			'autoupdate'  => mailster_option( 'autoupdate', true ),
-		)
-	);
+	// UpdateCenterPlugin::add(
+	// array(
+	// 'licensecode' => mailster()->license(),
+	// 'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
+	// 'plugin'      => MAILSTER_SLUG,
+	// 'slug'        => 'mailster',
+	// 'autoupdate'  => mailster_option( 'autoupdate', true ),
+	// )
+	// );
 
 	mailster()->uninstall();
 

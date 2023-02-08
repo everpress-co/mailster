@@ -19,7 +19,6 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' ); ?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' ); ?></a></li>
 		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' ); ?></a></li>
-		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' ); ?></a></li>
 		<li class="not-hidden"><a href="#finish"><?php esc_html_e( 'Ready!', 'mailster' ); ?></a></li>
 	</ol>
 
@@ -442,32 +441,8 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
-				<a class="button button-large button-primary next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
-
-			</div>
-
-		</div>
-
-		<div class="mailster-setup-step" id="step_validation">
-
-			<h2 class="section-title"><?php esc_html_e( 'Validation', 'mailster' ); ?></h2>
-
-			<div class="mailster-setup-step-body">
-
-			<p><?php esc_html_e( 'Updates are important to get new features and security fixes. An outdated version of your plugins can always bring the risk of getting compromised.', 'mailster' ); ?></p>
-
-			<?php mailster( 'register' )->form(); ?>
-
-			</div>
-
-			<div class="mailster-setup-step-buttons">
-
-				<span class="alignleft status"></span>
-				<i class="spinner"></i>
-
-				<a class="button button-large skip-step validation-skip-step<?php echo $is_verified ? ' disabled' : ''; ?>" href="#finish"><?php esc_html_e( 'Remind me later', 'mailster' ); ?></a>
-				<a class="button button-large button-primary next-step validation-next-step<?php echo ! $is_verified ? ' disabled' : ''; ?>" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
+				<a class="button button-large skip-step" href="#finish"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
+				<a class="button button-large button-primary next-step" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
 
 			</div>
 

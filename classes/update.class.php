@@ -7,9 +7,7 @@ class MailsterUpdate {
 
 	public function __construct() {
 
-		return;
-
-		add_filter( 'plugins_loaded', array( &$this, 'init' ) );
+		// add_filter( 'plugins_loaded', array( &$this, 'init' ) );
 
 		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
 		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
@@ -70,14 +68,14 @@ class MailsterUpdate {
 	}
 
 	public function get_auto_update_url() {
-			$query_args = array(
-				'action' => 'enable-auto-update',
-				'plugin' => MAILSTER_SLUG,
-				's'      => MAILSTER_SLUG,
-			);
-			$url        = add_query_arg( $query_args, 'plugins.php' );
+		$query_args = array(
+			'action' => 'enable-auto-update',
+			'plugin' => MAILSTER_SLUG,
+			's'      => MAILSTER_SLUG,
+		);
+		$url        = add_query_arg( $query_args, 'plugins.php' );
 
-			return wp_nonce_url( $url, 'updates' );
+		return wp_nonce_url( $url, 'updates' );
 
 	}
 

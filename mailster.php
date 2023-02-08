@@ -31,9 +31,9 @@ if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
 }
 
 require_once MAILSTER_DIR . 'vendor/autoload.php';
-require_once MAILSTER_DIR . 'includes/freemius.php';
 require_once MAILSTER_DIR . 'includes/check.php';
 require_once MAILSTER_DIR . 'includes/functions.php';
+require_once MAILSTER_DIR . 'includes/freemius.php';
 require_once MAILSTER_DIR . 'includes/deprecated.php';
 require_once MAILSTER_DIR . 'includes/3rdparty.php';
 require_once MAILSTER_DIR . 'classes/mailster.class.php';

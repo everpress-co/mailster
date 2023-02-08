@@ -1,5 +1,6 @@
 <?php
-if ( ! function_exists( 'mailster_freemius' ) ) {
+
+if ( get_option( 'mailster_setup' ) && ! function_exists( 'mailster_freemius' ) ) {
 	// Create a helper function for easy SDK access.
 	function mailster_freemius() {
 		global $mailster_freemius;
@@ -13,7 +14,7 @@ if ( ! function_exists( 'mailster_freemius' ) ) {
 					'id'                  => '11268',
 					'slug'                => 'mailster',
 					'premium_slug'        => 'mailster',
-					'type'                => 'plugin',
+					// 'type'                => 'plugin',
 					'public_key'          => 'pk_24ea323af7b2d311e3883b4c79db9',
 					'is_premium'          => true,
 					'is_premium_only'     => true,
@@ -26,10 +27,12 @@ if ( ! function_exists( 'mailster_freemius' ) ) {
 						'slug'    => 'edit.php?post_type=newsletter',
 						'contact' => false,
 						'support' => false,
+						'pricing' => false,
+						'account' => false,
 					),
-					// Set the SDK to work in a sandbox mode (for development & testing).
-					// IMPORTANT: MAKE SURE TO REMOVE SECRET KEY BEFORE DEPLOYMENT.
-					'secret_key'          => 'sk_C]ABkbx^>84%_K4uH<li>U8bvTMXO',
+					'first-path'          => 'admin.php?page=mailster_setup',
+					// 'account'             => false,
+					'navigation'          => 'menu',
 				)
 			);
 		}
