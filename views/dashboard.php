@@ -9,10 +9,22 @@ if ( $this->update ) {
 	$classes[] = 'has-update';
 }
 
+
+$msg  = '<h2>' . esc_html__( '[Action Required] Your Mailster license need to be transfered!', 'mailster' ) . '</h2>';
+$msg .= '<p>' . sprintf( esc_html__( ' Please %1$s and read more about this on our %2$s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">Start now</a>', '<a href="' . mailster_url( 'https://mailster.co/blog/' ) . '" class="external">' . esc_html__( 'Blog', 'mailster' ) . '</a>' ) . '</p>';
+
+mailster_notice(
+	$msg,
+	'error',
+	true,
+	'mailster_freemius'
+);
+
+
 ?>
 <div class="<?php echo implode( ' ', $classes ); ?>">
 <h1><?php esc_html_e( 'Dashboard', 'mailster' ); ?></h1>
-
+	
 <?php if ( ! $this->verified && current_user_can( 'mailster_manage_licenses' ) ) : ?>
 	<div id="mailster-register-panel" class="postbox" style="display:block !important">
 		<h2><?php esc_html_e( 'Register for News, Support and Updates related to Mailster.', 'mailster' ); ?></h2>

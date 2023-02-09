@@ -476,7 +476,7 @@ class Mailster {
 			return;
 		}
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests' ) ) ) {
+		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests','mailster_convert' ) ) ) {
 			return;
 		}
 
@@ -1215,6 +1215,9 @@ class Mailster {
 
 		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
+		
+		$page = add_submenu_page( true, esc_html__( 'Convert Mailster', 'mailster' ), esc_html__( 'Convert Mailster', 'mailster' ), 'read', 'mailster_convert', array( &$this, 'convert_page' ) );
+		add_action( 'load-' . $page, array( &$this, 'convert_scripts_styles' ) );
 
 		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
@@ -1249,6 +1252,13 @@ class Mailster {
 		mailster_update_option( 'welcome', false );
 		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 		include MAILSTER_DIR . 'views/welcome.php';
+
+	}
+
+	public function convert_page() {
+
+		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
+		include MAILSTER_DIR . 'views/convert.php';
 
 	}
 
@@ -1433,6 +1443,20 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/welcome-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $hook
+	 */
+	public function convert_scripts_styles( $hook ) {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-convert', MAILSTER_URI . 'assets/js/convert-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 	}
 
