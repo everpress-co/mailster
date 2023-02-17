@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bfa0033eee4f56d7de0f94a0f7ea7ea8",
+    "content-hash": "a62d3b1affac9a82d5a1467661856e9d",
     "packages": [
         {
             "name": "composer/installers",
@@ -159,16 +159,16 @@
         },
         {
             "name": "freemius/wordpress-sdk",
-            "version": "2.4.5",
+            "version": "2.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freemius/wordpress-sdk.git",
-                "reference": "d4aa83b1e74f3269affcbfe0d2b75ceae35ba864"
+                "reference": "2e56d683dd7b30445940679ecb401d2aff746c9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freemius/wordpress-sdk/zipball/d4aa83b1e74f3269affcbfe0d2b75ceae35ba864",
-                "reference": "d4aa83b1e74f3269affcbfe0d2b75ceae35ba864",
+                "url": "https://api.github.com/repos/Freemius/wordpress-sdk/zipball/2e56d683dd7b30445940679ecb401d2aff746c9e",
+                "reference": "2e56d683dd7b30445940679ecb401d2aff746c9e",
                 "shasum": ""
             },
             "require": {
@@ -192,9 +192,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Freemius/wordpress-sdk/issues",
-                "source": "https://github.com/Freemius/wordpress-sdk/tree/2.4.5"
+                "source": "https://github.com/Freemius/wordpress-sdk/tree/2.5.3"
             },
-            "time": "2022-07-31T06:50:47+00:00"
+            "time": "2022-12-05T10:31:45+00:00"
         },
         {
             "name": "inlinestyle/inlinestyle",
@@ -1746,20 +1746,20 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "v1.16.0",
+            "version": "v1.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "be8cac52a0827776ff9ccda8c381ac5b71aeb359"
+                "reference": "15873c65b207b07765dbc3c95d20fdf4a320cbe2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/be8cac52a0827776ff9ccda8c381ac5b71aeb359",
-                "reference": "be8cac52a0827776ff9ccda8c381ac5b71aeb359",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/15873c65b207b07765dbc3c95d20fdf4a320cbe2",
+                "reference": "15873c65b207b07765dbc3c95d20fdf4a320cbe2",
                 "shasum": ""
             },
             "require": {
-                "doctrine/instantiator": "^1.2",
+                "doctrine/instantiator": "^1.2 || ^2.0",
                 "php": "^7.2 || 8.0.* || 8.1.* || 8.2.*",
                 "phpdocumentor/reflection-docblock": "^5.2",
                 "sebastian/comparator": "^3.0 || ^4.0",
@@ -1767,6 +1767,7 @@
             },
             "require-dev": {
                 "phpspec/phpspec": "^6.0 || ^7.0",
+                "phpstan/phpstan": "^1.9",
                 "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
@@ -1807,9 +1808,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-                "source": "https://github.com/phpspec/prophecy/tree/v1.16.0"
+                "source": "https://github.com/phpspec/prophecy/tree/v1.17.0"
             },
-            "time": "2022-11-29T15:06:56+00:00"
+            "time": "2023-02-02T15:41:36+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -3133,18 +3134,6 @@
         },
         {
             "name": "symfony/console",
-<<<<<<< HEAD
-            "version": "v5.4.14",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/console.git",
-                "reference": "984ea2c0f45f42dfed01d2f3987b187467c4b16d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/984ea2c0f45f42dfed01d2f3987b187467c4b16d",
-                "reference": "984ea2c0f45f42dfed01d2f3987b187467c4b16d",
-=======
             "version": "v5.4.19",
             "source": {
                 "type": "git",
@@ -3155,7 +3144,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/console/zipball/dccb8d251a9017d5994c988b034d3e18aaabf740",
                 "reference": "dccb8d251a9017d5994c988b034d3e18aaabf740",
->>>>>>> origin/develop
                 "shasum": ""
             },
             "require": {
@@ -3225,11 +3213,7 @@
                 "terminal"
             ],
             "support": {
-<<<<<<< HEAD
-                "source": "https://github.com/symfony/console/tree/v5.4.14"
-=======
                 "source": "https://github.com/symfony/console/tree/v5.4.19"
->>>>>>> origin/develop
             },
             "funding": [
                 {
@@ -3245,11 +3229,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-            "time": "2022-10-07T08:01:20+00:00"
-=======
             "time": "2023-01-01T08:32:19+00:00"
->>>>>>> origin/develop
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -3399,18 +3379,6 @@
         },
         {
             "name": "symfony/filesystem",
-<<<<<<< HEAD
-            "version": "v5.4.13",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/filesystem.git",
-                "reference": "ac09569844a9109a5966b9438fc29113ce77cf51"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/ac09569844a9109a5966b9438fc29113ce77cf51",
-                "reference": "ac09569844a9109a5966b9438fc29113ce77cf51",
-=======
             "version": "v5.4.19",
             "source": {
                 "type": "git",
@@ -3421,7 +3389,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/filesystem/zipball/648bfaca6a494f3e22378123bcee2894045dc9d8",
                 "reference": "648bfaca6a494f3e22378123bcee2894045dc9d8",
->>>>>>> origin/develop
                 "shasum": ""
             },
             "require": {
@@ -3456,11 +3423,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-<<<<<<< HEAD
-                "source": "https://github.com/symfony/filesystem/tree/v5.4.13"
-=======
                 "source": "https://github.com/symfony/filesystem/tree/v5.4.19"
->>>>>>> origin/develop
             },
             "funding": [
                 {
@@ -3476,11 +3439,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-            "time": "2022-09-21T19:53:16+00:00"
-=======
             "time": "2023-01-14T19:14:44+00:00"
->>>>>>> origin/develop
         },
         {
             "name": "symfony/finder",
@@ -4039,18 +3998,6 @@
         },
         {
             "name": "symfony/string",
-<<<<<<< HEAD
-            "version": "v5.4.14",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/string.git",
-                "reference": "089e7237497fae7a9c404d0c3aeb8db3254733e4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/089e7237497fae7a9c404d0c3aeb8db3254733e4",
-                "reference": "089e7237497fae7a9c404d0c3aeb8db3254733e4",
-=======
             "version": "v5.4.19",
             "source": {
                 "type": "git",
@@ -4061,7 +4008,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/string/zipball/0a01071610fd861cc160dfb7e2682ceec66064cb",
                 "reference": "0a01071610fd861cc160dfb7e2682ceec66064cb",
->>>>>>> origin/develop
                 "shasum": ""
             },
             "require": {
@@ -4118,11 +4064,7 @@
                 "utf8"
             ],
             "support": {
-<<<<<<< HEAD
-                "source": "https://github.com/symfony/string/tree/v5.4.14"
-=======
                 "source": "https://github.com/symfony/string/tree/v5.4.19"
->>>>>>> origin/develop
             },
             "funding": [
                 {
@@ -4138,11 +4080,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-            "time": "2022-10-05T15:16:54+00:00"
-=======
             "time": "2023-01-01T08:32:19+00:00"
->>>>>>> origin/develop
         },
         {
             "name": "thecodingmachine/safe",

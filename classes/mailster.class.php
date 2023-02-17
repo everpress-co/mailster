@@ -284,8 +284,6 @@ class Mailster {
 
 			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
 
-			add_action( 'load-plugins.php', array( &$this, 'deactivation_survey' ) );
-
 		}
 
 		do_action( 'mailster', $this );
@@ -464,11 +462,6 @@ class Mailster {
 	 */
 	public function maybe_redirect_special_pages() {
 
-		global $pagenow;
-
-		if ( 'edit.php' != $pagenow ) {
-			return;
-		}
 		if ( is_network_admin() ) {
 			return;
 		}
@@ -476,8 +469,12 @@ class Mailster {
 			return;
 		}
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests','mailster_convert' ) ) ) {
+		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert' ) ) ) {
 			return;
+		}
+
+		if ( $page === 'mailster' ) {
+			$page = 'mailster_dashboard';
 		}
 
 		mailster_redirect( 'admin.php?page=' . $page, 302 );
@@ -1215,7 +1212,7 @@ class Mailster {
 
 		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
-		
+
 		$page = add_submenu_page( true, esc_html__( 'Convert Mailster', 'mailster' ), esc_html__( 'Convert Mailster', 'mailster' ), 'read', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'convert_scripts_styles' ) );
 
@@ -1320,58 +1317,6 @@ class Mailster {
 		if ( ! empty( $scripts ) ) {
 			wp_localize_script( 'mailster-script', 'mailster_l10n', $scripts );
 		}
-	}
-
-
-	public function deactivation_survey( $hook ) {
-
-		if ( ! mailster_option( 'usage_tracking' ) ) {
-			return;
-		}
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		if ( isset( $_GET['mailster_deactivation_survey'] ) && wp_verify_nonce( $_POST['mailster_nonce'], 'mailster_deactivation_survey' ) ) {
-
-			if ( ! current_user_can( 'deactivate_plugin', MAILSTER_SLUG ) ) {
-				wp_die( 'You cannot deactivate plugins.' );
-			}
-
-			$reason  = stripslashes( $_POST['mailster_surey_reason'] );
-			$details = stripslashes( $_POST['mailster_surey_extra'] );
-
-			update_option( 'wisdom_deactivation_reason_mailster', '["' . $reason . '"]' );
-			update_option( 'wisdom_deactivation_details_mailster', $details );
-
-			if ( isset( $_POST['delete_data'] ) && $_POST['delete_data'] ) {
-
-				$remove_campaigns    = isset( $_POST['delete_campaigns'] ) && $_POST['delete_campaigns'];
-				$remove_capabilities = isset( $_POST['delete_capabilities'] ) && $_POST['delete_capabilities'];
-				$remove_tables       = isset( $_POST['delete_tables'] ) && $_POST['delete_tables'];
-				$remove_options      = isset( $_POST['delete_options'] ) && $_POST['delete_options'];
-				$remove_files        = isset( $_POST['delete_files'] ) && $_POST['delete_files'];
-
-				$this->uninstall( true, $remove_campaigns, $remove_capabilities, $remove_tables, $remove_options, $remove_files );
-			}
-			deactivate_plugins( MAILSTER_SLUG );
-
-			mailster_redirect( remove_query_arg( 'mailster_deactivation_survey', add_query_arg( 'deactivate', true ) ) );
-			exit;
-
-		}
-
-		wp_enqueue_style( 'mailster-deactivate', MAILSTER_URI . 'assets/css/deactivate-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-deactivate', MAILSTER_URI . 'assets/js/deactivate-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-		mailster_localize_script(
-			'deactivate',
-			array(
-				'select_reason' => esc_html__( 'Please select a reason for the deactivation.', 'mailster' ),
-			)
-		);
-
-		add_action( 'admin_footer', array( &$this, 'deactivation_dialog' ) );
-
 	}
 
 
@@ -1702,7 +1647,7 @@ class Mailster {
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 				if ( ! is_network_admin() ) {
-					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+					// add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
 				}
 			}
 		}
@@ -2868,7 +2813,9 @@ class Mailster {
 	public function is_verified( $force = false ) {
 
 		if ( ! function_exists( 'mailster_freemius' ) ) {
-			return false;
+			$verified = $this->get_verfied_object( $force );
+
+			return is_array( $verified );
 		}
 
 		return mailster_freemius()->is_registered();
@@ -2879,19 +2826,60 @@ class Mailster {
 	public function is_email_verified( $force = false ) {
 
 		if ( ! function_exists( 'mailster_freemius' ) ) {
-			return false;
+			$verified = $this->get_verfied_object( $force );
+
+			if ( is_array( $verified ) && isset( $verified['email_verfied'] ) ) {
+				 return (bool) $verified['email_verfied'];
+			}
+
+			return true;
 		}
 
 		return mailster_freemius()->is_registered();
 
-		$verified = $this->get_verfied_object( $force );
+	}
 
-		if ( is_array( $verified ) && isset( $verified['email_verfied'] ) ) {
-			 return (bool) $verified['email_verfied'];
+	private function get_verfied_object( $force = false ) {
+
+		$old = get_option( '_transient_mailster_verified', array() );
+
+		if ( false === ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
+
+			$license       = $this->license();
+			$license_email = $this->email();
+			$license_user  = $this->username();
+			if ( ! $license || ! $license_email || ! $license_user ) {
+				return false;
+			}
+
+			$verified = null;
+			$recheck  = DAY_IN_SECONDS;
+
+			$result = UpdateCenterPlugin::verify( 'mailster' );
+			if ( ! is_wp_error( $result ) ) {
+				$verified = $result;
+			} else {
+				switch ( $result->get_error_code() ) {
+					case 500: // Internal Server Error
+					case 503: // Service Unavailable
+					case 'http_err':
+						$recheck  = 900;
+						$verified = $old;
+						break;
+					case 681: // no user assigned
+						break;
+				}
+			}
+
+			if ( null !== $verified ) {
+				mailster_remove_notice( 'verify' );
+			}
+
+			set_transient( 'mailster_verified', $verified, $recheck );
+
 		}
 
-		return true;
-
+		return $verified;
 	}
 
 	public function has_update( $force = false ) {
