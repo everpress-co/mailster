@@ -11,24 +11,26 @@ if ( get_option( 'mailster_freemius' ) && ! function_exists( 'mailster_freemius'
 
 			$mailster_freemius = fs_dynamic_init(
 				array(
-					'id'               => '11268',
-					'slug'             => 'mailster',
-					'public_key'       => 'pk_24ea323af7b2d311e3883b4c79db9',
-					'is_premium'       => true,
-					'is_premium_only'  => true,
-					// 'has_premium_version' => true,
-					'has_addons'       => false,
-					'has_paid_plans'   => true,
-					'is_org_compliant' => false,
-					'menu'             => array(
-						'slug'       => 'edit.php?post_type=newsletter',
-						'contact'    => false,
-						'support'    => false,
-						'pricing'    => false,
-						'first-path' => 'admin.php?page=mailster_dashboard',
-						// 'account' => false,
+					'id'                  => 11268,
+					'slug'                => 'mailster',
+					'public_key'          => 'pk_24ea323af7b2d311e3883b4c79db9',
+					'is_premium'          => true,
+					'is_premium_only'     => true,
+					'has_premium_version' => true,
+					'has_addons'          => false,
+					'has_paid_plans'      => true,
+					'is_org_compliant'    => true,
+					'has_affiliation'     => true,
+					'menu'                => array(
+						'slug'        => 'edit.php?post_type=newsletter',
+						'contact'     => false,
+						'support'     => false,
+						'pricing'     => false,
+						'affiliation' => false,
+						'first-path'  => 'admin.php?page=mailster_dashboard',
+						'account'     => false,
 					),
-					'navigation'       => 'menu',
+					// 'navigation'       => 'tabs',
 				)
 			);
 		}
@@ -55,6 +57,13 @@ if ( get_option( 'mailster_freemius' ) && ! function_exists( 'mailster_freemius'
 		);
 	}
 
+	mailster_freemius()->add_filter( 'connect/after_license_input', 'mailster_freemius_connect_before' );
+	function mailster_freemius_connect_before() {
+
+		echo '<div class="notice"><p>asd</p></div>';
+
+	}
+
 	mailster_freemius()->add_action( 'after_uninstall', 'mailster_freemius_uninstall_cleanup' );
 	function mailster_freemius_uninstall_cleanup() {
 		include_once MAILSTER_DIR . 'includes/uninstall.php';
@@ -78,7 +87,7 @@ if ( get_option( 'mailster_freemius' ) && ! function_exists( 'mailster_freemius'
 		return $key;
 	}
 
-	// mailster_freemius()->add_filter( 'permission_list', 'mailster_add_helpscount_permission' );
+	mailster_freemius()->add_filter( 'permission_list', 'mailster_add_helpscount_permission' );
 	function mailster_add_helpscount_permission( $permissions ) {
 
 		$permissions[] = array(
@@ -99,7 +108,7 @@ if ( get_option( 'mailster_freemius' ) && ! function_exists( 'mailster_freemius'
 	function mailster_add_diagnostic_permission( $permissions ) {
 		foreach ( $permissions as $key => $permission ) {
 			if ( $permission['id'] === 'diagnostic' ) {
-				$permissions[ $key ]['default'] = false;
+				$permissions[ $key ]['default'] = true;
 			}
 		}
 
@@ -109,9 +118,7 @@ if ( get_option( 'mailster_freemius' ) && ! function_exists( 'mailster_freemius'
 	// change length of licenses keys to accept the one from Envato
 	mailster_freemius()->add_filter( 'license_key_maxlength', 'mailster_license_key_maxlength' );
 	function mailster_license_key_maxlength( $length ) {
-
 		return 36;
-
 	}
 }
 

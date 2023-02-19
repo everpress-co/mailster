@@ -13,28 +13,22 @@ if ( $this->update ) {
 <div class="<?php echo implode( ' ', $classes ); ?>">
 <h1><?php esc_html_e( 'Dashboard', 'mailster' ); ?></h1>
 	
-<?php if ( ! $this->verified && current_user_can( 'mailster_manage_licenses' ) ) : ?>
-	<div id="mailster-register-panel" class="postbox" style="display:block !important">
-		<h2><?php esc_html_e( 'Register for News, Support and Updates related to Mailster.', 'mailster' ); ?></h2>
-		<?php mailster( 'register' )->form(); ?>
-	</div>
-<?php endif; ?>
-	<div id="dashboard-widgets-wrap">
-		<div id="dashboard-widgets" class="metabox-holder">
-			<div id="postbox-container-1" class="postbox-container" data-id="normal">
-				<?php do_meta_boxes( $this->screen->id, 'normal', '' ); ?>
-			</div>
-			<div id="postbox-container-2" class="postbox-container" data-id="side">
-				<?php do_meta_boxes( $this->screen->id, 'side', '' ); ?>
-			</div>
-			<div id="postbox-container-3" class="postbox-container" data-id="column3">
-				<?php do_meta_boxes( $this->screen->id, 'column3', '' ); ?>
-			</div>
-			<div id="postbox-container-4" class="postbox-container" data-id="column4">
-				<?php do_meta_boxes( $this->screen->id, 'column4', '' ); ?>
-			</div>
+<div id="dashboard-widgets-wrap">
+	<div id="dashboard-widgets" class="metabox-holder">
+		<div id="postbox-container-1" class="postbox-container" data-id="normal">
+			<?php do_meta_boxes( $this->screen->id, 'normal', '' ); ?>
+		</div>
+		<div id="postbox-container-2" class="postbox-container" data-id="side">
+			<?php do_meta_boxes( $this->screen->id, 'side', '' ); ?>
+		</div>
+		<div id="postbox-container-3" class="postbox-container" data-id="column3">
+			<?php do_meta_boxes( $this->screen->id, 'column3', '' ); ?>
+		</div>
+		<div id="postbox-container-4" class="postbox-container" data-id="column4">
+			<?php do_meta_boxes( $this->screen->id, 'column4', '' ); ?>
 		</div>
 	</div>
+</div>
 
 <?php $addons = mailster( 'addons' )->get_available_addons(); ?>
 <?php if ( $addons && ! is_wp_error( $addons ) ) : ?>

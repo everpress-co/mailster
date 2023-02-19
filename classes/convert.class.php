@@ -5,23 +5,24 @@ class MailsterConvert {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
-	}
-
-
-	public function init() {
-
-		if ( get_option( 'mailster_freemius' ) ) {
-			return;
-		}
-
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 1 );
 		add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
 
 	}
 
 
+	public function init() {
+
+		// add_action( 'admin_menu', array( &$this, 'admin_menu' ), 1 );
+		// add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
+	}
+
+
 	public function notice() {
+
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
 
 		$msg  = '<h2>' . esc_html__( '[Action Required] Your Mailster license need to be transfered!', 'mailster' ) . '</h2>';
 		$msg .= '<p>' . sprintf( esc_html__( ' Please %1$s and read more about this on our %2$s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">Start now</a>', '<a href="' . mailster_url( 'https://mailster.co/blog/' ) . '" class="external">' . esc_html__( 'Blog', 'mailster' ) . '</a>' ) . '</p>';
@@ -37,9 +38,20 @@ class MailsterConvert {
 
 	public function admin_menu() {
 
-		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert', 'mailster' ), esc_html__( 'Convert', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
+		$page = add_submenu_page( null, esc_html__( 'Convert', 'mailster' ), esc_html__( 'Convert', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 
+		add_action( 'load-' . $page, array( &$this, 'maybe_redirect' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
+
+	}
+
+	public function maybe_redirect() {
+
+		if ( ! get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+
+		mailster_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) );
 
 	}
 

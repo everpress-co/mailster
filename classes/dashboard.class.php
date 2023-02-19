@@ -34,21 +34,6 @@ class MailsterDashboard {
 
 		}
 
-		if ( isset( $_GET['reset_license'] ) && wp_verify_nonce( $_GET['reset_license'], 'mailster_reset_license' ) && current_user_can( 'mailster_manage_licenses' ) ) {
-
-			$result = mailster()->reset_license();
-
-			if ( is_wp_error( $result ) ) {
-				mailster_notice( esc_html__( 'There was an Error while processing your request!', 'mailster' ) . '<br>' . $result->get_error_message(), 'error', true );
-			} else {
-				update_option( 'mailster_license', '' );
-				mailster_notice( esc_html__( 'Your License has been reset!', 'mailster' ), '', true );
-			}
-
-			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
-			exit;
-		}
-
 		if ( ! get_option( 'mailster_setup' ) ) {
 			mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ) );
 			exit;

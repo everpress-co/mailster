@@ -43,7 +43,6 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/update.class.php';
 		require_once MAILSTER_DIR . 'classes/upgrade.class.php';
 		require_once MAILSTER_DIR . 'classes/helpmenu.class.php';
-		require_once MAILSTER_DIR . 'classes/register.class.php';
 		require_once MAILSTER_DIR . 'classes/geo.class.php';
 		require_once MAILSTER_DIR . 'classes/privacy.class.php';
 		require_once MAILSTER_DIR . 'classes/security.class.php';
@@ -77,7 +76,6 @@ class Mailster {
 				'update'       => new MailsterUpdate(),
 				'upgrade'      => new MailsterUpgrade(),
 				'helpmenu'     => new MailsterHelpmenu(),
-				'register'     => new MailsterRegister(),
 				'geo'          => new MailsterGeo(),
 				'privacy'      => new MailsterPrivacy(),
 				'security'     => new MailsterSecurity(),
@@ -1428,8 +1426,6 @@ class Mailster {
 
 	public function uninstall( $data = null, $remove_campaigns = true, $remove_capabilities = true, $remove_tables = true, $remove_options = true, $remove_files = true ) {
 
-		$this->reset_license();
-
 		if ( is_null( $data ) ) {
 			$data = mailster_option( 'remove_data' );
 		}
@@ -2689,6 +2685,7 @@ class Mailster {
 		if ( $force ) {
 			do_action( 'updatecenterplugin_check' );
 		}
+
 		$plugins = get_site_transient( 'update_plugins' );
 
 		if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {
@@ -2697,6 +2694,26 @@ class Mailster {
 			$plugin_info = $plugins->no_update[ MAILSTER_SLUG ];
 		} else {
 			return null;
+		}
+
+		if ( function_exists( 'mailster_freemius' ) ) {
+			$delay = $force ? 0 : HOUR_IN_SECONDS;
+			$data  = mailster_cache_get( 'fs_get_update' );
+			if ( $data = get_option( 'fs_accounts' ) ) {
+
+				$plugin_id = $data['plugins']['mailster']->id;
+
+				$plugin_info->update      = false;
+				$plugin_info->last_update = $data['plugin_data']['mailster']['sync_cron']->timestamp;
+
+				if ( ! empty( $data['updates'][ $plugin_id ] ) ) {
+					$data                     = $data['updates'][ $plugin_id ];
+					$plugin_info->update      = true;
+					$plugin_info->package     = $data->url;
+					$plugin_info->new_version = $data->version;
+					$plugin_info->last_update = $data->updated;
+				}
+			}
 		}
 
 		if ( is_null( $field ) ) {
@@ -2712,81 +2729,48 @@ class Mailster {
 
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $license (optional)
-	 * @return unknown
-	 */
-	public function maybe_register( $license = null, $license_email = null, $license_user = null ) {
-
-		return;
-
-		if ( ! $license ) {
-			$license = $this->license();
-		}
-		if ( ! $license_email ) {
-			$license_email = $this->email();
-		}
-		if ( ! $license_user ) {
-			$license_user = $this->username();
-		}
-
-		if ( ! $license || ! $license_email || ! $license_user ) {
-			return false;
-		}
-
-		$userdata = array(
-			'username' => $license_user,
-			'email'    => $license_email,
-		);
-
-		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::register( 'mailster', $userdata, $license );
-
-	}
-
 	public function license( $fallback = '' ) {
-		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE ) {
-			return MAILSTER_LICENSE;
+
+		if ( ! function_exists( 'mailster_freemius' ) ) {
+			if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE ) {
+				return MAILSTER_LICENSE;
+			}
+			return get_option( 'mailster_license', $fallback );
 		}
-		return get_option( 'mailster_license', $fallback );
+
+		$user = mailster_freemius()->get_user();
+
+		return $user->secret_key;
 	}
 
 	public function email( $fallback = '' ) {
-		if ( defined( 'MAILSTER_EMAIL' ) && MAILSTER_EMAIL ) {
-			return MAILSTER_EMAIL;
+		if ( ! function_exists( 'mailster_freemius' ) ) {
+
+			if ( defined( 'MAILSTER_EMAIL' ) && MAILSTER_EMAIL ) {
+				return MAILSTER_EMAIL;
+			}
+			return get_option( 'mailster_email', $fallback );
 		}
-		return get_option( 'mailster_email', $fallback );
+
+		$user = mailster_freemius()->get_user();
+
+		return $user->email;
 	}
 
 	public function username( $fallback = '' ) {
-		if ( defined( 'MAILSTER_USERNAME' ) && MAILSTER_USERNAME ) {
-			return MAILSTER_USERNAME;
+		if ( ! function_exists( 'mailster_freemius' ) ) {
+
+			if ( defined( 'MAILSTER_USERNAME' ) && MAILSTER_USERNAME ) {
+				return MAILSTER_USERNAME;
+			}
+			return get_option( 'mailster_username', $fallback );
 		}
-		return get_option( 'mailster_username', $fallback );
+
+		$user = mailster_freemius()->get_user();
+
+		return trim( $user->first . ' ' . $user->last );
 	}
 
-	/**
-	 *
-	 *
-	 * @param unknown $license (optional)
-	 * @return unknown
-	 */
-	public function reset_license( $license = null ) {
-
-		if ( ! $license ) {
-			$license = $this->license();
-		}
-
-		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE && $this->is_verified() ) {
-			return new WP_Error( 'defined_constants', sprintf( esc_html__( 'The License is defined as constant %s. You have to remove it before you can reset your license.', 'mailster' ), '<code>MAILSTER_LICENSE</code>' ) );
-		}
-
-		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::reset( 'mailster', $license );
-
-	}
 
 
 	public function is_verified( $force = false ) {

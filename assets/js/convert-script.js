@@ -20,8 +20,6 @@ mailster = (function (mailster, $, window, document) {
 					form.prop('disabled', false);
 					wrap.removeClass('loading');
 
-					console.warn(response);
-
 					if (response.success) {
 						wrap.addClass('step-2').removeClass('step-1');
 					} else {

@@ -6,7 +6,7 @@
 	border: 1px solid #c3c4c7;
 	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
 	background: #fff;
-	padding: 4em;
+	padding: 2em 4em;
 	margin: 4em auto;
 	width: 700px;
 	max-width: 100%;
@@ -27,8 +27,7 @@
 	opacity: 0;
 }
 .convert_form_wrap.step-1 form.convert_form,
-.convert_form_wrap.step-2 form.convert_form_2,
-.convert_form_wrap.step-3 form.registration_complete {
+.convert_form_wrap.step-2 form.registration_complete {
 	display: block;
 }
 .convert_form_wrap input[type='text'],
@@ -201,10 +200,12 @@
 	margin: 0 auto;
 }
 .convert_form_wrap .registration_complete div.registration_complete_text {
+	margin-bottom: 2em;
 }
 .convert_form_wrap .registration_complete div.registration_complete_check {
 	height: 80px;
 	width: 100px;
+	margin-top: 2em;
 }
 .convert_form_wrap
 	.registration_complete

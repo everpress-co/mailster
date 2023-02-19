@@ -23,8 +23,7 @@ if ( mailster()->is_verified() ) {
 	<?php endif; ?>
 	<dd>
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
-		<a href="<?php echo mailster_url( 'https://mailster.co/manage-licenses/' ); ?>" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
-		<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard&reset_license=' . wp_create_nonce( 'mailster_reset_license' ) ); ?>" class="reset-license"><?php esc_html_e( 'Reset License', 'mailster' ); ?></a> |
+		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ); ?>"><?php esc_html_e( 'Account', 'mailster' ); ?></a> |
 		<?php endif; ?>
 		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
 	</dd>
@@ -68,7 +67,7 @@ if ( mailster()->is_verified() ) {
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
 	<?php if ( mailster()->has_support() || ! mailster()->support() ) : ?>
-		<a href="<?php echo mailster_url( 'https://mailster.co/support/' ); ?>" class="external"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
+		<a href="<?php echo admin_url( 'edit.php?page=mailster-contact&post_type=newsletter' ); ?>"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
 	<?php else : ?>
 		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy-support' ); ?>" class="external"><?php esc_html_e( 'Renew Support', 'mailster' ); ?></a> |
 	<?php endif; ?>
