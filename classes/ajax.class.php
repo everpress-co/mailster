@@ -82,6 +82,7 @@ class MailsterAjax {
 		'get_dashboard_chart'         => 'mailster_dashboard',
 
 		'register'                    => 'mailster_dashboard',
+		'convert'                     => 'mailster_dashboard',
 		'envato_verify'               => 'mailster_dashboard',
 		'check_for_update'            => 'mailster_dashboard',
 		'check_language'              => 'mailster_dashboard',
@@ -2715,6 +2716,24 @@ class MailsterAjax {
 				$return['code']  = str_replace( '_', '', $result->get_error_code() );
 				wp_send_json_error( $return );
 			}
+		}
+
+		wp_send_json_success( $return );
+	}
+
+	private function convert() {
+
+		$this->ajax_nonce();
+		$email   = trim( $_POST['email'] );
+		$license = mailster()->license();
+		$return  = array();
+
+		$result = mailster( 'convert' )->convert( $email, $license );
+
+		if ( is_wp_error( $result ) ) {
+			$return['error'] = $result->get_error_message();
+			$return['code']  = $result->get_error_code();
+			wp_send_json_error( $return );
 		}
 
 		wp_send_json_success( $return );

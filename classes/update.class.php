@@ -21,6 +21,11 @@ class MailsterUpdate {
 
 
 	public function init() {
+
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+
 		if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
 			require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
 		}

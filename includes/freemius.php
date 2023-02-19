@@ -1,6 +1,6 @@
 <?php
 
-if ( 1 && ! function_exists( 'mailster_freemius' ) ) {
+if ( get_option( 'mailster_freemius' ) && ! function_exists( 'mailster_freemius' ) ) {
 	// Create a helper function for easy SDK access.
 	function mailster_freemius() {
 		global $mailster_freemius;
@@ -21,11 +21,11 @@ if ( 1 && ! function_exists( 'mailster_freemius' ) ) {
 					'has_paid_plans'   => true,
 					'is_org_compliant' => false,
 					'menu'             => array(
-						'slug'    => 'admin.php?page=mailster_dashboard',
-						'slug'    => 'edit.php?post_type=newsletter',
-						'contact' => false,
-						'support' => false,
-						'pricing' => false,
+						'slug'       => 'edit.php?post_type=newsletter',
+						'contact'    => false,
+						'support'    => false,
+						'pricing'    => false,
+						'first-path' => 'admin.php?page=mailster_dashboard',
 						// 'account' => false,
 					),
 					'navigation'       => 'menu',
@@ -61,16 +61,19 @@ if ( 1 && ! function_exists( 'mailster_freemius' ) ) {
 	}
 
 
-	mailster_freemius()->add_filter( 'license_key_', 'mailster_legacy_license_key' );
+	mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );
 	function mailster_legacy_license_key( $key ) {
 
-		return 'sk_wY%r?ymD4dW?Cn%r6W=!~vF0;3i=2';
-
-		if ( ! preg_match( '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{8,12}/', $key ) ) {
+		// check for UUIDv4 (Envato License)
+		if ( ! preg_match( '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/', $key ) ) {
 			return $key;
 		}
 
-		$key = 'sk_wY%r?ymD4dW?Cn%r6W=!~vF0;3i=2';
+		$response = mailster( 'convert' )->convert( null, $key );
+
+		if ( ! is_wp_error( $response ) ) {
+			$key = $response['secret_key'];
+		}
 
 		return $key;
 	}
@@ -91,6 +94,7 @@ if ( 1 && ! function_exists( 'mailster_freemius' ) ) {
 	}
 
 
+
 	mailster_freemius()->add_filter( 'permission_list', 'mailster_add_diagnostic_permission' );
 	function mailster_add_diagnostic_permission( $permissions ) {
 		foreach ( $permissions as $key => $permission ) {
@@ -102,46 +106,12 @@ if ( 1 && ! function_exists( 'mailster_freemius' ) ) {
 		return $permissions;
 	}
 
-	add_action( 'admin_init', 'my_fs_license_key_migration' );
-	function my_fs_license_key_migration() {
-		if ( ! mailster_freemius()->has_api_connectivity() || mailster_freemius()->is_registered() ) {
-			// No connectivity OR the user already opted-in to Freemius.
-			return;
-		}
+	// change length of licenses keys to accept the one from Envato
+	mailster_freemius()->add_filter( 'license_key_maxlength', 'mailster_license_key_maxlength' );
+	function mailster_license_key_maxlength( $length ) {
 
-		if ( 'pending' != get_option( 'mailster_freemius_migrated2fs', 'pending' ) ) {
-			return;
-		}
+		return 36;
 
-		// Get the license key from the previous eCommerce platform's storage.
-		$license_key = mailster()->license();
-
-		if ( empty( $license_key ) ) {
-			// No key to migrate.
-			return;
-		}
-
-		// Get the first 32 characters.
-		$license_key = substr( $license_key, 0, 32 );
-
-		error_log( print_r( 'XXX ' . $license_key, true ) );
-		try {
-			$next_page = mailster_freemius()->activate_migrated_license( $license_key );
-			error_log( print_r( $next_page, true ) );
-		} catch ( Exception $e ) {
-			update_option( 'mailster_freemius_migrated2fs', 'unexpected_error' );
-			return;
-		}
-
-		if ( mailster_freemius()->can_use_premium_code() ) {
-			update_option( 'mailster_freemius_migrated2fs', 'done' );
-
-			if ( is_string( $next_page ) ) {
-				fs_redirect( $next_page );
-			}
-		} else {
-			update_option( 'mailster_freemius_migrated2fs', 'failed' );
-		}
 	}
 }
 

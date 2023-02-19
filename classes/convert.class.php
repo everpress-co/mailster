@@ -1,0 +1,137 @@
+<?php
+
+class MailsterConvert {
+
+	public function __construct() {
+
+		add_action( 'plugins_loaded', array( &$this, 'init' ) );
+
+	}
+
+
+	public function init() {
+
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 1 );
+		add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
+
+	}
+
+
+	public function notice() {
+
+		$msg  = '<h2>' . esc_html__( '[Action Required] Your Mailster license need to be transfered!', 'mailster' ) . '</h2>';
+		$msg .= '<p>' . sprintf( esc_html__( ' Please %1$s and read more about this on our %2$s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">Start now</a>', '<a href="' . mailster_url( 'https://mailster.co/blog/' ) . '" class="external">' . esc_html__( 'Blog', 'mailster' ) . '</a>' ) . '</p>';
+
+		mailster_notice(
+			$msg,
+			'error',
+			true,
+			'mailster_freemius'
+		);
+
+	}
+
+	public function admin_menu() {
+
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert', 'mailster' ), esc_html__( 'Convert', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
+
+		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
+
+	}
+
+	public function convert_page() {
+
+		remove_action( 'admin_notices', array( mailster(), 'admin_notices' ) );
+		include MAILSTER_DIR . 'views/convert.php';
+
+	}
+
+
+	public function script_styles() {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-convert', MAILSTER_URI . 'assets/js/convert-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+	}
+
+	public function convert( $email = null, $license = null ) {
+
+		if ( is_null( $email ) ) {
+			$user  = wp_get_current_user();
+			$email = mailster()->email( $user->user_email );
+		}
+		if ( is_null( $license ) ) {
+			$license = mailster()->license();
+		}
+
+		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
+		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+
+		$url = add_query_arg(
+			array(
+				'license'     => $license,
+				'email'       => $email,
+				'redirect_to' => rawurlencode( admin_url( 'admin.php?page=mailster_dashboard' ) ),
+			),
+			$endpoint
+		);
+
+		$response = wp_remote_get( $url, array( 'sslverify' => false ) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+
+		if ( $code !== 200 ) {
+			return new WP_Error( $code, esc_html__( 'Not able to convert', 'mailster' ) );
+		}
+
+		$response = json_decode( wp_remote_retrieve_body( $response ) );
+
+		if ( $fs_accounts = get_option( 'fs_accounts' ) ) {
+			if ( isset( $fs_accounts['plans']['mailster'] ) ) {
+				unset( $fs_accounts['plans']['mailster'] );
+			}
+			if ( isset( $fs_accounts['plugins']['mailster'] ) ) {
+				unset( $fs_accounts['plugins']['mailster'] );
+			}
+			if ( isset( $fs_accounts['sites']['mailster'] ) ) {
+				unset( $fs_accounts['sites']['mailster'] );
+			}
+			if ( isset( $fs_accounts['plugin_data']['mailster'] ) ) {
+				unset( $fs_accounts['plugin_data']['mailster'] );
+			}
+			update_option( 'fs_accounts', $fs_accounts );
+		}
+
+		error_log( print_r( get_option( 'fs_accounts' ), true ) );
+
+		if ( ! function_exists( 'mailster_freemius' ) ) {
+			add_option( 'mailster_freemius', time() );
+			require MAILSTER_DIR . 'includes/freemius.php';
+		}
+
+		$is_marketing_allowed = true;
+
+		$response = mailster_freemius()->activate_migrated_license( $response->data->secret_key, $is_marketing_allowed );
+
+		if ( isset( $response['error'] ) && $response['error'] ) {
+			delete_option( 'mailster_freemius' );
+			return new WP_Error( $code, $response['error'] );
+		}
+		if ( isset( $response['success'] ) && $response['success'] ) {
+
+		}
+
+		return $response;
+
+	}
+
+}

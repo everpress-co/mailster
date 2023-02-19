@@ -798,7 +798,6 @@ class UpdateCenterPlugin {
 			$http_url = set_url_scheme( $url, 'http' );
 			$response = wp_remote_post( $http_url, $args );
 		}
-		error_log( print_r( wp_remote_retrieve_body( $response ), true ) );
 
 		return $response;
 

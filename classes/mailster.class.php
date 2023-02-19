@@ -19,6 +19,7 @@ class Mailster {
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
+		require_once MAILSTER_DIR . 'classes/convert.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
@@ -53,6 +54,7 @@ class Mailster {
 			'mailster_classes',
 			array(
 				'settings'     => new MailsterSettings(),
+				'convert'      => new MailsterConvert(),
 				'translations' => new MailsterTranslations(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
@@ -1213,9 +1215,6 @@ class Mailster {
 		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
-		$page = add_submenu_page( true, esc_html__( 'Convert Mailster', 'mailster' ), esc_html__( 'Convert Mailster', 'mailster' ), 'read', 'mailster_convert', array( &$this, 'convert_page' ) );
-		add_action( 'load-' . $page, array( &$this, 'convert_scripts_styles' ) );
-
 		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
@@ -1252,12 +1251,6 @@ class Mailster {
 
 	}
 
-	public function convert_page() {
-
-		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
-		include MAILSTER_DIR . 'views/convert.php';
-
-	}
 
 	public function tests_page() {
 
@@ -1391,19 +1384,6 @@ class Mailster {
 
 	}
 
-	/**
-	 *
-	 *
-	 * @param unknown $hook
-	 */
-	public function convert_scripts_styles( $hook ) {
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-convert', MAILSTER_URI . 'assets/js/convert-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-	}
 
 	/**
 	 *
@@ -1645,9 +1625,10 @@ class Mailster {
 				update_option( 'mailster_hooks', '' );
 				update_option( 'mailster_version_first', MAILSTER_VERSION );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+				update_option( 'mailster_freemius', time() );
 
 				if ( ! is_network_admin() ) {
-					// add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
 				}
 			}
 		}
@@ -2212,7 +2193,7 @@ class Mailster {
 			return;
 		}
 
-		mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
+		mailster_redirect( admin_url( 'admin.php?page=mailster' ), 302 );
 
 		exit;
 
@@ -2793,8 +2774,6 @@ class Mailster {
 	 * @return unknown
 	 */
 	public function reset_license( $license = null ) {
-
-		return true;
 
 		if ( ! $license ) {
 			$license = $this->license();
