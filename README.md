@@ -1,14 +1,14 @@
-=== Mailster - Email Newsletter Plugin for WordPress ===
+# Mailster - Email Newsletter Plugin for WordPress
 
 Contributors: everpress  
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.1  
-Stable tag: 3.2.5
+Stable tag: 3.2.4
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
-== Description ==
+## Description
 
 ### Mailster is an easy to use Email Newsletter Plugin for WordPress. Create, send and track your Newsletter Campaigns without hassle.
 
@@ -145,7 +145,7 @@ Just go ahead and adapt Mailster to your unique needs.
 -   Capability management.
 -   Developer friendly.
 
-== Templates ==
+## Templates
 
 ### Free and Premium Templates
 
@@ -153,7 +153,7 @@ Mailster supports over 400 templates from various authors. Please visit our webs
 
 **[Templates →](https://mailster.co/templates/)**
 
-== Add Ons ==
+## Add Ons
 
 ### Add Ons
 
@@ -161,7 +161,7 @@ Extend the functionality of Mailster or your site with these add ons.
 
 **[Add ons →](https://mailster.co/addons/)**
 
-== Support ==
+## Support
 
 ### We’re Here to Help.
 
@@ -183,14 +183,9 @@ Get professional development help from our expert support partner _Codeable_ for
 
 **[Get a Quote →](https://codeable.io/?ref=zATDD)**
 
-== Changelog ==
+## Changelog
 
 ### Changelog
-
-### 3.2.5
-
--   fixed: Campaign related conditions for "Any Campaign" now work as expected.
--   fixed: restoring of deleted subscribers working again.
 
 ### 3.2.4
 
