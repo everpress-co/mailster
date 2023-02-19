@@ -111,8 +111,6 @@ class MailsterConvert {
 			update_option( 'fs_accounts', $fs_accounts );
 		}
 
-		error_log( print_r( get_option( 'fs_accounts' ), true ) );
-
 		if ( ! function_exists( 'mailster_freemius' ) ) {
 			add_option( 'mailster_freemius', time() );
 			require MAILSTER_DIR . 'includes/freemius.php';

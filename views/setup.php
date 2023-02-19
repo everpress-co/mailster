@@ -38,7 +38,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 			<p><?php esc_html_e( 'This wizard helps you to setup Mailster. All options available can be found later in the settings. You can always skip each step and adjust your settings later if you\'re not sure.', 'mailster' ); ?></p>
 
-			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 6 ); ?></p>
+			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 4 ); ?></p>
 
 			<dl>
 				<dt><?php esc_html_e( 'Basic Information', 'mailster' ); ?></dt>
@@ -55,10 +55,6 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 			<dl>
 				<dt><?php esc_html_e( 'Privacy', 'mailster' ); ?></dt>
 				<dd><?php esc_html_e( 'Mailster takes the privacy of your subscribers information seriously. Define which information Mailster should save.', 'mailster' ); ?></dd>
-			</dl>
-			<dl>
-				<dt><?php esc_html_e( 'Validation', 'mailster' ); ?></dt>
-				<dd><?php esc_html_e( 'Updates are important and if you have a valid license for Mailster you can automatically update directly from WordPress.', 'mailster' ); ?></dd>
 			</dl>
 
 			<p><a class="button button-hero button-primary next-step" href="#basics"><?php esc_html_e( 'Start Wizard', 'mailster' ); ?></a> <?php esc_html_e( 'or', 'mailster' ); ?> <a href="admin.php?page=mailster_dashboard&mailster_setup_complete=<?php echo wp_create_nonce( 'mailster_setup_complete' ); ?>"><?php esc_html_e( 'skip it', 'mailster' ); ?></a></p>
