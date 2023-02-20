@@ -60,14 +60,15 @@ if ( get_option( 'mailster_freemius' ) && ! function_exists( 'mailster_freemius'
 	mailster_freemius()->add_filter( 'connect/after_license_input', 'mailster_freemius_connect_before' );
 	function mailster_freemius_connect_before() {
 
-		echo '<div class="notice"><p>asd</p></div>';
-
 	}
 
 	mailster_freemius()->add_action( 'after_uninstall', 'mailster_freemius_uninstall_cleanup' );
 	function mailster_freemius_uninstall_cleanup() {
-		include_once MAILSTER_DIR . 'includes/uninstall.php';
+		mailster()->uninstall();
 	}
+
+	mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
+
 
 
 	mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );

@@ -4,17 +4,9 @@ class MailsterConvert {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 1 );
 		add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
 
-	}
-
-
-	public function init() {
-
-		// add_action( 'admin_menu', array( &$this, 'admin_menu' ), 1 );
-		// add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
 	}
 
 
@@ -93,19 +85,18 @@ class MailsterConvert {
 			$endpoint
 		);
 
-		$response = wp_remote_get( $url, array( 'sslverify' => false ) );
+		$response = wp_remote_get( $url, array( 'timeout' => 30 ) );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
-		$code = wp_remote_retrieve_response_code( $response );
+		$code     = wp_remote_retrieve_response_code( $response );
+		$response = json_decode( wp_remote_retrieve_body( $response ) );
 
 		if ( $code !== 200 ) {
-			return new WP_Error( $code, esc_html__( 'Not able to convert', 'mailster' ) );
+			return new WP_Error( $code, $response->message );
 		}
-
-		$response = json_decode( wp_remote_retrieve_body( $response ) );
 
 		if ( $fs_accounts = get_option( 'fs_accounts' ) ) {
 			if ( isset( $fs_accounts['plans']['mailster'] ) ) {

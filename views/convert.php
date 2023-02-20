@@ -1,10 +1,16 @@
 <div class="wrap" id="mailster-convert">
 <?php
-$useremail = mailster()->email();
+$user_email = mailster()->email();
+$license    = mailster()->license();
+
+if ( empty( $user_email ) ) {
+	$user       = wp_get_current_user();
+	$user_email = $user->user_email;
+}
 ?>
 
 	<div class="convert_form_wrap step-1 loading">
-			<div class="convert-form-info"></div>
+		<div class="convert-form-info"></div>
 		<form class="convert_form" action="" method="POST">
 			<h1>Mailster License Migration</h1>
 			<h2>You're about to convert your Mailster license to Freemius and we need your consent.</h2>
@@ -13,7 +19,8 @@ $useremail = mailster()->email();
 			<p class="error-msg">&nbsp;</p>
 
 			<p>
-				<input type="email" class="widefat email align-center" name="email" value="<?php echo esc_attr( $useremail ); ?>" placeholder="<?php echo esc_attr( $useremail ); ?>">
+				<input type="text" class="widefat license align-center" name="license" value="<?php echo esc_attr( $license ); ?>" placeholder="XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX">
+				<input type="email" class="widefat email align-center" name="email" value="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo esc_attr( $user_email ); ?>">
 			</p>
 			<input type="submit" class="button button-hero button-primary dashboard-convert" value="<?php esc_attr_e( 'Migrate to Freemius now', 'mailster' ); ?>">
 			<div class="howto">

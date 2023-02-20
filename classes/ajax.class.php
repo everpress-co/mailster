@@ -2666,7 +2666,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 		$email   = trim( $_POST['email'] );
-		$license = mailster()->license();
+		$license = trim( $_POST['license'] );
 		$return  = array();
 
 		$result = mailster( 'convert' )->convert( $email, $license );
