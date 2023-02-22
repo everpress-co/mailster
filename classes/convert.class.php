@@ -74,7 +74,7 @@ class MailsterConvert {
 		}
 
 		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
-		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+		$endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
 
 		$url = add_query_arg(
 			array(
@@ -93,6 +93,8 @@ class MailsterConvert {
 
 		$code     = wp_remote_retrieve_response_code( $response );
 		$response = json_decode( wp_remote_retrieve_body( $response ) );
+
+		error_log( print_r( $response, true ) );
 
 		if ( $code !== 200 ) {
 			return new WP_Error( $code, $response->message );
@@ -121,13 +123,15 @@ class MailsterConvert {
 
 		$is_marketing_allowed = true;
 
-		$response = mailster_freemius()->activate_migrated_license( $response->data->secret_key, $is_marketing_allowed );
+		$migrate = mailster_freemius()->activate_migrated_license( $response->data->secret_key, $is_marketing_allowed );
 
-		if ( isset( $response['error'] ) && $response['error'] ) {
+		error_log( print_r( $response, true ) );
+
+		if ( isset( $migrate['error'] ) && $migrate['error'] ) {
 			delete_option( 'mailster_freemius' );
-			return new WP_Error( $code, $response['error'] );
+			return new WP_Error( $code, $migrate['error'] );
 		}
-		if ( isset( $response['success'] ) && $response['success'] ) {
+		if ( isset( $migrate['success'] ) && $migrate['success'] ) {
 
 		}
 

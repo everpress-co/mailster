@@ -17,7 +17,7 @@
 	opacity: 1;
 	z-index: 2;
 	display: none;
-	text-align: center;
+	_text-align: center;
 }
 .convert_form_wrap div.mailster-notice.notice {
 	display: none;
@@ -42,7 +42,7 @@
 }
 .convert_form_wrap .howto {
 	width: 80%;
-	margin: 0.6em auto 0;
+	margin: 0.6em auto 0 0;
 	line-height: 1.4em;
 }
 .convert_form_wrap .howto.tos-field {
@@ -56,33 +56,15 @@
 .convert_form_wrap .registration_complete {
 	top: 20%;
 }
-.convert_form_wrap input.convert-form-purchasecode {
-	text-align: center;
-}
-
-.convert_form_wrap input.convert-form-purchasecode::-webkit-input-placeholder {
-	/* WebKit, Blink, Edge */
-	color: #ccc;
-}
-.convert_form_wrapinput.convert-form-purchasecode:moz-placeholder {
-	/* Mozilla Firefox 4 to 18 */
-	color: #ccc;
-	opacity: 1;
-}
-.convert_form_wrap input.convert-form-purchasecode:-moz-placeholder {
-	/* Mozilla Firefox 19+ */
-	color: #ccc;
-	opacity: 1;
-}
-.convert_form_wrapinput.convert-form-purchasecode:-ms-input-placeholder {
-	/* Internet Explorer 10-11 */
-	color: #ccc;
+.result {
+	color: #1d2327;
+	font-size: 1.3em;
+	font-weight: 600;
 }
 .convert_form_wrap .convert-form-info {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	text-align: center;
 	top: 50%;
 	width: 100%;
 	height: 100%;
@@ -198,6 +180,9 @@
 	font-size: 20px;
 	cursor: pointer;
 	margin: 0 auto;
+}
+.convert_form_wrap .registration_complete_wrap {
+	float: right;
 }
 .convert_form_wrap .registration_complete div.registration_complete_text {
 	margin-bottom: 2em;

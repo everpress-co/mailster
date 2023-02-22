@@ -2677,6 +2677,8 @@ class MailsterAjax {
 			wp_send_json_error( $return );
 		}
 
+		$return['data'] = $result->data;
+
 		wp_send_json_success( $return );
 	}
 
