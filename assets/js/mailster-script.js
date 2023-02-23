@@ -178,7 +178,9 @@ mailster = (function (mailster, $, window, document) {
 				if (textStatus == 'error' && !errorThrown) return;
 				mailster.log(response, 'error');
 				if ('JSON' == dataType) {
-					var maybe_json = response.data.match(/{(.*)}$/);
+					var maybe_json = response.data
+						? response.data.match(/{(.*)}$/)
+						: false;
 					if (maybe_json && callback) {
 						try {
 							callback.call(this, JSON.parse(maybe_json[0]));
@@ -205,6 +207,7 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	mailster.util.rgb2hex = function (str) {
+		if (!str) return str;
 		var colors = str.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/);
 
 		function nullify(val) {
