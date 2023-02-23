@@ -21,7 +21,7 @@
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-short-codes">
-		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?><?php echo mailster()->beacon( '611bba3321ef206e5592c322' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[shortcodes]" value=""><input type="checkbox" name="mailster_options[shortcodes]" value="1" <?php checked( mailster_option( 'shortcodes' ) ); ?>> <?php esc_html_e( 'Process short codes in emails.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Check this option to process short codes. This may cause unexpected results.', 'mailster' ); ?></p>
 		</td>
 	</tr>

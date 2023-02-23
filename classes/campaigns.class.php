@@ -623,6 +623,8 @@ class MailsterCampaigns {
 	 */
 	public function columns( $columns ) {
 
+		echo mailster()->beacon( array( '62a0b386e1d2cf0eac00f108', '611bb545b55c2b04bf6df0f3' ) );
+
 		$columns = array(
 			'cb'      => '<input type="checkbox" />',
 			'title'   => esc_html__( 'Name', 'mailster' ),
@@ -1377,7 +1379,7 @@ class MailsterCampaigns {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( 'edit-newsletter' == $screen->id ) {
-			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array( 'mailster-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
 
 			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -1481,7 +1483,7 @@ class MailsterCampaigns {
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );
 
-			wp_enqueue_script( 'mailster-campaign', MAILSTER_URI . 'assets/js/campaign-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-campaign', MAILSTER_URI . 'assets/js/campaign-script' . $suffix . '.js', array( 'mailster-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'mailster-campaign', MAILSTER_URI . 'assets/css/campaign-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_script( 'mailster-editbar', MAILSTER_URI . 'assets/js/editbar-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );

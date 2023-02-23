@@ -1,3 +1,4 @@
+<?php echo mailster()->beacon( '611bb1fe21ef206e5592c2a9' ); ?>
 <form id="import_wordpress" method="post" class="importer-form" data-type="wordpress">
 	<?php $roles = get_editable_roles(); ?>
 	<p class="howto"><?php printf( esc_html__( 'Import your existing WordPress users here. You can define how Mailster should handle future users on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#wordpress-users">' . esc_html__( 'Settings page', 'mailster' ) . '</a>' ); ?></p>

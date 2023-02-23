@@ -1259,6 +1259,18 @@ class Mailster {
 
 	}
 
+	public function beacon( $ids, $hidden = false ) {
+
+		$return = '';
+
+		foreach ( (array) $ids as $id ) {
+			$return .= sprintf( ' <a class="mailster-infolink" href="%s" data-article="%s" %s></a>', mailster_url( 'https://kb.mailster.co/' . $id ), $id, $hidden ? 'hidden' : '' );
+		}
+
+		return $return;
+
+	}
+
 
 
 	/**
@@ -1295,6 +1307,21 @@ class Mailster {
 
 		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard' ), MAILSTER_VERSION, true );
+
+		wp_register_script( 'mailster-helpscout', MAILSTER_URI . 'assets/js/helpscout-beacon' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		// global $_wp_admin_css_colors;
+
+		// error_log( print_r($_wp_admin_css_colors, true) );
+		wp_localize_script(
+			'mailster-helpscout',
+			'mailster_helpscout',
+			array(
+				'name'  => trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name ),
+				'email' => $this->email(),
+				// 'color' =>  $_wp_admin_css_colors[get_user_option('admin_color')]->colors[2],
+				// 'signature' => hash_hmac('sha256',   $user->email, 'secret_key_from_beacon_config')
+			)
+		);
 
 		mailster_localize_script(
 			'clipboard',

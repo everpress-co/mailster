@@ -1,3 +1,6 @@
+<?php echo mailster()->beacon( '611bb9bbb37d837a3d0e47c1', true ); ?>
+<?php echo mailster()->beacon( '611bb961b37d837a3d0e47be', true ); ?>
+<?php echo mailster()->beacon( '611bb186b55c2b04bf6df0c3', true ); ?>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-tracking">
 		<th scope="row"><?php esc_html_e( 'Tracking', 'mailster' ); ?></th>

@@ -74,7 +74,26 @@ tr.status-active div.campaign-progress span.bar:before,
 		left: 120%;
 	}
 }
-
+.mailster-infolink {
+	display: inline-block;
+	background: #ccc;
+	width: 18px;
+	height: 18px;
+	font-size: 14px;
+	vertical-align: top;
+	border-radius: 50%;
+	color: #fff;
+	text-decoration: none !important;
+	text-align: center;
+	margin: auto 2px;
+	line-height: 127%;
+}
+.mailster-infolink[hidden] {
+	display: none;
+}
+.mailster-infolink:after {
+	content: '?';
+}
 /*#adminmenu ul>li:not(:last-child) a[href^="post-new.php?post_type=newsletter"]:after,
 #adminmenu ul>li:not(:last-child) a[href^="edit.php?post_type=newsletter&page=mailster_manage_subscribers"]:after,
 #adminmenu ul>li:not(:last-child) a[href^="edit.php?post_type=newsletter&page=mailster_addons"]:after,

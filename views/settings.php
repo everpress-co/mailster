@@ -59,6 +59,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	unset( $sections['manage_settings'] );
 }
 
+$beacons = array(
+	'tags'            => '611bb5296ffe270af2a99926',
+	'wordpress-users' => '611bb1fe21ef206e5592c2a9',
+)
 ?>
 
 	<div class="settings-wrap">
@@ -77,7 +81,13 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 		<?php foreach ( $sections as $id => $name ) : ?>
 			<div id="tab-<?php echo esc_attr( $id ); ?>" class="tab">
-				<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
+				<h3><?php echo esc_html( strip_tags( $name ) ); ?>
+					<?php
+					if ( isset( $beacons[ $id ] ) ) {
+						echo mailster()->beacon( $beacons[ $id ] );
+					}
+					?>
+				</h3>
 				<?php do_action( 'mailster_section_tab', $id ); ?>
 				<?php do_action( 'mailster_section_tab_' . $id ); ?>
 

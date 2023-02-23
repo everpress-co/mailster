@@ -41,8 +41,29 @@ mailster = (function (mailster, $, window, document) {
 			load_spf_data();
 			load_dkim_data();
 		}
+		articles();
+
 		return false;
 	});
+
+	function articles() {
+		if (!mailster.beacon) return;
+		var articles = [];
+
+		$('.tab:visible')
+			.find('.mailster-infolink')
+			.each(function () {
+				var id = $(this).data('article');
+				if (!id) return;
+				articles.push(id);
+			});
+
+		if (articles.length) {
+			mailster.beacon('suggest', articles);
+		} else {
+			mailster.beacon('reset');
+		}
+	}
 
 	$('.click-to-select').on('click', function (event) {
 		if (document.selection) {
