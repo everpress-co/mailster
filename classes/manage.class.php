@@ -287,6 +287,7 @@ class MailsterManage {
 		$html  = '<form id="subscriber-table">';
 		$html .= '<h2>';
 		$html .= sprintf( esc_html__( _n( '%s contact to import.', '%s contacts to import.', $contactcount, 'mailster' ) ), number_format_i18n( $contactcount ) );
+		$html .= mailster()->beacon( '63f5f51ee6d6615225472ab9' );
 		if ( ! empty( $removed ) ) {
 			$html .= ' <span class="howto">' . sprintf( esc_html__( _n( '%s entry without valid email address has been removed.', '%s entries without valid email address have been removed.', $removed, 'mailster' ) ), number_format_i18n( $removed ) ) . '</span>';
 		}

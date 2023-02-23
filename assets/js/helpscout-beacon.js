@@ -92,16 +92,11 @@ mailster = (function (mailster, $, window, document) {
 	} else {
 		mailster.beacon('init');
 	}
-	mailster.beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385', {
-		force: true,
-	});
+	// mailster.beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385', {
+	// 	force: true,
+	// });
+	//mailster.beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385');
 	$('a[href^="https://mailster.co/support"]').on('click', function () {
-		mailster.beacon(
-			'show-message',
-			'9f50516e-ffdc-431a-9899-29e5d4abc385',
-			{ force: true }
-		);
-		return false;
 		mailster.beacon(
 			'suggest',
 			[
@@ -122,7 +117,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$.document.on('click', '.mailster-infolink', function () {
 		Beacon('article', $(this).data('article'), {
-			type: 'modal',
+			type: 'sidebar',
 		});
 		return false;
 	});

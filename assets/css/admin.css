@@ -74,6 +74,7 @@ tr.status-active div.campaign-progress span.bar:before,
 		left: 120%;
 	}
 }
+
 .mailster-infolink {
 	display: inline-block;
 	background: #ccc;
@@ -87,6 +88,10 @@ tr.status-active div.campaign-progress span.bar:before,
 	text-align: center;
 	margin: auto 2px;
 	line-height: 127%;
+}
+.mailster-infolink:hover {
+	color: #fff;
+	background: #2bb3e7;
 }
 .mailster-infolink[hidden] {
 	display: none;
