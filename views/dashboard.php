@@ -10,7 +10,6 @@ if ( $this->update ) {
 }
 
 ?>
-<script>console.log("asda")</script>
 <div class="<?php echo implode( ' ', $classes ); ?>">
 <h1><?php esc_html_e( 'Dashboard', 'mailster' ); ?></h1>
 

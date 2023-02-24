@@ -14,11 +14,14 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	if ( ! current_user_can( $sub_item[1] ) ) {
 		continue;
 	}
-	if ( in_array( $sub_item[1], array( 'mailster_dashboard', 'mailster_tests', 'mailster_manage_templates', 'mailster_manage_addons' ) ) ) {
+	if ( in_array( $sub_item[1], array( 'mailster_dashboard', 'mailster_tests', 'mailster_manage_templates', 'mailster_manage_addons', 'mailster_manage_subscribers' ) ) ) {
 		continue;
 	}
 	if ( $i === 10 ) {
-		continue;
+		$sub_item[0] = esc_html__( 'New', 'mailster' );
+	}
+	if ( $i !== 5 ) {
+		// continue;
 	}
 
 	$tab = array(
@@ -29,16 +32,16 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	if ( ! strpos( $sub_item[2], '.php' ) ) {
 		$tab['url'] = add_query_arg( array( 'page' => $sub_item[2] ), $slug );
 	}
-	if ( $submenu_file === $sub_item[2] || $plugin_page === $sub_item[2] ) {
-		$tab['is_active'] = true;
-	}
 
-	if ( $i === 10 && $submenu_file === 'edit.php?post_type=newsletter' ) {
+	$is_autoresponder = isset( $_GET['post_status'] ) && $_GET['post_status'] == 'autoresponder';
+
+	if ( $is_autoresponder && $sub_item[1] == 'mailster_edit_autoresponders' ) {
+		$tab['is_active'] = true;
+	} elseif ( ! $is_autoresponder && ( $submenu_file === $sub_item[2] || $plugin_page === $sub_item[2] ) && $pagenow !== 'post_new.php' ) {
 		$tab['is_active'] = true;
 	}
 	$tabs[] = $tab;
 }
-
 $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 
 ?>
@@ -59,11 +62,4 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 			Help
 		</button>
 	</div>
-</div>
-<div class="mailster-offscreen-canvas">
-	<h2>Welcome</h2>
-	<p>This is a subline</p>
-
-	<input type="search" class="widefat" placeholder="Search Knowledgebase">
-
 </div>

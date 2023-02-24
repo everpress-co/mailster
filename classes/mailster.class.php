@@ -1311,20 +1311,18 @@ class Mailster {
 		wp_enqueue_style( 'mailster-icons', MAILSTER_URI . 'assets/css/icons' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-admin', MAILSTER_URI . 'assets/css/admin' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
 
-		wp_register_style( 'mailster-admin-header', MAILSTER_URI . 'assets/css/admin-header-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_register_script( 'mailster-admin-header', MAILSTER_URI . 'assets/js/admin-header-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
 		wp_register_script( 'mailster-script', MAILSTER_URI . 'assets/js/mailster-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
 		wp_localize_script(
 			'mailster-script',
 			'mailster',
 			array(
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-				'isrtl'   => is_rtl(),
-				'version' => MAILSTER_VERSION,
-				'colors'  => array(
+				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+				'wpnonce'  => wp_create_nonce( 'mailster_nonce' ),
+				'isrtl'    => is_rtl(),
+				'version'  => MAILSTER_VERSION,
+				'verified' => mailster()->is_verified(),
+				'colors'   => array(
 					'main'        => '#2BB3E7',
 					'track'       => '#f3f3f3',
 					'track_light' => '#ffffff',
@@ -1337,49 +1335,15 @@ class Mailster {
 		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard' ), MAILSTER_VERSION, true );
 
-		if ( mailster_option( 'helpscout' ) ) {
+		wp_register_style( 'mailster-admin-header', MAILSTER_URI . 'assets/css/admin-header-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_script( 'mailster-admin-header', MAILSTER_URI . 'assets/js/admin-header-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
-			wp_register_script( 'mailster-helpscout', MAILSTER_URI . 'assets/js/helpscout-beacon' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-			$user = wp_get_current_user();
-
-			$helpscout_data = array(
-				'name'     => trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name ),
-				'email'    => $this->email(),
-				'avatar'   => get_avatar_url( $user->ID ),
-				'verified' => $this->is_verified(),
-			);
-
-			wp_add_inline_script( 'mailster-helpscout', 'mailster.helpscout = ' . json_encode( $helpscout_data ), 'before' );
-
-		} else {
-			wp_register_script( 'mailster-helpscout', MAILSTER_URI . 'assets/js/helpscout-beacon-dummy' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-		}
-
-		// mailster_localize_script(
-		// 'helpscout',
-		// array(
-		// 'suggestedForYou'          => 'x ' . esc_html__( 'Instant Answers', 'mailster' ),
-		// 'getInTouch'               => 'x ' . esc_html__( 'Get in touch', 'mailster' ),
-		// 'searchLabel'              => 'x ' . esc_html__( 'What can we help you with?', 'mailster' ),
-		// 'tryAgain'                 => 'x ' . esc_html__( 'Try again', 'mailster' ),
-		// 'defaultMessageErrorText'  => 'x ' . esc_html__( 'There was a problem sending your message. Please try again in a moment.', 'mailster' ),
-		// 'beaconButtonClose'        => 'x ' . esc_html__( 'Close', 'mailster' ),
-		// 'beaconButtonChatMinimize' => 'x ' . esc_html__( 'Minimise chat', 'mailster' ),
-		// 'beaconButtonChatOpen'     => 'x ' . esc_html__( 'Open chat', 'mailster' ),
-		// 'answer'                   => 'x ' . esc_html__( 'Answers', 'mailster' ),
-		// 'ask'                      => 'x ' . esc_html__( 'Ask', 'mailster' ),
-		// 'messageButtonLabel'       => 'x ' . esc_html__( 'Email', 'mailster' ),
-		// 'noTimeToWaitAround'       => 'x ' . esc_html__( 'No time to wait around? We usually respond within a few hours', 'mailster' ),
-		// 'chatButtonLabel'          => 'x ' . esc_html__( 'Chat', 'mailster' ),
-		// 'chatButtonDescription'    => 'x ' . esc_html__( 'We’re online right now, talk with our team in real-time', 'mailster' ),
-		// 'wereHereToHelp'           => 'x ' . esc_html__( 'Start a conversation', 'mailster' ),
-		// 'whatMethodWorks'          => 'x ' . esc_html__( 'What channel do you prefer?', 'mailster' ),
-		// 'previousMessages'         => 'x ' . esc_html__( 'Previous Conversations', 'mailster' ),
-
-		// )
-		// );
+		mailster_localize_script(
+			'helpscout',
+			array(
+				'consent' => esc_html__( 'Do you like to use on page help and documentation? If you agree third party scripts are loaded to provide you with help.', 'mailster' ),
+			)
+		);
 
 		mailster_localize_script(
 			'clipboard',
@@ -1460,7 +1424,7 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style' ), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'setup',
@@ -1531,7 +1495,7 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'tests',

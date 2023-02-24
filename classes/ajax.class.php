@@ -90,6 +90,7 @@ class MailsterAjax {
 		'wizard_save'                 => 'mailster_dashboard',
 
 		'test'                        => 'manage_options',
+		'get_helpscout_data'          => 'read',
 
 	);
 
@@ -2902,6 +2903,22 @@ class MailsterAjax {
 		if ( ! $success ) {
 			wp_send_json_error( $return );
 		}
+		wp_send_json_success( $return );
+
+	}
+	private function get_helpscout_data() {
+
+		$this->ajax_nonce();
+		$user = wp_get_current_user();
+
+		$return = array(
+			'name'   => trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name ),
+			'email'  => mailster()->email(),
+			'avatar' => get_avatar_url( $user->ID ),
+		);
+
+		error_log( print_r( $return, true ) );
+
 		wp_send_json_success( $return );
 
 	}

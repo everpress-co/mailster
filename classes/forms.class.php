@@ -242,7 +242,7 @@ class MailsterForms {
 			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-sortable', 'mailster-clipboard-script', 'wp-color-picker', 'mailster-helpscout' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-sortable', 'mailster-clipboard-script', 'wp-color-picker' ), MAILSTER_VERSION );
 
 			mailster_localize_script(
 				'form',

@@ -222,7 +222,6 @@ class MailsterSettings {
 
 			'welcome'                            => false,
 			'setup'                              => true,
-			'helpscout'                          => true,
 
 			'ID'                                 => md5( uniqid() ),
 
@@ -384,7 +383,7 @@ class MailsterSettings {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'settings',

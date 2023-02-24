@@ -136,6 +136,47 @@ mailster = (function (mailster, $, window, document) {
 mailster = (function (mailster, $, window, document) {
 	'use strict';
 
+	mailster.user = mailster.user || {};
+	mailster.local = mailster.local || {};
+	mailster.session = mailster.session || {};
+
+	mailster.user.get = function (key) {
+		key = 'mailster_' + key;
+		return window.getUserSetting(key);
+	};
+	mailster.user.set = function (key, value) {
+		key = 'mailster_' + key;
+		return window.setUserSetting(key, value);
+	};
+
+	mailster.local.get = function (key) {
+		key = 'mailster_' + key;
+		if (localStorage.getItem(key) === undefined) return {};
+
+		return JSON.parse(localStorage.getItem(key));
+	};
+	mailster.local.set = function (key, value) {
+		key = 'mailster_' + key;
+		return localStorage.setItem(key, JSON.stringify(value));
+	};
+
+	mailster.session.get = function (key) {
+		key = 'mailster_' + key;
+		if (sessionStorage.getItem(key) === undefined) return {};
+
+		return JSON.parse(sessionStorage.getItem(key));
+	};
+	mailster.session.set = function (key, value) {
+		key = 'mailster_' + key;
+		return sessionStorage.setItem(key, JSON.stringify(value));
+	};
+
+	return mailster;
+})(mailster || {}, jQuery, window, document);
+
+mailster = (function (mailster, $, window, document) {
+	'use strict';
+
 	mailster.util = mailster.util || {};
 
 	mailster.util.requestAnimationFrame =
@@ -378,12 +419,6 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.window = $(window);
 	mailster.$.document = $(document);
 
-	//open externals in a new tab
-	mailster.$.document.on('click', 'a.external', function () {
-		window.open(this.href);
-		return false;
-	});
-
 	mailster.util.tb_position = function () {
 		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
 		$('#TB_window').css({
@@ -401,6 +436,11 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	mailster.events.push('documentReady', function () {
+		//open externals in a new tab
+		mailster.$.document.on('click', 'a.external', function () {
+			window.open(this.href);
+			return false;
+		});
 		for (var i in mailster.$) {
 			mailster.dom[i] = mailster.$[i][0];
 		}

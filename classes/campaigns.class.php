@@ -1379,7 +1379,7 @@ class MailsterCampaigns {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( 'edit-newsletter' == $screen->id ) {
-			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array( 'mailster-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -1483,7 +1483,7 @@ class MailsterCampaigns {
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );
 
-			wp_enqueue_script( 'mailster-campaign', MAILSTER_URI . 'assets/js/campaign-script' . $suffix . '.js', array( 'mailster-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-campaign', MAILSTER_URI . 'assets/js/campaign-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'mailster-campaign', MAILSTER_URI . 'assets/css/campaign-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_script( 'mailster-editbar', MAILSTER_URI . 'assets/js/editbar-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
@@ -4435,10 +4435,9 @@ class MailsterCampaigns {
 						$meta           = $this->meta( $id );
 						$sent_formatted = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $total ) );
 						if ( is_wp_error( $cron_status ) ) {
-							$status_title = esc_html__( 'Sending Problem!', 'mailster' );
-							if ( current_user_can( 'activate_plugins' ) ) {
-								 $status_title .= ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . esc_html__( 'Self Test', 'mailster' ) . '</a>';
-							}
+							$status_title  = esc_html__( 'Sending Problem!', 'mailster' );
+							$status_title .= mailster()->beacon( '63f91cb252af714471a170de' );
+
 						} else {
 							$status_title = $sent_formatted;
 						}

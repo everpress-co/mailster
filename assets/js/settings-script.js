@@ -47,7 +47,7 @@ mailster = (function (mailster, $, window, document) {
 	});
 
 	function articles() {
-		if (!mailster.helpscout) return;
+		if (!mailster.beacon) return;
 		var articles = [];
 
 		$('.tab:visible')
@@ -59,9 +59,9 @@ mailster = (function (mailster, $, window, document) {
 			});
 
 		if (articles.length) {
-			mailster.helpscout.beacon('suggest', articles);
+			mailster.beacon('suggest', articles);
 		} else {
-			mailster.helpscout.beacon('reset');
+			mailster.beacon('reset');
 		}
 	}
 
@@ -81,10 +81,11 @@ mailster = (function (mailster, $, window, document) {
 		nav.find('a[href="' + $(this).attr('href') + '"]').trigger('click');
 	});
 
-	location.hash && nav.find('a[href="' + location.hash + '"]').length
-		? nav.find('a[href="' + location.hash + '"]').trigger('click')
-		: nav.find('a').eq(0).trigger('click');
-
+	mailster.events.push('documentReady', function () {
+		location.hash && nav.find('a[href="' + location.hash + '"]').length
+			? nav.find('a[href="' + location.hash + '"]').trigger('click')
+			: nav.find('a').eq(0).trigger('click');
+	});
 	$('.system_mail').on('change', function () {
 		$('[name="mailster_options[system_mail_template]"]').prop(
 			'disabled',

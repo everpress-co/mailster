@@ -57,7 +57,7 @@ class MailsterManage {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-import-script', 'mailster-export-script', 'mailster-delete-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-import-script', 'mailster-export-script', 'mailster-delete-script' ), MAILSTER_VERSION, true );
 
 		wp_register_script( 'mailster-import-script', MAILSTER_URI . 'assets/js/import-script' . $suffix . '.js', array( 'mailster-script', 'plupload-all', 'thickbox' ), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-export-script', MAILSTER_URI . 'assets/js/export-script' . $suffix . '.js', array( 'mailster-script', 'jquery-ui-sortable', 'jquery-touch-punch' ), MAILSTER_VERSION, true );
