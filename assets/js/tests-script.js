@@ -32,6 +32,7 @@ mailster = (function (mailster, $, window, document) {
 
 	output.on('click', 'a', function () {
 		if (this.className.match(/retest/)) return true;
+		if (this.className.match(/mailster-infolink/)) return true;
 		if (this.href) window.open(this.href);
 		return false;
 	});

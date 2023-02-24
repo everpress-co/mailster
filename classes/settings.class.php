@@ -222,6 +222,7 @@ class MailsterSettings {
 
 			'welcome'                            => false,
 			'setup'                              => true,
+			'helpscout'                          => true,
 
 			'ID'                                 => md5( uniqid() ),
 

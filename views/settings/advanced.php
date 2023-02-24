@@ -13,6 +13,11 @@
 			<label><input type="hidden" name="mailster_options[mailster_branding]" value=""><input type="checkbox" name="mailster_options[mailster_branding]" value="1" <?php checked( mailster_option( 'mailster_branding' ) ); ?>> <?php esc_html_e( 'Show Mailster Branding in your campaigns.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you enable this option your campaigns contain a small logo of Mailster at the very bottom of the email.', 'mailster' ); ?>
 		</td>
 	</tr>
+	<tr valign="top" class="settings-row settings-row-helpscout">
+		<th scope="row"><?php esc_html_e( 'HelpScout Beacon', 'mailster' ); ?><?php echo mailster()->beacon( '63f768c985990362ed9ad5ff' ); ?></th>
+		<td><label><input type="hidden" name="mailster_options[helpscout]" value=""><input type="checkbox" name="mailster_options[helpscout]" value="1" <?php checked( mailster_option( 'helpscout' ) ); ?>> <?php esc_html_e( 'Enable HelpScout Beacon', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Get Help inside Mailster by enable the HelpScout Beacon.', 'mailster' ); ?></p>
+		</td>
+	</tr>
 	<tr valign="top" class="settings-row settings-row-cache">
 		<th scope="row"><?php esc_html_e( 'Cache', 'mailster' ); ?></th>
 		<td>
@@ -20,7 +25,7 @@
 			<br><label><input type="hidden" name="mailster_options[disable_cache]" value=""><input type="checkbox" name="mailster_options[disable_cache]" value="1" <?php checked( mailster_option( 'disable_cache' ) ); ?>> <?php esc_html_e( 'Disable Object Cache for Mailster', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If enabled Mailster doesn\'t use cache anymore. This causes an increase in page load time! This option is not recommended!', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top" class="settings-row settings-short-codes">
+	<tr valign="top" class="settings-row settings-row-short-codes">
 		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?><?php echo mailster()->beacon( '611bba3321ef206e5592c322' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[shortcodes]" value=""><input type="checkbox" name="mailster_options[shortcodes]" value="1" <?php checked( mailster_option( 'shortcodes' ) ); ?>> <?php esc_html_e( 'Process short codes in emails.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Check this option to process short codes. This may cause unexpected results.', 'mailster' ); ?></p>
 		</td>

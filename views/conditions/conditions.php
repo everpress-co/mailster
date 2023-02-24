@@ -415,6 +415,5 @@
 		</div><?php endforeach; ?>
 	</div>
 		<a class="button add-condition"><?php esc_html_e( 'Add Condition', 'mailster' ); ?></a>
-	<div class="mailster-condition-empty">
-	</div>
+	<div class="mailster-condition-empty"></div>
 </div>

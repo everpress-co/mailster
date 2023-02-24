@@ -47,7 +47,7 @@ mailster = (function (mailster, $, window, document) {
 	});
 
 	function articles() {
-		if (!mailster.beacon) return;
+		if (!mailster.helpscout) return;
 		var articles = [];
 
 		$('.tab:visible')
@@ -59,9 +59,9 @@ mailster = (function (mailster, $, window, document) {
 			});
 
 		if (articles.length) {
-			mailster.beacon('suggest', articles);
+			mailster.helpscout.beacon('suggest', articles);
 		} else {
-			mailster.beacon('reset');
+			mailster.helpscout.beacon('reset');
 		}
 	}
 

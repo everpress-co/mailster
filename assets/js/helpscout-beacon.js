@@ -31,73 +31,89 @@ mailster = (function (mailster, $, window, document) {
 			: e.addEventListener('load', a, !1);
 	})(window, document, window.Beacon || function () {});
 
-	mailster.beacon = function () {
-		const m = Array.prototype.slice.call(arguments, 0)[0];
+	var beacon_config = {
+		docsEnabled: true,
+		color: mailster.colors.main,
+		enableFabAnimation: false,
+		enableSounds: false,
+		messagingEnabled: mailster.helpscout.verified,
+		messaging: {
+			chatEnabled: mailster.helpscout.verified,
+			_contactForm: {
+				customFieldsEnabled: true,
+				showName: true,
+			},
+		},
+		display: {
+			text: 'Mailster Help',
+			style: 'iconAndText',
+			style: 'icon',
+			_style: 'manual',
+			iconImage: 'buoy',
+			iconImage: 'question',
+			position: 'right',
+		},
+	};
+
+	var beacon = function () {
+		const method = Array.prototype.slice.call(arguments, 0)[0];
 		const options = Array.prototype.slice.call(arguments, 1)[0];
 		const data = Array.prototype.slice.call(arguments, 2)[0];
 
-		console.warn(m, options, data);
-		switch (m) {
+		switch (method) {
 			case 'init':
 				Beacon('reset');
 				Beacon('init', 'a32295c1-a002-4dcb-b097-d15532bb73d6');
-				Beacon('prefill', {
-					name: mailster_helpscout.name,
-					email: mailster_helpscout.email,
+				Beacon('identify', {
+					name: mailster.helpscout.name,
+					email: mailster.helpscout.email,
+					avatar: mailster.helpscout.avatar,
 				});
-				Beacon('config', {
-					docsEnabled: true,
-					color: mailster.colors.main,
-					enableFabAnimation: false,
-					enableSounds: false,
-					messagingEnabled: true,
-					messaging: {
-						chatEnabled: true,
-						_contactForm: {
-							customFieldsEnabled: true,
-							showName: true,
-						},
-					},
-					display: {
-						text: 'Mailster Help',
-						style: 'iconAndText',
-						style: 'icon',
-						iconImage: 'buoy',
-						position: 'right',
-					},
+				Beacon('config', beacon_config);
+				Beacon('session-data', {
+					'App Version': 'v12.2.0 (Beta)',
+					'Last Action': 'Update Profile',
 				});
 				break;
 			case 'suggest':
-				mailster.beacon('init');
+				beacon('init');
+				if (!mailster.helpscout.verified) {
+					options.push({
+						text: 'Mailster Support',
+						url: '#',
+					});
+				}
 				Beacon('suggest', options, data);
 				break;
 			default:
-				Beacon(m, options, data);
+				Beacon(method, options, data);
 		}
 	};
 
 	var articles = [];
 
-	$('.mailster-infolink').each(function (i, e) {
-		if (i >= 9) return;
-		var id = $(this).data('article');
-		if (!id) return;
-		if (articles.includes(id)) return;
-		$(this).removeClass('external');
-		articles.push(id);
+	mailster.events.push('documentReady', function () {
+		$('.mailster-infolink').each(function () {
+			if (articles.length >= 9) return;
+			var id = $(this).data('article');
+			if (!id) return;
+			if (articles.includes(id)) return;
+			articles.push(id);
+		});
+		if (articles.length) {
+			beacon_config.display.style = 'icon';
+			beacon('suggest', articles);
+		} else {
+			beacon('init');
+		}
+
+		beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385', {
+			force: false,
+		});
 	});
 
-	if (articles.length) {
-		mailster.beacon('suggest', articles);
-	} else {
-		mailster.beacon('init');
-	}
-	// mailster.beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385', {
-	// 	force: true,
-	// });
-	//mailster.beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385');
 	$('a[href^="https://mailster.co/support"]').on('click', function () {
-		mailster.beacon(
+		beacon(
 			'suggest',
 			[
 				{
@@ -110,27 +126,19 @@ mailster = (function (mailster, $, window, document) {
 				},
 			].concat(articles)
 		);
-		mailster.beacon('open');
-		mailster.beacon('navigate', '/');
+		beacon('open');
+		beacon('navigate', '/');
 		return false;
 	});
 
 	mailster.$.document.on('click', '.mailster-infolink', function () {
-		Beacon('article', $(this).data('article'), {
+		beacon('article', $(this).data('article'), {
 			type: 'sidebar',
 		});
 		return false;
 	});
 
-	//Beacon('article', '611bb545b55c2b04bf6df0f3', { type: 'modal' });
-	//Beacon('search', 'abc');
-	// $.getScript('https://beacon-v2.helpscout.net', function (r) {
-	// 	console.warn(r);
-	// 	Beacon('init', 'a32295c1-a002-4dcb-b097-d15532bb73d6');
-	// 	Beacon('open');
-	// });
-
-	//Beacon('navigate', '/previous-messages/');
+	mailster.helpscout.beacon = beacon;
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);
