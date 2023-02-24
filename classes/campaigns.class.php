@@ -2692,7 +2692,7 @@ class MailsterCampaigns {
 		}
 
 		kses_remove_filters();
-		$new_id = wp_insert_post( $campaign );
+		$new_id = wp_insert_post( (array) $campaign );
 		kses_init_filters();
 
 		if ( $new_id ) {
