@@ -83,10 +83,10 @@ class MailsterUpgrade {
 					}
 				} elseif ( ! mailster_option( 'db_update_background' ) ) {
 					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
-						wp_redirect( $redirectto );
+						mailster_redirect( $redirectto );
 						exit;
 					} elseif ( ! is_network_admin() && isset( $_GET['page'] ) && 0 === strpos( $_GET['page'], 'mailster_' ) ) {
-						wp_redirect( $redirectto );
+						mailster_redirect( $redirectto );
 						exit;
 					} else {
 						mailster_remove_notice( 'no_homepage' );
@@ -116,14 +116,14 @@ class MailsterUpgrade {
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_setup' != $_GET['page'] ) ) {
-				wp_redirect( 'admin.php?page=mailster_setup', 302 );
+				mailster_redirect( 'admin.php?page=mailster_setup', 302 );
 				exit;
 			}
 		} elseif ( mailster_option( 'welcome' ) ) {
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_welcome' != $_GET['page'] ) ) {
-				wp_redirect( 'admin.php?page=mailster_welcome', 302 );
+				mailster_redirect( 'admin.php?page=mailster_welcome', 302 );
 				exit;
 			}
 		}
@@ -420,7 +420,7 @@ class MailsterUpgrade {
 		<p>Your campaigns will continue once the update is finished.</p>
 		<hr>
 		<div id="mailster-update-info" style="display: none;">
-			<div class="notice-error error inline"><p>Make sure to create a backup before run the Mailster Batch Update. If you experience any issues upgrading please reach out to us via our member area <a href="https://mailster.co/go/register" class="external">here</a>.<br>
+			<div class="notice-error error inline"><p>Make sure to create a backup before run the Mailster Batch Update. If you experience any issues upgrading please reach out to us via our member area <a href="<?php echo mailster_url( 'https://mailster.co/go/register' ); ?>" class="external">here</a>.<br>
 			<strong>Important: No data can get lost thanks to our smart upgrade process.</strong></p></div>
 			<p>Built: <?php echo date_i18n( 'Y-m-d H:i:s', MAILSTER_BUILT ); ?></p>
 			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_actions" ) ) : ?>
@@ -438,7 +438,7 @@ class MailsterUpgrade {
 		</div>
 		<div id="mailster-update-process" style="display:none;">
 		<p>If you encounter any problem please get in touch with us by open up a ticket:</p>
-		<p><a class="button button-primary" href="https://mailster.co/support/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" target="_blank">Get Support</a></p>
+		<p><a class="button button-primary" href="<?php echo mailster_url( 'https://mailster.co/support/' ); ?>" target="_blank">Get Support</a></p>
 
 			<div class="alignleft" style="width:54%">
 
@@ -546,8 +546,7 @@ class MailsterUpgrade {
 			return true;
 		}
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$old_location = MAILSTER_DIR . '/myMail.php';
 		$new_location = MAILSTER_DIR . '/mailster.php';
@@ -743,9 +742,9 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_movefiles() {
 
-		global $wpdb, $wp_filesystem;
+		global $wpdb;
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$new_location = MAILSTER_UPLOAD_DIR;
 		$old_location = dirname( MAILSTER_UPLOAD_DIR ) . '/myMail';
@@ -858,8 +857,7 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_legacy() {
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$this->deactivate_mymail( false );
 
@@ -881,7 +879,7 @@ class MailsterUpgrade {
 			copy( $from, $to );
 		}
 
-		$content = "<?php\n/*\nPlugin Name: MyMail Legacy Code Helper\nDescription: Helper for legacy external forms and cron of Mailster (former MyMail). You can delete this 'plugin' if you have no external forms or subscriber buttons or you have update them already to the new version.\n */\ndie('There\'s no need to activate this plugin! If you experience any issues upgrading please reach out to us via our member area <a href=\"https://mailster.co/go/register\" target=\"_blank\">here</a>.');\n";
+		$content = "<?php\n/*\nPlugin Name: MyMail Legacy Code Helper\nDescription: Helper for legacy external forms and cron of Mailster (former MyMail). You can delete this 'plugin' if you have no external forms or subscriber buttons or you have update them already to the new version.\n */\ndie('There\'s no need to activate this plugin! If you experience any issues upgrading please reach out to us via our member area <a href=\"" . mailster_url( 'https://mailster.co/go/register' ) . "\" target=\"_blank\">here</a>.');\n";
 
 		if ( ! $wp_filesystem->put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content, FS_CHMOD_FILE ) ) {
 			mailster( 'helper' )->file_put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content );

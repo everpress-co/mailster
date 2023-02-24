@@ -315,7 +315,7 @@ class UpdateCenterPlugin {
 
 			if ( isset( $data->admin_notices ) ) {
 				foreach ( $data->admin_notices as $version => $notice ) {
-					if ( version_compare( $version, $data->version, '<=' ) ) {
+					if ( version_compare( $version, $data->version, '<=' ) || empty( $notice ) ) {
 						continue;
 					}
 
@@ -682,7 +682,7 @@ class UpdateCenterPlugin {
 	 */
 	public static function check_collection( $remote_url, $plugins ) {
 
-		$body = http_build_query( array( 'updatecenter_data' => array_values( $plugins ) ), null, '&' );
+		$body = build_query( array( 'updatecenter_data' => urlencode_deep( array_values( $plugins ) ) ) );
 
 		$response = self::save_response(
 			add_query_arg(
@@ -731,7 +731,7 @@ class UpdateCenterPlugin {
 		if ( ! empty( $data ) ) {
 			$body = wp_parse_args( array( 'data' => $data ), $body );
 		}
-		$body = http_build_query( $body, null, '&' );
+		$body = build_query( urlencode_deep( $body ) );
 
 		$response = self::save_response(
 			add_query_arg(

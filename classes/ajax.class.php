@@ -248,6 +248,11 @@ class MailsterAjax {
 		$file        = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 
+		global $post, $post_id;
+		$post = get_post( $id, OBJECT );
+		setup_postdata( $post );
+		$post_id = $post->ID;
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -391,7 +396,7 @@ class MailsterAjax {
 
 		if ( $subscriber_id ) {
 
-			if ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) {
+			if ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) {
 
 				$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
 
@@ -741,8 +746,8 @@ class MailsterAjax {
 				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
 
 				// check for subscriber by mail
-				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) ) {
-					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
+				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) ) {
+					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true, true );
 				}
 
 				if ( $subscriber ) {
@@ -1350,7 +1355,7 @@ class MailsterAjax {
 				$args = wp_parse_args(
 					array(
 						'post_type'   => $post_types,
-						'post_status' => array( 'publish', 'future', 'draft' ),
+						'post_status' => array( 'publish', 'future', 'draft', 'private' ),
 					),
 					$defaults
 				);
@@ -1714,7 +1719,7 @@ class MailsterAjax {
 		$post_type   = $_POST['posttype'];
 		$labels      = isset( $_POST['labels'] ) ? ( $_POST['labels'] == 'true' ) : false;
 		$names       = isset( $_POST['names'] ) ? $_POST['names'] : false;
-		$campaign_id = isset( $_POST['id'] ) ? (int) $_POST['names'] : false;
+		$campaign_id = isset( $_POST['id'] ) ? (int) $_POST['id'] : false;
 		$values      = null;
 
 		if ( $campaign_id ) {
@@ -1812,10 +1817,9 @@ class MailsterAjax {
 
 		} else {
 
-			global $wp_filesystem;
-			mailster_require_filesystem();
-			$path = mailster( 'templates', $return['slug'] )->get_path();
-			$file = $path . '/' . $return['slug'] . '/' . $return['file'];
+			$wp_filesystem = mailster_require_filesystem();
+			$path          = mailster( 'templates', $return['slug'] )->get_path();
+			$file          = $path . '/' . $return['slug'] . '/' . $return['file'];
 
 			$content = mailster()->sanitize_content( $content, null, true );
 
@@ -2447,9 +2451,7 @@ class MailsterAjax {
 		$file = $path . '/' . esc_attr( $_POST['file'] );
 
 		if ( file_exists( $file ) && current_user_can( 'mailster_delete_templates' ) ) {
-			mailster_require_filesystem();
-
-			global $wp_filesystem;
+			$wp_filesystem = mailster_require_filesystem();
 
 			if ( ! $wp_filesystem->delete( $file ) ) {
 				wp_send_json_error();
@@ -2510,7 +2512,7 @@ class MailsterAjax {
 			$url
 		);
 
-		wp_redirect( $location );
+		mailster_redirect( $location );
 		exit;
 
 	}
@@ -2756,7 +2758,7 @@ class MailsterAjax {
 				$url
 			);
 
-			wp_redirect( $url );
+			mailster_redirect( $url );
 			exit;
 		}
 

@@ -155,7 +155,7 @@ var a = <?php echo max( 1, ceil( $interval - $time ) ); ?>,
 			o = '&#x27F2;';
 			p = '<?php esc_html_e( 'progressing', 'mailster' ); ?>';
 			clearInterval(f);
-			location.reload();
+			location.reload(true);
 		}
 	document.title = p+' '+c;
 	b.innerHTML = d+' ('+o+')';

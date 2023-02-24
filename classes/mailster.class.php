@@ -482,7 +482,7 @@ class Mailster {
 			return;
 		}
 
-		wp_redirect( 'admin.php?page=' . $page, 302 );
+		mailster_redirect( 'admin.php?page=' . $page, 302 );
 		exit;
 
 	}
@@ -515,7 +515,7 @@ class Mailster {
 	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function get_unsubscribe_link( $campaign_id = '', $hash = '', $index = null ) {
+	public function get_unsubscribe_link( $campaign_id = null, $hash = null, $index = null ) {
 
 		$is_permalink = mailster( 'helper' )->using_permalinks();
 
@@ -571,10 +571,10 @@ class Mailster {
 		$slug  = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
 		$path  = $slug;
 		if ( ! empty( $hash ) ) {
-			$path .= '/' . $hash;
+			$path .= '/' . (string) $hash;
 		}
 		if ( ! empty( $campaign_id ) ) {
-			$path .= '/' . $campaign_id;
+			$path .= '/' . (string) $campaign_id;
 		}
 
 		$url = $is_permalink
@@ -1285,6 +1285,18 @@ class Mailster {
 
 	}
 
+	public function beacon( $ids, $hidden = false ) {
+
+		$return = '';
+
+		foreach ( (array) $ids as $id ) {
+			$return .= sprintf( ' <a class="mailster-infolink mailster-infolink-%s" href="%s" data-article="%s" %s></a>', $id, mailster_url( 'https://kb.mailster.co/' . $id ), $id, $hidden ? 'hidden' : '' );
+		}
+
+		return $return;
+
+	}
+
 
 
 	/**
@@ -1324,6 +1336,50 @@ class Mailster {
 
 		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard' ), MAILSTER_VERSION, true );
+
+		if ( mailster_option( 'helpscout' ) ) {
+
+			wp_register_script( 'mailster-helpscout', MAILSTER_URI . 'assets/js/helpscout-beacon' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+			$user = wp_get_current_user();
+
+			$helpscout_data = array(
+				'name'     => trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name ),
+				'email'    => $this->email(),
+				'avatar'   => get_avatar_url( $user->ID ),
+				'verified' => $this->is_verified(),
+			);
+
+			wp_add_inline_script( 'mailster-helpscout', 'mailster.helpscout = ' . json_encode( $helpscout_data ), 'before' );
+
+		} else {
+			wp_register_script( 'mailster-helpscout', MAILSTER_URI . 'assets/js/helpscout-beacon-dummy' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		}
+
+		// mailster_localize_script(
+		// 'helpscout',
+		// array(
+		// 'suggestedForYou'          => 'x ' . esc_html__( 'Instant Answers', 'mailster' ),
+		// 'getInTouch'               => 'x ' . esc_html__( 'Get in touch', 'mailster' ),
+		// 'searchLabel'              => 'x ' . esc_html__( 'What can we help you with?', 'mailster' ),
+		// 'tryAgain'                 => 'x ' . esc_html__( 'Try again', 'mailster' ),
+		// 'defaultMessageErrorText'  => 'x ' . esc_html__( 'There was a problem sending your message. Please try again in a moment.', 'mailster' ),
+		// 'beaconButtonClose'        => 'x ' . esc_html__( 'Close', 'mailster' ),
+		// 'beaconButtonChatMinimize' => 'x ' . esc_html__( 'Minimise chat', 'mailster' ),
+		// 'beaconButtonChatOpen'     => 'x ' . esc_html__( 'Open chat', 'mailster' ),
+		// 'answer'                   => 'x ' . esc_html__( 'Answers', 'mailster' ),
+		// 'ask'                      => 'x ' . esc_html__( 'Ask', 'mailster' ),
+		// 'messageButtonLabel'       => 'x ' . esc_html__( 'Email', 'mailster' ),
+		// 'noTimeToWaitAround'       => 'x ' . esc_html__( 'No time to wait around? We usually respond within a few hours', 'mailster' ),
+		// 'chatButtonLabel'          => 'x ' . esc_html__( 'Chat', 'mailster' ),
+		// 'chatButtonDescription'    => 'x ' . esc_html__( 'We’re online right now, talk with our team in real-time', 'mailster' ),
+		// 'wereHereToHelp'           => 'x ' . esc_html__( 'Start a conversation', 'mailster' ),
+		// 'whatMethodWorks'          => 'x ' . esc_html__( 'What channel do you prefer?', 'mailster' ),
+		// 'previousMessages'         => 'x ' . esc_html__( 'Previous Conversations', 'mailster' ),
+
+		// )
+		// );
 
 		mailster_localize_script(
 			'clipboard',
@@ -1374,7 +1430,7 @@ class Mailster {
 			}
 			deactivate_plugins( MAILSTER_SLUG );
 
-			wp_redirect( remove_query_arg( 'mailster_deactivation_survey', add_query_arg( 'deactivate', true ) ) );
+			mailster_redirect( remove_query_arg( 'mailster_deactivation_survey', add_query_arg( 'deactivate', true ) ) );
 			exit;
 
 		}
@@ -1404,7 +1460,7 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style' ), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'setup',
@@ -1475,7 +1531,7 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script', 'mailster-helpscout' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'tests',
@@ -1592,9 +1648,9 @@ class Mailster {
 		if ( $remove_files ) {
 
 			// remove folder in the upload directory
-			if ( $filesystem = mailster_require_filesystem() ) {
+			if ( $wp_filesystem  = mailster_require_filesystem() ) {
 				$upload_folder = wp_upload_dir();
-				$filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
+				$wp_filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
 			}
 		}
 
@@ -1840,6 +1896,10 @@ class Mailster {
 
 			case 680: // Licensecode in use
 				$error_msg = $short ? esc_html__( 'Code in use!', 'mailster' ) : esc_html__( 'Your purchase code is already in use and can only be used for one site.', 'mailster' );
+				break;
+
+			case 681: // Download canceled
+				$error_msg = $short ? esc_html__( 'Download canceled', 'mailster' ) : esc_html__( 'Download canceled. Please upgrade your license to get automatic updates.', 'mailster' ) . '<br/><a href="' . mailster_url( 'https://kb.mailster.co/no-longer-able-to-access-your-download-heres-what-to-do/' ) . '" target="_blank">' . esc_html__( 'Learn more', 'mailster' ) . '</a>';
 				break;
 
 			case 500: // Internal Server Error
@@ -2268,7 +2328,7 @@ class Mailster {
 			return;
 		}
 
-		wp_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
+		mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
 
 		exit;
 

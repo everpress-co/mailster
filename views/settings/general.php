@@ -16,7 +16,7 @@
 		<td><input type="text" name="mailster_options[send_offset]" value="<?php echo esc_attr( mailster_option( 'send_offset' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'The default delay in minutes for sending campaigns.', 'mailster' ); ?></span></td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-delivery-by-time-zone">
-		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ); ?> *</th>
+		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ); ?> *<?php echo mailster()->beacon( '611bb77fb37d837a3d0e47a2' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[timezone]" value=""><input type="checkbox" name="mailster_options[timezone]" value="1" <?php checked( mailster_option( 'timezone' ) ); ?>> <?php esc_html_e( 'Send Campaigns based on the subscribers timezone if known', 'mailster' ); ?></label>
 		</td>
 	</tr>
@@ -35,7 +35,7 @@
 		<td><input type="text" name="mailster_options[post_count]" value="<?php echo esc_attr( mailster_option( 'post_count' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'Number of posts or images displayed at once in the editbar.', 'mailster' ); ?></span></td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-system-mails">
-		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ); ?><a class="infolink external" href="https://kb.mailster.co/how-can-i-use-mailster-with-the-wp_mail-function/"></a>
+		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ); ?><?php echo mailster()->beacon( '611bba6ff886c9486f8d9936' ); ?></a>
 		<p class="description"><?php esc_html_e( 'Decide how Mailster uses the wp_mail function.', 'mailster' ); ?></p>
 		</th>
 		<td>

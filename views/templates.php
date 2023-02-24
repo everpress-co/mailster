@@ -1,3 +1,4 @@
+<?php echo mailster()->beacon( array( '611bbdb721ef206e5592c34b', '611bba8d6ffe270af2a99968', '611bbdd6b55c2b04bf6df15f' ), true ); ?>
 <div class="wrap">
 <h1><?php esc_html_e( 'Templates', 'mailster' ); ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Upload Template', 'mailster' ); ?> </a></h1>
 

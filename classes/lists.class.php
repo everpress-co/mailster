@@ -114,7 +114,7 @@ class MailsterLists {
 						mailster_notice( sprintf( esc_html__( '%d Lists have been removed', 'mailster' ), count( $_POST['lists'] ) ), 'error', true );
 					}
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 
 				}
@@ -126,7 +126,7 @@ class MailsterLists {
 						mailster_notice( sprintf( esc_html__( '%d Lists with subscribers have been removed', 'mailster' ), count( $_POST['lists'] ) ), 'error', true );
 					}
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 
 				}
@@ -136,7 +136,7 @@ class MailsterLists {
 
 					mailster_notice( esc_html__( 'Subscribers have been subscribed', 'mailster' ), 'error', true );
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 				}
 				break;
@@ -145,7 +145,7 @@ class MailsterLists {
 
 					mailster_notice( esc_html__( 'Subscribers have been unsubscribed', 'mailster' ), 'error', true );
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 				}
 				break;
@@ -154,14 +154,14 @@ class MailsterLists {
 
 					mailster_notice( esc_html__( 'Please selected at least two lists!', 'mailster' ), 'error', true );
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 
 				} elseif ( $this->merge( $_POST['lists'] ) ) {
 
 					mailster_notice( sprintf( esc_html__( 'Lists have been merged. Please update your %s if necessary!', 'mailster' ), '<a href="edit.php?post_type=newsletter">' . esc_html__( 'campaigns', 'mailster' ) . '</a>' ), 'success', true );
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 				}
 				break;
@@ -169,7 +169,7 @@ class MailsterLists {
 				$link = 'post-new.php?post_type=newsletter';
 				$link = add_query_arg( array( 'lists' => $_POST['lists'] ), $link );
 
-				wp_redirect( $link );
+				mailster_redirect( $link );
 				exit;
 			break;
 
@@ -212,7 +212,7 @@ class MailsterLists {
 
 					mailster_notice( isset( $urlparams['new'] ) ? esc_html__( 'List added', 'mailster' ) : esc_html__( 'List saved', 'mailster' ), 'success', true );
 					do_action( 'mailster_list_save', $list_id );
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID );
+					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID );
 					exit;
 				} elseif ( $_POST['delete'] || $_POST['delete_subscribers'] ) :
 
@@ -223,7 +223,7 @@ class MailsterLists {
 						if ( $this->remove( $list->ID, $delete_subscribers ) ) {
 							mailster_notice( sprintf( esc_html__( 'List %s has been removed', 'mailster' ), '<strong>&quot;' . $list->name . '&quot;</strong>' ), 'error', true );
 							do_action( 'mailster_list_delete', $list->ID );
-							wp_redirect( 'edit.php?post_type=newsletter&page=mailster_lists' );
+							mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_lists' );
 							exit;
 						}
 					}
@@ -633,7 +633,7 @@ class MailsterLists {
 
 			$sql .= ' ' . implode( ',', $insert );
 
-			$sql .= ' ON DUPLICATE KEY UPDATE list_id = values(list_id), subscriber_id = values(subscriber_id)';
+			$sql .= ' ON DUPLICATE KEY UPDATE list_id = values(list_id), subscriber_id = values(subscriber_id), added = values(added)';
 
 			$success = $success && ( false !== $wpdb->query( $sql ) );
 

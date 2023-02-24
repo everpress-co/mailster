@@ -15,6 +15,7 @@
 	display: none;
 }
 [id^='mailster_'].postbox,
+[id^='acf-'].postbox,
 #postimagediv.postbox,
 #authordiv.postbox {
 	display: inherit;
@@ -632,6 +633,11 @@ textarea#head {
 .mailster_autoresponder_more,
 .autoresponder_before_after {
 	display: none;
+}
+.mailster_autoresponder_more > .mailster-infolink {
+	position: absolute;
+	right: 0;
+	top: -1.5em;
 }
 .autoresponder-mailster_subscriber_insert
 	.autoresponderfield-mailster_subscriber_insert,

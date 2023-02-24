@@ -40,7 +40,7 @@ class MailsterRegister {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'pretext'      => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page . '&utm_source=mailster_plugin' ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
+				'pretext'      => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . mailster_url( 'https://mailster.co/go/buy' ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
 				'purchasecode' => mailster()->license(),
 			)
 		);
@@ -67,14 +67,14 @@ class MailsterRegister {
 				<input type="text" class="widefat register-form-purchasecode" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="purchasecode" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="36" value="<?php echo esc_attr( $args['purchasecode'] ); ?>">
 				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Verify Purchase Code', 'mailster' ); ?>">
 				<div class="howto">
-					<a href="https://static.mailster.co/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
+					<a href="<?php echo mailster_url( 'https://kb.mailster.co/where-is-my-purchasecode' ); ?>" class="external"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
 				</div>
 			</form>
 			<form class="register_form_2" action="" method="POST">
 				<div class="error-msg">&nbsp;</div>
 				<input type="text" class="widefat username" placeholder="<?php esc_attr_e( 'Username', 'mailster' ); ?>" name="username" value="<?php echo esc_attr( $username ); ?>">
 				<input type="email" class="widefat email" placeholder="Email" name="email" value="<?php echo esc_attr( $useremail ); ?>">
-				<div class="howto tos-field"><input type="checkbox" name="tos" class="tos" value="<?php echo time(); ?>"> <?php printf( esc_html__( 'I agree to the %1$s and the %2$s by completing the registration.', 'mailster' ), '<a href="https://mailster.co/legal/tos/" class="external">' . esc_html__( 'Terms of service', 'mailster' ) . '</a>', '<a href="https://mailster.co/legal/privacy-policy/" class="external">' . esc_html__( 'Privacy Policy', 'mailster' ) . '</a>' ); ?></div>
+				<div class="howto tos-field"><input type="checkbox" name="tos" class="tos" value="<?php echo time(); ?>"> <?php printf( esc_html__( 'I agree to the %1$s and the %2$s by completing the registration.', 'mailster' ), '<a href="' . mailster_url( 'https://mailster.co/legal/tos/' ) . '" class="external">' . esc_html__( 'Terms of service', 'mailster' ) . '</a>', '<a href="' . mailster_url( 'https://mailster.co/legal/privacy-policy/' ) . '" class="external">' . esc_html__( 'Privacy Policy', 'mailster' ) . '</a>' ); ?></div>
 				<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Complete Registration', 'mailster' ); ?>">
 			</form>
 			<form class="registration_complete">
@@ -83,18 +83,6 @@ class MailsterRegister {
 			</form>
 		</div>
 		<?php
-		mailster( 'helper' )->dialog(
-			'<img src="https://static.mailster.co/images/purchasecode.gif">',
-			array(
-				'id'      => 'registration-dialog',
-				'buttons' => array(
-					array(
-						'label'   => esc_html__( 'OK got it', 'mailster' ),
-						'classes' => 'button button-primary right notification-dialog-dismiss',
-					),
-				),
-			)
-		);
 
 	}
 
@@ -143,7 +131,7 @@ class MailsterRegister {
 		}
 
 		if ( mailster()->is_outdated() ) {
-			mailster_notice( sprintf( esc_html__( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog?v=' . MAILSTER_VERSION . '">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ), 'error', false, 'outdated', 'mailster_manage_licenses' );
+			mailster_notice( sprintf( esc_html__( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="' . mailster_url( 'https://mailster.co/changelog', 'v=' . MAILSTER_VERSION ) . '" class="external">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ), 'error', false, 'outdated', 'mailster_manage_licenses' );
 		} else {
 			mailster_remove_notice( 'outdated' );
 		}

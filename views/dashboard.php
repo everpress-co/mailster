@@ -10,6 +10,7 @@ if ( $this->update ) {
 }
 
 ?>
+<script>console.log("asda")</script>
 <div class="<?php echo implode( ' ', $classes ); ?>">
 <h1><?php esc_html_e( 'Dashboard', 'mailster' ); ?></h1>
 
@@ -21,7 +22,7 @@ if ( $this->update ) {
 <?php elseif ( ! mailster_option( 'usage_tracking' ) && mailster_option( 'ask_usage_tracking' ) && ( time() - get_option( 'mailster_updated' ) ) > HOUR_IN_SECONDS && current_user_can( 'manage_options' ) ) : ?>
 	<div class="info notice">
 		<h2><?php esc_html_e( 'Help us improve Mailster automatically.', 'mailster' ); ?></h2>
-		<p style="max-width: 800px;"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="https://kb.mailster.co/usage-tracking/" class="external"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a>
+		<p style="max-width: 800px;"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="<?php echo mailster_url( 'https://kb.mailster.co/usage-tracking/' ); ?>" class="external"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a>
 		</p>
 		<p>
 			<a class="button button-primary" href="<?php echo wp_nonce_url( add_query_arg( 'mailster_allow_usage_tracking', 1 ), 'mailster_allow_usage_tracking', '_wpnonce' ); ?>"><?php esc_html_e( 'Yes, let me help you by enabling this option!', 'mailster' ); ?></a>

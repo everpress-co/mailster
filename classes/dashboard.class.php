@@ -29,7 +29,7 @@ class MailsterDashboard {
 			if ( ! get_option( 'mailster_setup' ) ) {
 				update_option( 'mailster_setup', time() );
 			}
-			wp_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
+			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
 			exit;
 
 		}
@@ -45,17 +45,17 @@ class MailsterDashboard {
 				mailster_notice( esc_html__( 'Your License has been reset!', 'mailster' ), '', true );
 			}
 
-			wp_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
+			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
 			exit;
 		}
 
 		if ( ! get_option( 'mailster_setup' ) ) {
-			wp_redirect( admin_url( 'admin.php?page=mailster_setup' ) );
+			mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ) );
 			exit;
 		}
 
 		if ( get_option( 'mailster_dbversion' ) != MAILSTER_DBVERSION && ! mailster_option( 'db_update_background' ) ) {
-			wp_redirect( admin_url( 'admin.php?page=mailster_update' ) );
+			mailster_redirect( admin_url( 'admin.php?page=mailster_update' ) );
 			exit;
 		}
 
@@ -229,7 +229,11 @@ class MailsterDashboard {
 		wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-chartjs', MAILSTER_URI . 'assets/js/libs/chart' . $suffix . '.js', array( 'easy-pie-chart' ), MAILSTER_VERSION, true );
 
-		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', array( 'mailster-script', 'postbox' ), MAILSTER_VERSION, true );
+		$dependencies = array( 'mailster-script', 'postbox' );
+		if ( get_current_screen()->id === 'newsletter_page_mailster_dashboard' ) {
+			$dependencies[] = 'mailster-helpscout';
+		}
+		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', $dependencies, MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-dashboard-style', MAILSTER_URI . 'assets/css/dashboard-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		mailster_localize_script(
