@@ -288,49 +288,12 @@ class Mailster {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
 
-			add_action( 'admin_notices', array( &$this, 'maybe_show_beacon' ), 10, 1 );
-
 		}
 
 		do_action( 'mailster', $this );
 
 	}
 
-
-	public function maybe_show_beacon() {
-
-		$screen = get_current_screen();
-		$tab    = isset( $_GET['tab'] ) ? $_GET['tab'] : null;
-
-		switch ( $screen->id ) {
-			case 'newsletter_page_mailster_dashboard':
-				break;
-			case 'edit-newsletter':
-				echo mailster()->beacon( array( '63fa049c0b394c459d8a5ae4' ) );
-				break;
-			case 'newsletter_page_mailster_subscribers':
-				echo mailster()->beacon( array( '63fb5f4e0b394c459d8a5c1e' ) );
-				break;
-			case 'newsletter_page_mailster_forms':
-				echo mailster()->beacon( array( '611bb32a6ffe270af2a99911' ) );
-				break;
-			case 'newsletter':
-				echo mailster()->beacon( array( '63fa63d6e6d6615225473a73' ) );
-				break;
-			case 'newsletter_page_mailster_templates':
-				echo mailster()->beacon( array( '63fbb9be81d3090330dcbd64' ) );
-				break;
-			case 'newsletter_page_mailster_settings':
-				break;
-			case 'xxx':
-				echo mailster()->beacon( array( 'xxx' ) );
-				break;
-			default:
-				echo '<pre style="float:right;font-size:10px">' . print_r( $screen->id, true ) . '</pre>';
-				break;
-		}
-
-	}
 
 
 	public function register_widgets() {
@@ -1262,28 +1225,78 @@ class Mailster {
 	}
 
 
-	public function maybe_add_admin_header() {
+	public function maybe_add_admin_header( $screen ) {
 
-		$screen = get_current_screen();
+		global $parent_file;
 
-		if ( ! $screen ) {
+		if ( $parent_file !== 'edit.php?post_type=newsletter' ) {
 			return;
 		}
-		if ( ( $screen->post_type != 'newsletter' && $screen->post_type != 'newsletter_form' ) && $screen->id != 'newsletter_page_mailster_dashboard' ) {
-			return;
-		}
+
+		$this->add_admin_header();
+
+	}
+
+	public function add_admin_header() {
+		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help. If you cancel you will be redirected to our support page.', 'mailster' );
+
+		mailster_localize_script( 'helpscout', array( 'consent' => $consent ) );
 
 		wp_enqueue_style( 'mailster-admin-header' );
 		wp_enqueue_script( 'mailster-admin-header' );
 
 		add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
+		add_action( 'admin_notices', array( &$this, 'page_beacon' ) );
 
 	}
-
 
 	public function admin_header() {
+
 		include MAILSTER_DIR . 'views/admin_header.php';
 	}
+
+
+	public function page_beacon() {
+
+		$screen = get_current_screen();
+		$tab    = isset( $_GET['tab'] ) ? $_GET['tab'] : null;
+
+		switch ( $screen->id ) {
+			case 'newsletter_page_mailster_dashboard':
+				break;
+			case 'edit-newsletter':
+				echo mailster()->beacon( array( '63fa049c0b394c459d8a5ae4' ) );
+				break;
+			case 'newsletter_page_mailster_subscribers':
+				if ( isset( $_GET['new'] ) || isset( $_GET['ID'] ) ) {
+
+				} else {
+					echo mailster()->beacon( array( '63fb5f4e0b394c459d8a5c1e' ) );
+				}
+				break;
+			case 'newsletter_page_mailster_forms':
+				if ( isset( $_GET['new'] ) || isset( $_GET['ID'] ) ) {
+
+				} else {
+					echo mailster()->beacon( array( '611bb32a6ffe270af2a99911' ) );
+				}
+				break;
+			case 'newsletter':
+				echo mailster()->beacon( array( '63fa63d6e6d6615225473a73' ) );
+				break;
+			case 'newsletter_page_mailster_templates':
+				echo mailster()->beacon( array( '63fbb9be81d3090330dcbd64' ) );
+				break;
+			case 'newsletter_page_mailster_settings':
+				break;
+			default:
+				break;
+		}
+
+		do_action( 'mailster_page_beacon_' . $screen->id, $tab );
+
+	}
+
 
 
 	public function remove_menu_entries() {
@@ -1294,7 +1307,14 @@ class Mailster {
 			return;
 		}
 
-		$submenu['edit.php?post_type=newsletter'] = array();
+		$submenu['edit.php?post_type=newsletter'] = array(
+			array(
+				esc_html__( 'Setup', 'mailster' ),
+				'activate_plugins',
+				'admin.php?page=mailster_setup',
+				esc_html__( 'Mailster Setup', 'mailster' ),
+			),
+		);
 
 	}
 
@@ -1377,13 +1397,6 @@ class Mailster {
 		wp_register_script( 'mailster-admin-header', MAILSTER_URI . 'assets/js/admin-header-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
-			'helpscout',
-			array(
-				'consent' => esc_html__( 'Do you like to use on page help and documentation? If you agree third party scripts are loaded to provide you with help.', 'mailster' ),
-			)
-		);
-
-		mailster_localize_script(
 			'clipboard',
 			array(
 				'copied' => esc_html__( 'Copied!', 'mailster' ),
@@ -1461,8 +1474,10 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style' ), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script' ), MAILSTER_VERSION, true );
+		$this->add_admin_header();
+
+		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style', 'mailster-admin-header' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script', 'mailster-admin-header' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'setup',
@@ -1519,6 +1534,8 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
+		mailster()->add_admin_header();
+
 		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/welcome-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 	}
@@ -1531,6 +1548,8 @@ class Mailster {
 	public function tests_scripts_styles( $hook ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		mailster()->add_admin_header();
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );

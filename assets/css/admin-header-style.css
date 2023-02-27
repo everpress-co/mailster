@@ -1,57 +1,65 @@
-.mailster-admin-toolbar {
+#mailster-admin-toolbar {
 	margin-left: -20px;
 	padding-left: 20px;
 	position: relative;
 	z-index: 1001;
 	background: #fff;
 	border-bottom: 1px solid #c3c4c4;
-	padding-top: 12px;
 	display: flex;
 }
-
-#mailster-admin-help {
-	width: 80px;
-	height: 40px;
-	opacity: 0.6;
-	transition: opacity 0.2s ease-in-out;
-}
-#mailster-admin-help.is-active,
-#mailster-admin-help:hover {
-	opacity: 1;
-}
-.mailster-admin-toolbar .mailster-tab.is-active {
-	border-bottom: 4px solid #2271b1;
-	padding-bottom: 9px;
-	opacity: 1;
-}
-.mailster-admin-toolbar .mailster-tab:hover {
-	opacity: 1;
-}
-.mailster-admin-toolbar .mailster-logo {
-	padding: 5px 0;
+#mailster-admin-toolbar .mailster-logo {
+	padding: 17px 0 5px;
 	margin: 0 10px 0 3px;
 	width: 30px;
 	transition: transform 0.2s ease-in-out;
 }
-.mailster-admin-toolbar .mailster-logo:hover {
+#mailster-admin-toolbar .mailster-logo:hover {
 	transform: scale(1.05);
 }
-.mailster-admin-toolbar .mailster-logo:focus {
+#mailster-admin-toolbar .mailster-logo:focus {
 	box-shadow: none;
 }
+#mailster-admin-toolbar .mailster-tab.is-active {
+	border-bottom: 4px solid #2271b1;
+	padding-bottom: 9px;
+	opacity: 1;
+}
+#mailster-admin-toolbar .mailster-tab:hover {
+	opacity: 1;
+}
+#mailster-admin-toolbar .panel-tabs button.panel-tab {
+	width: 80px;
+	height: 58px;
+	opacity: 0.8;
+	padding: 8px 0;
+	transition: opacity 0.2s ease-in-out;
+}
+#mailster-admin-toolbar .panel-tabs button.is-active {
+	border-bottom: 4px solid #2271b1;
+	padding-bottom: 4px;
+	opacity: 1;
+}
+#mailster-admin-toolbar .panel-tabs button.is-loading {
+	background-image: url(../img/inactive.png);
+	pointer-events: none;
+}
+#mailster-admin-toolbar .panel-tabs button:hover {
+	opacity: 1;
+	background-color: #f0f0f0;
+}
+
 #wpbody-content > .mailster-infolink {
 	float: right;
 	margin: 5px;
 }
-
 #screen-meta + .mailster-infolink {
 	margin: 5px 35px 5px 5px;
 }
-.mailster-admin-toolbar .mailster-tab {
+#mailster-admin-toolbar .mailster-tab {
 	display: inline-block;
 	font-size: 14px;
 	line-height: 2em;
-	padding: 5px;
+	padding: 17px 5px 5px;
 	margin: 0 5px;
 	text-decoration: none;
 	color: inherit;
@@ -59,18 +67,18 @@
 	padding-bottom: 13px;
 	white-space: nowrap;
 }
-.mailster-admin-toolbar .mailster-infolink {
+#mailster-admin-toolbar .mailster-infolink {
 	float: right;
 	display: flex;
 	justify-content: flex-end;
 }
-.mailster-admin-toolbar .panel-tabs {
+#mailster-admin-toolbar .panel-tabs {
 	display: flex;
 	justify-content: flex-end;
 	flex-basis: 100px;
 	margin-left: auto;
 }
-.mailster-admin-toolbar .panel-tabs .panel-tab {
+#mailster-admin-toolbar .panel-tabs .panel-tab {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -86,33 +94,30 @@
 }
 .mailster-infolink {
 	display: inline-block;
-	background: #ccc;
 	width: 18px;
 	height: 18px;
 	font-size: 14px;
 	vertical-align: top;
 	border-radius: 50%;
-	color: #fff;
 	text-decoration: none !important;
 	text-align: center;
 	margin: auto 2px;
 	line-height: 127%;
 	position: relative;
 	z-index: 1;
-	background-image: url('data:image/svg+xml;utf8,<svg width="16" height="24" xmlns="http://www.w3.org/2000/svg"><path d="M5.98785 17.5656L6.01976 15.4805C6.01976 14.9458 6.12612 14.5288 6.33882 14.2294C6.59407 13.652 7.03012 13.2243 7.64698 12.9463C8.2851 12.6469 9.0083 12.3154 9.81659 11.9519C10.8589 11.5669 11.6671 11.0216 12.2415 10.3159C12.8158 9.58879 13.1029 8.59437 13.1029 7.33264C13.1029 5.9212 12.635 4.81985 11.6991 4.02859C10.7631 3.21595 9.55071 2.80962 8.06175 2.80962C6.59407 2.80962 5.38164 3.10902 4.42445 3.70781C3.48854 4.3066 3.02058 5.26894 3.02058 6.59484H0.5C0.5 4.64877 1.17003 3.15179 2.51009 2.10391C3.87142 1.03464 5.7326 0.5 8.09366 0.5C9.60388 0.5 10.912 0.799396 12.0181 1.39819C13.1455 1.99698 14.0176 2.82032 14.6344 3.8682C15.2513 4.91608 15.5384 6.09228 15.4959 7.39679C15.4746 9.10763 15.0705 10.487 14.2835 11.5349C13.4964 12.5614 12.3372 13.3954 10.8057 14.037C10.1463 14.3364 9.64642 14.5716 9.30609 14.7427C8.96576 14.9138 8.73178 15.1062 8.60416 15.3201C8.47653 15.5126 8.40209 15.7799 8.38082 16.122C8.38082 16.4642 8.38082 16.9454 8.38082 17.5656H5.98785ZM7.16838 23.5C6.7217 23.5 6.32819 23.3396 5.98785 23.0188C5.66879 22.6767 5.50926 22.281 5.50926 21.8319C5.50926 21.3615 5.66879 20.9658 5.98785 20.645C6.32819 20.3243 6.7217 20.1639 7.16838 20.1639C7.61507 20.1639 7.99794 20.3243 8.317 20.645C8.63606 20.9658 8.80623 21.3615 8.8275 21.8319C8.8275 22.281 8.65734 22.6767 8.317 23.0188C7.99794 23.3396 7.61507 23.5 7.16838 23.5Z" fill="%23FFF"></path></svg>');
-	background-size: 40%;
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M12 4.75a7.25 7.25 0 100 14.5 7.25 7.25 0 000-14.5zM3.25 12a8.75 8.75 0 1117.5 0 8.75 8.75 0 01-17.5 0zM12 8.75a1.5 1.5 0 01.167 2.99c-.465.052-.917.44-.917 1.01V14h1.5v-.845A3 3 0 109 10.25h1.5a1.5 1.5 0 011.5-1.5zM11.25 15v1.5h1.5V15h-1.5z" fill="%23aaa"></path></svg>');
 	background-repeat: no-repeat;
 	background-position: center;
 }
 .mailster-infolink:hover {
-	color: #fff;
 	background-color: #2bb3e7;
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M12 8.75a1.5 1.5 0 01.167 2.99c-.465.052-.917.44-.917 1.01V14h1.5v-.845A3 3 0 109 10.25h1.5a1.5 1.5 0 011.5-1.5zM11.25 15v1.5h1.5V15h-1.5z" fill="%23fff"></path></svg>');
 }
 .mailster-infolink[hidden] {
 	display: none !important;
 }
 @media only screen and (max-width: 782px) {
-	.mailster-admin-toolbar {
+	#mailster-admin-toolbar {
 		display: none;
 	}
 	#wpbody-content > .mailster-infolink {

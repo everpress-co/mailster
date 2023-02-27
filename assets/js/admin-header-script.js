@@ -1,11 +1,12 @@
 mailster = (function (mailster, $, window, document) {
 	'use strict';
 
-	var inited = false;
+	var loaded = false;
 	var beacon;
 	var queue = [];
 	var beacondata;
 	var articles = [];
+	var helpbtn = $('#mailster-admin-help');
 
 	var beacon = function (method, options, data) {
 		queue.push({
@@ -18,7 +19,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.document
 		.on('click', '#mailster-admin-help', function () {
 			if (!requireConsent()) {
-				window.open('https://mailster.co/support');
+				window.open($(this).attr('href'));
 				return false;
 			}
 
@@ -27,7 +28,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.mailster-infolink', function (event) {
 			if (!requireConsent()) {
-				window.open(this.href);
+				window.open($(this).attr('href'));
 				return false;
 			}
 
@@ -39,23 +40,10 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a[href^="https://mailster.co/support"]', function (e) {
 			e.stopImmediatePropagation();
 			if (!requireConsent()) {
-				window.open(this.href);
+				window.open($(this).attr('href'));
 				return false;
 			}
 
-			beacon(
-				'suggest',
-				[
-					{
-						text: 'Mailster Support',
-						url: this.href,
-					},
-					{
-						text: 'Knowledge Base',
-						url: 'https://kb.mailster.co/?utm_campaign=plugin&utm_medium=link&utm_source=Mailster%20Plugin&utm_term=mailster_dashboard',
-					},
-				].concat(articles)
-			);
 			beacon('open');
 			beacon('navigate', '/');
 			return false;
@@ -65,24 +53,22 @@ mailster = (function (mailster, $, window, document) {
 
 	beacon('on', 'ready', function () {
 		if (beacon('info').status.isOpened) {
-			$('#mailster-admin-help').addClass('is-active');
+			helpbtn.addClass('is-active');
 		}
 	});
 	beacon('on', 'open', function () {
-		console.warn('OPEN');
+		helpbtn.addClass('is-active');
 	});
-	beacon('on', 'article-viewed', function () {
-		console.warn('article-viewed');
-	});
-
 	beacon('on', 'close', function () {
-		console.warn('CLOSE');
+		helpbtn.removeClass('is-active');
 	});
 
 	function loadBeaconData() {
-		if (inited) {
+		if (loaded) {
 			return;
 		}
+
+		helpbtn.addClass('is-loading');
 
 		if (typeof window.Beacon == 'undefined') {
 			var script = document.createElement('script');
@@ -92,63 +78,49 @@ mailster = (function (mailster, $, window, document) {
 			document.head.appendChild(script);
 		}
 
-		if (beacondata === false) {
-			return;
-		}
 		beacondata = mailster.session.get('helpscout');
 
-		if (beacondata) {
+		//reload at least every hour
+		if (beacondata && new Date() / 1000 - beacondata.timestamp < 3600) {
 			initBeacon();
 			return;
 		}
-
-		beacondata = false;
 
 		mailster.util.ajax(
 			'get_helpscout_data',
 			function (response) {
 				beacondata = response.data;
+				beacondata.timestamp = Math.round(new Date() / 1000);
 				mailster.session.set('helpscout', beacondata);
-				initBeacon();
+				!loaded && initBeacon();
 			},
 			function (jqXHR, textStatus, errorThrown) {}
 		);
 	}
 
 	function initBeacon() {
-		var beacon_config = {
-			docsEnabled: true,
-			color: '#f0f0f1',
-			messagingEnabled: mailster.verified,
-			messaging: {
-				chatEnabled: mailster.verified,
-			},
-			display: {
-				style: 'manual',
-			},
-		};
-
 		beacon = function (method, options, data) {
 			switch (method) {
 				case 'init':
-					window.Beacon('reset');
-					window.Beacon('close');
-					window.Beacon('identify', {
+					Beacon('reset');
+					Beacon('close');
+					Beacon('identify', {
 						name: beacondata.name,
 						email: beacondata.email,
 						avatar: beacondata.avatar,
-						//signature: beacondata.signature,
 					});
-					// window.Beacon('prefill', {
-					// 	name: beacondata.name,
-					// 	email: beacondata.email,
-					// });
-					// window.Beacon('session-data', {
-					// 	'App Version': 'v12.2.0 (Beta)',
-					// 	'Last Action': 'Update Profile',
-					// });
-					window.Beacon('config', beacon_config);
-					return window.Beacon('init', beacondata.id);
+					Beacon('config', {
+						docsEnabled: true,
+						color: '#f0f0f1',
+						messagingEnabled: mailster.verified,
+						messaging: {
+							chatEnabled: mailster.verified,
+						},
+						display: {
+							style: 'manual',
+						},
+					});
+					return Beacon('init', beacondata.id);
 					break;
 				case 'suggest':
 					if (!mailster.verified) {
@@ -157,10 +129,10 @@ mailster = (function (mailster, $, window, document) {
 							url: '#',
 						});
 					}
-					return window.Beacon('suggest', options, data);
+					return Beacon('suggest', options, data);
 					break;
 				default:
-					return window.Beacon(method, options, data);
+					return Beacon(method, options, data);
 			}
 		};
 
@@ -187,7 +159,8 @@ mailster = (function (mailster, $, window, document) {
 
 		window.mailster.beacon = beacon;
 
-		inited = true;
+		loaded = true;
+		helpbtn.removeClass('is-loading');
 	}
 
 	function requireConsent(ask = true) {

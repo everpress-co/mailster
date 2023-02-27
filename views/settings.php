@@ -59,6 +59,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 $beacons = array(
 	'tags'            => '611bb5296ffe270af2a99926',
+	'frontend'        => '63fa7350e6d6615225473a99',
 	'wordpress-users' => '611bb1fe21ef206e5592c2a9',
 )
 ?>

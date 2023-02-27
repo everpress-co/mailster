@@ -1,9 +1,8 @@
 <?php
 
-global $submenu, $parent_file, $submenu_file, $plugin_page, $pagenow;
+global $submenu, $submenu_file, $plugin_page, $pagenow;
 
 $slug = 'edit.php?post_type=newsletter';
-
 
 if ( ! isset( $submenu[ $slug ] ) ) {
 	return;
@@ -13,6 +12,7 @@ $current_screen = get_current_screen();
 if ( $current_screen->is_block_editor() ) {
 	return;
 }
+
 $tabs    = array();
 $current = null;
 foreach ( $submenu[ $slug ] as $i => $sub_item ) {
@@ -21,7 +21,11 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	if ( ! current_user_can( $sub_item[1] ) ) {
 		continue;
 	}
-	if ( in_array( $sub_item[1], array( 'mailster_dashboard', 'mailster_tests', 'mailster_manage_templates', 'mailster_manage_addons', 'mailster_manage_subscribers' ) ) ) {
+	if ( in_array( $sub_item[1], array( 'mailster_dashboard', 'mailster_manage_templates', 'mailster_manage_addons', 'mailster_manage_subscribers' ) ) ) {
+		continue;
+	}
+
+	if ( in_array( $sub_item[2], array( 'mailster_dashboard', 'mailster_tests' ) ) ) {
 		continue;
 	}
 
@@ -53,17 +57,20 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 
 ?>
-<div class="mailster-admin-toolbar">
-	<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="mailster-logo" title="<?php esc_attr_e( sprintf( 'Mailster %s', MAILSTER_VERSION ) ); ?>"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 692.8 611.9" style="enable-background:new 0 0 692.8 611.9;" xml:space="preserve"><path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/></svg></a>
+<div id="mailster-admin-toolbar">
+	<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="mailster-logo" title="<?php echo esc_attr( sprintf( 'Mailster %s', MAILSTER_VERSION ) ); ?>">
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 692.8 611.9" xml:space="preserve"><path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/></svg>
+		<span class="screen-reader-text">Mailster Newsletter Plugin</span>
+	</a>
 	<?php
 	foreach ( $tabs as $tab ) {
 		printf( '<a class="mailster-tab%s" href="%s">%s</a>', ! empty( $tab['is_active'] ) ? ' is-active' : '', esc_url( $tab['url'] ), esc_html( $tab['text'] ) );
 	}
 	?>
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
-		<button type="button" role="tab" aria-selected="false" aria-controls="activity-panel-help" id="mailster-admin-help" class="panel-tab">
-			<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0,0h24v24h-24Z"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.56,7.119c1.92,2.97 1.919,6.794 0.001,9.763"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.5476,8.45245c1.95926,1.95926 1.95926,5.13585 0,7.09511c-1.95926,1.95926 -5.13585,1.95926 -7.09511,0c-1.95926,-1.95926 -1.95926,-5.13585 0,-7.09511c1.95926,-1.95926 5.13585,-1.95926 7.09511,0"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.321,7.551l2.584,-3.139c0.376,-0.457 1.064,-0.49 1.483,-0.072l1.273,1.273c0.419,0.419 0.385,1.107 -0.072,1.483l-3.139,2.584"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.679,16.449l-2.584,3.139c-0.376,0.457 -1.064,0.49 -1.483,0.072l-1.273,-1.273c-0.419,-0.419 -0.385,-1.107 0.072,-1.483l3.139,-2.584"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.551,9.679l-3.14,-2.584c-0.457,-0.376 -0.49,-1.064 -0.072,-1.483l1.273,-1.273c0.419,-0.419 1.107,-0.385 1.483,0.072l2.584,3.139"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.449,14.321l3.139,2.584c0.457,0.376 0.49,1.064 0.072,1.483l-1.273,1.273c-0.419,0.419 -1.107,0.385 -1.483,-0.072l-2.584,-3.139"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.882,19.561c-2.969,1.918 -6.794,1.919 -9.763,-0.001"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.439,7.118c-1.918,2.969 -1.919,6.793 0.001,9.763"></path><path stroke="#545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.881,4.44c-2.97,-1.92 -6.794,-1.919 -9.763,-0.001"></path></g></svg>
-			Help
+		<button type="button" role="tab" aria-selected="false" aria-controls="activity-panel-help" id="mailster-admin-help" class="panel-tab" href="<?php echo mailster_url( 'https://mailster.co/support' ); ?>">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M12 4.75a7.25 7.25 0 100 14.5 7.25 7.25 0 000-14.5zM3.25 12a8.75 8.75 0 1117.5 0 8.75 8.75 0 01-17.5 0zM12 8.75a1.5 1.5 0 01.167 2.99c-.465.052-.917.44-.917 1.01V14h1.5v-.845A3 3 0 109 10.25h1.5a1.5 1.5 0 011.5-1.5zM11.25 15v1.5h1.5V15h-1.5z"fill="#757575"></path></svg>
+			<?php esc_html_e( 'Help', 'mailster' ); ?>
 		</button>
 	</div>
 </div>
