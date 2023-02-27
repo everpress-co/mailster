@@ -2,7 +2,6 @@ mailster = (function (mailster, $, window, document) {
 	'use strict';
 
 	var inited = false;
-	var thirdparty = false;
 	var beacon;
 	var queue = [];
 	var beacondata;
@@ -16,18 +15,6 @@ mailster = (function (mailster, $, window, document) {
 		});
 	};
 
-	function requireConsent(ask = true) {
-		if (!mailster.user.get('helpscout')) {
-			if (!ask || !confirm(mailster.l10n.helpscout.consent)) {
-				return false;
-			}
-			mailster.user.set('helpscout', true);
-			//articles.push('611bbc50f886c9486f8d994c');
-		}
-		initBeacon();
-		return true;
-	}
-
 	mailster.$.document
 		.on('click', '#mailster-admin-help', function () {
 			if (!requireConsent()) {
@@ -35,21 +22,17 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			}
 
-			//var isOpen = Beacon('info').status.isOpened;
-
 			beacon('toggle');
-			//console.warn('INFO', isOpen, Beacon('info'));
-
 			$(this).toggleClass('is-active');
 		})
-		.on('click', '.mailster-infolink', function () {
+		.on('click', '.mailster-infolink', function (event) {
 			if (!requireConsent()) {
 				window.open(this.href);
 				return false;
 			}
 
 			beacon('article', $(this).data('article'), {
-				type: 'sidebar',
+				type: event.altKey ? 'modal' : 'sidebar',
 			});
 			return false;
 		})
@@ -85,11 +68,18 @@ mailster = (function (mailster, $, window, document) {
 			$('#mailster-admin-help').addClass('is-active');
 		}
 	});
-	beacon('on', 'open', function () {});
+	beacon('on', 'open', function () {
+		console.warn('OPEN');
+	});
+	beacon('on', 'article-viewed', function () {
+		console.warn('article-viewed');
+	});
 
-	beacon('on', 'close', function () {});
+	beacon('on', 'close', function () {
+		console.warn('CLOSE');
+	});
 
-	function initBeacon(cb) {
+	function loadBeaconData() {
 		if (inited) {
 			return;
 		}
@@ -98,15 +88,17 @@ mailster = (function (mailster, $, window, document) {
 			var script = document.createElement('script');
 			script.id = 'beacon';
 			script.text = `!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`;
+			script.text = `!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`;
 			document.head.appendChild(script);
 		}
 
 		if (beacondata === false) {
 			return;
 		}
+		beacondata = mailster.session.get('helpscout');
 
-		if ((beacondata = mailster.session.get('helpscout'))) {
-			run();
+		if (beacondata) {
+			initBeacon();
 			return;
 		}
 
@@ -117,53 +109,46 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				beacondata = response.data;
 				mailster.session.set('helpscout', beacondata);
-				run();
+				initBeacon();
 			},
 			function (jqXHR, textStatus, errorThrown) {}
 		);
 	}
 
-	function run() {
+	function initBeacon() {
 		var beacon_config = {
 			docsEnabled: true,
-			color: mailster.colors.main,
-			enableFabAnimation: false,
-			enableSounds: false,
+			color: '#f0f0f1',
 			messagingEnabled: mailster.verified,
 			messaging: {
 				chatEnabled: mailster.verified,
-				contactForm: {
-					showName: true,
-				},
 			},
 			display: {
 				style: 'manual',
-				position: 'right',
 			},
 		};
 
 		beacon = function (method, options, data) {
 			switch (method) {
 				case 'init':
-					//window.Beacon('reset');
+					window.Beacon('reset');
+					window.Beacon('close');
 					window.Beacon('identify', {
 						name: beacondata.name,
 						email: beacondata.email,
 						avatar: beacondata.avatar,
+						//signature: beacondata.signature,
 					});
-					window.Beacon('prefill', {
-						name: beacondata.name,
-						email: beacondata.email,
-					});
+					// window.Beacon('prefill', {
+					// 	name: beacondata.name,
+					// 	email: beacondata.email,
+					// });
 					// window.Beacon('session-data', {
 					// 	'App Version': 'v12.2.0 (Beta)',
 					// 	'Last Action': 'Update Profile',
 					// });
 					window.Beacon('config', beacon_config);
-					return window.Beacon(
-						'init',
-						'a32295c1-a002-4dcb-b097-d15532bb73d6'
-					);
+					return window.Beacon('init', beacondata.id);
 					break;
 				case 'suggest':
 					if (!mailster.verified) {
@@ -198,14 +183,22 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385');
-
-		// beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385', {
-		// 	force: true,
-		// });
+		beacon('show-message', '02558a31-163d-4322-ba47-66a142338ff1');
 
 		window.mailster.beacon = beacon;
 
 		inited = true;
+	}
+
+	function requireConsent(ask = true) {
+		if (!mailster.user.get('helpscout')) {
+			if (!ask || !confirm(mailster.l10n.helpscout.consent)) {
+				return false;
+			}
+			mailster.user.set('helpscout', true);
+		}
+		loadBeaconData();
+		return true;
 	}
 
 	return mailster;

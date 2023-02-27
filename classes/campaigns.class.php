@@ -623,8 +623,6 @@ class MailsterCampaigns {
 	 */
 	public function columns( $columns ) {
 
-		echo mailster()->beacon( array( '62a0b386e1d2cf0eac00f108', '611bb545b55c2b04bf6df0f3' ) );
-
 		$columns = array(
 			'cb'      => '<input type="checkbox" />',
 			'title'   => esc_html__( 'Name', 'mailster' ),

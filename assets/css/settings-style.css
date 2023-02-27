@@ -57,6 +57,9 @@
 	left: 25px;
 	right: 20px;
 }
+input.submit-form.button-primary {
+	float: right;
+}
 .dark-mode .submitbutton {
 	border-color: #32373c;
 }

@@ -4,10 +4,17 @@ global $submenu, $parent_file, $submenu_file, $plugin_page, $pagenow;
 
 $slug = 'edit.php?post_type=newsletter';
 
+
 if ( ! isset( $submenu[ $slug ] ) ) {
 	return;
 }
-$tabs = array();
+$current_screen = get_current_screen();
+
+if ( $current_screen->is_block_editor() ) {
+	return;
+}
+$tabs    = array();
+$current = null;
 foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 
 	// Check user can access page.
@@ -17,11 +24,9 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	if ( in_array( $sub_item[1], array( 'mailster_dashboard', 'mailster_tests', 'mailster_manage_templates', 'mailster_manage_addons', 'mailster_manage_subscribers' ) ) ) {
 		continue;
 	}
+
 	if ( $i === 10 ) {
 		$sub_item[0] = esc_html__( 'New', 'mailster' );
-	}
-	if ( $i !== 5 ) {
-		// continue;
 	}
 
 	$tab = array(
@@ -37,20 +42,19 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 
 	if ( $is_autoresponder && $sub_item[1] == 'mailster_edit_autoresponders' ) {
 		$tab['is_active'] = true;
+		$current          = $tab;
 	} elseif ( ! $is_autoresponder && ( $submenu_file === $sub_item[2] || $plugin_page === $sub_item[2] ) && $pagenow !== 'post_new.php' ) {
 		$tab['is_active'] = true;
+		$current          = $tab;
 	}
 	$tabs[] = $tab;
 }
+
 $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 
 ?>
 <div class="mailster-admin-toolbar">
-	<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="mailster-logo" title="<?php esc_attr_e( sprintf( 'Mailster %s', MAILSTER_VERSION ) ); ?>">
-	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 692.8 611.9" style="enable-background:new 0 0 692.8 611.9;" xml:space="preserve">
-<path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/>
-</svg></a>
+	<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="mailster-logo" title="<?php esc_attr_e( sprintf( 'Mailster %s', MAILSTER_VERSION ) ); ?>"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 692.8 611.9" style="enable-background:new 0 0 692.8 611.9;" xml:space="preserve"><path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/></svg></a>
 	<?php
 	foreach ( $tabs as $tab ) {
 		printf( '<a class="mailster-tab%s" href="%s">%s</a>', ! empty( $tab['is_active'] ) ? ' is-active' : '', esc_url( $tab['url'] ), esc_html( $tab['text'] ) );

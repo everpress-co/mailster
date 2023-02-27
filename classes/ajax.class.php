@@ -2885,7 +2885,6 @@ class MailsterAjax {
 
 	}
 
-
 	private function test() {
 
 		$test_id = isset( $_POST['test_id'] ) ? $_POST['test_id'] : null;
@@ -2906,18 +2905,25 @@ class MailsterAjax {
 		wp_send_json_success( $return );
 
 	}
+
 	private function get_helpscout_data() {
 
 		$this->ajax_nonce();
 		$user = wp_get_current_user();
 
-		$return = array(
-			'name'   => trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name ),
-			'email'  => mailster()->email(),
-			'avatar' => get_avatar_url( $user->ID ),
-		);
+		$email = mailster()->email();
+		if ( empty( $email ) ) {
+			$email = $user->user_email;
+		}
 
-		error_log( print_r( $return, true ) );
+		$name = trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name );
+
+		$return = array(
+			'name'   => $name,
+			'email'  => $email,
+			'avatar' => get_avatar_url( $user->ID ),
+			'id'     => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
+		);
 
 		wp_send_json_success( $return );
 

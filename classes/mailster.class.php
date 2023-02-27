@@ -288,9 +288,47 @@ class Mailster {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
 
+			add_action( 'admin_notices', array( &$this, 'maybe_show_beacon' ), 10, 1 );
+
 		}
 
 		do_action( 'mailster', $this );
+
+	}
+
+
+	public function maybe_show_beacon() {
+
+		$screen = get_current_screen();
+		$tab    = isset( $_GET['tab'] ) ? $_GET['tab'] : null;
+
+		switch ( $screen->id ) {
+			case 'newsletter_page_mailster_dashboard':
+				break;
+			case 'edit-newsletter':
+				echo mailster()->beacon( array( '63fa049c0b394c459d8a5ae4' ) );
+				break;
+			case 'newsletter_page_mailster_subscribers':
+				echo mailster()->beacon( array( '63fb5f4e0b394c459d8a5c1e' ) );
+				break;
+			case 'newsletter_page_mailster_forms':
+				echo mailster()->beacon( array( '611bb32a6ffe270af2a99911' ) );
+				break;
+			case 'newsletter':
+				echo mailster()->beacon( array( '63fa63d6e6d6615225473a73' ) );
+				break;
+			case 'newsletter_page_mailster_templates':
+				echo mailster()->beacon( array( '63fbb9be81d3090330dcbd64' ) );
+				break;
+			case 'newsletter_page_mailster_settings':
+				break;
+			case 'xxx':
+				echo mailster()->beacon( array( 'xxx' ) );
+				break;
+			default:
+				echo '<pre style="float:right;font-size:10px">' . print_r( $screen->id, true ) . '</pre>';
+				break;
+		}
 
 	}
 
@@ -1290,7 +1328,7 @@ class Mailster {
 		$return = '';
 
 		foreach ( (array) $ids as $id ) {
-			$return .= sprintf( ' <a class="mailster-infolink mailster-infolink-%s" href="%s" data-article="%s" %s></a>', $id, mailster_url( 'https://kb.mailster.co/' . $id ), $id, $hidden ? 'hidden' : '' );
+			$return .= sprintf( ' <a class="mailster-infolink mailster-infolink-%s" href="%s" data-article="%s" title="%s" %s></a>', $id, mailster_url( 'https://kb.mailster.co/' . $id ), $id, esc_attr__( 'Get Help. [ALT]-click to open as modal.', 'mailster' ), $hidden ? 'hidden' : '' );
 		}
 
 		return $return;

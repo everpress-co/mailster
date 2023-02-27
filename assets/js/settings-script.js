@@ -53,8 +53,10 @@ mailster = (function (mailster, $, window, document) {
 		$('.tab:visible')
 			.find('.mailster-infolink')
 			.each(function () {
+				if (articles.length >= 9) return;
 				var id = $(this).data('article');
 				if (!id) return;
+				if (articles.includes(id)) return;
 				articles.push(id);
 			});
 

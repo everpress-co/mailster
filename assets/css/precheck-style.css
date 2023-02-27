@@ -251,6 +251,14 @@ details summary::-webkit-details-marker {
 	padding: 1em 2em;
 	filter: blur(3px);
 }
+.score-wrap .precheck-score .mailster-infolink {
+	right: 8px;
+	position: absolute;
+}
+.precheck-tos-box .mailster-infolink {
+	right: 33px;
+	position: absolute;
+}
 
 .score-wrap .precheck-status-icon {
 	height: 100px;
