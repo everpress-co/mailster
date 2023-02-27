@@ -24,6 +24,12 @@ mailster = (function (mailster, $, window, document) {
 
 					if (response.success) {
 						wrap.addClass('step-2').removeClass('step-1');
+
+						$.each(response.data.data.texts, function (i, text) {
+							$('.result').append('<li>' + text + '</li>');
+						});
+
+						$('.convert-plan').html(response.data.data.plan);
 					} else {
 						error = response.data.error;
 						form.addClass('has-error')

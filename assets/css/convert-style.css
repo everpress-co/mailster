@@ -17,7 +17,6 @@
 	opacity: 1;
 	z-index: 2;
 	display: none;
-	_text-align: center;
 }
 .convert_form_wrap div.mailster-notice.notice {
 	display: none;
@@ -45,6 +44,10 @@
 	margin: 0.6em auto 0 0;
 	line-height: 1.4em;
 }
+.convert_form_wrap .convert-plan {
+	font-weight: bold;
+}
+
 .convert_form_wrap .howto.tos-field {
 	margin: 0.1em auto 1em;
 	width: 100%;
@@ -56,10 +59,12 @@
 .convert_form_wrap .registration_complete {
 	top: 20%;
 }
-.result {
+.convert_form_wrap .result {
 	color: #1d2327;
-	font-size: 1.3em;
+	font-size: 1.1em;
 	font-weight: 600;
+	line-height: 1.3em;
+	margin: 2em 0.5em;
 }
 .convert_form_wrap .convert-form-info {
 	display: flex;
@@ -72,7 +77,7 @@
 	transform: translateY(-50%);
 	z-index: -1;
 	background-repeat: no-repeat;
-	background-position: 50% 35%;
+	background-position: 50% 50%;
 	background-size: 20px 20px;
 	background-image: url('../img/loading.gif');
 	background-color: rgba(255, 255, 255, 0.9);

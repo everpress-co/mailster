@@ -94,8 +94,6 @@ class MailsterConvert {
 		$code     = wp_remote_retrieve_response_code( $response );
 		$response = json_decode( wp_remote_retrieve_body( $response ) );
 
-		error_log( print_r( $response, true ) );
-
 		if ( $code !== 200 ) {
 			return new WP_Error( $code, $response->message );
 		}
@@ -125,15 +123,13 @@ class MailsterConvert {
 
 		$migrate = mailster_freemius()->activate_migrated_license( $response->data->secret_key, $is_marketing_allowed );
 
-		error_log( print_r( $response, true ) );
-
 		if ( isset( $migrate['error'] ) && $migrate['error'] ) {
 			delete_option( 'mailster_freemius' );
 			return new WP_Error( $code, $migrate['error'] );
 		}
 		if ( isset( $migrate['success'] ) && $migrate['success'] ) {
-
 		}
+			$response->migrate = $migrate;
 
 		return $response;
 
