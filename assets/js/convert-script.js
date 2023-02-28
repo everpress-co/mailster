@@ -1,6 +1,13 @@
 mailster = (function (mailster, $, window, document) {
 	'use strict';
 
+	var strings = [
+		'Validating license',
+		'Sending to Freemius',
+		'Checking updates',
+		'Clean up',
+	];
+
 	$('.convert_form_wrap')
 		.on('submit', '.convert_form', function () {
 			var form = $(this),
@@ -11,6 +18,8 @@ mailster = (function (mailster, $, window, document) {
 
 			form.removeClass('has-error').prop('disabled', true);
 			wrap.addClass('loading');
+
+			info();
 
 			mailster.util.ajax(
 				'convert',
@@ -47,6 +56,21 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 		.removeClass('loading');
+
+	function info() {
+		var el = $('.convert-form-info');
+		var i = 0;
+		var l = strings.length;
+
+		var t = setInterval(function () {
+			el.html(strings[i]);
+			i++;
+			if (i > l) {
+				i = 0;
+				clearInterval(t);
+			}
+		}, 3000);
+	}
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);

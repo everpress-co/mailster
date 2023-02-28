@@ -2728,15 +2728,7 @@ class Mailster {
 	}
 
 
-
 	public function license( $fallback = '' ) {
-
-		if ( ! function_exists( 'mailster_freemius' ) ) {
-			if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE ) {
-				return MAILSTER_LICENSE;
-			}
-			return get_option( 'mailster_license', $fallback );
-		}
 
 		$user = mailster_freemius()->get_user();
 
@@ -2744,13 +2736,6 @@ class Mailster {
 	}
 
 	public function email( $fallback = '' ) {
-		if ( ! function_exists( 'mailster_freemius' ) ) {
-
-			if ( defined( 'MAILSTER_EMAIL' ) && MAILSTER_EMAIL ) {
-				return MAILSTER_EMAIL;
-			}
-			return get_option( 'mailster_email', $fallback );
-		}
 
 		$user = mailster_freemius()->get_user();
 
@@ -2758,13 +2743,6 @@ class Mailster {
 	}
 
 	public function username( $fallback = '' ) {
-		if ( ! function_exists( 'mailster_freemius' ) ) {
-
-			if ( defined( 'MAILSTER_USERNAME' ) && MAILSTER_USERNAME ) {
-				return MAILSTER_USERNAME;
-			}
-			return get_option( 'mailster_username', $fallback );
-		}
 
 		$user = mailster_freemius()->get_user();
 
@@ -2775,30 +2753,14 @@ class Mailster {
 
 	public function is_verified( $force = false ) {
 
-		if ( ! function_exists( 'mailster_freemius' ) ) {
-			$verified = $this->get_verfied_object( $force );
-
-			return is_array( $verified );
-		}
-
-		return mailster_freemius()->is_registered();
+		return mailster_freemius()->has_active_valid_license();
 
 	}
 
 
 	public function is_email_verified( $force = false ) {
 
-		if ( ! function_exists( 'mailster_freemius' ) ) {
-			$verified = $this->get_verfied_object( $force );
-
-			if ( is_array( $verified ) && isset( $verified['email_verfied'] ) ) {
-				 return (bool) $verified['email_verfied'];
-			}
-
-			return true;
-		}
-
-		return mailster_freemius()->is_registered();
+		return mailster_freemius()->has_active_valid_license();
 
 	}
 
@@ -2861,13 +2823,15 @@ class Mailster {
 
 	public function has_support( $force = false ) {
 
-		return $this->support( $force ) - time() > 0;
+		return mailster_freemius()->is_premium();
 
 	}
 
 	public function support( $force = false ) {
 
 		$support = (int) $this->plugin_info( 'support', $force );
+
+		error_log( print_r( mailster_freemius(), true ) );
 
 		if ( $support ) {
 			$support += DAY_IN_SECONDS;

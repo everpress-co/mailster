@@ -5,30 +5,25 @@ class MailsterConvert {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 1 );
-		add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
 
 	}
 
 
 	public function notice() {
 
-		if ( get_option( 'mailster_freemius' ) ) {
-			return;
-		}
+		$msg  = '<h2>' . esc_html__( '[Action Required] Your Mailster license need to be transferred!', 'mailster' ) . '</h2>';
+		$msg .= '<p>' . sprintf( esc_html__( ' Please %1$s and read more about this on our %2$s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'start the process now', 'mailster' ) . '</a>', '<a href="' . mailster_url( 'https://kb.mailster.co/migrating-your-license-to-freemius/' ) . '" class="external">' . esc_html__( 'Knowledge Base', 'mailster' ) . '</a>' ) . '</p>';
 
-		$msg  = '<h2>' . esc_html__( '[Action Required] Your Mailster license need to be transfered!', 'mailster' ) . '</h2>';
-		$msg .= '<p>' . sprintf( esc_html__( ' Please %1$s and read more about this on our %2$s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">Start now</a>', '<a href="' . mailster_url( 'https://mailster.co/blog/' ) . '" class="external">' . esc_html__( 'Blog', 'mailster' ) . '</a>' ) . '</p>';
-
-		mailster_notice(
-			$msg,
-			'error',
-			true,
-			'mailster_freemius'
-		);
+		mailster_notice( $msg, 'info', true, 'mailster_freemius' );
 
 	}
 
 	public function admin_menu() {
+
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+		add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
 
 		$page = add_submenu_page( null, esc_html__( 'Convert', 'mailster' ), esc_html__( 'Convert', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 
@@ -98,38 +93,15 @@ class MailsterConvert {
 			return new WP_Error( $code, $response->message );
 		}
 
-		if ( $fs_accounts = get_option( 'fs_accounts' ) ) {
-			if ( isset( $fs_accounts['plans']['mailster'] ) ) {
-				unset( $fs_accounts['plans']['mailster'] );
-			}
-			if ( isset( $fs_accounts['plugins']['mailster'] ) ) {
-				unset( $fs_accounts['plugins']['mailster'] );
-			}
-			if ( isset( $fs_accounts['sites']['mailster'] ) ) {
-				unset( $fs_accounts['sites']['mailster'] );
-			}
-			if ( isset( $fs_accounts['plugin_data']['mailster'] ) ) {
-				unset( $fs_accounts['plugin_data']['mailster'] );
-			}
-			update_option( 'fs_accounts', $fs_accounts );
-		}
-
-		if ( ! function_exists( 'mailster_freemius' ) ) {
-			add_option( 'mailster_freemius', time() );
-			require MAILSTER_DIR . 'includes/freemius.php';
-		}
-
 		$is_marketing_allowed = true;
 
 		$migrate = mailster_freemius()->activate_migrated_license( $response->data->secret_key, $is_marketing_allowed );
 
-		if ( isset( $migrate['error'] ) && $migrate['error'] ) {
-			delete_option( 'mailster_freemius' );
-			return new WP_Error( $code, $migrate['error'] );
+		if ( is_wp_error( $migrate ) ) {
+			return $migrate;
 		}
-		if ( isset( $migrate['success'] ) && $migrate['success'] ) {
-		}
-			$response->migrate = $migrate;
+
+		$response->migrate = $migrate;
 
 		return $response;
 

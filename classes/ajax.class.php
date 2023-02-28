@@ -2730,18 +2730,10 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		if ( function_exists( 'mailster_freemius' ) ) {
-			mailster_freemius()->get_update( false, false, MINUTE_IN_SECONDS );
-		}
+		$return = mailster_freemius()->get_update( false, true, 1 );
 
-		if ( ! $plugin_info = mailster()->plugin_info( null, true ) ) {
-			wp_send_json_error();
-		}
-
-		$return['update']      = $plugin_info->update;
-		$return['version']     = $plugin_info->new_version;
-		$return['last_update'] = human_time_diff( $plugin_info->last_update );
-		$return['plugin_info'] = $plugin_info;
+		error_log( 'ss' . print_r( $return, true ) );
+		error_log( print_r( get_option( 'fs_accounts' ), true ) );
 
 		wp_send_json_success( $return );
 	}
