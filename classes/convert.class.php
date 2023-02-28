@@ -56,7 +56,7 @@ class MailsterConvert {
 		}
 
 		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
-		$endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
 
 		$url = add_query_arg(
 			array(
@@ -69,14 +69,12 @@ class MailsterConvert {
 
 		$response = wp_remote_get( $url, array( 'timeout' => 30 ) );
 
-
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
 		$code     = wp_remote_retrieve_response_code( $response );
 		$response = json_decode( wp_remote_retrieve_body( $response ) );
-		error_log( print_r($response, true) );
 
 		if ( $code !== 200 ) {
 			return new WP_Error( $code, $response->message );

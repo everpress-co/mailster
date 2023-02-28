@@ -1,6 +1,5 @@
 <?php
 
-	// Create a helper function for easy SDK access.
 function mailster_freemius() {
 
 	global $mailster_freemius;
@@ -43,7 +42,7 @@ function mailster_freemius_uninstall_cleanup() {
 	mailster()->uninstall();
 }
 
-// mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
+mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
 
 
 mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );
@@ -70,9 +69,9 @@ function mailster_add_helpscount_permission( $permissions ) {
 		'id'         => 'helpscout',
 		'icon-class' => 'dashicons dashicons-sos',
 		'label'      => mailster_freemius()->get_text_inline( 'Help Scout', 'helpscout' ),
-		'desc'       => mailster_freemius()->get_text_inline( 'Rendering Help Scout\'s beacon for easy support access', 'permissions-helpscout' ),
-		'optional'   => true,
-		'priority'   => 16,
+		'desc'       => mailster_freemius()->get_text_inline( 'Loading Help Scout\'s beacon for easy support access', 'permissions-helpscout' ),
+		'optional'   => false,
+		// 'priority'   => 16,
 	);
 
 	return $permissions;
