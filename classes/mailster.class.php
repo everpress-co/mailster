@@ -468,6 +468,7 @@ class Mailster {
 		if ( ! isset( $_GET['page'] ) ) {
 			return;
 		}
+
 		$page = $_GET['page'];
 		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert' ) ) ) {
 			return;
@@ -475,6 +476,11 @@ class Mailster {
 
 		if ( $page === 'mailster' ) {
 			$page = 'mailster_dashboard';
+		}
+
+		if ( $page === 'mailster_convert' ) {
+			mailster_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) );
+			exit;
 		}
 
 		mailster_redirect( 'admin.php?page=' . $page, 302 );
