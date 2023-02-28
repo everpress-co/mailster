@@ -1375,11 +1375,13 @@ class Mailster {
 			'mailster-script',
 			'mailster',
 			array(
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-				'isrtl'   => is_rtl(),
-				'version' => MAILSTER_VERSION,
-				'colors'  => array(
+				'ajaxurl'     => admin_url( 'admin-ajax.php' ),
+				'wpnonce'     => wp_create_nonce( 'mailster_nonce' ),
+				'isrtl'       => is_rtl(),
+				'version'     => MAILSTER_VERSION,
+				'is_verified' => mailster()->is_verified(),
+				'has_support' => mailster()->has_support(),
+				'colors'      => array(
 					'main'        => '#2BB3E7',
 					'track'       => '#f3f3f3',
 					'track_light' => '#ffffff',
@@ -2852,6 +2854,10 @@ class Mailster {
 			$plugin_info = $plugins->no_update[ MAILSTER_SLUG ];
 		} else {
 			return null;
+		}
+
+		if ( ! $force && ! isset( $plugin_info->support ) ) {
+			return $this->plugin_info( $field, true );
 		}
 
 		if ( is_null( $field ) ) {

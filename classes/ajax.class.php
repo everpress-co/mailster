@@ -2920,11 +2920,10 @@ class MailsterAjax {
 		$name = trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name );
 
 		$return = array(
-			'name'        => $name,
-			'email'       => $email,
-			'avatar'      => get_avatar_url( $user->ID ),
-			'id'          => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
-			'has_support' => mailster()->has_support(),
+			'name'   => $name,
+			'email'  => $email,
+			'avatar' => get_avatar_url( $user->ID ),
+			'id'     => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
 		);
 
 		wp_send_json_success( $return );
