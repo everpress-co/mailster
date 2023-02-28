@@ -2706,6 +2706,7 @@ class MailsterAjax {
 
 					$return['username']     = $result['username'];
 					$return['email']        = $result['email'];
+					$return['support']      = mailster()->has_support( true );
 					$return['purchasecode'] = $purchasecode;
 				}
 			}
@@ -2919,10 +2920,11 @@ class MailsterAjax {
 		$name = trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name );
 
 		$return = array(
-			'name'   => $name,
-			'email'  => $email,
-			'avatar' => get_avatar_url( $user->ID ),
-			'id'     => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
+			'name'        => $name,
+			'email'       => $email,
+			'avatar'      => get_avatar_url( $user->ID ),
+			'id'          => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
+			'has_support' => mailster()->has_support(),
 		);
 
 		wp_send_json_success( $return );

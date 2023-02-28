@@ -23,6 +23,11 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			}
 
+			if (!beacondata.has_support) {
+				beacon('suggest', []);
+			} else {
+				beacon('navigate', '/');
+			}
 			beacon('toggle');
 			$(this).toggleClass('is-active');
 		})
@@ -112,9 +117,9 @@ mailster = (function (mailster, $, window, document) {
 					Beacon('config', {
 						docsEnabled: true,
 						color: '#f0f0f1',
-						messagingEnabled: mailster.verified,
+						messagingEnabled: beacondata.has_support,
 						messaging: {
-							chatEnabled: mailster.verified,
+							chatEnabled: beacondata.has_support,
 						},
 						display: {
 							style: 'manual',
@@ -123,7 +128,7 @@ mailster = (function (mailster, $, window, document) {
 					return Beacon('init', beacondata.id);
 					break;
 				case 'suggest':
-					if (!mailster.verified) {
+					if (!beacondata.has_support) {
 						options.push({
 							text: 'Mailster Support',
 							url: '#',

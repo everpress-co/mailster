@@ -1375,12 +1375,11 @@ class Mailster {
 			'mailster-script',
 			'mailster',
 			array(
-				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-				'wpnonce'  => wp_create_nonce( 'mailster_nonce' ),
-				'isrtl'    => is_rtl(),
-				'version'  => MAILSTER_VERSION,
-				'verified' => mailster()->is_verified(),
-				'colors'   => array(
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'wpnonce' => wp_create_nonce( 'mailster_nonce' ),
+				'isrtl'   => is_rtl(),
+				'version' => MAILSTER_VERSION,
+				'colors'  => array(
 					'main'        => '#2BB3E7',
 					'track'       => '#f3f3f3',
 					'track_light' => '#ffffff',
