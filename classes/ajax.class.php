@@ -2732,9 +2732,6 @@ class MailsterAjax {
 
 		$return = mailster_freemius()->get_update( false, true, 1 );
 
-		error_log( 'ss' . print_r( $return, true ) );
-		error_log( print_r( get_option( 'fs_accounts' ), true ) );
-
 		wp_send_json_success( $return );
 	}
 

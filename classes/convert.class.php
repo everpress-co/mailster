@@ -4,7 +4,7 @@ class MailsterConvert {
 
 	public function __construct() {
 
-		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 1 );
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 10 );
 
 	}
 
@@ -16,7 +16,7 @@ class MailsterConvert {
 		}
 
 		add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
-		$page = add_submenu_page( null, esc_html__( 'Convert', 'mailster' ), esc_html__( 'Convert', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert to Freemius', 'mailster' ), esc_html__( 'Convert to Freemius', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
 
 	}
@@ -56,7 +56,7 @@ class MailsterConvert {
 		}
 
 		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
-		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+		$endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
 
 		$url = add_query_arg(
 			array(
@@ -86,6 +86,10 @@ class MailsterConvert {
 
 		if ( is_wp_error( $migrate ) ) {
 			return $migrate;
+		}
+
+		if ( strtotime( $response->data->support ) > time() ) {
+			update_option( 'mailster_support', strtotime( $response->data->support ) );
 		}
 
 		$response->migrate = $migrate;
