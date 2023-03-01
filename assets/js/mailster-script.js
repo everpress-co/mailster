@@ -418,6 +418,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$.window = $(window);
 	mailster.$.document = $(document);
+	mailster.$.body = $('body');
 
 	mailster.util.tb_position = function () {
 		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;

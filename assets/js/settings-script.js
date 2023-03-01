@@ -51,7 +51,7 @@ mailster = (function (mailster, $, window, document) {
 		var articles = [];
 
 		$('.tab:visible')
-			.find('.mailster-infolink')
+			.find('.mailster-help-link')
 			.each(function () {
 				if (articles.length >= 9) return;
 				var id = $(this).data('article');

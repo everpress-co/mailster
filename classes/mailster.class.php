@@ -271,7 +271,6 @@ class Mailster {
 			add_action( 'admin_enqueue_scripts', array( &$this, 'admin_scripts_styles' ), 10, 1 );
 			add_action( 'admin_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
 			add_action( 'admin_menu', array( &$this, 'special_pages' ), 60 );
-			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 
 			add_filter( 'plugin_action_links', array( &$this, 'add_action_link' ), 10, 2 );
 			add_filter( 'plugin_row_meta', array( &$this, 'add_plugin_links' ), 10, 2 );
@@ -288,6 +287,8 @@ class Mailster {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
 
+			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
+
 		}
 
 		do_action( 'mailster', $this );
@@ -302,6 +303,22 @@ class Mailster {
 		register_widget( 'Mailster_Newsletter_List_Widget' );
 		register_widget( 'Mailster_Newsletter_Subscriber_Button_Widget' );
 		register_widget( 'Mailster_Newsletter_Subscribers_Count_Widget' );
+
+	}
+
+
+	public function admin_body_class( $classes = '' ) {
+		if ( ! ( $mailster_notices = get_option( 'mailster_notices' ) ) ) {
+			return $classes;
+		}
+
+		$screens              = wp_list_pluck( $mailster_notices, 'screen' );
+		$displayed_everywhere = array_filter( $screens, 'is_null' );
+		if ( ! empty( $displayed_everywhere ) ) {
+			$classes .= ' mailster-has-notices';
+		}
+
+		return $classes;
 
 	}
 
@@ -1246,7 +1263,8 @@ class Mailster {
 		wp_enqueue_script( 'mailster-admin-header' );
 
 		add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
-		add_action( 'admin_notices', array( &$this, 'page_beacon' ) );
+		add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
+		add_action( 'admin_notices', array( &$this, 'page_beacon' ), 1 );
 
 	}
 
@@ -1346,9 +1364,11 @@ class Mailster {
 	public function beacon( $ids, $hidden = false ) {
 
 		$return = '';
+		$title  = esc_attr__( 'Get Help. [ALT]-click to open as modal.', 'mailster' );
+		$hidden = $hidden ? 'hidden' : '';
 
 		foreach ( (array) $ids as $id ) {
-			$return .= sprintf( ' <a class="mailster-infolink mailster-infolink-%s" href="%s" data-article="%s" title="%s" %s></a>', $id, mailster_url( 'https://kb.mailster.co/' . $id ), $id, esc_attr__( 'Get Help. [ALT]-click to open as modal.', 'mailster' ), $hidden ? 'hidden' : '' );
+			$return .= sprintf( ' <a class="mailster-help mailster-help-link" href="%s" data-article="%s" title="%s" %s></a>', mailster_url( 'https://kb.mailster.co/' . $id ), $id, $title, $hidden );
 		}
 
 		return $return;

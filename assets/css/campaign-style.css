@@ -634,7 +634,7 @@ textarea#head {
 .autoresponder_before_after {
 	display: none;
 }
-.mailster_autoresponder_more > .mailster-infolink {
+.mailster_autoresponder_more > .mailster-help {
 	position: absolute;
 	right: 0;
 	top: -1.5em;

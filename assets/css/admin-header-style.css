@@ -48,11 +48,11 @@
 	background-color: #f0f0f0;
 }
 
-#wpbody-content > .mailster-infolink {
+#wpbody-content > .mailster-help {
 	float: right;
 	margin: 5px;
 }
-#screen-meta + .mailster-infolink {
+#screen-meta + .mailster-help {
 	margin: 5px 35px 5px 5px;
 }
 #mailster-admin-toolbar .mailster-tab {
@@ -67,7 +67,7 @@
 	padding-bottom: 13px;
 	white-space: nowrap;
 }
-#mailster-admin-toolbar .mailster-infolink {
+#mailster-admin-toolbar .mailster-help {
 	float: right;
 	display: flex;
 	justify-content: flex-end;
@@ -92,7 +92,7 @@
 	color: #757575;
 	white-space: nowrap;
 }
-.mailster-infolink {
+.mailster-help {
 	display: inline-block;
 	width: 18px;
 	height: 18px;
@@ -109,18 +109,18 @@
 	background-repeat: no-repeat;
 	background-position: center;
 }
-.mailster-infolink:hover {
+.mailster-help:hover {
 	background-color: #2bb3e7;
 	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M12 8.75a1.5 1.5 0 01.167 2.99c-.465.052-.917.44-.917 1.01V14h1.5v-.845A3 3 0 109 10.25h1.5a1.5 1.5 0 011.5-1.5zM11.25 15v1.5h1.5V15h-1.5z" fill="%23fff"></path></svg>');
 }
-.mailster-infolink[hidden] {
+.mailster-help[hidden] {
 	display: none !important;
 }
 @media only screen and (max-width: 782px) {
 	#mailster-admin-toolbar {
 		display: none;
 	}
-	#wpbody-content > .mailster-infolink {
+	#wpbody-content > .mailster-help {
 		margin: 10px 5px;
 	}
 }

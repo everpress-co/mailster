@@ -251,11 +251,11 @@ details summary::-webkit-details-marker {
 	padding: 1em 2em;
 	filter: blur(3px);
 }
-.score-wrap .precheck-score .mailster-infolink {
+.score-wrap .precheck-score .mailster-help {
 	right: 8px;
 	position: absolute;
 }
-.precheck-tos-box .mailster-infolink {
+.precheck-tos-box .mailster-help {
 	right: 33px;
 	position: absolute;
 }

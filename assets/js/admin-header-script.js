@@ -27,7 +27,7 @@ mailster = (function (mailster, $, window, document) {
 			beacon('toggle');
 			$(this).toggleClass('is-active');
 		})
-		.on('click', '.mailster-infolink', function (event) {
+		.on('click', '.mailster-help-link', function (event) {
 			if (!requireConsent()) {
 				window.open($(this).attr('href'));
 				return false;
@@ -143,7 +143,7 @@ mailster = (function (mailster, $, window, document) {
 			beacon(queue[i].method, queue[i].options, queue[i].data);
 		}
 
-		$('.mailster-infolink').each(function () {
+		$('.mailster-help-link').each(function () {
 			if (articles.length >= 9) return;
 			var id = $(this).data('article');
 			if (!id) return;
