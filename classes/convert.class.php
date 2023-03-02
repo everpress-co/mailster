@@ -4,7 +4,7 @@ class MailsterConvert {
 
 	public function __construct() {
 
-		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 10 );
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 100 );
 
 	}
 
@@ -15,8 +15,9 @@ class MailsterConvert {
 			return;
 		}
 
-		add_action( 'admin_notices', array( &$this, 'notice' ), 1 );
-		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert to Freemius', 'mailster' ), esc_html__( 'Convert to Freemius', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
+		$this->notice();
+
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert License', 'mailster' ), esc_html__( 'Convert License', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
 
 	}
@@ -39,7 +40,8 @@ class MailsterConvert {
 	public function notice() {
 
 		$msg  = '<h2>' . esc_html__( '[Action Required] Your Mailster license need to be transferred!', 'mailster' ) . '</h2>';
-		$msg .= '<p>' . sprintf( esc_html__( ' Please %1$s and read more about this on our %2$s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'start the process now', 'mailster' ) . '</a>', '<a href="' . mailster_url( 'https://kb.mailster.co/migrating-your-license-to-freemius/' ) . '" class="external">' . esc_html__( 'Knowledge Base', 'mailster' ) . '</a>' ) . '</p>';
+		$msg .= '<p>' . sprintf( esc_html__( ' Please %1$s and read more about this on our %2$s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'start the process now', 'mailster' ) . '</a>', '<a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" class="mailster-help-link" data-article="63fe029de6d6615225474599">' . esc_html__( 'Knowledge Base', 'mailster' ) . '</a>' ) . '</p>';
+		$msg .= '<p><a class="button button-primary" href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'Convert now', 'mailster' ) . '</a> or <a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" class="mailster-help-link" data-article="63fe029de6d6615225474599">' . esc_html__( 'read more about it', 'mailster' ) . '</a></p>';
 
 		mailster_notice( $msg, 'info', true, 'mailster_freemius' );
 

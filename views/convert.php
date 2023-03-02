@@ -8,12 +8,13 @@ if ( empty( $user_email ) ) {
 	$user       = wp_get_current_user();
 	$user_email = $user->user_email;
 }
+
 ?>
 
 	<div class="convert_form_wrap step-1 loading">
 		<div class="convert-form-info">Start converting your license</div>
 		<form class="convert_form" action="" method="POST">
-			<h1>Mailster License Migration</h1>
+			<h1>Mailster License Migration <?php echo mailster()->beacon( '63fe029de6d6615225474599' ); ?></h1>
 			<h2>You're about to convert your Mailster license to Freemius and we need your consent.</h2>
 			<p class="howto">Freemius is our partner for delivering updates to the Mailster newsletter plugin. By submitting the form you agree to transfer data to Freemius to process future updates.</p>
 			<p class="howto">Please enter the email you like to use with your account. If you already have a Freemius account you should use that email address.</p>
@@ -24,7 +25,7 @@ if ( empty( $user_email ) ) {
 			</p>
 			<input type="submit" class="button button-hero button-primary dashboard-convert" value="<?php esc_attr_e( 'Migrate to Freemius now', 'mailster' ); ?>">
 			<p class="howto">
-				<a href="<?php echo mailster_url( 'https://kb.mailster.co/migrating-your-license-to-freemius/' ); ?>" class="external"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
+				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" class="mailster-help-link"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
 			</p>
 		</form>
 		<form class="registration_complete">
@@ -39,7 +40,7 @@ if ( empty( $user_email ) ) {
 			<p><a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ); ?>" class="button button-primary">Your Freemius Account</a> <a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="button button-secondary">Mailster Dashboard</a></p>
 			
 			<p class="howto">
-				<a href="<?php echo mailster_url( 'https://kb.mailster.co/migrating-your-license-to-freemius/' ); ?>" class="external"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
+				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" class="mailster-help-link"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
 			</p>
 		</form>
 	</div>
