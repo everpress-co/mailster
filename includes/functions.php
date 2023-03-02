@@ -686,6 +686,50 @@ function mailster_get_user_client( $string = null ) {
 
 }
 
+/**
+ *
+ *
+ * @param unknown $key
+ * @param unknown $default (optional)
+ * @return unknown
+ */
+function mailster_get_user_setting( $key, $default = null ) {
+
+	$key = 'mailster_' . $key;
+	$raw = get_user_setting( $key, $default );
+
+	if ( $raw === 'true' ) {
+		return true;
+	} elseif ( $raw === 'false' ) {
+		return false;
+	}
+
+	return $raw;
+
+}
+
+/**
+ *
+ *
+ * @param unknown $key
+ * @param unknown $value
+ * @return unknown
+ */
+function mailster_set_user_setting( $key, $value ) {
+
+	$key = 'mailster_' . $key;
+	if ( $value === true ) {
+		$value = 'true';
+	} elseif ( $value === false ) {
+		$value = 'false';
+	}
+
+	return set_user_setting( $key, $value );
+
+}
+
+
+
 
 /**
  *

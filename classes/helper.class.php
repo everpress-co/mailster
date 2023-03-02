@@ -1576,7 +1576,7 @@ class MailsterHelper {
 
 			if ( ! $cache_duration || false === ( $body = get_transient( 'mailster_feed_' . $feed_id ) ) ) {
 
-				$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
+				$response = wp_remote_get( $url, array( 'timeout' => 20 ) );
 				$code     = wp_remote_retrieve_response_code( $response );
 
 				if ( $code != 200 ) {
@@ -1587,6 +1587,9 @@ class MailsterHelper {
 					if ( ! is_admin() ) {
 						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', $cache_duration, $feed_id );
 					}
+					// cache some time to prevent long loadings
+					set_transient( 'mailster_feed_' . $feed_id, $response, MINUTE_IN_SECONDS );
+
 					return $response;
 				}
 
@@ -1599,6 +1602,10 @@ class MailsterHelper {
 
 				set_transient( 'mailster_feed_' . $feed_id, $body, $cache_duration );
 
+			}
+
+			if ( is_wp_error( $body ) ) {
+				return $body;
 			}
 
 			$feed->set_raw_data( $body );

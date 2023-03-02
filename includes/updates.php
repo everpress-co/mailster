@@ -637,8 +637,6 @@ if ( $old_version ) {
 		case '3.2.2':
 		case '3.2.3':
 		case '3.2.4':
-			mailster_notice( '<pre>A old_version_sanitized ' . print_r( $old_version_sanitized, true ) . '</pre>' );
-			mailster_notice( '<pre>A new_version ' . print_r( $new_version, true ) . '</pre>' );
 		case '3.2.5':
 		default:
 			// reset translations

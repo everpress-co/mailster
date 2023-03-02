@@ -52,6 +52,7 @@ if ( $customfields ) {
 }
 
 ?>
+<?php echo mailster()->beacon( array( '611bb32a6ffe270af2a99911', '611bb2ee6ffe270af2a99910', '611bb0f121ef206e5592c29c', '611bbb4121ef206e5592c32f' ), true ); ?>
 <div class="wrap<?php echo ( $is_new ) ? ' new' : ''; ?>">
 <form id="form_form" action="<?php echo add_query_arg( array( 'ID' => $id ) ); ?>" method="post">
 <?php wp_nonce_field( 'mailster_nonce' ); ?>
@@ -316,7 +317,8 @@ else :
 				</p>
 
 				<p><label><input type="hidden" name="mailster_data[redirect]" value=""><input id="redirect-cb" type="checkbox" <?php checked( ! empty( $form->redirect ) ); ?>> <?php esc_html_e( 'Redirect after submit', 'mailster' ); ?></label>
-				<input type="url" id="redirect-tf" name="mailster_data[redirect]" class="widefat regular-text" value="<?php echo esc_attr( $form->redirect ); ?>" placeholder="https://www.example.com" >
+
+				<input type="url" id="redirect-tf" name="mailster_data[redirect]" class="widefat regular-text" value="<?php echo esc_attr( $form->redirect ); ?>" placeholder="https://www.example.com" ><?php echo mailster()->beacon( '611bb2ee6ffe270af2a99910' ); ?>
 				</p>
 
 				<p><label><input type="hidden" name="mailster_data[overwrite]" value="0"><input type="checkbox" name="mailster_data[overwrite]" value="1" <?php checked( $form->overwrite ); ?>> <?php esc_html_e( 'Allow users to update their data with this form', 'mailster' ); ?></label>

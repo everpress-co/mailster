@@ -5,7 +5,7 @@ if ( mailster( 'subscribers' )->get_count_by_status( false ) ) :
 	$no_list = mailster( 'lists' )->count( false );
 
 	?>
-<h2><?php esc_html_e( 'Which subscribers do you like to delete?', 'mailster' ); ?></h2>
+<h2><?php esc_html_e( 'Which subscribers do you like to delete?', 'mailster' ); ?><?php echo mailster()->beacon( '63fbb3fe81d3090330dcbd5e' ); ?></h2>
 
 <form method="post" id="delete-subscribers">
 	<?php wp_nonce_field( 'mailster_nonce' ); ?>

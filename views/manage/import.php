@@ -1,6 +1,5 @@
-
 <div class="import-wrap">
-<h2><?php esc_html_e( 'Where do you like to import your subscribers from?', 'mailster' ); ?></h2>
+<h2><?php esc_html_e( 'Where do you like to import your subscribers from?', 'mailster' ); ?><?php echo mailster()->beacon( '63f5f51ee6d6615225472ab9' ); ?></h2>
 
 <?php
 $methods = array(
@@ -16,12 +15,7 @@ if ( ! current_user_can( 'mailster_import_wordpress_users' ) ) {
 	unset( $methods['wordpress'] );
 }
 
-$user_settings = wp_parse_args(
-	get_user_option( 'mailster_import_settings' ),
-	array(
-		'method' => null,
-	)
-);
+$user_settings = wp_parse_args( get_user_option( 'mailster_import_settings' ), array( 'method' => null ) );
 $current       = isset( $_GET['method'] ) ? $_GET['method'] : $user_settings['method'];
 ?>
 <?php foreach ( $methods as $id => $name ) : ?>
