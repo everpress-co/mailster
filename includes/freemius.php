@@ -70,7 +70,7 @@ function mailster_add_helpscount_permission( $permissions ) {
 		'icon-class' => 'dashicons dashicons-sos',
 		'label'      => mailster_freemius()->get_text_inline( 'Help Scout', 'helpscout' ),
 		'desc'       => mailster_freemius()->get_text_inline( 'Loading Help Scout\'s beacon for easy support access', 'permissions-helpscout' ),
-		'optional'   => false,
+		'optional'   => true,
 		// 'priority'   => 16,
 	);
 

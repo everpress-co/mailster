@@ -2837,8 +2837,6 @@ class Mailster {
 
 		$support = (int) $this->plugin_info( 'support', $force );
 
-		error_log( print_r( mailster_freemius(), true ) );
-
 		if ( $support ) {
 			$support += DAY_IN_SECONDS;
 		}
