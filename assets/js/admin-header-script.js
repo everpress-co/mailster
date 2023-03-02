@@ -27,7 +27,7 @@ mailster = (function (mailster, $, window, document) {
 			beacon('toggle');
 			$(this).toggleClass('is-active');
 		})
-		.on('click', '.mailster-help-link', function (event) {
+		.on('click', '[data-article]', function (event) {
 			if (!requireConsent()) {
 				window.open($(this).attr('href'));
 				return false;
@@ -123,12 +123,6 @@ mailster = (function (mailster, $, window, document) {
 					return Beacon('init', beacondata.id);
 					break;
 				case 'suggest':
-					if (!mailster.has_support) {
-						options.push({
-							text: 'Mailster Support',
-							url: '#',
-						});
-					}
 					return Beacon('suggest', options, data);
 					break;
 				default:
@@ -142,7 +136,7 @@ mailster = (function (mailster, $, window, document) {
 			beacon(queue[i].method, queue[i].options, queue[i].data);
 		}
 
-		$('.mailster-help-link').each(function () {
+		$('[data-article]').each(function () {
 			if (articles.length >= 9) return;
 			var id = $(this).data('article');
 			if (!id) return;

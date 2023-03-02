@@ -540,7 +540,7 @@ class MailsterForms {
 		if ( ! in_array( 'mailster-block-forms/mailster-block-forms.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 			$msg  = '<h2>' . esc_html__( 'A new way to create forms for Mailster is coming!', 'mailster' ) . '</h2>';
 			$msg .= '<p>' . esc_html__( 'Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.', 'mailster' ) . '</p>';
-			$msg .= '<p><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_addons&search=mailster-block-forms&type=slug' ) . '" class="button button-primary">' . esc_html__( 'Install Mailster Block Forms', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595' ) . '" class="button button-link mailster-help-link" data-article="63fc875152af714471a17595">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
+			$msg .= '<p><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_addons&search=mailster-block-forms&type=slug' ) . '" class="button button-primary">' . esc_html__( 'Install Mailster Block Forms', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595' ) . '" class="button button-link" data-article="63fc875152af714471a17595">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
 
 			mailster_notice( $msg, 'info', $once, 'mailster_block_form_notice', true, $page );
 
