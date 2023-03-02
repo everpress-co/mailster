@@ -189,8 +189,18 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### 3.2.5
 
--   fixed: Campaign related conditions for "Any Campaign" now work as expected.
+-   new: Admin header bar with new support integration.
+-   new: Help buttons located in the plugin to provide context-specific assistance
+-   changed: Mailster related notices only show up on Mailster related pages.
+-   fixed: campaign related conditions for "Any Campaign" now work as expected.
 -   fixed: restoring of deleted subscribers working again.
+-   fixed: issue where some subscribers are not able to get deleted/exported
+-   fixed: missing object error in mailster-script
+-   fixed: searching with quotes on the subscribers page working again
+-   fixed: broken RSS feed URL can cause timeouts
+-   fixed: force array when duplicating a campaign for `wp_insert_post`
+-   change: do not use the `$wp_filesystem` global when require filesystem
+-   added: `mailster_get_user_setting` and `mailster_set_user_setting`
 
 ### 3.2.4
 
