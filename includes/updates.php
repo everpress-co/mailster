@@ -639,6 +639,8 @@ if ( $old_version ) {
 		case '3.2.4':
 		case '3.2.5':
 		default:
+			mailster( 'convert' )->notice();
+
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
