@@ -1,3 +1,4 @@
+<?php echo mailster()->beacon( array( '611bbb5fb37d837a3d0e47d4', '611bb943b55c2b04bf6df131' ), true ); ?>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-newsletter-homepage">
 		<?php $mailster_homepage = mailster_option( 'homepage' ); ?>

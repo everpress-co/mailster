@@ -381,6 +381,8 @@ class MailsterUpgrade {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
+		mailster()->add_admin_header();
+
 		wp_enqueue_style( 'mailster-update-style', MAILSTER_URI . 'assets/css/upgrade-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
@@ -423,9 +425,6 @@ class MailsterUpgrade {
 			<div class="notice-error error inline"><p>Make sure to create a backup before run the Mailster Batch Update. If you experience any issues upgrading please reach out to us via our member area <a href="<?php echo mailster_url( 'https://mailster.co/go/register' ); ?>" class="external">here</a>.<br>
 			<strong>Important: No data can get lost thanks to our smart upgrade process.</strong></p></div>
 			<p>Built: <?php echo date_i18n( 'Y-m-d H:i:s', MAILSTER_BUILT ); ?></p>
-			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_actions" ) ) : ?>
-			<p>Action Table: <?php echo number_format( $count ); ?> entries</p>
-			<?php endif; ?>
 			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers" ) ) : ?>
 			<p>Subscribers Table: <?php echo number_format( $count ); ?> entries</p>
 			<?php endif; ?>
@@ -546,8 +545,7 @@ class MailsterUpgrade {
 			return true;
 		}
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$old_location = MAILSTER_DIR . '/myMail.php';
 		$new_location = MAILSTER_DIR . '/mailster.php';
@@ -743,9 +741,9 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_movefiles() {
 
-		global $wpdb, $wp_filesystem;
+		global $wpdb;
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$new_location = MAILSTER_UPLOAD_DIR;
 		$old_location = dirname( MAILSTER_UPLOAD_DIR ) . '/myMail';
@@ -858,8 +856,7 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_legacy() {
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$this->deactivate_mymail( false );
 

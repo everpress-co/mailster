@@ -22,7 +22,7 @@
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-auto-click-prevention">
-		<th scope="row"><?php esc_html_e( 'Auto Click Prevention', 'mailster' ); ?> <a class="infolink external" href="<?php echo mailster_url( 'https://kb.mailster.co/prevent-spam-filters-automatically-opening-and-clicking-through-links-in-your-campaigns/' ); ?>" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></th>
+		<th scope="row"><?php esc_html_e( 'Auto Click Prevention', 'mailster' ); ?> <?php echo mailster()->beacon( '611badd2b37d837a3d0e4729' ); ?></th>
 		<td>
 		<p><label><input type="hidden" name="mailster_options[autoclickprevention]" value=""><input type="checkbox" name="mailster_options[autoclickprevention]" value="1" <?php checked( mailster_option( 'autoclickprevention' ) ); ?>><?php esc_html_e( 'Prevent automated clicks from email servers.', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Some Email Security Servers automatically click on one ore more links in your campaigns which can cause wrong open and click rates.', 'mailster' ); ?> <?php esc_html_e( 'Enable this option to add an additional redirect for clicks which happens after a short time after sending.', 'mailster' ); ?></span></p>
 		</td>

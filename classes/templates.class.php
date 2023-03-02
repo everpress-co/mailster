@@ -154,11 +154,9 @@ class MailsterTemplates {
 			$location .= '/' . $file;
 		};
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
-		global $wp_filesystem;
-
-		if ( $wp_filesystem->delete( $location, true ) ) {
+		if ( $wp_filesystem && $wp_filesystem->delete( $location, true ) ) {
 
 			if ( is_null( $file ) ) {
 				$screenshots = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug;
@@ -187,9 +185,7 @@ class MailsterTemplates {
 	 */
 	public function unzip_template( $templatefile, $renamefolder = null, $overwrite = false, $backup_old = false ) {
 
-		global $wp_filesystem;
-
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$uploadfolder = mailster( 'helper' )->mkdir( 'uploads' );
 
@@ -197,6 +193,10 @@ class MailsterTemplates {
 
 		if ( ! is_dir( $uploadfolder ) ) {
 			wp_mkdir_p( $uploadfolder );
+		}
+
+		if ( ! $wp_filesystem ) {
+			return new WP_Error( 'wp_filesystem', esc_html__( 'The content folder is not writeable', 'mailster' ) );
 		}
 
 		if ( ! wp_is_writable( $uploadfolder ) ) {
@@ -395,9 +395,7 @@ class MailsterTemplates {
 
 	public function process_colors( $slug = null ) {
 
-		global $wp_filesystem;
-
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$path = mailster( 'helper' )->mkdir( 'templates' );
 
@@ -829,9 +827,9 @@ class MailsterTemplates {
 			return;
 		}
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
-		return $wp_filesystem->delete( $folder, true );
+		return $wp_filesystem && $wp_filesystem->delete( $folder, true );
 
 	}
 
@@ -844,8 +842,6 @@ class MailsterTemplates {
 	 * @param unknown $async   (optional)
 	 */
 	public function get_screenshots( $slug, $file = 'index.html', $async = true ) {
-
-		global $wp_filesystem;
 
 		$slug = ( $slug );
 		$file = ( $file );
@@ -865,7 +861,7 @@ class MailsterTemplates {
 		$screenshot_modules_folder = $screenshot_folder_base . $slug . '/modules/' . $hash . '/';
 		$screenshoturi             = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		if ( ! is_dir( $screenshot_folder ) ) {
 			mailster( 'helper' )->mkdir( $screenshot_folder, true );
