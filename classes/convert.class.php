@@ -65,6 +65,7 @@ class MailsterConvert {
 
 		$url = add_query_arg(
 			array(
+				'version'     => MAILSTER_VERSION,
 				'license'     => $license,
 				'email'       => $email,
 				'redirect_to' => rawurlencode( admin_url( 'admin.php?page=mailster_dashboard' ) ),
@@ -79,7 +80,12 @@ class MailsterConvert {
 		}
 
 		$code     = wp_remote_retrieve_response_code( $response );
-		$response = json_decode( wp_remote_retrieve_body( $response ) );
+		$body     = wp_remote_retrieve_body( $response );
+		$response = json_decode( $body );
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			error_log( print_r( $body, true ) );
+			return new WP_Error( 'no_json', 'Response is invalid: ' . json_last_error_msg() );
+		}
 
 		if ( $code !== 200 ) {
 			return new WP_Error( $code, $response->message );
@@ -98,6 +104,8 @@ class MailsterConvert {
 		}
 
 		$response->migrate = $migrate;
+
+		mailster_remove_notice( 'mailster_freemius' );
 
 		return $response;
 

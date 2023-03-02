@@ -3,8 +3,8 @@ mailster = (function (mailster, $, window, document) {
 
 	var strings = [
 		'Validating license',
-		'Sending to Freemius',
-		'Checking updates',
+		'Sending to Provider',
+		'Checking for Updates',
 		'Clean up',
 	];
 

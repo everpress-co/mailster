@@ -19,17 +19,18 @@ class MailsterLicense {
 		require_once MAILSTER_DIR . 'vendor/freemius/wordpress-sdk/start.php';
 		$mailster_freemius = fs_dynamic_init(
 			array(
-				'id'                  => 11268,
-				'slug'                => 'mailster',
-				'public_key'          => 'pk_24ea323af7b2d311e3883b4c79db9',
-				'is_premium'          => true,
-				'is_premium_only'     => true,
-				'has_premium_version' => true,
-				'has_addons'          => false,
-				'has_paid_plans'      => true,
-				'is_org_compliant'    => true,
-				'has_affiliation'     => true,
-				'menu'                => array(
+				'id'               => 12132,
+				'slug'             => 'mailster',
+				'public_key'       => 'pk_24ea323af7b2d311e3883b4c79db9',
+				'public_key'       => 'pk_73a8ad525d7ab5e8fd03c90abe4b8',
+				'is_premium'       => true,
+				'is_premium_only'  => true,
+				// 'has_premium_version' => true,
+				'has_addons'       => false,
+				'has_paid_plans'   => true,
+				'is_org_compliant' => false,
+				// 'has_affiliation'     => true,
+				'menu'             => array(
 					'slug'        => 'edit.php?post_type=newsletter',
 					'contact'     => false,
 					'support'     => false,

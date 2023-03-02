@@ -25,7 +25,7 @@ if ( empty( $user_email ) ) {
 			</p>
 			<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Migrate now', 'mailster' ); ?>">
 			<p class="howto">
-				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" class="mailster-help-link"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
+				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" data-article="63fe029de6d6615225474599"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
 			</p>
 		</form>
 		<form class="registration_complete">
@@ -40,7 +40,7 @@ if ( empty( $user_email ) ) {
 			<p><a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ); ?>" class="button button-primary">Your Freemius Account</a> <a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="button button-secondary">Mailster Dashboard</a></p>
 			
 			<p class="howto">
-				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" class="mailster-help-link"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
+				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" data-article="63fe029de6d6615225474599"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
 			</p>
 		</form>
 	</div>

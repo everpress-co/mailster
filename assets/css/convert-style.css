@@ -4,12 +4,15 @@
 	position: relative;
 	min-width: 255px;
 	border: 1px solid #c3c4c7;
-	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
-	background: #fff;
 	padding: 2em 4em;
 	margin: 4em auto;
 	width: 700px;
 	max-width: 100%;
+
+	box-shadow: 0 1px 3px rgb(0 0 0 / 13%);
+	background: #fff;
+	zoom: 1;
+	clear: both;
 }
 .convert_form_wrap form {
 	padding: 10px 0 0 0;

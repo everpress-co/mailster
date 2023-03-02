@@ -48,6 +48,8 @@ mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
 mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );
 function mailster_legacy_license_key( $key ) {
 
+	$key = trim($key);
+
 	// check for UUIDv4 (Envato License)
 	if ( ! preg_match( '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/', $key ) ) {
 		return $key;
@@ -90,9 +92,9 @@ function mailster_add_diagnostic_permission( $permissions ) {
 	return $permissions;
 }
 
-	// change length of licenses keys to accept the one from Envato
+// change length of licenses keys to accept the one from Envato 36 but allow some whitespace
 mailster_freemius()->add_filter( 'license_key_maxlength', 'mailster_license_key_maxlength' );
 function mailster_license_key_maxlength( $length ) {
-	return 36;
+	return 40;
 }
 

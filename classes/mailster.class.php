@@ -2870,21 +2870,21 @@ class Mailster {
 
 		$user = mailster_freemius()->get_user();
 
-		return $user->secret_key;
+		return $user ? $user->secret_key : $fallback;
 	}
 
 	public function email( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
-		return $user->email;
+		return $user ? $user->email : $fallback;
 	}
 
 	public function username( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
-		return trim( $user->first . ' ' . $user->last );
+		return $user ? trim( $user->first . ' ' . $user->last ) : $fallback;
 	}
 
 
