@@ -4433,10 +4433,9 @@ class MailsterCampaigns {
 						$meta           = $this->meta( $id );
 						$sent_formatted = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $total ) );
 						if ( is_wp_error( $cron_status ) ) {
-							$status_title = esc_html__( 'Sending Problem!', 'mailster' );
-							if ( current_user_can( 'activate_plugins' ) ) {
-								 $status_title .= ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . esc_html__( 'Self Test', 'mailster' ) . '</a>';
-							}
+							$status_title  = esc_html__( 'Sending Problem!', 'mailster' );
+							$status_title .= mailster()->beacon( '63f91cb252af714471a170de' );
+
 						} else {
 							$status_title = $sent_formatted;
 						}

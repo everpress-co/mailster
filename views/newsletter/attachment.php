@@ -9,6 +9,8 @@ $is_autoresponder = 'autoresponder' == $post->post_status || $this->post_data['a
 
 ?>
 <?php if ( $editable ) : ?>
+	
+
 	<ul class="mailster-attachments is-editable">
 
 		<li class="mailster-attachment">
@@ -34,6 +36,7 @@ $is_autoresponder = 'autoresponder' == $post->post_status || $this->post_data['a
 
 	<p class="description">
 		<?php esc_html_e( 'Add an attachment to your campaign.', 'mailster' ); ?>
+		<?php echo mailster()->beacon( '611bbbb96ffe270af2a99978' ); ?>
 	</p>
 	<p class="description">
 		<?php esc_html_e( 'Note: Each attachment will increase your overall mail size, consider to share a link instead of attaching a file to prevent your email getting too big.', 'mailster' ); ?>

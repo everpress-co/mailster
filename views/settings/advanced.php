@@ -20,8 +20,8 @@
 			<br><label><input type="hidden" name="mailster_options[disable_cache]" value=""><input type="checkbox" name="mailster_options[disable_cache]" value="1" <?php checked( mailster_option( 'disable_cache' ) ); ?>> <?php esc_html_e( 'Disable Object Cache for Mailster', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If enabled Mailster doesn\'t use cache anymore. This causes an increase in page load time! This option is not recommended!', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top" class="settings-row settings-short-codes">
-		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?></th>
+	<tr valign="top" class="settings-row settings-row-short-codes">
+		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?><?php echo mailster()->beacon( '611bba3321ef206e5592c322' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[shortcodes]" value=""><input type="checkbox" name="mailster_options[shortcodes]" value="1" <?php checked( mailster_option( 'shortcodes' ) ); ?>> <?php esc_html_e( 'Process short codes in emails.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Check this option to process short codes. This may cause unexpected results.', 'mailster' ); ?></p>
 		</td>
 	</tr>

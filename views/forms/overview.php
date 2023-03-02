@@ -1,3 +1,4 @@
+<?php echo mailster()->beacon( array( '611bb32a6ffe270af2a99911', '611bb2ee6ffe270af2a99910', '611bb0f121ef206e5592c29c' ), true ); ?>
 <div class="wrap">
 <h1><?php esc_html_e( 'Forms', 'mailster' ); ?>
 <?php if ( current_user_can( 'mailster_add_forms' ) ) : ?>

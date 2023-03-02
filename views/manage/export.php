@@ -29,7 +29,7 @@ if ( mailster( 'subscribers' )->get_count_by_status( false ) ) :
 	}
 
 	?>
-<h2><?php esc_html_e( 'Which subscribers do you like to export?', 'mailster' ); ?></h2>
+<h2><?php esc_html_e( 'Which subscribers do you like to export?', 'mailster' ); ?><?php echo mailster()->beacon( '611bbdf3f886c9486f8d9959' ); ?></h2>
 
 <form method="post" id="export-subscribers">
 		<?php wp_nonce_field( 'mailster_nonce' ); ?>

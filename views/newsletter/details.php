@@ -11,6 +11,9 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 ?>
 
 <?php if ( $editable ) : ?>
+
+	<?php echo mailster()->beacon( array( '611bb545b55c2b04bf6df0f3', '611bb88f21ef206e5592c30e', '611bb745b37d837a3d0e479a', '611bb4cfb37d837a3d0e477b' ), true ); ?>
+
 <table class="form-table">
 		<tbody>
 

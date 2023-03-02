@@ -633,8 +633,10 @@ if ( $old_version ) {
 
 		case '3.2.0':
 			mailster( 'forms' )->block_forms_message( null, false, null );
-
-
+		case '3.2.1':
+		case '3.2.2':
+		case '3.2.3':
+		case '3.2.4':
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
