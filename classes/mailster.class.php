@@ -306,7 +306,11 @@ class Mailster {
 
 
 	public function admin_body_class( $classes = '' ) {
-		if ( ! ( $mailster_notices = get_option( 'mailster_notices' ) ) ) {
+
+		global $mailster_notices;
+
+		$mailster_notices = get_option( 'mailster_notices' );
+		if ( ! $mailster_notices ) {
 			return $classes;
 		}
 
@@ -334,7 +338,8 @@ class Mailster {
 
 		global $mailster_notices;
 
-		if ( ! ( $mailster_notices = get_option( 'mailster_notices' ) ) ) {
+		$mailster_notices = get_option( 'mailster_notices' );
+		if ( ! $mailster_notices ) {
 			return;
 		}
 
@@ -1372,7 +1377,7 @@ class Mailster {
 		$hidden = $hidden ? 'hidden' : '';
 
 		foreach ( (array) $ids as $id ) {
-			$return .= sprintf( ' <a class="mailster-help mailster-help-link" href="%s" data-article="%s" title="%s" %s></a>', mailster_url( 'https://kb.mailster.co/' . $id ), $id, $title, $hidden );
+			$return .= sprintf( ' <a class="mailster-help" href="%s" data-article="%s" title="%s" %s></a>', mailster_url( 'https://kb.mailster.co/' . $id ), $id, $title, $hidden );
 		}
 
 		return $return;
