@@ -333,10 +333,7 @@ mailster = (function (mailster, $, window, document) {
 		toggle = $('a.toggle-modules');
 
 	mailster.modules = mailster.modules || {};
-	mailster.modules.showSelector = !!parseInt(
-		window.getUserSetting('mailstershowmodules', 1),
-		10
-	);
+	mailster.modules.showSelector = mailster.user.get('showmodules', true);
 	mailster.modules.dragging = false;
 	mailster.modules.selected = false;
 
@@ -538,10 +535,8 @@ mailster = (function (mailster, $, window, document) {
 	function toggleModules() {
 		mailster.$.templateWrap.toggleClass('show-modules');
 		mailster.modules.showSelector = !mailster.modules.showSelector;
-		window.setUserSetting(
-			'mailstershowmodules',
-			mailster.modules.showSelector ? 1 : 0
-		);
+		mailster.user.set('showmodules', mailster.modules.showSelector);
+
 		setTimeout(function () {
 			mailster.trigger('resize');
 		}, 200);

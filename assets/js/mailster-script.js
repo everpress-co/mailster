@@ -140,13 +140,30 @@ mailster = (function (mailster, $, window, document) {
 	mailster.local = mailster.local || {};
 	mailster.session = mailster.session || {};
 
-	mailster.user.get = function (key) {
+	mailster.user.get = function (key, def) {
 		key = 'mailster_' + key;
-		return window.getUserSetting(key);
+		if (window.getUserSetting !== 'undefined') {
+			var raw = window.getUserSetting(key, def);
+			if (raw === 'true') {
+				return true;
+			} else if (raw === 'false') {
+				return false;
+			}
+			return raw;
+		}
+		return null;
 	};
 	mailster.user.set = function (key, value) {
 		key = 'mailster_' + key;
-		return window.setUserSetting(key, value);
+		if (window.setUserSetting !== 'undefined') {
+			if (value === true) {
+				value = 'true';
+			} else if (value === false) {
+				value = 'false';
+			}
+			return window.setUserSetting(key, value);
+		}
+		return null;
 	};
 
 	mailster.local.get = function (key) {
@@ -219,7 +236,9 @@ mailster = (function (mailster, $, window, document) {
 				if (textStatus == 'error' && !errorThrown) return;
 				mailster.log(response, 'error');
 				if ('JSON' == dataType) {
-					var maybe_json = response.data.match(/{(.*)}$/);
+					var maybe_json = response.data
+						? response.data.match(/{(.*)}$/)
+						: false;
 					if (maybe_json && callback) {
 						try {
 							callback.call(this, JSON.parse(maybe_json[0]));
