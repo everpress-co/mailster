@@ -75,7 +75,6 @@ mailster = (function (mailster, $, window, document) {
 			var script = document.createElement('script');
 			script.id = 'beacon';
 			script.text = `!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`;
-			script.text = `!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});`;
 			document.head.appendChild(script);
 		}
 
@@ -154,9 +153,6 @@ mailster = (function (mailster, $, window, document) {
 		if (articles.length) {
 			beacon('suggest', articles);
 		}
-
-		beacon('show-message', '9f50516e-ffdc-431a-9899-29e5d4abc385');
-		beacon('show-message', '02558a31-163d-4322-ba47-66a142338ff1');
 
 		window.mailster.beacon = beacon;
 
