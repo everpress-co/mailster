@@ -2818,12 +2818,11 @@ class MailsterAjax {
 
 				break;
 
-			case 'validation':
-				break;
 			case 'finish':
 				// maybe
 				mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
 				update_option( 'mailster_setup', time() );
+				// check for updates
 				flush_rewrite_rules();
 				break;
 			case 'delivery':
@@ -2870,7 +2869,10 @@ class MailsterAjax {
 			$email = $user->user_email;
 		}
 
-		$name = trim( wp_get_current_user()->first_name . ' ' . wp_get_current_user()->last_name );
+		$name = trim( $user->first_name . ' ' . $user->last_name );
+		if ( empty( $name ) ) {
+			$name = $user->nickname;
+		}
 
 		$return = array(
 			'name'   => $name,

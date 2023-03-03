@@ -1,6 +1,6 @@
 <?php
-	$plugin_info = mailster()->plugin_info();
-	$dateformat  = mailster( 'helper' )->dateformat();
+
+	$dateformat = mailster( 'helper' )->dateformat();
 
 	$license_email = '';
 	$license_user  = '';
@@ -44,31 +44,31 @@ if ( mailster()->is_verified() ) {
 	<?php if ( function_exists( 'wp_is_auto_update_enabled_for_type' ) && ! mailster( 'update' )->is_auto_update() ) : ?>
 	<dd><a href="<?php echo mailster( 'update' )->get_auto_update_url(); ?>" class="enable-auto-update"><?php esc_html_e( 'Enable Auto Update', 'mailster' ); ?></a></dd>
 	<?php endif; ?>
-	<dd><span class="lighter"><a href="" class="check-for-update"><?php esc_html_e( 'Check for Updates', 'mailster' ); ?></a></span>
-	</dd>
+	<!-- <dd><span class="lighter"><a href="" class="check-for-update"><?php esc_html_e( 'Check for Updates', 'mailster' ); ?></a></span>
+	</dd> -->
 </dl>
+<?php if ( mailster()->plugin_info( 'update' ) ) : ?>
 <dl class="mailster-icon mailster-update update-available">
 	<dt><?php printf( esc_html__( 'Installed Version %s', 'mailster' ), MAILSTER_VERSION ); ?></dt>
 	<dd><?php esc_html_e( 'A new Version is available', 'mailster' ); ?></dd>
-	<dd><a class="thickbox" href="<?php echo network_admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=mailster&amp;section=changelog&amp;TB_iframe=true&amp;width=772&amp;height=745' ); ?>"><?php esc_html_e( 'view changelog', 'mailster' ); ?></a> <?php esc_html_e( 'or', 'mailster' ); ?> <a href="update.php?action=upgrade-plugin&plugin=<?php echo urlencode( MAILSTER_SLUG ); ?>&_wpnonce=<?php echo wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ); ?>" class="update-button"><?php printf( esc_html__( 'update to %s now', 'mailster' ), '<span class="update-version">' . $plugin_info->new_version . '</span>' ); ?></a>
+	<dd><a href="<?php echo mailster_url( 'https://kb.mailster.co/6401de4552af714471a19027' ); ?>" data-article="6401de4552af714471a19027"><?php esc_html_e( 'view changelog', 'mailster' ); ?></a> <?php esc_html_e( 'or', 'mailster' ); ?> <a href="update.php?action=upgrade-plugin&plugin=<?php echo urlencode( MAILSTER_SLUG ); ?>&_wpnonce=<?php echo wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ); ?>" class="update-button"><?php printf( esc_html__( 'update to %s now', 'mailster' ), '<span class="update-version">' . esc_html( mailster()->plugin_info( 'new_version' ) ) . '</span>' ); ?></a>
 	</dd>
 </dl>
+<?php endif; ?>
 <dl class="mailster-icon mailster-support">
 	<dt><?php esc_html_e( 'Support', 'mailster' ); ?></dt>
-	<?php if ( mailster()->support() ) : ?>
 		<?php if ( mailster()->has_support() ) : ?>
 		<dd><span class="lighter"><?php printf( esc_html__( 'Your support expires on %s.', 'mailster' ), '<span class="">' . esc_html( date( $dateformat, mailster()->support() ) ) . '</span>' ); ?></span></dd>
-		<?php else : ?>
-		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_url( 'https://mailster.co/go/buy-support' ); ?>" class="external"><?php esc_html_e( 'Renew Support', 'mailster' ); ?></a></dd>
+		<?php elseif ( ! mailster()->support() ) : ?>
+		<dd><strong><?php esc_html_e( 'Your license doesn\'t come with support', 'mailster' ); ?></strong> &ndash; <a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
+		<?php elseif ( mailster()->support() ) : ?>
+		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
 		<?php endif; ?>
-	<?php endif; ?>
 	<dd>
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
 	<?php if ( mailster()->has_support() || ! mailster()->support() ) : ?>
-		<a href="<?php echo admin_url( 'edit.php?page=mailster-contact&post_type=newsletter' ); ?>"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
-	<?php else : ?>
-		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy-support' ); ?>" class="external"><?php esc_html_e( 'Renew Support', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_url( 'https://mailster.co/support' ); ?>"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
 	<?php endif; ?>
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>

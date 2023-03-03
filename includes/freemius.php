@@ -48,7 +48,7 @@ mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
 mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );
 function mailster_legacy_license_key( $key ) {
 
-	$key = trim($key);
+	$key = trim( $key );
 
 	// check for UUIDv4 (Envato License)
 	if ( ! preg_match( '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/', $key ) ) {
@@ -57,10 +57,13 @@ function mailster_legacy_license_key( $key ) {
 
 	$response = mailster( 'convert' )->convert( null, $key );
 
-	if ( ! is_wp_error( $response ) ) {
+	error_log( print_r( $response, true ) );
+
+	if ( is_wp_error( $response ) ) {
+		set_transient( 'mailster_last_legacy_key_error', $response, 10 );
+	} else {
 		$key = $response->data->secret_key;
 	}
-
 	return $key;
 }
 
@@ -90,6 +93,20 @@ function mailster_add_diagnostic_permission( $permissions ) {
 	}
 
 	return $permissions;
+}
+
+// change length of licenses keys to accept the one from Envato 36 but allow some whitespace
+mailster_freemius()->add_filter( 'opt_in_error_message', 'mailster_freemius_opt_in_error_message' );
+function mailster_freemius_opt_in_error_message( $error ) {
+
+	error_log( print_r( $error, true ) );
+
+	$last_error = get_transient( 'mailster_last_legacy_key_error' );
+	if ( $last_error ) {
+		$error = $last_error->get_error_message();
+		delete_transient( 'mailster_last_legacy_key_error' );
+	}
+	return $error;
 }
 
 // change length of licenses keys to accept the one from Envato 36 but allow some whitespace

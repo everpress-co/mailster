@@ -268,6 +268,12 @@ class MailsterUpdate {
 		}
 
 		$res->homepage = mailster_url( $res->homepage );
+		$res->author   = strip_tags( $res->author );
+
+		// remove the rating from the repo version
+		$res->rating      = null;
+		$res->ratings     = array();
+		$res->num_ratings = 0;
 
 		$res->banners = array(
 			'low'  => 'https://static.mailster.co/images/plugin-header-772x250.png',

@@ -61,14 +61,15 @@ class MailsterConvert {
 		}
 
 		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
-		$endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
 
 		$url = add_query_arg(
 			array(
 				'version'     => MAILSTER_VERSION,
 				'license'     => $license,
 				'email'       => $email,
-				'redirect_to' => rawurlencode( admin_url( 'admin.php?page=mailster_dashboard' ) ),
+				// 'redirect_to' => rawurlencode( admin_url( 'admin.php?page=mailster_dashboard' ) ),
+				'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
 			),
 			$endpoint
 		);
@@ -83,7 +84,6 @@ class MailsterConvert {
 		$body     = wp_remote_retrieve_body( $response );
 		$response = json_decode( $body );
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			error_log( print_r( $body, true ) );
 			return new WP_Error( 'no_json', 'Response is invalid: ' . json_last_error_msg() );
 		}
 
@@ -93,21 +93,56 @@ class MailsterConvert {
 
 		$is_marketing_allowed = true;
 
+		$this->clear_fs_cache();
 		$migrate = mailster_freemius()->activate_migrated_license( $response->data->secret_key, $is_marketing_allowed );
 
 		if ( is_wp_error( $migrate ) ) {
 			return $migrate;
 		}
 
-		if ( strtotime( $response->data->support ) > time() ) {
-			update_option( 'mailster_support', strtotime( $response->data->support ) );
+		if ( $response->data->org_support ) {
+			update_option( 'mailster_support', strtotime( $response->data->org_support ) );
 		}
 
+		mailster_remove_notice( 'mailster_freemius' );
 		$response->migrate = $migrate;
 
-		mailster_remove_notice( 'mailster_freemius' );
-
 		return $response;
+
+	}
+
+	private function clear_fs_cache( $slug = 'mailster', $plugin_id = 12132 ) {
+
+		if ( $fs_accounts = get_option( 'fs_accounts' ) ) {
+			if ( isset( $fs_accounts['id_slug_type_path_map'][ $plugin_id ] ) ) {
+				unset( $fs_accounts['id_slug_type_path_map'][ $plugin_id ] );
+			}
+			if ( isset( $fs_accounts['user_id_license_ids_map'][ $plugin_id ] ) ) {
+				unset( $fs_accounts['user_id_license_ids_map'][ $plugin_id ] );
+			}
+			if ( isset( $fs_accounts['all_licenses'][ $plugin_id ] ) ) {
+				unset( $fs_accounts['all_licenses'][ $plugin_id ] );
+			}
+			if ( isset( $fs_accounts['updates'][ $plugin_id ] ) ) {
+				unset( $fs_accounts['updates'][ $plugin_id ] );
+			}
+			if ( isset( $fs_accounts['plans'][ $slug ] ) ) {
+				unset( $fs_accounts['plans'][ $slug ] );
+			}
+			if ( isset( $fs_accounts['plugins'][ $slug ] ) ) {
+				unset( $fs_accounts['plugins'][ $slug ] );
+			}
+			if ( isset( $fs_accounts['sites'][ $slug ] ) ) {
+				unset( $fs_accounts['sites'][ $slug ] );
+			}
+			if ( isset( $fs_accounts['plugin_data'][ $slug ] ) ) {
+				unset( $fs_accounts['plugin_data'][ $slug ] );
+			}
+			if ( isset( $fs_accounts['admin_notices'][ $slug ] ) ) {
+				unset( $fs_accounts['admin_notices'][ $slug ] );
+			}
+			update_option( 'fs_accounts', $fs_accounts );
+		}
 
 	}
 

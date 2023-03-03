@@ -212,7 +212,7 @@ class MailsterSettings {
 			'dkim_passphrase'                    => '',
 
 			'usage_tracking'                     => false,
-			'mailster_branding'                  => true,
+			'mailster_branding'                  => false,
 			'disable_cache'                      => false,
 			'shortcodes'                         => false,
 			'remove_data'                        => false,

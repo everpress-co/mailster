@@ -250,7 +250,7 @@ mailster = (function (mailster, $, window, document) {
 				}
 				errorCallback &&
 					errorCallback.call(this, jqXHR, textStatus, errorThrown);
-				alert(
+				console.error(
 					textStatus +
 						' ' +
 						jqXHR.status +

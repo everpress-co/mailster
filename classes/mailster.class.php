@@ -2820,45 +2820,41 @@ class Mailster {
 	 */
 	public function plugin_info( $field = null, $force = false ) {
 
-		if ( $force ) {
-			do_action( 'updatecenterplugin_check' );
-		}
-
 		$plugins = get_site_transient( 'update_plugins' );
 
 		if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {
-			$plugin_info = $plugins->response[ MAILSTER_SLUG ];
+			$info = $plugins->response[ MAILSTER_SLUG ];
 		} elseif ( isset( $plugins->no_update[ MAILSTER_SLUG ] ) ) {
-			$plugin_info = $plugins->no_update[ MAILSTER_SLUG ];
+			$info = $plugins->no_update[ MAILSTER_SLUG ];
 		} else {
 			return null;
 		}
 
-		if ( function_exists( 'mailster_freemius' ) ) {
-			$delay = $force ? 0 : HOUR_IN_SECONDS;
-			$data  = mailster_cache_get( 'fs_get_update' );
-			if ( $data = get_option( 'fs_accounts' ) ) {
+		$info->support = 0;
+		if ( ! $info->support ) {
+			$info->support = (int) get_option( 'mailster_support' );
+		}
 
-				$plugin_id = $data['plugins']['mailster']->id;
+		$info->new_version = MAILSTER_VERSION;
+		$info->update      = false;
 
-				$plugin_info->update      = false;
-				$plugin_info->last_update = $data['plugin_data']['mailster']['sync_cron']->timestamp;
+		// wp repo has Id
+		if ( ! isset( $info->id ) ) {
+			if ( false === ( $data = get_transient( 'mailster_freemius_info' ) ) || $force ) {
 
-				if ( ! empty( $data['updates'][ $plugin_id ] ) ) {
-					$data                     = $data['updates'][ $plugin_id ];
-					$plugin_info->update      = true;
-					$plugin_info->package     = $data->url;
-					$plugin_info->new_version = $data->version;
-					$plugin_info->last_update = $data->updated;
-				}
+				$data = mailster_freemius()->get_update( false, false );
+				set_transient( 'mailster_freemius_info', $data, $data ? HOUR_IN_SECONDS : 20 );
 			}
+			$info->new_version = $data->version;
+			$info->update      = $data->updated;
+
 		}
 
 		if ( is_null( $field ) ) {
-			return $plugin_info;
+			return $info;
 		}
-		if ( isset( $plugin_info->{$field} ) ) {
-			return $plugin_info->{$field};
+		if ( isset( $info->{$field} ) ) {
+			return $info->{$field};
 		}
 
 		return null;
@@ -2961,17 +2957,15 @@ class Mailster {
 
 	public function has_support( $force = false ) {
 
-		return mailster_freemius()->is_premium();
+		$support = $this->support( $force );
+
+		return time() < $support;
 
 	}
 
 	public function support( $force = false ) {
 
 		$support = (int) $this->plugin_info( 'support', $force );
-
-		if ( $support ) {
-			$support += DAY_IN_SECONDS;
-		}
 
 		return $support;
 

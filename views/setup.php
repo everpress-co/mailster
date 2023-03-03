@@ -149,7 +149,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 			</table>
 
-			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/611bb5296ffe270af2a99926' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
+			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/611bb5296ffe270af2a99926' ) . '" data-article="611bb5296ffe270af2a99926">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
 
 			</div>
 

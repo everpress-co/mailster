@@ -89,7 +89,6 @@ class MailsterDashboard {
 
 		$this->update       = mailster()->has_update();
 		$this->verified     = mailster()->is_verified();
-		$this->plugin_info  = mailster()->plugin_info();
 		$this->is_dashboard = false;
 
 		$this->screen = get_current_screen();

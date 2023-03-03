@@ -50,22 +50,6 @@ class MailsterLicense {
 
 	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {
 
-		if ( $fs_accounts = get_option( 'fs_accounts' ) ) {
-			if ( isset( $fs_accounts['plans']['mailster'] ) ) {
-				unset( $fs_accounts['plans']['mailster'] );
-			}
-			if ( isset( $fs_accounts['plugins']['mailster'] ) ) {
-				unset( $fs_accounts['plugins']['mailster'] );
-			}
-			if ( isset( $fs_accounts['sites']['mailster'] ) ) {
-				unset( $fs_accounts['sites']['mailster'] );
-			}
-			if ( isset( $fs_accounts['plugin_data']['mailster'] ) ) {
-				unset( $fs_accounts['plugin_data']['mailster'] );
-			}
-			update_option( 'fs_accounts', $fs_accounts );
-		}
-
 		$this->sdk();
 
 		// at this point mailster_freemius is the freemius SDK
@@ -99,6 +83,13 @@ class MailsterLicense {
 
 	public function add_action( $hook, $callback, $priority = 10, $arguments = 1 ) {
 		$this->actions[] = func_get_args();
+	}
+
+	public function get_update() {
+		return (object) array(
+			'version' => MAILSTER_VERSION,
+			'updated' => false,
+		);
 	}
 
 	public function get_user() {
