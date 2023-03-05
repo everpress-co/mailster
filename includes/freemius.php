@@ -36,6 +36,10 @@ function mailster_freemius_connect_before() {
 
 }
 
+mailster_freemius()->add_filter( 'plugin_icon', 'mailster_freemius_custom_icon' );
+function mailster_freemius_custom_icon() {
+	return MAILSTER_DIR . 'assets/img/opt-in.png';
+}
 
 mailster_freemius()->add_action( 'after_uninstall', 'mailster_freemius_uninstall_cleanup' );
 function mailster_freemius_uninstall_cleanup() {
@@ -57,8 +61,6 @@ function mailster_legacy_license_key( $key ) {
 
 	$response = mailster( 'convert' )->convert( null, $key );
 
-	error_log( print_r( $response, true ) );
-
 	if ( is_wp_error( $response ) ) {
 		set_transient( 'mailster_last_legacy_key_error', $response, 10 );
 	} else {
@@ -76,12 +78,23 @@ function mailster_add_helpscount_permission( $permissions ) {
 		'label'      => mailster_freemius()->get_text_inline( 'Help Scout', 'helpscout' ),
 		'desc'       => mailster_freemius()->get_text_inline( 'Loading Help Scout\'s beacon for easy support access', 'permissions-helpscout' ),
 		'optional'   => true,
-		// 'priority'   => 16,
 	);
 
 	return $permissions;
 }
+mailster_freemius()->add_action( 'connect/after_license_input', 'mailster_add_link_for_envato' );
+function mailster_add_link_for_envato() {
+	if ( ! MAILSTER_ENVATO ) {
+		return;
+	}
+	?>
+	<style>.fs-license-key-container a.show-license-resend-modal{display: none;}</style>
+	<div class="fs-license-key-container">
+		<a href="https://kb.mailster.co/where-is-my-purchasecode/" target="_blank"><?php esc_html_e( "Can't find your license key?", 'mailster' ); ?></a>
+	</div>
+	<?php
 
+}
 
 
 mailster_freemius()->add_filter( 'permission_list', 'mailster_add_diagnostic_permission' );
@@ -98,8 +111,6 @@ function mailster_add_diagnostic_permission( $permissions ) {
 // change length of licenses keys to accept the one from Envato 36 but allow some whitespace
 mailster_freemius()->add_filter( 'opt_in_error_message', 'mailster_freemius_opt_in_error_message' );
 function mailster_freemius_opt_in_error_message( $error ) {
-
-	error_log( print_r( $error, true ) );
 
 	$last_error = get_transient( 'mailster_last_legacy_key_error' );
 	if ( $last_error ) {
