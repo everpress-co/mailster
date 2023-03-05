@@ -811,7 +811,6 @@ class MailsterPlaceholder {
 								if ( $relative_to_absolute ) {
 									continue;
 								}
-
 								$post = get_post( $post_id_or_identifier );
 
 							}
@@ -835,7 +834,7 @@ class MailsterPlaceholder {
 
 							if ( ! empty( $post ) ) {
 
-								if ( ! empty( $post->ID ) ) {
+								if ( is_numeric( $post->ID ) ) {
 
 									if ( 'attachment' == $post->post_type ) {
 										$thumb_id = $post->ID;
