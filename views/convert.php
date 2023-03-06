@@ -25,7 +25,7 @@ if ( empty( $user_email ) ) {
 			</p>
 			<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Migrate now', 'mailster' ); ?>">
 			<p class="howto">
-				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" data-article="63fe029de6d6615225474599"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
+				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" data-article="63fe029de6d6615225474599">Why is this step required?</a>
 			</p>
 		</form>
 		<form class="registration_complete">
@@ -38,10 +38,7 @@ if ( empty( $user_email ) ) {
 			<p class="howto">Congratulation you know have a <code class="convert-plan"></code> Plan!</p>
 			<ul class="result"></ul>
 			<p><a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ); ?>" class="button button-primary">Your Freemius Account</a> <a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="button button-secondary">Mailster Dashboard</a></p>
-			
-			<p class="howto">
-				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" data-article="63fe029de6d6615225474599"><?php esc_html_e( 'What is this all about?', 'mailster' ); ?></a>
-			</p>
+
 		</form>
 	</div>
 

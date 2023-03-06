@@ -37,7 +37,7 @@ class MailsterLicense {
 					'pricing'     => false,
 					'affiliation' => false,
 					'first-path'  => 'admin.php?page=mailster_dashboard',
-					'account'     => false,
+					'account'     => true,
 				),
 			)
 		);
@@ -45,7 +45,17 @@ class MailsterLicense {
 		// Signal that SDK was initiated.
 		do_action( 'mailster_freemius_loaded' );
 
+		add_action( 'load-newsletter_page_mailster-pricing', array( $this, '_maybe_redirect_to_checkout' ) );
+
 		return $mailster_freemius;
+	}
+
+	public function _maybe_redirect_to_checkout() {
+
+		if ( ! isset( $_GET['plan_id'] ) ) {
+			mailster_redirect( mailster_freemius_checkout_url() );
+		}
+
 	}
 
 	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {

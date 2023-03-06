@@ -44,7 +44,7 @@ class MailsterConvert {
 		$msg  = '<h2>' . esc_html__( '[Action Required] We need to transfer your Mailster license!', 'mailster' ) . '</h2>';
 		$msg .= '<p>' . esc_html__( 'Hey there! Just wanted to give you a heads up that we\'re changing our license provider.', 'mailster' ) . '</p>';
 		$msg .= '<p>' . esc_html__( 'As part of the process, we\'ll need your consent for a quick manual step. Thanks for your help in advance!', 'mailster' ) . '</p>';
-		$msg .= '<p><a class="button button-primary" href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'Convert now', 'mailster' ) . '</a> or <a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" data-article="63fe029de6d6615225474599">' . esc_html__( 'read more about it', 'mailster' ) . '</a></p>';
+		$msg .= '<p><a class="button button-primary button-hero" href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'Convert now', 'mailster' ) . '</a> or <a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" data-article="63fe029de6d6615225474599">' . esc_html__( 'read more about it', 'mailster' ) . '</a></p>';
 
 		mailster_notice( $msg, 'info', false, 'mailster_freemius' );
 
@@ -61,14 +61,13 @@ class MailsterConvert {
 		}
 
 		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
-		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+		$endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
 
 		$url = add_query_arg(
 			array(
 				'version'     => MAILSTER_VERSION,
 				'license'     => $license,
 				'email'       => $email,
-				// 'redirect_to' => rawurlencode( admin_url( 'admin.php?page=mailster_dashboard' ) ),
 				'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
 			),
 			$endpoint
@@ -91,10 +90,8 @@ class MailsterConvert {
 			return new WP_Error( $code, $response->message );
 		}
 
-		$is_marketing_allowed = true;
-
 		$this->clear_fs_cache();
-		$migrate = mailster_freemius()->activate_migrated_license( $response->data->secret_key, $is_marketing_allowed );
+		$migrate = mailster_freemius()->activate_migrated_license( $response->data->secret_key, (bool) $response->data->marketing );
 
 		if ( is_wp_error( $migrate ) ) {
 			return $migrate;

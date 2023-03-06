@@ -25,7 +25,7 @@ if ( mailster()->is_verified() ) {
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
 		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ); ?>"><?php esc_html_e( 'Account', 'mailster' ); ?></a> |
 		<?php endif; ?>
-		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
+		<a href="<?php echo mailster_freemius_checkout_url(); ?>" ><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
 	</dd>
 </dl>
 <dl class="mailster-icon mailster-not-valid not-valid">
@@ -35,7 +35,7 @@ if ( mailster()->is_verified() ) {
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
 		<a href="<?php echo mailster_url( 'https://mailster.co/manage-licenses/' ); ?>" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
 		<?php endif; ?>
-		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
+		<a href="<?php echo mailster_freemius_checkout_url(); ?>"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
 	</dd>
 </dl>
 <dl class="mailster-icon mailster-update update-not-available">
@@ -57,12 +57,14 @@ if ( mailster()->is_verified() ) {
 <?php endif; ?>
 <dl class="mailster-icon mailster-support">
 	<dt><?php esc_html_e( 'Support', 'mailster' ); ?></dt>
-		<?php if ( mailster()->has_support() ) : ?>
+		<?php if ( mailster()->lifetime_support() ) : ?>
+		<dd><strong><?php esc_html_e( 'Your license come with support', 'mailster' ); ?></strong></dd>
+		<?php elseif ( mailster()->has_support() ) : ?>
 		<dd><span class="lighter"><?php printf( esc_html__( 'Your support expires on %s.', 'mailster' ), '<span class="">' . esc_html( date( $dateformat, mailster()->support() ) ) . '</span>' ); ?></span></dd>
 		<?php elseif ( ! mailster()->support() ) : ?>
-		<dd><strong><?php esc_html_e( 'Your license doesn\'t come with support', 'mailster' ); ?></strong> &ndash; <a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
+		<dd><strong><?php esc_html_e( 'Your license doesn\'t come with support', 'mailster' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius_checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
 		<?php elseif ( mailster()->support() ) : ?>
-		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
+		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius_checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
 		<?php endif; ?>
 	<dd>
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |

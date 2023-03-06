@@ -2830,25 +2830,35 @@ class Mailster {
 			return null;
 		}
 
-		$info->support = 0;
-		if ( ! $info->support ) {
-			$info->support = (int) get_option( 'mailster_support' );
+		if ( $force ) {
+			mailster_freemius()->_sync_licenses();
+		}
+
+		$license = mailster_freemius()->_get_license();
+
+		if ( $license && $license->expiration ) {
+			$info->support = strtotime( $license->expiration );
+		} else {
+			$info->support = true;
 		}
 
 		$info->new_version = MAILSTER_VERSION;
 		$info->update      = false;
 
-		// wp repo has Id
-		if ( ! isset( $info->id ) ) {
-			if ( false === ( $data = get_transient( 'mailster_freemius_info' ) ) || $force ) {
+		// // wp repo has Id
+		// //if ( ! isset( $info->id ) ) {
+		// if ( false === ( $data = get_transient( 'mailster_freemius_info' ) ) || $force ) {
 
-				$data = mailster_freemius()->get_update( false, false );
-				set_transient( 'mailster_freemius_info', $data, $data ? HOUR_IN_SECONDS : 20 );
-			}
-			$info->new_version = $data->version;
-			$info->update      = $data->updated;
+		// $data = mailster_freemius()->get_update( false, false );
+		// set_transient( 'mailster_freemius_info', $data, $data ? HOUR_IN_SECONDS : 20 );
+		// }
+		// error_log( print_r($data, true) );
+		// $info->new_version = $data->version;
+		// $info->update      = $data->updated;
 
-		}
+		// //}
+
+		// error_log( print_r($info, true) );
 
 		if ( is_null( $field ) ) {
 			return $info;
@@ -2880,21 +2890,23 @@ class Mailster {
 
 		$user = mailster_freemius()->get_user();
 
-		return $user ? trim( $user->first . ' ' . $user->last ) : $fallback;
+		return $user ? $user->get_name() : $fallback;
 	}
 
 
 
 	public function is_verified( $force = false ) {
 
-		return mailster_freemius()->has_active_valid_license();
+		$license = mailster_freemius()->_get_license();
+
+		return is_object( $license );
 
 	}
 
 
 	public function is_email_verified( $force = false ) {
 
-		return mailster_freemius()->has_active_valid_license();
+		return $this->is_verified();
 
 	}
 
@@ -2955,9 +2967,23 @@ class Mailster {
 
 	}
 
+	public function lifetime_support( $force = false ) {
+		$support = $this->support( $force );
+
+		return $support === true;
+	}
+
 	public function has_support( $force = false ) {
 
+		if ( $support = get_option( 'mailster_support' ) ) {
+			return time() < $support;
+		}
+
 		$support = $this->support( $force );
+
+		if ( $support === true ) {
+			return true;
+		}
 
 		return time() < $support;
 
@@ -2965,7 +2991,7 @@ class Mailster {
 
 	public function support( $force = false ) {
 
-		$support = (int) $this->plugin_info( 'support', $force );
+		$support = $this->plugin_info( 'support', $force );
 
 		return $support;
 

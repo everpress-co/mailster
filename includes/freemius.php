@@ -36,6 +36,30 @@ function mailster_freemius_connect_before() {
 
 }
 
+mailster_freemius()->add_filter( 'checkout_url', 'mailster_freemius_checkout_url' );
+function mailster_freemius_checkout_url() {
+
+	if ( mailster_freemius()->is_whitelabeled() ) {
+		return mailster_url( 'https://mailster.co/go/buy' );
+	}
+
+	return add_query_arg(
+		array(
+			'page'          => 'mailster-pricing',
+			'checkout'      => 'true',
+			'plan_id'       => 20601,
+			'plan_name'     => 'standard',
+			'billing_cycle' => 'annual',
+			'pricing_id'    => 23716,
+			'currency'      => 'usd',
+			'post_type'     => 'newsletter',
+		),
+		admin_url( 'edit.php' )
+	);
+
+}
+
+
 mailster_freemius()->add_filter( 'plugin_icon', 'mailster_freemius_custom_icon' );
 function mailster_freemius_custom_icon() {
 	return MAILSTER_DIR . 'assets/img/opt-in.png';
@@ -47,6 +71,7 @@ function mailster_freemius_uninstall_cleanup() {
 }
 
 mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
+mailster_freemius()->add_action( 'hide_account_tabs', '__return_true' );
 
 
 mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );
