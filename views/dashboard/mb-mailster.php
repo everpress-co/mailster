@@ -23,10 +23,10 @@ if ( mailster()->is_verified() ) {
 	<?php endif; ?>
 	<dd>
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
-		<a href="https://mailster.co/manage-licenses/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_url( 'https://mailster.co/manage-licenses/' ); ?>" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard&reset_license=' . wp_create_nonce( 'mailster_reset_license' ) ); ?>" class="reset-license"><?php esc_html_e( 'Reset License', 'mailster' ); ?></a> |
 		<?php endif; ?>
-		<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
+		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
 	</dd>
 </dl>
 <dl class="mailster-icon mailster-not-valid not-valid">
@@ -34,9 +34,9 @@ if ( mailster()->is_verified() ) {
 	<dd><?php esc_html_e( 'Your license has not been verified', 'mailster' ); ?></dd>
 	<dd>
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
-		<a href="https://mailster.co/manage-licenses/" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_url( 'https://mailster.co/manage-licenses/' ); ?>" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
 		<?php endif; ?>
-		<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
+		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy' ); ?>" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
 	</dd>
 </dl>
 <dl class="mailster-icon mailster-update update-not-available">
@@ -61,16 +61,16 @@ if ( mailster()->is_verified() ) {
 		<?php if ( mailster()->has_support() ) : ?>
 		<dd><span class="lighter"><?php printf( esc_html__( 'Your support expires on %s.', 'mailster' ), '<span class="">' . esc_html( date( $dateformat, mailster()->support() ) ) . '</span>' ); ?></span></dd>
 		<?php else : ?>
-		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="https://mailster.co/go/buy-support?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Renew Support', 'mailster' ); ?></a></dd>
+		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_url( 'https://mailster.co/go/buy-support' ); ?>" class="external"><?php esc_html_e( 'Renew Support', 'mailster' ); ?></a></dd>
 		<?php endif; ?>
 	<?php endif; ?>
 	<dd>
-		<a href="https://docs.mailster.co/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
-		<a href="https://kb.mailster.co/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_url( 'https://kb.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
 	<?php if ( mailster()->has_support() || ! mailster()->support() ) : ?>
-		<a href="https://mailster.co/support/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_url( 'https://mailster.co/support/' ); ?>" class="external"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
 	<?php else : ?>
-		<a href="https://mailster.co/go/buy-support?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Renew Support', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_url( 'https://mailster.co/go/buy-support' ); ?>" class="external"><?php esc_html_e( 'Renew Support', 'mailster' ); ?></a> |
 	<?php endif; ?>
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>

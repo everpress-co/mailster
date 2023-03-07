@@ -16,7 +16,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		$('#use-it').on('click', function () {
-			tb_show(
+			mailster.util.tb_show(
 				mailster.l10n.form.useit,
 				'#TB_inline?&width=' +
 					Math.min(1200, mailster.$.window.width() - 50) +

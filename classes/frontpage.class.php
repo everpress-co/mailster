@@ -192,7 +192,7 @@ class MailsterFrontpage {
 			if ( preg_match( '#^(index\.php/)?mailster/#', $wp->request ) && ! isset( $_REQUEST['mailster_error'] ) ) {
 				flush_rewrite_rules();
 				$redirect_to = add_query_arg( array( 'mailster_error' => 1 ), home_url( $wp->request ) );
-				wp_redirect( $redirect_to, 302 );
+				mailster_redirect( $redirect_to, 302 );
 				exit;
 			}
 		}
@@ -229,7 +229,7 @@ class MailsterFrontpage {
 
 		if ( isset( $_GET['mailster_unsubscribe'] ) ) {
 			if ( mailster( 'helper' )->using_permalinks() ) {
-				wp_redirect( $this->get_link( 'unsubscribe', $_GET['mailster_unsubscribe'], $_GET['k'] ), 301 );
+				mailster_redirect( $this->get_link( 'unsubscribe', $_GET['mailster_unsubscribe'], $_GET['k'] ), 301 );
 				exit;
 			} else {
 				set_query_var( '_mailster_page', 'unsubscribe' );
@@ -238,7 +238,7 @@ class MailsterFrontpage {
 			}
 		} elseif ( isset( $_GET['mailster_profile'] ) ) {
 			if ( mailster( 'helper' )->using_permalinks() ) {
-				wp_redirect( $this->get_link( 'profile', $_GET['mailster_profile'] ), 301 );
+				mailster_redirect( $this->get_link( 'profile', $_GET['mailster_profile'] ), 301 );
 				exit;
 			} else {
 				set_query_var( '_mailster_page', 'profile' );
@@ -247,7 +247,7 @@ class MailsterFrontpage {
 			}
 		} elseif ( isset( $_GET['mailster_confirm'] ) ) {
 			if ( mailster( 'helper' )->using_permalinks() ) {
-				wp_redirect( $this->get_link( 'confirm', $_GET['mailster_confirm'] ), 301 );
+				mailster_redirect( $this->get_link( 'confirm', $_GET['mailster_confirm'] ), 301 );
 				exit;
 			} else {
 				set_query_var( '_mailster_page', 'confirm' );
@@ -487,7 +487,7 @@ class MailsterFrontpage {
 			$to = apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber_id, $campaign_index );
 			$to = str_replace( '&amp;', '&', $to );
 			// redirect in any case with 307 (temporary moved) to force tracking
-			header( 'Location: ' . $to, true, 307 );
+			mailster_redirect( $to, 307 );
 		}
 
 		exit;
@@ -533,7 +533,7 @@ class MailsterFrontpage {
 				if ( ! empty( $hash ) && strpos( $unsubscribe_url, $wp->request ) === false ) {
 					$this->setcookie( $hash );
 					$redirect_to = $this->get_link( 'unsubscribe', $hash, get_query_var( '_mailster_extra' ) );
-					wp_redirect( $redirect_to, 307 );
+					mailster_redirect( $redirect_to, 307 );
 					exit;
 				}
 
@@ -549,7 +549,7 @@ class MailsterFrontpage {
 				if ( ! empty( $hash ) && strpos( $profile_url, $wp->request ) === false ) {
 					$this->setcookie( $hash );
 					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $hash ), get_query_var( '_mailster_extra' ) );
-					wp_redirect( $redirect_to, 307 );
+					mailster_redirect( $redirect_to, 307 );
 					exit;
 				}
 
@@ -567,7 +567,7 @@ class MailsterFrontpage {
 
 					if ( empty( $hash ) ) {
 
-						wp_redirect( $this->get_link(), 307 );
+						mailster_redirect( $this->get_link(), 307 );
 						exit;
 					}
 				}
@@ -582,7 +582,7 @@ class MailsterFrontpage {
 				// redirect if no such subscriber
 				if ( ! $subscriber ) {
 
-					wp_redirect( $this->get_link(), 307 );
+					mailster_redirect( $this->get_link(), 307 );
 					exit;
 				}
 
@@ -646,7 +646,7 @@ class MailsterFrontpage {
 						}
 					} else {
 
-						wp_redirect( $this->get_link(), 307 );
+						mailster_redirect( $this->get_link(), 307 );
 						exit;
 					}
 				}
@@ -661,7 +661,7 @@ class MailsterFrontpage {
 				 */
 				$redirect_to = apply_filters( 'mailster_confirm_target', $target, $subscriber_id );
 
-				wp_redirect( $redirect_to, 307 );
+				mailster_redirect( $redirect_to, 307 );
 				exit;
 			break;
 
@@ -792,9 +792,7 @@ class MailsterFrontpage {
 
 					$content = $placeholder->get_content();
 					$content = mailster( 'helper' )->strip_structure_html( $content );
-					$search  = array( '<a ', '@media only screen and (max-device-width:' );
-					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );
-					$content = str_replace( $search, $replace, $content );
+					$content = links_add_target( $content, '_top' );
 
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );

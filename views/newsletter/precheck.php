@@ -27,7 +27,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 ?>
 <div id="mailster_precheck_wrap" style="display:none;">
 	<div class="mailster-precheck<?php echo ( $terms_agreed ) ? ' precheck-terms-agreed' : ''; ?>">
-		<div class="precheck-bar">
+		<div class="precheck-bar">			
 			<ul class="precheck-emailheader">
 				<li><label><?php esc_html_e( 'From', 'mailster' ); ?>:</label><span class="precheck-from"></span></li>
 				<li><label><?php esc_html_e( 'Subject', 'mailster' ); ?>:</label><span class="precheck-subject"></span></li>
@@ -42,6 +42,8 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 				<a class="button precheck-switch mailster-icon precheck-switch-desktop active" data-dimensions='{"w":"100%","h":"100%"}'></a>
 				<a class="button precheck-switch mailster-icon precheck-switch-mobile" data-dimensions='{"w":319,"h":639}'></a>
 				<a class="button precheck-switch mailster-icon precheck-switch-landscape" data-dimensions='{"w":639,"h":319}'></a>
+
+
 			</div>
 			<ul class="precheck-run">
 				<li class="alignright"><span class="spinner" id="precheck-ajax-loading"></span><button class="button button-primary precheck-run-btn"><?php esc_html_e( 'Precheck Campaign', 'mailster' ); ?></button></li>
@@ -63,6 +65,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			<div class="precheck-tos-box">
 
 				<?php if ( mailster()->is_verified() ) : ?>
+					<?php echo mailster()->beacon( array( '63fa7367e6d6615225473a9b' ) ); ?>
 					<h3><?php esc_html_e( 'Precheck Terms of Service.', 'mailster' ); ?></h3>
 					<?php $terms = file_get_contents( MAILSTER_DIR . 'licensing/Precheck.txt' ); ?>
 					<?php echo wpautop( $terms, false ); ?>
@@ -79,6 +82,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 
 			</div>
 			<div class="precheck-score">
+				<?php echo mailster()->beacon( array( '63fa7367e6d6615225473a9b' ) ); ?>
 				<div class="precheck-status-icon"></div>
 				<h3 class="precheck-status"><?php esc_html_e( 'Ready for Precheck!', 'mailster' ); ?></h3>
 			</div>

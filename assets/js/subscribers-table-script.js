@@ -8,7 +8,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$.document
 		.on('click', '#filter, .mailster-condition-render-group', function () {
-			tb_show(
+			mailster.util.tb_show(
 				mailster.l10n.subscribers.filters,
 				'#TB_inline?x=1&width=720&height=520&inlineId=mailster-subscriber-conditions',
 				null

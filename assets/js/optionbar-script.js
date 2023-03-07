@@ -180,7 +180,7 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	mailster.optionbar.openSaveDialog = function () {
-		tb_show(
+		mailster.util.tb_show(
 			mailster.l10n.campaigns.save_template,
 			'#TB_inline?x=1&width=480&height=320&inlineId=mailster_template_save',
 			null

@@ -1,6 +1,6 @@
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-notification">
-		<th scope="row"><?php esc_html_e( 'Notification', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Notification', 'mailster' ); ?> <?php echo mailster()->beacon( '611bb65e6ffe270af2a99930' ); ?></th>
 		<td>
 		<p>
 			<label><input type="hidden" name="mailster_options[subscriber_notification]" value=""><input type="checkbox" name="mailster_options[subscriber_notification]" value="1" <?php checked( mailster_option( 'subscriber_notification' ) ); ?>> <?php esc_html_e( 'Send a notification of new subscribers to following receivers (comma separated)', 'mailster' ); ?> <input type="text" name="mailster_options[subscriber_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'subscriber_notification_receviers' ) ); ?>" class="regular-text"></label>
@@ -37,7 +37,7 @@
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-list-based-subscription">
-		<th scope="row"><?php esc_html_e( 'List Based Subscription', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'List Based Subscription', 'mailster' ); ?> <?php echo mailster()->beacon( '611bae98f886c9486f8d98a9' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[list_based_opt_in]" value=""><input type="checkbox" name="mailster_options[list_based_opt_in]" value="1" <?php checked( mailster_option( 'list_based_opt_in' ) ); ?>> <?php esc_html_e( 'Subscribers sign up on a per list basis instead of globally.', 'mailster' ); ?></label>
 		</td>
 	</tr>
@@ -65,6 +65,8 @@
 		<th scope="row"><?php esc_html_e( 'Custom Fields', 'mailster' ); ?>:
 			<p class="description"><?php esc_html_e( 'Custom field tags are individual tags for each subscriber. You can ask for them on subscription and/or make it a required field.', 'mailster' ); ?></p>
 			<p class="description"><?php esc_html_e( 'You have to enable Custom fields for each form:', 'mailster' ); ?><br><a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'Forms', 'mailster' ); ?></a></p>
+			<?php echo mailster()->beacon( '611bb23bb37d837a3d0e4758', true ); ?>
+
 		</th>
 		<td>
 		<input type="hidden" name="mailster_options[custom_field][0]" value="empty">

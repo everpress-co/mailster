@@ -201,6 +201,7 @@ class MailsterForms {
 
 			add_action( 'load-' . $page, array( &$this, 'bulk_actions' ), 99 );
 			add_action( 'load-' . $page, array( &$this, 'screen_options' ) );
+			add_action( 'load-' . $page, array( &$this, 'block_forms_message' ) );
 			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
 		endif;
@@ -264,6 +265,7 @@ class MailsterForms {
 		else :
 
 			wp_enqueue_style( 'mailster-forms-table', MAILSTER_URI . 'assets/css/forms-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-helpscout' );
 
 		endif;
 
@@ -322,7 +324,7 @@ class MailsterForms {
 						mailster_notice( sprintf( esc_html__( '%d forms have been removed', 'mailster' ), count( $_POST['forms'] ) ), 'error', true );
 					}
 
-					wp_redirect( $redirect );
+					mailster_redirect( $redirect );
 					exit;
 
 				}
@@ -348,8 +350,8 @@ class MailsterForms {
 
 			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
 				( isset( $_GET['ID'] ) )
-					? wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
-					: wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+					? mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
+					: mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
 				exit;
 			}
 		}
@@ -447,17 +449,17 @@ class MailsterForms {
 
 			if ( isset( $_POST['design'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'design' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'design' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['settings'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'settings' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'settings' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['structure'] ) ) :
 
-				wp_redirect( add_query_arg( array( 'tab' => 'structure' ), $redirect ) );
+				mailster_redirect( add_query_arg( array( 'tab' => 'structure' ), $redirect ) );
 				exit;
 
 			elseif ( isset( $_POST['delete'] ) ) :
@@ -472,14 +474,14 @@ class MailsterForms {
 						do_action( 'mailster_form_delete', $form->ID );
 					}
 
-					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
 					exit;
 
 				};
 
 			endif;
 
-			wp_redirect( $redirect );
+			mailster_redirect( $redirect );
 			exit;
 
 		}
@@ -532,6 +534,19 @@ class MailsterForms {
 
 	}
 
+
+	public function block_forms_message( $hook = null, $once = true, $page = 'newsletter_page_mailster_forms' ) {
+
+		if ( ! in_array( 'mailster-block-forms/mailster-block-forms.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+			$msg  = '<h2>' . esc_html__( 'A new way to create forms for Mailster is coming!', 'mailster' ) . '</h2>';
+			$msg .= '<p>' . esc_html__( 'Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.', 'mailster' ) . '</p>';
+			$msg .= '<p><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_addons&search=mailster-block-forms&type=slug' ) . '" class="button button-primary">' . esc_html__( 'Install Mailster Block Forms', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595' ) . '" class="button button-link" data-article="63fc875152af714471a17595">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
+
+			mailster_notice( $msg, 'info', $once, 'mailster_block_form_notice', true, $page );
+
+		}
+
+	}
 
 	/**
 	 *
@@ -1309,7 +1324,7 @@ class MailsterForms {
 
 			$occurrence = array();
 
-			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit') AND post_type NOT IN ('newsletter', 'attachment')";
+			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit', 'auto-draft') AND post_type NOT IN ('newsletter', 'attachment')";
 
 			$result = $wpdb->get_results( $sql );
 
