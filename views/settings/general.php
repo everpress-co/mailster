@@ -16,7 +16,7 @@
 		<td><input type="text" name="mailster_options[send_offset]" value="<?php echo esc_attr( mailster_option( 'send_offset' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'The default delay in minutes for sending campaigns.', 'mailster' ); ?></span></td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-delivery-by-time-zone">
-		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ); ?> *</th>
+		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ); ?> *<?php echo mailster()->beacon( '63fb2e7c52af714471a1738a' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[timezone]" value=""><input type="checkbox" name="mailster_options[timezone]" value="1" <?php checked( mailster_option( 'timezone' ) ); ?>> <?php esc_html_e( 'Send Campaigns based on the subscribers timezone if known', 'mailster' ); ?></label>
 		</td>
 	</tr>
@@ -35,7 +35,7 @@
 		<td><input type="text" name="mailster_options[post_count]" value="<?php echo esc_attr( mailster_option( 'post_count' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'Number of posts or images displayed at once in the editbar.', 'mailster' ); ?></span></td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-system-mails">
-		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ); ?><a class="infolink external" href="https://kb.mailster.co/how-can-i-use-mailster-with-the-wp_mail-function/"></a>
+		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ); ?><?php echo mailster()->beacon( '611bba6ff886c9486f8d9936' ); ?></a>
 		<p class="description"><?php esc_html_e( 'Decide how Mailster uses the wp_mail function.', 'mailster' ); ?></p>
 		</th>
 		<td>
@@ -109,7 +109,7 @@
 		<td>
 		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="0" <?php checked( ! mailster_option( 'static_map' ) ); ?>> <?php esc_html_e( 'Don\'t use any static maps', 'mailster' ); ?></label></p>
 		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="osm" <?php checked( mailster_option( 'static_map' ), 'osm' ); ?>> <?php esc_html_e( 'Use OpenStreetMaps', 'mailster' ); ?></label></p>		
-		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="google" <?php checked( mailster_option( 'static_map' ), 'google' ); ?>> <?php esc_html_e( 'Use Google Maps', 'mailster' ); ?></label></p>
+		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="google" <?php checked( mailster_option( 'static_map' ), 'google' ); ?>> <?php esc_html_e( 'Use Google Maps', 'mailster' ); ?></label><?php echo mailster()->beacon( '611bb4ec21ef206e5592c2d8' ); ?></p>
 		<p class="static_map_more" <?php echo mailster_option( 'static_map' ) != 'google' ? 'style="display:none"' : ''; ?>>
 			<label><?php esc_html_e( 'Google API Key', 'mailster' ); ?><br><input type="password" name="mailster_options[google_api_key]" value="<?php echo esc_attr( mailster_option( 'google_api_key' ) ); ?>" class="regular-text" autocomplete="new-password"></label><br>
 		<span class="description">

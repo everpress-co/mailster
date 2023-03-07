@@ -89,9 +89,7 @@ class MailsterAddons {
 			$location .= '/' . $file;
 		};
 
-		mailster_require_filesystem();
-
-		global $wp_filesystem;
+		$wp_filesystem = mailster_require_filesystem();
 
 		if ( $wp_filesystem->delete( $location, true ) ) {
 
@@ -327,7 +325,7 @@ class MailsterAddons {
 			}
 		}
 
-		wp_redirect( $redirect );
+		mailster_redirect( $redirect );
 		exit;
 
 	}

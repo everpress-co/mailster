@@ -15,6 +15,7 @@
 	display: none;
 }
 [id^='mailster_'].postbox,
+[id^='acf-'].postbox,
 #postimagediv.postbox,
 #authordiv.postbox {
 	display: inherit;
@@ -611,7 +612,7 @@ textarea#head {
 	left: 0;
 	bottom: 0;
 	background-image: url(../img/inactive.png);
-	z-index: 100;
+	z-index: 1;
 }
 .timezone-enabled .utcoffset {
 	text-decoration: line-through;
@@ -632,6 +633,11 @@ textarea#head {
 .mailster_autoresponder_more,
 .autoresponder_before_after {
 	display: none;
+}
+.mailster_autoresponder_more > .mailster-help {
+	position: absolute;
+	right: 0;
+	top: -1.5em;
 }
 .autoresponder-mailster_subscriber_insert
 	.autoresponderfield-mailster_subscriber_insert,

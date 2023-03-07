@@ -251,11 +251,9 @@ class MailsterNotification {
 				$form = $this->get_form_options( $options['form'], $subscriber );
 				if ( $form->vcard ) {
 
-					global $wp_filesystem;
+					$wp_filesystem = mailster_require_filesystem();
 
-					mailster_require_filesystem();
-
-					if ( $wp_filesystem->put_contents( MAILSTER_UPLOAD_DIR . '/vCard.vcf', $form->vcard_content, FS_CHMOD_FILE ) ) {
+					if ( $wp_filesystem && $wp_filesystem->put_contents( MAILSTER_UPLOAD_DIR . '/vCard.vcf', $form->vcard_content, FS_CHMOD_FILE ) ) {
 						$content[] = MAILSTER_UPLOAD_DIR . '/vCard.vcf';
 					}
 				}
@@ -367,7 +365,7 @@ class MailsterNotification {
 	 */
 	public function send( $subscriber_id, $options ) {
 
-		$template = $options['template'];
+		$template = isset( $options['template'] ) ? $options['template'] : '';
 
 		$this->apply_options( $options );
 		if ( $subscriber_id && $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) {
@@ -448,6 +446,8 @@ class MailsterNotification {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->set_subscriber( $subscriber->ID );
+			$placeholder->set_hash( $subscriber->hash );
+			$placeholder->add_custom();
 			$placeholder->add( $userdata );
 			$placeholder->add(
 				array(
@@ -455,6 +455,21 @@ class MailsterNotification {
 					'hash'         => $subscriber->hash,
 				)
 			);
+
+			// add list unsubscribe headers
+			$listunsubscribe = array();
+			if ( mailster_option( 'mail_opt_out' ) ) {
+				$listunsubscribe_mail    = $this->mail->bouncemail ? $this->mail->bouncemail : $this->mail->from;
+				$listunsubscribe_subject = rawurlencode( 'Please remove me from the list' );
+				$listunsubscribe_link    = mailster()->get_unsubscribe_link( null, $subscriber->hash );
+				$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
+
+				$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
+			}
+			$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash ) . '>';
+
+			$this->mail->add_header( 'List-Unsubscribe', implode( ',', $listunsubscribe ) );
+
 		}
 
 		$placeholder->add(
@@ -1072,8 +1087,11 @@ class MailsterNotification {
 			if ( $i >= $limit ) {
 				break;
 			}
-			$subscriber = mailster( 'subscribers' )->get( $subscriber->ID, true );
-			$link       = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+			$subscriber = mailster( 'subscribers' )->get( $subscriber, true );
+			if ( ! $subscriber ) {
+				continue;
+			}
+			$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 			?>
 
 		<table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">

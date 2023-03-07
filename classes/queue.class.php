@@ -1054,7 +1054,7 @@ class MailsterQueue {
 			if ( is_user_logged_in() ) {
 				echo '<p>' . esc_html__( 'Another process is currently running the cron process and you have been temporary blocked to prevent duplicate emails getting sent out.', 'mailster' ) . '</p>';
 
-				echo '<p>' . sprintf( esc_html__( 'Read more about Cron Locks %s.', 'mailster' ), '<a href="https://kb.mailster.co/what-is-a-cron-lock/">' . esc_html__( 'here', 'mailster' ) . '</a>' );
+				echo '<p>' . sprintf( esc_html__( 'Read more about Cron Locks %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/what-is-a-cron-lock/' ) . '">' . esc_html__( 'here', 'mailster' ) . '</a>' );
 
 				if ( $last_hit ) {
 					echo '<p>' . sprintf(
@@ -1093,7 +1093,7 @@ class MailsterQueue {
 
 		if ( empty( $last_hit ) ) {
 			$last_hit = array(
-				'timestamp' => $microtime,
+				'timestamp' => (int) $microtime,
 				'time'      => 0,
 				'timemax'   => 0,
 				'mail'      => 0,
@@ -1102,7 +1102,7 @@ class MailsterQueue {
 
 		$last_hit = array(
 			'ip'           => mailster_get_ip(),
-			'timestamp'    => $microtime,
+			'timestamp'    => (int) $microtime,
 			'user'         => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : 'unknown',
 			'oldtimestamp' => $last_hit['timestamp'],
 			'time'         => $last_hit['timemax'],
@@ -1256,7 +1256,8 @@ class MailsterQueue {
 				} elseif ( $data->_options ) {
 
 					if ( $options = maybe_unserialize( $data->_options ) ) {
-						$result = mailster( 'notification' )->send( $data->subscriber_id, $options );
+						$options = wp_parse_args( $options, array( 'template' => '' ) );
+						$result  = mailster( 'notification' )->send( $data->subscriber_id, $options );
 					} else {
 						continue;
 					}

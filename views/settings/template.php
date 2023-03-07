@@ -1,3 +1,4 @@
+<?php echo mailster()->beacon( array( '611bbdb721ef206e5592c34b', '611bba8d6ffe270af2a99968', '611bbdd6b55c2b04bf6df15f' ), true ); ?>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-default-template">
 		<th scope="row"><?php esc_html_e( 'Default Template', 'mailster' ); ?></th>

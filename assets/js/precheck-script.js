@@ -349,7 +349,7 @@ mailster = (function (mailster, $, window, document) {
 					);
 				imagebtn.addClass('active');
 				strcturebtn.removeClass('active');
-				tb_show(
+				mailster.util.tb_show(
 					title
 						? mailster.util.sprintf(
 								mailster.l10n.campaigns.precheck,

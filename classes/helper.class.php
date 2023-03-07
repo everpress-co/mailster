@@ -1372,7 +1372,7 @@ class MailsterHelper {
 	 */
 	public function file_put_contents( $filename, $data = '', $flags = 'w' ) {
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		if ( ! is_dir( dirname( $filename ) ) ) {
 			wp_mkdir_p( dirname( $filename ) );
@@ -1397,7 +1397,7 @@ class MailsterHelper {
 	 */
 	public function mkdir( $folder = '', $prevent_access = true ) {
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$upload_dir = wp_upload_dir();
 
@@ -1598,7 +1598,7 @@ class MailsterHelper {
 
 			if ( ! $cache_duration || false === ( $body = get_transient( 'mailster_feed_' . $feed_id ) ) ) {
 
-				$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
+				$response = wp_remote_get( $url, array( 'timeout' => 20 ) );
 				$code     = wp_remote_retrieve_response_code( $response );
 
 				if ( $code != 200 ) {
@@ -1609,6 +1609,9 @@ class MailsterHelper {
 					if ( ! is_admin() ) {
 						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', $cache_duration, $feed_id );
 					}
+					// cache some time to prevent long loadings
+					set_transient( 'mailster_feed_' . $feed_id, $response, MINUTE_IN_SECONDS );
+
 					return $response;
 				}
 
@@ -1621,6 +1624,10 @@ class MailsterHelper {
 
 				set_transient( 'mailster_feed_' . $feed_id, $body, $cache_duration );
 
+			}
+
+			if ( is_wp_error( $body ) ) {
+				return $body;
 			}
 
 			$feed->set_raw_data( $body );
@@ -1657,46 +1664,48 @@ class MailsterHelper {
 
 			foreach ( $rss_items as $id => $rss_item ) {
 
-				$post_content = $rss_item->get_content();
-				$post_excerpt = $rss_item->get_description();
+				$item_id = $rss_item->get_id( true );
 
-				preg_match_all( '/<img[^>]*src="(.*?(?:\.png|\.jpg|\.gif))"[^>]*>/i', $post_content . $post_excerpt, $images );
-				if ( ! empty( $images[0] ) ) {
-					$post_image = $images[1][0];
-				} else {
-					$post_image = null;
-				}
+				$post_content  = $rss_item->get_content();
+				$post_excerpt  = $rss_item->get_description();
+				$post_image    = null;
+				$comment_count = 0;
+
 				$author    = $rss_item->get_author();
-				$category  = $rss_item->get_categories();
 				$permalink = $rss_item->get_permalink();
+				$category  = $rss_item->get_categories();
 				$category  = wp_list_pluck( (array) $category, 'term' );
 				$comments  = $rss_item->get_item_tags( 'http://purl.org/rss/1.0/modules/slash/', 'comments' );
 				if ( isset( $comments[0]['data'] ) ) {
 					$comment_count = (int) $comments[0]['data'];
-				} else {
-					$comment_count = 0;
 				}
 
-				$gmt_date     = $rss_item->get_gmdate( 'U' );
+				// save the first publish date in our db as some feeds change this date which causes problems on sending autoresponders
+				$gmt_date     = $this->get_feed_item_date( $rss_item, $item_id, $feed_id );
 				$gmt_modified = $rss_item->get_updated_gmdate( 'U' );
-
+				if ( empty( $gmt_modified ) ) {
+					$gmt_modified = $gmt_date;
+				}
 				$post = new WP_Post(
 					(object) array(
+						'ID'                => $item_id,
 						'post_type'         => 'mailster_rss',
 						'post_title'        => $rss_item->get_title(),
-						'post_name'         => basename( parse_url( $permalink, PHP_URL_PATH ) ),
+						'post_status'       => 'publish',
+						'post_name'         => $item_id,
 						'post_image'        => $post_image,
 						'post_author'       => $author ? $author->name : '',
 						'post_author_link'  => $author ? $author->link : '',
 						'post_author_email' => $author ? $author->email : '',
+						'post_link'         => $permalink,
 						'post_permalink'    => $permalink,
 						'post_excerpt'      => $post_excerpt,
 						'post_content'      => $post_content,
 						'post_category'     => $category,
 						'post_date'         => date( 'Y-m-d H:i:s', $gmt_date + $gmt_offset ),
 						'post_date_gmt'     => date( 'Y-m-d H:i:s', $gmt_date ),
-						'post_modified'     => date( 'Y-m-d H:i:s', $gmt_date + $gmt_offset ),
-						'post_modified_gmt' => date( 'Y-m-d H:i:s', $gmt_date ),
+						'post_modified'     => date( 'Y-m-d H:i:s', $gmt_modified + $gmt_offset ),
+						'post_modified_gmt' => date( 'Y-m-d H:i:s', $gmt_modified ),
 						'comment_count'     => $comment_count,
 					)
 				);
@@ -1714,11 +1723,53 @@ class MailsterHelper {
 			mailster_cache_set( 'feed_' . $feed_id, $posts );
 		}
 
-		if ( ! is_null( $item ) ) {
-			return isset( $posts[ $item ] ) ? $posts[ $item ] : new WP_Error( 'no_item', sprintf( esc_html__( 'Feed item #%d does not exist', 'mailster' ), $item ) );
+		if ( is_null( $item ) ) {
+			return $posts;
 		}
 
-		return $posts;
+		if ( ! isset( $posts[ $item ] ) ) {
+			new WP_Error( 'no_item', sprintf( esc_html__( 'Feed item #%d does not exist', 'mailster' ), $item ) );
+		}
+
+		$post = $posts[ $item ];
+
+		// get an image from the content if not defined
+		if ( empty( $post->post_image ) ) {
+			if ( preg_match( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $post->post_excerpt . $post_content, $matches ) ) {
+				$post->post_image = $matches[1];
+			}
+		}
+
+		// remove images in post excerpt
+		$post->post_excerpt = preg_replace( '/<img[^>]+\>/i', '', $post->post_excerpt );
+
+		return $post;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $rss_item
+	 * @param unknown $item_id
+	 * @param unknown $feed_id
+	 * @return unknown
+	 */
+	private function get_feed_item_date( $rss_item, $item_id, $feed_id ) {
+
+		$dates = get_transient( '_mailster_feed_dates_' . $feed_id );
+		if ( empty( $dates ) ) {
+			$dates = array();
+		} elseif ( isset( $dates[ $item_id ] ) ) {
+			return $dates[ $item_id ];
+		}
+
+		$dates[ $item_id ] = $rss_item->get_gmdate( 'U' );
+
+		set_transient( '_mailster_feed_dates_' . $feed_id, $dates, WEEK_IN_SECONDS );
+
+		return $dates[ $item_id ];
 
 	}
 
@@ -1786,11 +1837,17 @@ class MailsterHelper {
 	 */
 	public function get_meta_tags_from_url( $url, $fields = null, $force = false ) {
 
-		$tags      = null;
-		$cache_key = 'mailster_meta_tags_' . md5( $url );
+		$cache_key = 'mailster_meta_tags_ss' . md5( $url );
 
 		if ( $force || false === ( $tags = get_transient( $cache_key ) ) ) {
-			$response = wp_remote_get( $url, array( 'timeout' => 5 ) );
+			// obfuscate as Google Bot to prevent blockade
+			$response = wp_remote_get(
+				$url,
+				array(
+					'user-agent' => 'Googlebot/2.1',
+					'timeout'    => 5,
+				)
+			);
 
 			$tags = array();
 
@@ -1802,7 +1859,7 @@ class MailsterHelper {
 				}
 			}
 
-			set_transient( $cache_key, $tags, DAY_IN_SECONDS );
+			set_transient( $cache_key, $tags, HOUR_IN_SECONDS * 6 );
 
 		}
 
