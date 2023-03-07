@@ -136,6 +136,64 @@ mailster = (function (mailster, $, window, document) {
 mailster = (function (mailster, $, window, document) {
 	'use strict';
 
+	mailster.user = mailster.user || {};
+	mailster.local = mailster.local || {};
+	mailster.session = mailster.session || {};
+
+	mailster.user.get = function (key, def) {
+		key = 'mailster_' + key;
+		if (window.getUserSetting !== 'undefined') {
+			var raw = window.getUserSetting(key, def);
+			if (raw === 'true') {
+				return true;
+			} else if (raw === 'false') {
+				return false;
+			}
+			return raw;
+		}
+		return null;
+	};
+	mailster.user.set = function (key, value) {
+		key = 'mailster_' + key;
+		if (window.setUserSetting !== 'undefined') {
+			if (value === true) {
+				value = 'true';
+			} else if (value === false) {
+				value = 'false';
+			}
+			return window.setUserSetting(key, value);
+		}
+		return null;
+	};
+
+	mailster.local.get = function (key) {
+		key = 'mailster_' + key;
+		if (localStorage.getItem(key) === undefined) return {};
+
+		return JSON.parse(localStorage.getItem(key));
+	};
+	mailster.local.set = function (key, value) {
+		key = 'mailster_' + key;
+		return localStorage.setItem(key, JSON.stringify(value));
+	};
+
+	mailster.session.get = function (key) {
+		key = 'mailster_' + key;
+		if (sessionStorage.getItem(key) === undefined) return {};
+
+		return JSON.parse(sessionStorage.getItem(key));
+	};
+	mailster.session.set = function (key, value) {
+		key = 'mailster_' + key;
+		return sessionStorage.setItem(key, JSON.stringify(value));
+	};
+
+	return mailster;
+})(mailster || {}, jQuery, window, document);
+
+mailster = (function (mailster, $, window, document) {
+	'use strict';
+
 	mailster.util = mailster.util || {};
 
 	mailster.util.requestAnimationFrame =
@@ -178,7 +236,9 @@ mailster = (function (mailster, $, window, document) {
 				if (textStatus == 'error' && !errorThrown) return;
 				mailster.log(response, 'error');
 				if ('JSON' == dataType) {
-					var maybe_json = response.data.match(/{(.*)}$/);
+					var maybe_json = response.data
+						? response.data.match(/{(.*)}$/)
+						: false;
 					if (maybe_json && callback) {
 						try {
 							callback.call(this, JSON.parse(maybe_json[0]));
@@ -205,6 +265,7 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	mailster.util.rgb2hex = function (str) {
+		if (!str) return str;
 		var colors = str.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/);
 
 		function nullify(val) {
@@ -377,12 +438,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$.window = $(window);
 	mailster.$.document = $(document);
-
-	//open externals in a new tab
-	mailster.$.document.on('click', 'a.external', function () {
-		window.open(this.href);
-		return false;
-	});
+	mailster.$.body = $('body');
 
 	mailster.util.tb_position = function () {
 		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
@@ -401,6 +457,11 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	mailster.events.push('documentReady', function () {
+		//open externals in a new tab
+		mailster.$.document.on('click', 'a.external', function () {
+			window.open(this.href);
+			return false;
+		});
 		for (var i in mailster.$) {
 			mailster.dom[i] = mailster.$[i][0];
 		}

@@ -125,6 +125,8 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 			</table>
 			<?php $tags = mailster_option( 'tags' ); ?>
 
+			<h4><?php esc_html_e( 'Tags', 'mailster' ); ?><?php echo mailster()->beacon( '611bb5296ffe270af2a99926' ); ?></h4>
+
 			<p><?php esc_html_e( 'Some information is used in the footer of your campaign. Some information is required by law so please ask your lawyer about correct use.', 'mailster' ); ?></p>
 
 			<table class="form-table">
@@ -152,7 +154,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 			</table>
 
-			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/tags-in-mailster/' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
+			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/611bb5296ffe270af2a99926' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
 
 			</div>
 
@@ -172,7 +174,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 		<div class="mailster-setup-step" id="step_homepage">
 
-			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?><?php echo mailster()->beacon( '611bbb5fb37d837a3d0e47d4' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -260,7 +262,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 		<div class="mailster-setup-step" id="step_delivery">
 
-			<h2 class="section-title"><?php esc_html_e( 'Delivery', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Delivery', 'mailster' ); ?> <?php echo mailster()->beacon( '611bb9daf886c9486f8d992f' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 

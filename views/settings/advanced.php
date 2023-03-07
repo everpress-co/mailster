@@ -3,7 +3,7 @@
 	<tr valign="top" class="settings-row settings-row-usage-tracking">
 		<th scope="row"><?php esc_html_e( 'Usage Tracking', 'mailster' ); ?></th>
 		<td>
-			<label><input type="hidden" name="mailster_options[usage_tracking]" value=""><input type="checkbox" name="mailster_options[usage_tracking]" value="1" <?php checked( mailster_option( 'usage_tracking' ) ); ?>> <?php esc_html_e( 'Enable usage tracking for this site.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="<?php echo mailster_url( 'https://kb.mailster.co/usage-tracking/' ); ?>" class="external"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a></p>
+			<label><input type="hidden" name="mailster_options[usage_tracking]" value=""><input type="checkbox" name="mailster_options[usage_tracking]" value="1" <?php checked( mailster_option( 'usage_tracking' ) ); ?>> <?php esc_html_e( 'Enable usage tracking for this site.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="<?php echo mailster_url( 'https://kb.mailster.co/611baf6921ef206e5592c28c' ); ?>" data-article="611baf6921ef206e5592c28c"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a></p>
 			<input type="hidden" name="mailster_options[ask_usage_tracking]" value="<?php echo mailster_option( 'ask_usage_tracking' ); ?>">
 		</td>
 	</tr>
@@ -20,8 +20,8 @@
 			<br><label><input type="hidden" name="mailster_options[disable_cache]" value=""><input type="checkbox" name="mailster_options[disable_cache]" value="1" <?php checked( mailster_option( 'disable_cache' ) ); ?>> <?php esc_html_e( 'Disable Object Cache for Mailster', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If enabled Mailster doesn\'t use cache anymore. This causes an increase in page load time! This option is not recommended!', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top" class="settings-row settings-short-codes">
-		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?></th>
+	<tr valign="top" class="settings-row settings-row-short-codes">
+		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?><?php echo mailster()->beacon( '611bba3321ef206e5592c322' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[shortcodes]" value=""><input type="checkbox" name="mailster_options[shortcodes]" value="1" <?php checked( mailster_option( 'shortcodes' ) ); ?>> <?php esc_html_e( 'Process short codes in emails.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Check this option to process short codes. This may cause unexpected results.', 'mailster' ); ?></p>
 		</td>
 	</tr>

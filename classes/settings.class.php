@@ -1214,8 +1214,7 @@ class MailsterSettings {
 					$folder = MAILSTER_UPLOAD_DIR;
 					$file   = MAILSTER_UPLOAD_DIR . '/dkim/' . $hash . '.pem';
 
-					global $wp_filesystem;
-					mailster_require_filesystem();
+					$wp_filesystem = mailster_require_filesystem();
 
 					// remove old
 					if ( isset( $options['dkim_private_hash'] ) && is_file( $folder . '/' . $options['dkim_private_hash'] . '.pem' ) ) {
@@ -1227,7 +1226,7 @@ class MailsterSettings {
 					// create folder
 					if ( ! is_dir( dirname( $file ) ) ) {
 						wp_mkdir_p( dirname( $file ) );
-						$wp_filesystem->put_contents( dirname( $file ) . '/index.php', '<?php //silence is golden ?>', FS_CHMOD_FILE );
+						$wp_filesystem && $wp_filesystem->put_contents( dirname( $file ) . '/index.php', '<?php //silence is golden ?>', FS_CHMOD_FILE );
 					}
 
 					if ( $wp_filesystem->put_contents( $file, $value ) ) {

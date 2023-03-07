@@ -1,4 +1,4 @@
-
+<?php echo mailster()->beacon( array( '611bb43821ef206e5592c2cb', '611bbc316ffe270af2a9997c' ), true ); ?>
 <table class="form-table">
 
 	<tr valign="top" class="settings-row settings-row-bounce-address">

@@ -39,7 +39,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$this->paged      = isset( $_GET['paged'] ) ? (int) $_GET['paged'] - 1 : null;
 		$this->status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
 		$this->lists      = isset( $_GET['lists'] ) ? array_filter( (array) $_GET['lists'], 'is_numeric' ) : null;
-		$this->search     = isset( $_GET['s'] ) ? $_GET['s'] : null;
+		$this->search     = isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null;
 		$this->strict     = isset( $_GET['strict'] ) ? $_GET['strict'] : null;
 		$this->conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
 		$this->orderby    = isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'id';

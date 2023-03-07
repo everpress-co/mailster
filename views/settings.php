@@ -9,10 +9,8 @@ $roles        = $wp_roles->get_names();
 <form id="mailster-settings-form" method="post" action="options.php" autocomplete="off" enctype="multipart/form-data">
 <input style="display:none" autocomplete="off" readonly ><input type="password" style="display:none" autocomplete="off" readonly>
 <div class="wrap">
-	<p class="alignright">
-		<input type="submit" class="submit-form button-primary" value="<?php esc_attr_e( 'Save Changes', 'mailster' ); ?>" disabled />
-	</p>
 <h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ); ?></h1>
+	
 <?php
 
 $timeformat = mailster( 'helper' )->timeformat();
@@ -60,6 +58,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	unset( $sections['manage_settings'] );
 }
 
+$beacons = array(
+	'tags'            => '611bb5296ffe270af2a99926',
+	'frontend'        => '63fa7350e6d6615225473a99',
+	'wordpress-users' => '611bb1fe21ef206e5592c2a9',
+)
 ?>
 
 	<div class="settings-wrap">
@@ -74,11 +77,19 @@ if ( ! current_user_can( 'manage_options' ) ) {
 			</div>
 		</div>
 
-		<div class="settings-tabs"> <div class="tab"><h3>&nbsp;</h3></div>
+		<div class="settings-tabs"><input type="submit" class="submit-form button-primary" value="<?php esc_attr_e( 'Save Changes', 'mailster' ); ?>" disabled /><div class="tab"><h3>&nbsp;</h3></div>
 
 		<?php foreach ( $sections as $id => $name ) : ?>
 			<div id="tab-<?php echo esc_attr( $id ); ?>" class="tab">
-				<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
+				<h3>
+
+					<?php echo esc_html( strip_tags( $name ) ); ?>
+					<?php
+					if ( isset( $beacons[ $id ] ) ) {
+						echo mailster()->beacon( $beacons[ $id ] );
+					}
+					?>
+				</h3>
 				<?php do_action( 'mailster_section_tab', $id ); ?>
 				<?php do_action( 'mailster_section_tab_' . $id ); ?>
 
@@ -100,9 +111,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 				<?php do_action( 'mailster_section_tab_' . $id ); ?>
 			</div>
 	<?php endforeach; ?>
-			<p class="submitbutton">
-				<input type="submit" class="submit-form button-primary" value="<?php esc_attr_e( 'Save Changes', 'mailster' ); ?>" disabled />
-			</p>
+		<p class="submitbutton">
+			<input type="submit" class="submit-form button-primary" value="<?php esc_attr_e( 'Save Changes', 'mailster' ); ?>" disabled />
+		</p>
 		</div>
 
 	</div>
