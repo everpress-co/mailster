@@ -1,3 +1,4 @@
+<?php echo mailster()->beacon( array( '611bb49221ef206e5592c2d3' ), true ); ?>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-subscription-form">
 		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ); ?>

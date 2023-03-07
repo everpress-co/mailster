@@ -147,6 +147,17 @@
 	cursor: default;
 	margin: 0 auto;
 }
+#editbar div.type > .mailster-help {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.rtl #editbar div.type > .mailster-help {
+	position: absolute;
+	right: unset;
+	left: 0;
+	top: 0;
+}
 #editbar div.type div.left {
 	width: 25%;
 	float: left;

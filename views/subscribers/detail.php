@@ -7,7 +7,7 @@ $is_new = isset( $_GET['new'] );
 if ( ! $is_new ) {
 	$this->maybe_update_rating( $id );
 
-	if ( ! ( $subscriber = $this->get( $id, true ) ) ) {
+	if ( ! ( $subscriber = $this->get( $id, true, true ) ) ) {
 		echo '<h2>' . esc_html__( 'This user does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
 	}
@@ -51,7 +51,7 @@ if ( $is_new ) {
 } else {
 	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . esc_html( $nicename ) . '</strong>' );
 	if ( $subscriber->status == 4 ) {
-		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : esc_html__( 'unknown', 'mailster' ) ) . '</strong>' ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : esc_html__( 'unknown', 'mailster' ) ) . '</strong>' ) . mailster()->beacon( '611bbac9b55c2b04bf6df143' ) . '</p></div>';
 	} elseif ( $subscriber->status == 5 ) {
 		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber is marked as deleted and will get permanently deleted in approx. %s.', 'mailster' ), '<strong>' . human_time_diff( $subscriber->updated + strtotime( '14 days' ) - time() ) . '</strong>' ) . '</p></div>';
 	}
@@ -91,7 +91,7 @@ if ( $is_new ) {
 			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 
-				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces.', 'mailster' ); ?>&#013;&#013;<?php printf( esc_attr__( 'Last Update: %s ago.', 'mailster' ), human_time_diff( $meta->update_rating ) ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
+				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces.', 'mailster' ); ?>&#013;&#013;<?php printf( esc_attr__( 'Last Update: %s ago.', 'mailster' ), human_time_diff( $meta->update_rating ) ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<?php echo mailster()->beacon( '611bb0d3f886c9486f8d98c0' ); ?><br />
 				<?php
 					$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
 					$full  = max( 0, min( 5, floor( $stars ) ) );

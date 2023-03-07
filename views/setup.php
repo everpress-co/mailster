@@ -13,12 +13,6 @@ $active_pluginslugs = preg_replace( '/^(.*)\/.*$/', '$1', $active_plugins );
 $plugins            = array_keys( get_plugins() );
 $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
-$utm = array(
-	'utm_campaign' => 'Mailster Setup',
-	'utm_source'   => preg_replace( '/^https?:\/\//', '', get_bloginfo( 'url' ) ),
-	'utm_medium'   => 'link',
-);
-
 ?>
 	<ol class="mailster-setup-steps-nav">
 		<li><a href="#basics"><?php esc_html_e( 'Basics', 'mailster' ); ?></a></li>
@@ -131,6 +125,8 @@ $utm = array(
 			</table>
 			<?php $tags = mailster_option( 'tags' ); ?>
 
+			<h4><?php esc_html_e( 'Tags', 'mailster' ); ?><?php echo mailster()->beacon( '611bb5296ffe270af2a99926' ); ?></h4>
+
 			<p><?php esc_html_e( 'Some information is used in the footer of your campaign. Some information is required by law so please ask your lawyer about correct use.', 'mailster' ); ?></p>
 
 			<table class="form-table">
@@ -158,7 +154,7 @@ $utm = array(
 
 			</table>
 
-			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . add_query_arg( $utm, 'https://kb.mailster.co/tags-in-mailster/' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
+			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/611bb5296ffe270af2a99926' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
 
 			</div>
 
@@ -178,7 +174,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_homepage">
 
-			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?><?php echo mailster()->beacon( '611bbb5fb37d837a3d0e47d4' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -266,7 +262,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_delivery">
 
-			<h2 class="section-title"><?php esc_html_e( 'Delivery', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Delivery', 'mailster' ); ?> <?php echo mailster()->beacon( '611bb9daf886c9486f8d992f' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -435,7 +431,7 @@ $utm = array(
 
 			<p><?php esc_html_e( 'Mailster can track specific behaviors and the location of your subscribers to target your audience better. In most countries you must get the consent of the subscriber if you sent them marketing emails. Please get in touch with your lawyer for legal advice in your country.', 'mailster' ); ?></p>
 			<p><?php esc_html_e( 'If you have users in the European Union you have to comply with the General Data Protection Regulation (GDPR). Please check our knowledge base on how Mailster can help you.', 'mailster' ); ?></p>
-			<p><a href="https://kb.mailster.co/tag/gdpr/" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a></p>
+			<p><a href="<?php echo mailster_url( 'https://kb.mailster.co/tag/gdpr/' ); ?>" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a></p>
 
 			<?php require MAILSTER_DIR . '/views/settings/privacy.php'; ?>
 
@@ -503,15 +499,15 @@ $utm = array(
 				<div class="col">
 				<h3><?php esc_html_e( 'External Resources', 'mailster' ); ?></h3>
 				<ol>
-					<li><a href="<?php echo add_query_arg( $utm, 'https://kb.mailster.co/working-with-subscriber-based-auto-responders/' ); ?>" class="external"><?php esc_html_e( 'Create a welcome message for new subscribers', 'mailster' ); ?></a></li>
-					<li><a href="<?php echo add_query_arg( $utm, 'https://kb.mailster.co/how-can-i-customize-the-notification-template/' ); ?>" class="external"><?php esc_html_e( 'Customize the notification template', 'mailster' ); ?></a></li>
-					<li><a href="<?php echo add_query_arg( $utm, 'https://kb.mailster.co/working-with-action-based-auto-responders/' ); ?>" class="external"><?php esc_html_e( 'Send your latest posts automatically', 'mailster' ); ?></a></li>
-					<li><a href="<?php echo add_query_arg( $utm, 'https://kb.mailster.co/creating-a-series-in-mailster/' ); ?>" class="external"><?php esc_html_e( 'Creating a series or drip campaign', 'mailster' ); ?></a></li>
-					<li><a href="<?php echo add_query_arg( $utm, 'https://kb.mailster.co/segmentation-in-mailster/' ); ?>" class="external"><?php esc_html_e( 'Learn more about segmentation', 'mailster' ); ?></a></li>
+					<li><a href="<?php echo mailster_url( 'https://kb.mailster.co/working-with-subscriber-based-auto-responders/' ); ?>" class="external"><?php esc_html_e( 'Create a welcome message for new subscribers', 'mailster' ); ?></a></li>
+					<li><a href="<?php echo mailster_url( 'https://kb.mailster.co/how-can-i-customize-the-notification-template/' ); ?>" class="external"><?php esc_html_e( 'Customize the notification template', 'mailster' ); ?></a></li>
+					<li><a href="<?php echo mailster_url( 'https://kb.mailster.co/working-with-action-based-auto-responders/' ); ?>" class="external"><?php esc_html_e( 'Send your latest posts automatically', 'mailster' ); ?></a></li>
+					<li><a href="<?php echo mailster_url( 'https://kb.mailster.co/creating-a-series-in-mailster/' ); ?>" class="external"><?php esc_html_e( 'Creating a series or drip campaign', 'mailster' ); ?></a></li>
+					<li><a href="<?php echo mailster_url( 'https://kb.mailster.co/segmentation-in-mailster/' ); ?>" class="external"><?php esc_html_e( 'Learn more about segmentation', 'mailster' ); ?></a></li>
 				</ol>
 				</div>
 			</div>
-			<p><?php printf( esc_html__( 'Still need help? Go ask on the %s further questions.', 'mailster' ), '<a href="' . add_query_arg( $utm, 'https://kb.mailster.co/' ) . '" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
+			<p><?php printf( esc_html__( 'Still need help? Go ask on the %s further questions.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co' ) . '" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
 
 			<div class="social-media-buttons">
 				<div id="fb-root"></div>

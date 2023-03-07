@@ -32,7 +32,7 @@ class MailsterSettings {
 			if ( $homepage = mailster_option( 'homepage' ) ) {
 
 				mailster_notice( esc_html__( 'Homepage already created!', 'mailster' ), '', true );
-				wp_redirect( 'post.php?post=' . $homepage . '&action=edit' );
+				mailster_redirect( 'post.php?post=' . $homepage . '&action=edit' );
 				exit;
 
 			} else {
@@ -44,7 +44,7 @@ class MailsterSettings {
 					mailster_update_option( 'homepage', $id );
 					mailster_remove_notice( 'no_homepage' );
 					mailster_remove_notice( 'wrong_homepage_status' );
-					wp_redirect( 'post.php?post=' . $id . '&action=edit&message=10' );
+					mailster_redirect( 'post.php?post=' . $id . '&action=edit&message=10' );
 					exit;
 				}
 			}
@@ -491,7 +491,7 @@ class MailsterSettings {
 			}
 
 			if ( $redirect ) {
-				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings' );
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings' );
 				exit;
 			}
 		}
@@ -513,7 +513,7 @@ class MailsterSettings {
 		mailster_remove_notice( 'dailylimit' );
 
 		if ( $redirect ) {
-			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' );
+			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' );
 			exit;
 		}
 
@@ -533,7 +533,7 @@ class MailsterSettings {
 			$this->set_capabilities();
 
 			if ( $redirect ) {
-				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#capabilities' );
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#capabilities' );
 				exit;
 			}
 		}
@@ -545,7 +545,7 @@ class MailsterSettings {
 
 		mailster( 'cron' )->unlock();
 		if ( $redirect ) {
-			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
 		}
 
@@ -555,7 +555,7 @@ class MailsterSettings {
 
 		update_option( 'mailster_cron_lasthit', array() );
 		if ( $redirect ) {
-			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
 		}
 
@@ -1214,8 +1214,7 @@ class MailsterSettings {
 					$folder = MAILSTER_UPLOAD_DIR;
 					$file   = MAILSTER_UPLOAD_DIR . '/dkim/' . $hash . '.pem';
 
-					global $wp_filesystem;
-					mailster_require_filesystem();
+					$wp_filesystem = mailster_require_filesystem();
 
 					// remove old
 					if ( isset( $options['dkim_private_hash'] ) && is_file( $folder . '/' . $options['dkim_private_hash'] . '.pem' ) ) {
@@ -1227,7 +1226,7 @@ class MailsterSettings {
 					// create folder
 					if ( ! is_dir( dirname( $file ) ) ) {
 						wp_mkdir_p( dirname( $file ) );
-						$wp_filesystem->put_contents( dirname( $file ) . '/index.php', '<?php //silence is golden ?>', FS_CHMOD_FILE );
+						$wp_filesystem && $wp_filesystem->put_contents( dirname( $file ) . '/index.php', '<?php //silence is golden ?>', FS_CHMOD_FILE );
 					}
 
 					if ( $wp_filesystem->put_contents( $file, $value ) ) {

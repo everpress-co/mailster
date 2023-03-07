@@ -46,23 +46,7 @@
 	background: #23282d;
 	border-left-color: #32373c;
 }
-.infolink {
-	display: inline-block;
-	background: #ccc;
-	width: 18px;
-	height: 18px;
-	font-size: 14px;
-	vertical-align: top;
-	border-radius: 50%;
-	color: #fff;
-	text-decoration: none;
-	text-align: center;
-	margin: auto 2px;
-	line-height: 127%;
-}
-.infolink:after {
-	content: '?';
-}
+
 .submitbutton {
 	border-top: 1px solid #ccc;
 	padding-top: 8px;
@@ -72,6 +56,9 @@
 	position: absolute;
 	left: 25px;
 	right: 20px;
+}
+input.submit-form.button-primary {
+	float: right;
 }
 .dark-mode .submitbutton {
 	border-color: #32373c;

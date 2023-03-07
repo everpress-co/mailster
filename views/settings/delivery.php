@@ -1,27 +1,11 @@
+<?php echo mailster()->beacon( '611bb9f86ffe270af2a9995c', true ); ?>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-number-of-mails-sent">
-		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ); ?><?php echo mailster()->beacon( '611bbcc7b37d837a3d0e47e8' ); ?></th>
 		<td>
 			<p><?php printf( esc_html__( 'Send max %s emails in one batch.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text" ' . disabled( mailster_option( 'auto_send_at_once' ), true, false ) . '>' ); ?></p>
-			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label> <a class="infolink external" href="https://kb.mailster.co/send-your-emails-as-fast-as-possible/" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></p>
+			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label><?php echo mailster()->beacon( '611badd0b55c2b04bf6df0a4' ); ?></p>
 			<p>
-		</td>
-	</tr>
-	<tr valign="top" class="settings-row settings-row-warmup">
-		<th scope="row"><?php esc_html_e( 'Warmup', 'mailster' ); ?></th>
-		<td><p><?php esc_html_e( 'Throttle the throughput for the next', 'mailster' ); ?> <select name="mailster_options[warmup]">
-			<?php $mn = strtotime( 'midnight' ); ?>
-			<option value="" <?php selected( ! mailster_option( 'warmup' ) ); ?>><?php esc_html_e( 'no warmup', 'mailster' ); ?> - 100%</option>
-			<?php
-			for ( $i = 1; $i <= 60; $i++ ) :
-				$v = $mn + ( $i * DAY_IN_SECONDS );
-				?>
-				<option value="<?php echo $v; ?>" <?php selected( mailster_option( 'warmup' ), $v ); ?>><?php printf( esc_html__( _n( '%d day', '%d days', $i, 'mailster' ) ), $i ); ?> - <?php echo ceil( 100 * ( 1 - $i / 60 ) + 1 ) . '%'; ?></option>
-			<?php endfor; ?>
-			</select>
-			 <a class="infolink external" href="https://kb.mailster.co/warm-up-your-email-delivery-method/" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></p>
-
-			<p class="description"><?php esc_html_e( 'Mailster can "warmup" your current delivery method. It will gradually increase your sending volume over the defined time frame. This will help you getting started with a new domain or if you have recently switched your email provider.', 'mailster' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
@@ -43,6 +27,23 @@
 	?>
 
 	<p class="description"><?php printf( esc_html__( 'You can still send %1$s mails within the next %2$s', 'mailster' ), '<strong>' . number_format_i18n( $mails_left ) . '</strong>', '<strong title="' . date_i18n( $timeformat, $next_reset + $timeoffset, true ) . '">' . human_time_diff( $next_reset ) . '</strong>' ); ?> &ndash; <a href="edit.php?post_type=newsletter&page=mailster_settings&reset-limits=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-limits' ); ?>"><?php esc_html_e( 'reset these limits', 'mailster' ); ?></a></p>
+		</td>
+	</tr>
+	<tr valign="top" class="settings-row settings-row-warmup">
+		<th scope="row"><?php esc_html_e( 'Warmup', 'mailster' ); ?><?php echo mailster()->beacon( '611badcdf886c9486f8d989f' ); ?></th>
+		<td><p><?php esc_html_e( 'Throttle the throughput for the next', 'mailster' ); ?> <select name="mailster_options[warmup]">
+			<?php $mn = strtotime( 'midnight' ); ?>
+			<option value="" <?php selected( ! mailster_option( 'warmup' ) ); ?>><?php esc_html_e( 'no warmup', 'mailster' ); ?> - 100%</option>
+			<?php
+			for ( $i = 1; $i <= 60; $i++ ) :
+				$v = $mn + ( $i * DAY_IN_SECONDS );
+				?>
+				<option value="<?php echo $v; ?>" <?php selected( mailster_option( 'warmup' ), $v ); ?>><?php printf( esc_html__( _n( '%d day', '%d days', $i, 'mailster' ) ), $i ); ?> - <?php echo ceil( 100 * ( 1 - $i / 60 ) + 1 ) . '%'; ?></option>
+			<?php endfor; ?>
+			</select>
+			</p>
+
+			<p class="description"><?php esc_html_e( 'Mailster can "warmup" your current delivery method. It will gradually increase your sending volume over the defined time frame. This will help you getting started with a new domain or if you have recently switched your email provider.', 'mailster' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-time-frame">
@@ -123,7 +124,7 @@
 
 	?>
 
-<h3><?php esc_html_e( 'Delivery Method', 'mailster' ); ?></h3>
+<h3><?php esc_html_e( 'Delivery Method', 'mailster' ); ?><?php echo mailster()->beacon( '611bb9daf886c9486f8d992f' ); ?></h3>
 <div class="updated inline"><p><?php printf( esc_html__( 'You are currently sending with the %s delivery method', 'mailster' ), '<strong>' . $deliverymethods[ $method ] . '</strong>' ); ?></p></div>
 
 <div id="deliverynav" class="nav-tab-wrapper hide-if-no-js">

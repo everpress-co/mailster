@@ -133,7 +133,7 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 						$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
 					}
 
-					mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank" rel="noopener">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
+					mailster_notice( sprintf( $msg, $referer, '<a href="' . mailster_url( 'https://kb.mailster.co/updating-mymail-to-mailster/' ) . '" target="_blank" rel="noopener">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
 				}
 			}
 		);

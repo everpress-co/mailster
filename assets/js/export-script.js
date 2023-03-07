@@ -57,14 +57,6 @@ mailster = (function (mailster, $, window, document) {
 		.on('change', 'select[name="outputformat"]', function () {
 			$('#csv-separator')[$(this).val() == 'csv' ? 'show' : 'hide']();
 		})
-		.on('change', '.list-toggle', function () {
-			$(this)
-				.parent()
-				.parent()
-				.parent()
-				.find('ul input')
-				.prop('checked', $(this).prop('checked'));
-		})
 		.on('submit', '#export-subscribers', function () {
 			var data = $(this).serialize();
 

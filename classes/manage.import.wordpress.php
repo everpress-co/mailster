@@ -124,20 +124,14 @@ class MailsterImportWordPress extends MailsterImport {
 			$query_args['meta_query'][] = array(
 				'key'     => 'wp_capabilities',
 				'value'   => 'a:0:{}',
-				'compare' => '=',
-			);
-		}
-		foreach ( $args['roles'] as $role ) {
-			$query_args['meta_query'][] = array(
-				'key'     => 'wp_capabilities',
-				'value'   => '"' . $role . '"',
 				'compare' => 'LIKE',
 			);
 		}
 
-		$user_query = new WP_User_Query( $query_args );
+		$query_args['role__in'] = (array) $args['roles'];
 
-		$user_ids = $user_query->get_results();
+		$user_query = new WP_User_Query( $query_args );
+		$user_ids   = $user_query->get_results();
 		if ( $args['count_total'] ) {
 			$total = $user_query->get_total();
 		}

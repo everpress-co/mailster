@@ -686,6 +686,50 @@ function mailster_get_user_client( $string = null ) {
 
 }
 
+/**
+ *
+ *
+ * @param unknown $key
+ * @param unknown $default (optional)
+ * @return unknown
+ */
+function mailster_get_user_setting( $key, $default = null ) {
+
+	$key = 'mailster_' . $key;
+	$raw = get_user_setting( $key, $default );
+
+	if ( $raw === 'true' ) {
+		return true;
+	} elseif ( $raw === 'false' ) {
+		return false;
+	}
+
+	return $raw;
+
+}
+
+/**
+ *
+ *
+ * @param unknown $key
+ * @param unknown $value
+ * @return unknown
+ */
+function mailster_set_user_setting( $key, $value ) {
+
+	$key = 'mailster_' . $key;
+	if ( $value === true ) {
+		$value = 'true';
+	} elseif ( $value === false ) {
+		$value = 'false';
+	}
+
+	return set_user_setting( $key, $value );
+
+}
+
+
+
 
 /**
  *
@@ -985,31 +1029,83 @@ function mailster_is_email( $email ) {
 /**
  *
  *
- * @param unknown $id_email_or_hash
- * @param unknown $type             (optional)
+ * @param unknown $url
+ * @param unknown $args (optional)
  * @return unknown
  */
-function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
+function mailster_url( $url, $args = array() ) {
+
+	$utms = array(
+		'utm_campaign' => 'plugin',
+		'utm_medium'   => 'link',
+		'utm_source'   => 'Mailster Plugin',
+	);
+
+	if ( function_exists( 'get_current_screen' ) ) {
+		$screen = get_current_screen();
+		if ( $screen && $screen->id ) {
+			$term             = str_replace( array( 'admin_page_', 'newsletter_page_' ), '', $screen->id );
+			$utms['utm_term'] = $term;
+		}
+	}
+
+	$args = wp_parse_args( $args, $utms );
+
+	$url = add_query_arg( $args, $url );
+
+	return esc_url_raw( $url );
+
+}
+
+/**
+ *
+ *
+ * @param unknown $content
+ * @param unknown $args (optional)
+ * @return unknown
+ */
+function mailster_links_add_args( $content, $args = array() ) {
+
+	if ( preg_match_all( '/"(https:\/\/(.*?)mailster\.co(.*?))"/i', $content, $links ) ) {
+		foreach ( $links[1] as $link ) {
+			$content = str_replace( $link, mailster_url( $link, $args ), $content );
+		}
+	}
+
+	return $content;
+
+}
+
+/**
+ *
+ *
+ * @param unknown $id_email_or_hash
+ * @param unknown $type             (optional)
+ * @param unknown $include_deleted  (optional)
+ * @return unknown
+ */
+function mailster_get_subscriber( $id_email_or_hash, $type = null, $include_deleted = false ) {
 
 	$id_email_or_hash = trim( $id_email_or_hash );
 
 	if ( ! is_null( $type ) ) {
 		if ( $type == 'id' ) {
-			return mailster( 'subscribers' )->get( $id_email_or_hash );
+			return mailster( 'subscribers' )->get( $id_email_or_hash, false, $include_deleted );
 		} elseif ( $type == 'email' ) {
-			return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash );
+			return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash, false, $include_deleted );
 		} elseif ( $type == 'hash' ) {
-			return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash );
+			return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash, false, $include_deleted );
 		}
 	}
 
 	if ( is_numeric( $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get( $id_email_or_hash );
+		return mailster( 'subscribers' )->get( $id_email_or_hash, false, $include_deleted );
 	} elseif ( preg_match( '#[0-9a-f]{32}#', $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash );
+		return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash, false, $include_deleted );
 	} elseif ( mailster_is_email( $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash );
+		return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash, false, $include_deleted );
 	}
+
 	return false;
 }
 
@@ -1182,6 +1278,36 @@ function mailster_update_notice( $text ) {
 /**
  *
  *
+ * @param unknown $location
+ * @param unknown $status        (optional)
+ * @param unknown $x_redirect_by (optional)
+ * @return unknown
+ */
+function mailster_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
+
+	return wp_redirect( $location, $status, $x_redirect_by );
+
+}
+
+
+/**
+ *
+ *
+ * @param unknown $location
+ * @param unknown $status        (optional)
+ * @param unknown $x_redirect_by (optional)
+ * @return unknown
+ */
+function mailster_safe_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
+
+	return wp_safe_redirect( $location, $status, $x_redirect_by );
+
+}
+
+
+/**
+ *
+ *
  * @param unknown $post_id (optional)
  * @return unknown
  */
@@ -1252,7 +1378,7 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	}
 
 	if ( ! $showform ) {
-		return false;
+		return $wp_filesystem;
 	}
 
 	if ( ! WP_Filesystem( $credentials ) ) {

@@ -84,7 +84,7 @@ if ( $item['envato_item_id'] ) {
 			<a class="button button-primary request-download popup" data-width="800" data-height="90%" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<?php if ( $item['price'] ) : ?>
-			<a class="button button-primary buy external" data-width="800" data-height="80%" href="<?php echo esc_url( $item['purchase_url'] ); ?>"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
+			<a class="button button-primary buy external" data-width="800" data-height="80%" href="<?php echo mailster_url( $item['purchase_url'], 'utm_term=mailster_templates' ); ?>"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>
