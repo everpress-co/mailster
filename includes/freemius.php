@@ -51,7 +51,6 @@ function mailster_freemius_checkout_url() {
 			'plan_name'     => 'standard',
 			'billing_cycle' => 'annual',
 			'pricing_id'    => 23716,
-			'currency'      => 'usd',
 			'post_type'     => 'newsletter',
 		),
 		admin_url( 'edit.php' )
@@ -70,7 +69,7 @@ function mailster_freemius_uninstall_cleanup() {
 	mailster()->uninstall();
 }
 
-mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
+// mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
 mailster_freemius()->add_action( 'hide_account_tabs', '__return_true' );
 
 

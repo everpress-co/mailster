@@ -23,7 +23,7 @@ if ( empty( $user_email ) ) {
 				<input type="text" class="widefat license align-center" name="license" value="<?php echo esc_attr( $license ); ?>" placeholder="XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX">
 				<input type="email" class="widefat email align-center" name="email" value="<?php echo esc_attr( $user_email ); ?>" placeholder="<?php echo esc_attr( $user_email ); ?>">
 			</p>
-			<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Migrate now', 'mailster' ); ?>">
+			<input type="submit" class="button button-hero button-primary" value="Convert License now">
 			<p class="howto">
 				<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ); ?>" data-article="63fe029de6d6615225474599">Why is this step required?</a>
 			</p>

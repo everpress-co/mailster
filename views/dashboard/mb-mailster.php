@@ -32,9 +32,6 @@ if ( mailster()->is_verified() ) {
 	<dt><?php esc_html_e( 'Not Verified', 'mailster' ); ?></dt>
 	<dd><?php esc_html_e( 'Your license has not been verified', 'mailster' ); ?></dd>
 	<dd>
-		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
-		<a href="<?php echo mailster_url( 'https://mailster.co/manage-licenses/' ); ?>" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
-		<?php endif; ?>
 		<a href="<?php echo mailster_freemius_checkout_url(); ?>"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
 	</dd>
 </dl>
@@ -51,7 +48,12 @@ if ( mailster()->is_verified() ) {
 <dl class="mailster-icon mailster-update update-available">
 	<dt><?php printf( esc_html__( 'Installed Version %s', 'mailster' ), MAILSTER_VERSION ); ?></dt>
 	<dd><?php esc_html_e( 'A new Version is available', 'mailster' ); ?></dd>
-	<dd><a href="<?php echo mailster_url( 'https://kb.mailster.co/6401de4552af714471a19027' ); ?>" data-article="6401de4552af714471a19027"><?php esc_html_e( 'view changelog', 'mailster' ); ?></a> <?php esc_html_e( 'or', 'mailster' ); ?> <a href="update.php?action=upgrade-plugin&plugin=<?php echo urlencode( MAILSTER_SLUG ); ?>&_wpnonce=<?php echo wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ); ?>" class="update-button"><?php printf( esc_html__( 'update to %s now', 'mailster' ), '<span class="update-version">' . esc_html( mailster()->plugin_info( 'new_version' ) ) . '</span>' ); ?></a>
+	<dd><a href="<?php echo mailster_url( 'https://kb.mailster.co/6401de4552af714471a19027' ); ?>" data-article="6401de4552af714471a19027"><?php esc_html_e( 'view changelog', 'mailster' ); ?></a>
+		<?php if ( mailster_freemius()->has_active_valid_license() ) : ?>
+			<?php esc_html_e( 'or', 'mailster' ); ?> <a href="update.php?action=upgrade-plugin&plugin=<?php echo urlencode( MAILSTER_SLUG ); ?>&_wpnonce=<?php echo wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ); ?>" class="update-button"><?php printf( esc_html__( 'update to %s now', 'mailster' ), '<span class="update-version">' . esc_html( mailster()->plugin_info( 'new_version' ) ) . '</span>' ); ?></a>
+		<?php else : ?>
+			<?php esc_html_e( 'or', 'mailster' ); ?> <strong><a href="<?php echo mailster_freemius_checkout_url(); ?>"><?php esc_html_e( 'Renew your license to update', 'mailster' ); ?></a></strong>
+		<?php endif; ?>
 	</dd>
 </dl>
 <?php endif; ?>

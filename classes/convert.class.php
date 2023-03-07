@@ -52,8 +52,8 @@ class MailsterConvert {
 
 	public function convert( $email = null, $license = null ) {
 
+		$user = wp_get_current_user();
 		if ( is_null( $email ) ) {
-			$user  = wp_get_current_user();
 			$email = mailster()->email( $user->user_email );
 		}
 		if ( is_null( $license ) ) {
@@ -68,6 +68,7 @@ class MailsterConvert {
 				'version'     => MAILSTER_VERSION,
 				'license'     => $license,
 				'email'       => $email,
+				'whitelabel'  => $user->user_email != $email,
 				'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
 			),
 			$endpoint
@@ -99,6 +100,8 @@ class MailsterConvert {
 
 		if ( $response->data->org_support ) {
 			update_option( 'mailster_support', strtotime( $response->data->org_support ) );
+		} else {
+			update_option( 'mailster_support', -1 );
 		}
 
 		mailster_remove_notice( 'mailster_freemius' );

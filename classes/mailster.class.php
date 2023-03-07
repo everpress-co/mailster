@@ -1880,6 +1880,14 @@ class Mailster {
 
 		switch ( $code ) {
 
+			case 403:
+				if ( ! mailster_freemius()->has_active_valid_license() ) {
+					$error_msg = esc_html__( 'You need a valid license to get an update.', 'mailster' ) . ' <a href="' . mailster_freemius_checkout_url() . '">' . esc_html__( 'Renew license now', 'mailster' ) . '</a>';
+				} else {
+					$error_msg = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
+				}
+				break;
+
 			case 678: // No Licensecode provided
 				$error_msg = $short ? esc_html__( 'Register via the %s.', 'mailster' ) : esc_html__( 'To get automatic updates for Mailster you need to register on the %s.', 'mailster' );
 				$error_msg = sprintf( $error_msg, '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '" target="_top">' . esc_html__( 'Dashboard', 'mailster' ) . '</a>' );
@@ -2832,33 +2840,31 @@ class Mailster {
 
 		if ( $force ) {
 			mailster_freemius()->_sync_licenses();
+			mailster_freemius()->get_update();
 		}
 
 		$license = mailster_freemius()->_get_license();
 
-		if ( $license && $license->expiration ) {
-			$info->support = strtotime( $license->expiration );
+		$support = get_option( 'mailster_support' );
+
+		// legacy license
+		if ( $license && $license->plan_id == 20600 ) {
+			if ( $support == -1 ) {
+				$info->support = false;
+			} elseif ( $support ) {
+				$info->support = $support;
+			}
+		} elseif ( $license && $license->expiration ) {
+			$info->support = max( strtotime( $license->expiration ), $support );
 		} else {
 			$info->support = true;
 		}
 
-		$info->new_version = MAILSTER_VERSION;
-		$info->update      = false;
-
-		// // wp repo has Id
-		// //if ( ! isset( $info->id ) ) {
-		// if ( false === ( $data = get_transient( 'mailster_freemius_info' ) ) || $force ) {
-
-		// $data = mailster_freemius()->get_update( false, false );
-		// set_transient( 'mailster_freemius_info', $data, $data ? HOUR_IN_SECONDS : 20 );
-		// }
-		// error_log( print_r($data, true) );
-		// $info->new_version = $data->version;
-		// $info->update      = $data->updated;
-
-		// //}
-
-		// error_log( print_r($info, true) );
+		$info->update = false;
+		if ( ! isset( $info->new_version ) ) {
+			$info->new_version = MAILSTER_VERSION;
+		}
+		$info->update = version_compare( MAILSTER_VERSION, $info->new_version, '<' );
 
 		if ( is_null( $field ) ) {
 			return $info;
@@ -2975,14 +2981,13 @@ class Mailster {
 
 	public function has_support( $force = false ) {
 
-		if ( $support = get_option( 'mailster_support' ) ) {
-			return time() < $support;
-		}
-
 		$support = $this->support( $force );
 
 		if ( $support === true ) {
 			return true;
+		}
+		if ( $support === false ) {
+			return false;
 		}
 
 		return time() < $support;

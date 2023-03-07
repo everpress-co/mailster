@@ -56,6 +56,8 @@ class MailsterLicense {
 			mailster_redirect( mailster_freemius_checkout_url() );
 		}
 
+		echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
+
 	}
 
 	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {
@@ -78,6 +80,9 @@ class MailsterLicense {
 		$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
 
 		if ( isset( $migrate['error'] ) && $migrate['error'] ) {
+			if ( is_object( $migrate['error'] ) ) {
+				return new WP_Error( $migrate['error']->code, $migrate['error']->message );
+			}
 			return new WP_Error( 'freemius_error', $migrate['error'] );
 		}
 

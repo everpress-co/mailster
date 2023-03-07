@@ -124,7 +124,7 @@
 		margin: 10px 5px;
 	}
 }
-.fs-secure-notice {
+#wpbody .fs-secure-notice {
 	position: absolute;
 	top: 0;
 	left: -20px;
