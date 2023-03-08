@@ -16,27 +16,28 @@ class MailsterLicense {
 
 		global $mailster_freemius;
 
+		if ( $mailster_freemius instanceof Freemius ) {
+			return $mailster_freemius;
+		}
+
 		require_once MAILSTER_DIR . 'vendor/freemius/wordpress-sdk/start.php';
 		$mailster_freemius = fs_dynamic_init(
 			array(
 				'id'               => 12132,
 				'slug'             => 'mailster',
-				'public_key'       => 'pk_24ea323af7b2d311e3883b4c79db9',
 				'public_key'       => 'pk_73a8ad525d7ab5e8fd03c90abe4b8',
 				'is_premium'       => true,
 				'is_premium_only'  => true,
-				// 'has_premium_version' => true,
 				'has_addons'       => false,
 				'has_paid_plans'   => true,
 				'is_org_compliant' => false,
-				// 'has_affiliation'     => true,
 				'menu'             => array(
 					'slug'        => 'edit.php?post_type=newsletter',
+					'first-path'  => 'admin.php?page=mailster_dashboard',
 					'contact'     => false,
 					'support'     => false,
 					'pricing'     => false,
 					'affiliation' => false,
-					'first-path'  => 'admin.php?page=mailster_dashboard',
 					'account'     => true,
 				),
 			)
@@ -63,8 +64,16 @@ class MailsterLicense {
 	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {
 
 		$this->sdk();
-
 		// at this point mailster_freemius is the freemius SDK
+
+		if ( mailster_option( 'usage_tracking' ) ) {
+			FS_Permission_Manager::instance( mailster_freemius() )->update_permissions_tracking_flag(
+				array(
+					FS_Permission_Manager::PERMISSION_DIAGNOSTIC => true,
+					FS_Permission_Manager::PERMISSION_EXTENSIONS => true,
+				)
+			);
+		}
 
 		// add collected filters
 		foreach ( $this->filters as $filter ) {

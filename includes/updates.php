@@ -638,6 +638,8 @@ if ( $old_version ) {
 		case '3.2.3':
 		case '3.2.4':
 		case '3.2.5':
+			update_option( 'mailster_envato', get_option( 'mailster', time() ) );
+
 		default:
 			mailster( 'convert' )->notice();
 

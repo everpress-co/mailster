@@ -9,7 +9,6 @@ function mailster_freemius() {
 
 		require_once MAILSTER_DIR . 'classes/license.class.php';
 		$mailster_freemius = new MailsterLicense();
-
 		if ( get_option( 'mailster_freemius' ) ) {
 			$mailster_freemius->sdk();
 		}
@@ -96,12 +95,15 @@ function mailster_legacy_license_key( $key ) {
 mailster_freemius()->add_filter( 'permission_list', 'mailster_add_helpscount_permission' );
 function mailster_add_helpscount_permission( $permissions ) {
 
+	error_log( print_r( $permissions, true ) );
 	$permissions[] = array(
 		'id'         => 'helpscout',
 		'icon-class' => 'dashicons dashicons-sos',
-		'label'      => mailster_freemius()->get_text_inline( 'Help Scout', 'helpscout' ),
+		'tooltip'    => mailster_freemius()->get_text_inline( 'Help Scout', 'helpscout' ),
+		'label'      => mailster_freemius()->get_text_inline( 'Help Scout (optional)', 'helpscout' ),
 		'desc'       => mailster_freemius()->get_text_inline( 'Loading Help Scout\'s beacon for easy support access', 'permissions-helpscout' ),
 		'optional'   => true,
+		'priority'   => 20,
 	);
 
 	return $permissions;
