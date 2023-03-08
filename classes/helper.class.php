@@ -1350,7 +1350,7 @@ class MailsterHelper {
 	 */
 	public function file_put_contents( $filename, $data = '', $flags = 'w' ) {
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		if ( ! is_dir( dirname( $filename ) ) ) {
 			wp_mkdir_p( dirname( $filename ) );
@@ -1375,7 +1375,7 @@ class MailsterHelper {
 	 */
 	public function mkdir( $folder = '', $prevent_access = true ) {
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$upload_dir = wp_upload_dir();
 
@@ -1576,7 +1576,7 @@ class MailsterHelper {
 
 			if ( ! $cache_duration || false === ( $body = get_transient( 'mailster_feed_' . $feed_id ) ) ) {
 
-				$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
+				$response = wp_remote_get( $url, array( 'timeout' => 20 ) );
 				$code     = wp_remote_retrieve_response_code( $response );
 
 				if ( $code != 200 ) {
@@ -1587,6 +1587,9 @@ class MailsterHelper {
 					if ( ! is_admin() ) {
 						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', $cache_duration, $feed_id );
 					}
+					// cache some time to prevent long loadings
+					set_transient( 'mailster_feed_' . $feed_id, $response, MINUTE_IN_SECONDS );
+
 					return $response;
 				}
 
@@ -1599,6 +1602,10 @@ class MailsterHelper {
 
 				set_transient( 'mailster_feed_' . $feed_id, $body, $cache_duration );
 
+			}
+
+			if ( is_wp_error( $body ) ) {
+				return $body;
 			}
 
 			$feed->set_raw_data( $body );
@@ -1654,7 +1661,9 @@ class MailsterHelper {
 				// save the first publish date in our db as some feeds change this date which causes problems on sending autoresponders
 				$gmt_date     = $this->get_feed_item_date( $rss_item, $item_id, $feed_id );
 				$gmt_modified = $rss_item->get_updated_gmdate( 'U' );
-
+				if ( empty( $gmt_modified ) ) {
+					$gmt_modified = $gmt_date;
+				}
 				$post = new WP_Post(
 					(object) array(
 						'ID'                => $item_id,
@@ -1666,6 +1675,7 @@ class MailsterHelper {
 						'post_author'       => $author ? $author->name : '',
 						'post_author_link'  => $author ? $author->link : '',
 						'post_author_email' => $author ? $author->email : '',
+						'post_link'         => $permalink,
 						'post_permalink'    => $permalink,
 						'post_excerpt'      => $post_excerpt,
 						'post_content'      => $post_content,
@@ -1699,10 +1709,19 @@ class MailsterHelper {
 			new WP_Error( 'no_item', sprintf( esc_html__( 'Feed item #%d does not exist', 'mailster' ), $item ) );
 		}
 
-		// remove images in post excerpt
-		$posts[ $item ]->post_excerpt = preg_replace( '/<img[^>]+\>/i', '', $posts[ $item ]->post_excerpt );
+		$post = $posts[ $item ];
 
-		return $posts[ $item ];
+		// get an image from the content if not defined
+		if ( empty( $post->post_image ) ) {
+			if ( preg_match( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $post->post_excerpt . $post_content, $matches ) ) {
+				$post->post_image = $matches[1];
+			}
+		}
+
+		// remove images in post excerpt
+		$post->post_excerpt = preg_replace( '/<img[^>]+\>/i', '', $post->post_excerpt );
+
+		return $post;
 
 	}
 

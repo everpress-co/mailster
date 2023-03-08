@@ -205,6 +205,8 @@
 
 		<div class="type auto">
 
+			<?php echo mailster()->beacon( '611bb1e1f886c9486f8d98cc' ); ?>
+
 			<p class="editbarposition" title="<?php esc_attr_e( 'The area in which content gets placed.', 'mailster' ); ?>"></p>
 
 			<div id="embedoption-bar" class="nav-tab-wrapper hide-if-no-js">
@@ -300,6 +302,7 @@
 					?>
 				<span class="dynamic-rss">
 					<?php esc_html_e( 'from', 'mailster' ); ?> <label class="dynamic-rss-url-label"><input type="url" id="dynamic_rss_url" class="widefat" placeholder="https://example.com/feed.xml" value=""></label>
+					<?php echo mailster()->beacon( array( '611baed36ffe270af2a998d7' ) ); ?>
 				</span>
 				</p>
 				<div class="right">
