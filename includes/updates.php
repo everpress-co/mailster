@@ -637,6 +637,10 @@ if ( $old_version ) {
 		case '3.2.2':
 		case '3.2.3':
 		case '3.2.4':
+		case '3.2.5':
+			$mailster_options['logging_max']  = 1000;
+			$mailster_options['logging_days'] = 7;
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );

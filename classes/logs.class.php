@@ -83,12 +83,12 @@ class MailsterLogs {
 
 		if ( isset( $_GET['ID'] ) ) :
 
-			include MAILSTER_DIR . 'views/logs/detail.php';
+			include MAILSTER_DIR . 'views/logging/detail.php';
 
 		else :
 
 			$this->cleanup();
-			include MAILSTER_DIR . 'views/logs/overview.php';
+			include MAILSTER_DIR . 'views/logging/overview.php';
 
 		endif;
 
@@ -152,29 +152,19 @@ class MailsterLogs {
 			return;
 		}
 
-		$le  = $obj->mailer->getLE();
-		$raw = $obj->mailer->getSentMIMEMessage();
-
-		$header = strstr( $raw, $le . $le, true );
-
 		global $wpdb;
+
 		$data = array(
 			'subject'       => $obj->subject,
 			'timestamp'     => time(),
 			'campaign_id'   => $obj->campaignID,
 			'subscriber_id' => $obj->subscriberID,
-			// 'headers' => $obj->headers,
-			// 'from' => $obj->from,
-			// 'from_name' => $obj->from_name,
-			// 'reply_to' => $obj->mailer->getReplyToAddresses(),
 			'to'            => serialize( array_keys( $obj->mailer->getAllRecipientAddresses() ) ),
 			'html'          => $obj->mailer->Body,
 			'text'          => $obj->mailer->AltBody,
 			'raw'           => $obj->mailer->getSentMIMEMessage(),
 			'message_id'    => $obj->mailer->getLastMessageID(),
 		);
-
-		// error_log( print_r($obj, true) );
 
 		$wpdb->insert( "{$wpdb->prefix}mailster_logs", $data );
 
@@ -187,15 +177,6 @@ class MailsterLogs {
 		$max_entries = mailster_option( 'logging_max' );
 		$max_days    = mailster_option( 'logging_days' );
 
-		if ( ! $max_entries && ! $max_days ) {
-			return;
-		}
-
-		$entries = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs" );
-
-		if ( $entries <= $max_entries ) {
-			return;
-		}
 		if ( $max_entries ) {
 			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE ID NOT IN ( SELECT ID FROM ( SELECT ID FROM {$wpdb->prefix}mailster_logs ORDER BY ID DESC LIMIT %d  ) x ) ", $max_entries ) );
 		}

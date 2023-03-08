@@ -114,17 +114,19 @@ class Mailster_Logs_Table extends WP_List_Table {
 				return '<strong><code>' . date_i18n( 'Y-m-d H:i:s', $item->{'timestamp'} + $timeoffset ) . '</code></strong>';
 
 			case 'subscriber':
-				return ( $item->{'subscriber_id'} );
+				$subscriber = mailster( 'subscribers' )->get( $item->{'subscriber_id'} );
+				if ( $subscriber ) {
+					return '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID ) . '">' . $subscriber->email . '</a>';
+				}
+				return $item->{'subscriber_id'};
 
 			case 'campaign':
 				return '<a href="' . admin_url( 'post.php?post=' . $item->{'campaign_id'} . '&action=edit' ) . '"><strong>' . esc_html( get_the_title( $item->{'campaign_id'} ) ) . '</strong></a>';
 
 			case 'subject':
 				return '<a href="' . add_query_arg( array( 'ID' => $item->ID ) ) . '" title="' . esc_attr( $item->{'subject'} ) . '"><strong>' . esc_html( $item->{'subject'} ) . '</strong></a>';
-				// return mailster('helper')->get_excerpt( $item->{'message'} );
 
 			default:
-				// return print_r( $item, true ); // Show the whole array for troubleshooting purposes
 		}
 	}
 
@@ -135,7 +137,6 @@ class Mailster_Logs_Table extends WP_List_Table {
 	 * @return unknown
 	 */
 	public function get_sortable_columns() {
-
 		return array();
 	}
 
