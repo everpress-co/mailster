@@ -17,59 +17,21 @@ function mailster_freemius() {
 	return $mailster_freemius;
 }
 
-mailster_freemius()->add_filter( 'connect_message_on_update', 'mailster_freemius_custom_connect_message_on_update', 10, 6 );
-function mailster_freemius_custom_connect_message_on_update( $message, $user_first_name, $plugin_title, $user_login, $site_link, $freemius_link ) {
-	return sprintf(
-		__( 'Hey %1$s' ) . ',<br>' .
-		__( 'Please help us improve %2$s! If you opt-in, some data about your usage of %2$s will be sent to %5$s. If you skip this, that\'s okay! %2$s will still work just fine.', 'mailster' ),
-		$user_first_name,
-		'<b>' . $plugin_title . '</b>',
-		'<b>' . $user_login . '</b>',
-		$site_link,
-		$freemius_link
-	);
-}
-
-mailster_freemius()->add_filter( 'connect/after_license_input', 'mailster_freemius_connect_before' );
-function mailster_freemius_connect_before() {
-
-}
-
-mailster_freemius()->add_filter( 'checkout_url', 'mailster_freemius_checkout_url' );
-function mailster_freemius_checkout_url() {
-
-	if ( mailster_freemius()->is_whitelabeled() ) {
-		return mailster_url( 'https://mailster.co/go/buy' );
-	}
-
-	return add_query_arg(
-		array(
-			'page'          => 'mailster-pricing',
-			'checkout'      => 'true',
-			'plan_id'       => 20601,
-			'plan_name'     => 'standard',
-			'billing_cycle' => 'annual',
-			'pricing_id'    => 23716,
-			'post_type'     => 'newsletter',
-		),
-		admin_url( 'edit.php' )
-	);
-
-}
-
 
 mailster_freemius()->add_filter( 'plugin_icon', 'mailster_freemius_custom_icon' );
 function mailster_freemius_custom_icon() {
 	return MAILSTER_DIR . 'assets/img/opt-in.png';
 }
 
+
 mailster_freemius()->add_action( 'after_uninstall', 'mailster_freemius_uninstall_cleanup' );
 function mailster_freemius_uninstall_cleanup() {
 	mailster()->uninstall();
 }
 
-// mailster_freemius()->add_action( 'hide_plan_change', '__return_true' );
+
 mailster_freemius()->add_action( 'hide_account_tabs', '__return_true' );
+mailster_freemius()->add_action( 'hide_freemius_powered_by', '__return_true' );
 
 
 mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );
@@ -92,22 +54,29 @@ function mailster_legacy_license_key( $key ) {
 	return $key;
 }
 
-mailster_freemius()->add_filter( 'permission_list', 'mailster_add_helpscount_permission' );
-function mailster_add_helpscount_permission( $permissions ) {
 
-	error_log( print_r( $permissions, true ) );
+mailster_freemius()->add_filter( 'permission_list', 'mailster_update_permission' );
+function mailster_update_permission( $permissions ) {
+
 	$permissions[] = array(
 		'id'         => 'helpscout',
 		'icon-class' => 'dashicons dashicons-sos',
-		'tooltip'    => mailster_freemius()->get_text_inline( 'Help Scout', 'helpscout' ),
-		'label'      => mailster_freemius()->get_text_inline( 'Help Scout (optional)', 'helpscout' ),
-		'desc'       => mailster_freemius()->get_text_inline( 'Loading Help Scout\'s beacon for easy support access', 'permissions-helpscout' ),
+		'tooltip'    => esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ),
+		'label'      => esc_html__( 'Help Scout (optional)', 'mailster' ),
+		'desc'       => esc_html__( 'Loading Help Scout\'s beacon for easy support access', 'mailster' ),
 		'optional'   => true,
 		'priority'   => 20,
 	);
 
+	$list = wp_list_pluck( $permissions, 'id' );
+	if ( $key = array_search( 'extensions', $list ) ) {
+		$permissions[ $key ]['default'] = true;
+	}
+
 	return $permissions;
 }
+
+
 mailster_freemius()->add_action( 'connect/after_license_input', 'mailster_add_link_for_envato' );
 function mailster_add_link_for_envato() {
 	if ( ! MAILSTER_ENVATO ) {
@@ -120,18 +89,6 @@ function mailster_add_link_for_envato() {
 	</div>
 	<?php
 
-}
-
-
-mailster_freemius()->add_filter( 'permission_list', 'mailster_add_diagnostic_permission' );
-function mailster_add_diagnostic_permission( $permissions ) {
-	foreach ( $permissions as $key => $permission ) {
-		if ( $permission['id'] === 'diagnostic' ) {
-			$permissions[ $key ]['default'] = true;
-		}
-	}
-
-	return $permissions;
 }
 
 // change length of licenses keys to accept the one from Envato 36 but allow some whitespace
@@ -150,5 +107,28 @@ function mailster_freemius_opt_in_error_message( $error ) {
 mailster_freemius()->add_filter( 'license_key_maxlength', 'mailster_license_key_maxlength' );
 function mailster_license_key_maxlength( $length ) {
 	return 40;
+}
+
+
+mailster_freemius()->add_filter( 'checkout_url', 'mailster_freemius_checkout_url' );
+function mailster_freemius_checkout_url() {
+
+	if ( mailster_freemius()->is_whitelabeled() ) {
+		return mailster_url( 'https://mailster.co/go/buy' );
+	}
+
+	return add_query_arg(
+		array(
+			'page'          => 'mailster-pricing',
+			'checkout'      => 'true',
+			'plan_id'       => 20601,
+			'plan_name'     => 'standard',
+			'billing_cycle' => 'annual',
+			'pricing_id'    => 23716,
+			'post_type'     => 'newsletter',
+		),
+		admin_url( 'edit.php' )
+	);
+
 }
 

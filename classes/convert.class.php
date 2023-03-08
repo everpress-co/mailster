@@ -61,7 +61,7 @@ class MailsterConvert {
 		}
 
 		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
-		$endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
 
 		$url = add_query_arg(
 			array(

@@ -134,9 +134,6 @@
 .fs-submenu-item.pricing.upgrade-mode {
 	color: #2bb3e7;
 }
-#pframe {
-	display: none;
-}
 #fs_frame iframe {
 	min-height: 900px !important;
 }
