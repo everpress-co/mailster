@@ -47,6 +47,7 @@ class MailsterLicense {
 		do_action( 'mailster_freemius_loaded' );
 
 		add_action( 'load-newsletter_page_mailster-pricing', array( $this, '_maybe_redirect_to_checkout' ) );
+		add_action( 'load-newsletter_page_mailster-account', array( $this, '_add_account_beacon' ) );
 
 		return $mailster_freemius;
 	}
@@ -61,11 +62,17 @@ class MailsterLicense {
 
 	}
 
+	public function _add_account_beacon( $hooks ) {
+
+		echo mailster()->beacon( array( '640898cd16d5327537bcb740', '611bb01bb55c2b04bf6df0ae', '64074c66512c5e08fd71ac91' ), true );
+
+	}
+
 	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {
 
 		$this->sdk();
-		// at this point mailster_freemius is the freemius SDK
 
+		// at this point mailster_freemius is the Freemius SDK
 		if ( mailster_option( 'usage_tracking' ) ) {
 			FS_Permission_Manager::instance( mailster_freemius() )->update_permissions_tracking_flag(
 				array(
