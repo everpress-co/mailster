@@ -57,23 +57,10 @@ class MailsterLogs {
 			wp_enqueue_style( 'mailster-log-detail', MAILSTER_URI . 'assets/css/log-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-log-detail', MAILSTER_URI . 'assets/js/log-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
-			mailster_localize_script(
-				'logs',
-				array(
-					'next' => esc_html__( 'next', 'mailster' ),
-				)
-			);
-
 		else :
 
 			wp_enqueue_style( 'mailster-logs-table', MAILSTER_URI . 'assets/css/logs-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-logs-table', MAILSTER_URI . 'assets/js/logs-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			mailster_localize_script(
-				'logs',
-				array(
-					'next' => esc_html__( 'next', 'mailster' ),
-				)
-			);
 
 		endif;
 
@@ -136,11 +123,11 @@ class MailsterLogs {
 
 	public function get_columns() {
 		$columns = array(
-			'cb'         => '<input type="checkbox" />',
-			'subject'    => esc_html__( 'Subject', 'mailster' ),
-			'timestamp'  => esc_html__( 'Time', 'mailster' ),
-			'subscriber' => esc_html__( 'Subscriber', 'mailster' ),
-			'campaign'   => esc_html__( 'Campaign', 'mailster' ),
+			'cb'        => '<input type="checkbox" />',
+			'subject'   => esc_html__( 'Subject', 'mailster' ),
+			'timestamp' => esc_html__( 'Time', 'mailster' ),
+			'receivers' => esc_html__( 'Receivers', 'mailster' ),
+			'campaign'  => esc_html__( 'Campaign', 'mailster' ),
 		);
 
 		return $columns;
@@ -159,7 +146,7 @@ class MailsterLogs {
 			'timestamp'     => time(),
 			'campaign_id'   => $obj->campaignID,
 			'subscriber_id' => $obj->subscriberID,
-			'to'            => serialize( array_keys( $obj->mailer->getAllRecipientAddresses() ) ),
+			'receivers'     => serialize( array_keys( $obj->mailer->getAllRecipientAddresses() ) ),
 			'html'          => $obj->mailer->Body,
 			'text'          => $obj->mailer->AltBody,
 			'raw'           => $obj->mailer->getSentMIMEMessage(),
@@ -171,6 +158,10 @@ class MailsterLogs {
 	}
 
 	public function cleanup() {
+
+		if ( ! mailster_option( 'logging' ) ) {
+			return;
+		}
 
 		global $wpdb;
 

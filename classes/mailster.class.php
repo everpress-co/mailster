@@ -2287,7 +2287,7 @@ class Mailster {
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
                 `subject` longtext NOT NULL,
-                `to` longtext NOT NULL,
+                `receivers` longtext NOT NULL,
                 `html` longtext NOT NULL,
                 `text` longtext NOT NULL,
                 `raw` longtext NOT NULL,

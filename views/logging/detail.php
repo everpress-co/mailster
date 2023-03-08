@@ -8,7 +8,7 @@ if ( ! ( $log = $this->get( $id ) ) ) {
 
 
 }
-$addresses = maybe_unserialize( $log->to );
+$addresses = maybe_unserialize( $log->receivers );
 
 ?>
 <div class="wrap">

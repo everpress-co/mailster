@@ -113,12 +113,9 @@ class Mailster_Logs_Table extends WP_List_Table {
 				$timeoffset = mailster( 'helper' )->gmt_offset( true );
 				return '<strong><code>' . date_i18n( 'Y-m-d H:i:s', $item->{'timestamp'} + $timeoffset ) . '</code></strong>';
 
-			case 'subscriber':
-				$subscriber = mailster( 'subscribers' )->get( $item->{'subscriber_id'} );
-				if ( $subscriber ) {
-					return '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID ) . '">' . $subscriber->email . '</a>';
-				}
-				return $item->{'subscriber_id'};
+			case 'receivers':
+				$addresses = maybe_unserialize( $item->{'receivers'} );
+				return implode( ', ', $addresses );
 
 			case 'campaign':
 				return '<a href="' . admin_url( 'post.php?post=' . $item->{'campaign_id'} . '&action=edit' ) . '"><strong>' . esc_html( get_the_title( $item->{'campaign_id'} ) ) . '</strong></a>';
@@ -215,7 +212,7 @@ class Mailster_Logs_Table extends WP_List_Table {
 		$max_entries = mailster_option( 'logging-max' );
 		$max_days    = mailster_option( 'logging-max' );
 
-		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, subscriber_id, campaign_id, timestamp, subject FROM {$wpdb->prefix}mailster_logs ORDER BY timestamp DESC, ID DESC LIMIT %d, %d";
+		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, `receivers`, `subscriber_id`, `campaign_id`, `timestamp`, `subject` FROM {$wpdb->prefix}mailster_logs ORDER BY timestamp DESC, ID DESC LIMIT %d, %d";
 
 		$items = $wpdb->get_results( $wpdb->prepare( $sql, $offset, $this->per_page ) );
 
