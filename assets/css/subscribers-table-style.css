@@ -43,6 +43,10 @@
 .widefat .column-signup {
 	width: 130px;
 }
+.mailster-subscriber-conditions-thickbox .mailster-conditions > .mailster-help {
+	display: none;
+}
+
 .mailster-avatar {
 	display: inline-block;
 	margin-right: 8px;
