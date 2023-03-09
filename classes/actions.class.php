@@ -409,21 +409,30 @@ class MailsterActions {
 			return false;
 		}
 
-		$cache_key = 'action_counts_total_' . $action;
+		/**
+		 * Filters the time frame used for growth default YEAR_IN_SECONDS
+		 *
+		 * @param string $content
+		 */
+		$growth_timeframe = abs( apply_filters( 'mailster_growth_timeframe', YEAR_IN_SECONDS, $action ) );
 
-		$action_counts = mailster_cache_get( $cache_key );
+		$cache_key = 'mailster_action_counts_total_' . $action . '_' . $growth_timeframe;
+
+		$action_counts = get_transient( $cache_key );
 		if ( ! $action_counts ) {
 			$action_counts = $default;
 
 			$table = $mod_action = str_replace( array( '_total', '_deleted' ), '', $action );
 			$table = str_replace( array( 'soft' ), '', $table );
 
-			$sql = "SELECT COUNT(DISTINCT subscriber_id, campaign_id) AS count, COUNT(DISTINCT a.subscriber_id, campaign_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a WHERE a.campaign_id IS NOT NULL AND a.timestamp > %d";
+			$sql = "SELECT COUNT(DISTINCT subscriber_id, campaign_id) AS count, COUNT(DISTINCT a.subscriber_id, campaign_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a WHERE a.campaign_id IS NOT NULL AND a.timestamp BETWEEN %d AND %d";
 
-			// better for caching results
-			$offset = strtotime( 'midnight - 1 year' );
+			$gmt_offset = mailster( 'helper' )->gmt_offset( true );
 
-			$result = $wpdb->get_results( $wpdb->prepare( $sql, $offset ) );
+			$start_of_day = strtotime( 'midnight' ) - $gmt_offset;
+			$offset       = $start_of_day - $growth_timeframe;
+
+			$result = $wpdb->get_results( $wpdb->prepare( $sql, $offset, $start_of_day ) );
 
 			foreach ( $result as $row ) {
 
@@ -470,7 +479,10 @@ class MailsterActions {
 				}
 			}
 
-			mailster_cache_set( $cache_key, $action_counts );
+			// cache until midnight
+			$sec_to_midnight = abs( $start_of_day + DAY_IN_SECONDS - time() );
+			set_transient( $cache_key, $action_counts, $sec_to_midnight );
+
 		}
 
 		if ( is_null( $action ) ) {
