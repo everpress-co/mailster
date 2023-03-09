@@ -254,7 +254,10 @@ class MailsterUpdate {
 
 	public function plugins_api_result( $res, $action, $args ) {
 
-		if ( is_wp_error( $res ) || ! $res || $res->slug !== 'mailster' ) {
+		if ( is_wp_error( $res ) || ! $res ) {
+			return $res;
+		}
+		if ( ! isset( $res->slug ) || $res->slug !== 'mailster' ) {
 			return $res;
 		}
 
