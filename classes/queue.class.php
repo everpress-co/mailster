@@ -1187,9 +1187,13 @@ class MailsterQueue {
 				$sql        .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
 			}
 
-			$sql .= ' ORDER BY queue.priority DESC, subscribers.rating DESC, queue.ID';
+			$sql .= 'ORDER BY queue.priority DESC,';
 
-			$sql .= ! mailster_option( 'split_campaigns' ) ? ', queue.campaign_id ASC' : '';
+			if ( mailster_option( 'split_campaigns' ) ) {
+				$sql .= ' subscribers.rating DESC, RAND()';
+			} else {
+				$sql .= ' queue.campaign_id ASC, subscribers.rating DESC';
+			}
 
 			$sql .= " LIMIT $send_at_once_limit";
 
