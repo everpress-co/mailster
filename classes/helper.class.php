@@ -1713,7 +1713,7 @@ class MailsterHelper {
 
 		// get an image from the content if not defined
 		if ( empty( $post->post_image ) ) {
-			if ( preg_match( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $post->post_excerpt . $post_content, $matches ) ) {
+			if ( preg_match( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $post->post_excerpt . $post->post_content, $matches ) ) {
 				$post->post_image = $matches[1];
 			}
 		}
