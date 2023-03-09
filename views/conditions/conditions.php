@@ -30,8 +30,7 @@
 
 	?>
 <div class="mailster-conditions">
-			<?php echo mailster()->beacon( '611bb8346ffe270af2a9994e' ); ?>
-
+	<?php echo mailster()->beacon( '611bb8346ffe270af2a9994e' ); ?>
 	<div class="mailster-condition-container"></div>
 	<div class="mailster-conditions-wrap" data-emptytext="<?php esc_attr_e( 'Please add your first condition.', 'mailster' ); ?>">
 	<?php foreach ( $conditions as $i => $condition_group ) : ?>
