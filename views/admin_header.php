@@ -59,7 +59,7 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 ?>
 <div id="mailster-admin-toolbar">
 	<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="mailster-logo" title="<?php echo esc_attr( sprintf( 'Mailster %s', MAILSTER_VERSION ) ); ?>">
-		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 692.8 611.9" xml:space="preserve"><path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/></svg>
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 692.8 611.9" xml:space="preserve" style="max-width:50px;"><path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/></svg>
 		<span class="screen-reader-text">Mailster Newsletter Plugin</span>
 	</a>
 	<?php

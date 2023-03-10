@@ -1282,6 +1282,10 @@ class MailsterQueue {
 
 					$wpdb->query( $wpdb->prepare( $queue_update_sql, time(), 0, $data->_priority, $data->_count, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options, $data->_i ) );
 
+					$output_php = round( $php_took, 5 );
+					if ( $php_took > 2 ) {
+						$output_php = sprintf( '<span class="error">%s</span>', $output_php );
+					}
 					$output_mail = round( $mail_took, 5 );
 					if ( $mail_took > 2 ) {
 						$output_mail = sprintf( '<span class="error">%s</span>', $output_mail );
@@ -1289,10 +1293,6 @@ class MailsterQueue {
 					$output_total = round( $took, 5 );
 					if ( $took > 2 ) {
 						$output_total = sprintf( '<span class="error">%s</span>', $output_total );
-					}
-					$output_php = round( $took, 5 );
-					if ( $php_took > 2 ) {
-						$output_php = sprintf( '<span class="error">%s</span>', $output_php );
 					}
 
 					if ( ! $options ) {
@@ -1531,7 +1531,7 @@ class MailsterQueue {
 				$html .= '<td>' . $log . '</td>';
 			}
 			$html .= str_repeat( '<td>&nbsp;</td>', max( 0, ( $mailster_cron_log_max_fields + 2 ) - $j - 4 ) );
-			$html .= '<td width="50">' . date( 'H:i:s', $time + $timeoffset ) . ':' . round( ( $time - floor( $time ) ) * 10000 ) . '</td>';
+			$html .= '<td width="50">' . date( 'H:i:s', round( $time ) + $timeoffset ) . ':' . round( ( $time - floor( $time ) ) * 10000 ) . '</td>';
 			$html .= '</tr>';
 			$i++;
 		}

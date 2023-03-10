@@ -858,8 +858,13 @@ class Mailster {
 			return false;
 		}
 
+		if ( ! $posts ) {
+			$posts = array();
+		}
+
 		if ( ! isset( $posts[ $campaign_id ] ) ) {
-			$posts[ $campaign_id ] = $stored = array();
+			$posts[ $campaign_id ] = array();
+			$stored                = array();
 		} else {
 			$stored = wp_list_pluck( $posts[ $campaign_id ], 'ID' );
 		}
