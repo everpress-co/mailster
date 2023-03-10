@@ -13,8 +13,6 @@ mailster = (function (mailster, $, window, document) {
 
 		!mailster.util.trim(conditions.html()) && conditions.empty();
 
-		datepicker();
-
 		_self
 			.on('click', '.add-condition', function () {
 				var id = groups.length,
@@ -37,7 +35,6 @@ mailster = (function (mailster, $, window, document) {
 							.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
-				datepicker();
 				groups = _self.find('.mailster-condition-group');
 				cond = _self.find('.mailster-condition');
 			})
@@ -65,7 +62,6 @@ mailster = (function (mailster, $, window, document) {
 							.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
-				datepicker();
 				cond = _self.find('.mailster-condition');
 			});
 
@@ -133,13 +129,23 @@ mailster = (function (mailster, $, window, document) {
 						.prop('disabled', false);
 				}
 
-				if (!value_field.val()) {
-					if (value_field.is('.hasDatepicker')) {
-						value_field.datepicker('setDate', 'yy-mm-dd');
-					}
-				}
+				// if (!value_field.val()) {
+				// 	if (value_field.is('.hasDatepicker')) {
+				// 		value_field.datepicker('setDate', 'yy-mm-dd');
+				// 	}
+				// }
 
 				mailster.trigger('updateCount');
+			})
+			.on('focus', 'input.condition-value', function () {
+				var field = $(this)
+					.parent()
+					.parent()
+					.parent()
+					.find('.condition-field')
+					.val();
+				var value = $(this);
+				autocomplete(field, value);
 			})
 			.on('change', '.relative-datepicker', function () {
 				var field = $(this).closest('.mailster-conditions-value-field');
@@ -165,6 +171,7 @@ mailster = (function (mailster, $, window, document) {
 						val = input.val();
 
 					if (is_relative) {
+						input.attr('type', 'text');
 						var values = get_relative_values(val);
 						input
 							.next('input.relative-datepicker')
@@ -173,6 +180,7 @@ mailster = (function (mailster, $, window, document) {
 							.val(values[1])
 							.trigger('change');
 					} else {
+						input.attr('type', 'date');
 						if (!val.match(/^(\d{4})-(\d{2})-(\d{2})$/))
 							input.val(new Date().toISOString().slice(0, 10));
 					}
@@ -244,20 +252,6 @@ mailster = (function (mailster, $, window, document) {
 				.next('select.relative-datepicker')
 				.val(values[1]);
 		});
-
-		function datepicker() {
-			conditions.find('.datepicker').datepicker({
-				dateFormat: 'yy-mm-dd',
-				firstDay: mailster.l10n.conditions.start_of_week,
-				showWeek: true,
-				dayNames: mailster.l10n.conditions.day_names,
-				dayNamesMin: mailster.l10n.conditions.day_names_min,
-				monthNames: mailster.l10n.conditions.month_names,
-				prevText: mailster.l10n.conditions.prev,
-				nextText: mailster.l10n.conditions.next,
-				showAnim: 'fadeIn',
-			});
-		}
 
 		function get_conditions(args) {
 			var lists = [],
@@ -448,6 +442,30 @@ mailster = (function (mailster, $, window, document) {
 		val[0] = Math.abs(val[0]);
 
 		return val;
+	}
+
+	function autocomplete(field, el) {
+		if (el.data('ui-autocomplete') != undefined) {
+			el.autocomplete('destroy');
+		}
+		el.autocomplete({
+			classes: {
+				'ui-autocomplete': 'mailster-condition-autocomplete',
+			},
+			source: function (request, cb) {
+				el.addClass('autocomplete-loading');
+				mailster.util.ajax(
+					'get_autocomplete_source',
+					{ field: field, search: request.term },
+					function (response) {
+						if (response.success) {
+							cb(response.data);
+						}
+						el.removeClass('autocomplete-loading');
+					}
+				);
+			},
+		});
 	}
 
 	mailster.conditions.get = get_conditions;

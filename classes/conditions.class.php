@@ -33,7 +33,7 @@ class MailsterConditions {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-autocomplete' ), MAILSTER_VERSION, true );
 
 		if ( is_null( $inputname ) ) {
 			$inputname = 'mailster_data[conditions]';
@@ -75,6 +75,64 @@ class MailsterConditions {
 
 		echo $output;
 
+	}
+
+	public function get_autocomplete_source( $field, $search = null ) {
+
+		global $wpdb;
+
+		$query = null;
+		$data  = array();
+
+		if ( isset( $this->fields[ $field ] ) ) {
+			$query = 'SELECT DISTINCT ' . esc_sql( $field ) . " AS %s FROM {$wpdb->prefix}mailster_subscribers WHERE 1";
+			if ( $search ) {
+				$query .= ' AND ' . esc_sql( $field ) . " LIKE '%%%s%%'";
+			}
+			$data = array();
+		} elseif ( isset( $this->custom_fields[ $field ] ) ) {
+			$custom_fields = mailster()->get_custom_fields();
+			switch ( $custom_fields[ $field ]['type'] ) {
+				case 'dropdown':
+					$data = $custom_fields[ $field ]['values'];
+					break;
+
+				default:
+					$query = "SELECT DISTINCT meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE meta_key = %s";
+					if ( $search ) {
+						$query .= " AND meta_value LIKE '%%%s%%'";
+					}
+					break;
+			}
+		} elseif ( isset( $this->tag_related[ $field ] ) ) {
+			$data = array();
+		} elseif ( isset( $this->meta_fields[ $field ] ) ) {
+			$query = "SELECT DISTINCT meta_value FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s";
+			if ( $search ) {
+				$query .= " AND meta_value LIKE '%%%s%%'";
+			}
+		} elseif ( isset( $this->wp_user_meta[ $field ] ) ) {
+			$query = "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s";
+			if ( $search ) {
+				$query .= " AND meta_value LIKE '%%%s%%'";
+			}
+		}
+
+		if ( $query ) {
+			// don't do to much
+			$query .= ' LIMIT 1000';
+			if ( $search ) {
+				$query = $wpdb->prepare( $query, $field, $search );
+			} else {
+				$query = $wpdb->prepare( $query, $field );
+			}
+			$data = $wpdb->get_col( $query );
+		}
+
+		$data = array_filter( $data );
+		$data = array_values( $data );
+
+		return apply_filters( 'mailster_conditions_autocomplete_data', $data, $field, $search );
 	}
 
 	public function fielddropdown() {
@@ -631,9 +689,13 @@ class MailsterConditions {
 
 	private function value_field_timestamp( $value, $inputname ) {
 		$value = is_array( $value ) ? $value[0] : $value;
+
+		// determine the type by checking the value
+		$type = ( empty( $value ) || date( 'Y-m-d', strtotime( $value ) ) == $value ) ? 'date' : 'text';
+
 		?>
 					
-		<input type="text" class="regular-text datepicker condition-value" disabled autocomplete="off" value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $inputname ); ?>">
+		<input type="<?php echo esc_attr( $type ); ?>" class="regular-text datepicker condition-value" disabled autocomplete="off" value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $inputname ); ?>">
 		<input type="number" class="small-text relative-datepicker" autocomplete="off" value="" min="1">
 		<select class="relative-datepicker">
 			<option value="minutes"><?php esc_html_e( 'minute(s)', 'mailster' ); ?></option>

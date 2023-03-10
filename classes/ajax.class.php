@@ -89,6 +89,8 @@ class MailsterAjax {
 		'quick_install'               => 'mailster_dashboard',
 		'wizard_save'                 => 'mailster_dashboard',
 
+		'get_autocomplete_source'     => 'edit_newsletters',
+
 		'test'                        => 'manage_options',
 		'get_helpscout_data'          => 'read',
 
@@ -2883,6 +2885,18 @@ class MailsterAjax {
 		}
 
 		wp_send_json_success();
+
+	}
+
+	private function get_autocomplete_source() {
+
+		$this->ajax_nonce();
+
+		$field  = isset( $_POST['field'] ) ? (string) $_POST['field'] : null;
+		$search = isset( $_POST['search'] ) ? (string) $_POST['search'] : null;
+		$return = mailster( 'conditions' )->get_autocomplete_source( $field, $search );
+
+		wp_send_json_success( $return );
 
 	}
 
