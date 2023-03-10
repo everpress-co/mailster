@@ -28,7 +28,6 @@ class Mailster_Logs_Table extends WP_List_Table {
 
 		add_filter( 'manage_newsletter_page_mailster_logs_columns', array( &$this, 'get_columns' ) );
 
-		$this->page    = isset( $_GET['page'] ) ? $_GET['page'] : null;
 		$this->paged   = isset( $_GET['paged'] ) ? (int) $_GET['paged'] - 1 : null;
 		$this->search  = isset( $_GET['s'] ) ? $_GET['s'] : null;
 		$this->orderby = isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'id';
@@ -67,13 +66,13 @@ class Mailster_Logs_Table extends WP_List_Table {
 
 	<form id="searchform" action method="get">
 
-		<?php if ( $this->page ) : ?>
-			<input type="hidden" name="page" value="<?php echo esc_attr( $this->page ); ?>">
-		<?php endif; ?>
+
 		<?php if ( $this->paged ) : ?>
-			<input type="hidden" name="_paged" value="<?php echo esc_attr( $this->paged ); ?>">
+			<input type="hidden" name="paged" value="<?php echo esc_attr( $this->paged ); ?>">
 		<?php endif; ?>
 
+			<input type="hidden" name="post_type" value="newsletter">
+			<input type="hidden" name="page" value="mailster_logs">
 
 		<p class="search-box">
 			<label class="screen-reader-text" for="sa-search-input"><?php echo esc_html( $text ); ?></label>
@@ -212,14 +211,18 @@ class Mailster_Logs_Table extends WP_List_Table {
 		$max_entries = mailster_option( 'logging-max' );
 		$max_days    = mailster_option( 'logging-max' );
 
-		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, `receivers`, `subscriber_id`, `campaign_id`, `timestamp`, `subject` FROM {$wpdb->prefix}mailster_logs ORDER BY timestamp DESC, ID DESC LIMIT %d, %d";
+		$sql = "SELECT SQL_CALC_FOUND_ROWS ID, `receivers`, `subscriber_id`, `campaign_id`, `timestamp`, `subject` FROM {$wpdb->prefix}mailster_logs WHERE 1";
+
+		if ( $this->search ) {
+			$sql .= $wpdb->prepare( " AND CONCAT(`receivers`, ' ', `raw`) LIKE '%%%s%%'", $this->search );
+		}
+
+		$sql .= ' ORDER BY timestamp DESC, ID DESC LIMIT %d, %d';
 
 		$items = $wpdb->get_results( $wpdb->prepare( $sql, $offset, $this->per_page ) );
 
 		$this->items       = $items;
 		$this->total_items = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
-
-		$item_ids = wp_list_pluck( $this->items, 'ID' );
 
 		$this->total_pages = ceil( $this->total_items / $this->per_page );
 

@@ -19,6 +19,7 @@ class MailsterLogs {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 55 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ), 100 );
+		add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
 
 	}
 
@@ -78,6 +79,17 @@ class MailsterLogs {
 			include MAILSTER_DIR . 'views/logging/overview.php';
 
 		endif;
+
+	}
+
+	public function save_screen_options( $status, $option, $value ) {
+
+		if ( 'mailster_logs_per_page' == $option ) {
+			update_user_option( get_current_user_id(), 'mailster_logs_per_page', (int) $value );
+			return $value;
+		}
+
+		return $status;
 
 	}
 
