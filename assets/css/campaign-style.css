@@ -710,9 +710,8 @@ textarea#head {
 }
 input.deliverydate,
 input.deliverytime {
-	width: 94px;
-	font-size: 16px;
-	padding: 3px 1px;
+	font-size: 1.1em;
+	width: 170px;
 	color: #333;
 	cursor: pointer;
 	text-align: center;
@@ -721,9 +720,6 @@ input.deliverydate.inactive,
 input.deliverytime.inactive {
 	color: #585858;
 	background: #fff;
-	padding: 4px 2px 3px;
-	border: 0;
-	border-bottom: 1px dotted #999;
 }
 .utcoffset {
 	white-space: nowrap;
@@ -736,7 +732,6 @@ input.deliverytime {
 .deliverydate.inactive:hover,
 .deliverytime.inactive:hover {
 	color: #333;
-	border-bottom: 1px dotted #585858;
 }
 #ui-datepicker-div {
 	display: none;

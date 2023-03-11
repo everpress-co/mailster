@@ -1458,11 +1458,6 @@ class MailsterCampaigns {
 				wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
 				wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
-				wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
-				wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-				wp_enqueue_script( 'jquery' );
-				wp_enqueue_script( 'jquery-ui-datepicker' );
 				wp_enqueue_script( 'jquery-ui-draggable' );
 
 				wp_enqueue_style( 'thickbox' );
@@ -1799,6 +1794,8 @@ class MailsterCampaigns {
 
 		if ( isset( $postdata ) ) {
 
+			error_log( print_r( $postdata, true ) );
+
 			$meta['webversion']   = isset( $postdata['webversion'] );
 			$meta['track_opens']  = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
@@ -1875,7 +1872,7 @@ class MailsterCampaigns {
 				if ( in_array( $autoresponder['action'], array( 'mailster_subscriber_insert', 'mailster_subscriber_unsubscribed' ) ) ) {
 					unset( $autoresponder['terms'] );
 
-					$localtime         = strtotime( $postdata['autoresponder_signup_date'] . ' ' . $postdata['autoresponder_signup_time'] );
+					$localtime         = strtotime( $postdata['autoresponder_signup_date'] );
 					$meta['timestamp'] = $localtime - $timeoffset;
 
 				} elseif ( 'mailster_post_published' == $autoresponder['action'] ) {
@@ -1894,7 +1891,7 @@ class MailsterCampaigns {
 
 					$autoresponder['since'] = isset( $autoresponder['since'] ) ? ( $autoresponder['since'] ? $autoresponder['since'] : $now ) : false;
 
-					$localtime = strtotime( $postdata['autoresponder_date'] . ' ' . $postdata['autoresponder_time'] );
+					$localtime = strtotime( $postdata['autoresponder_date'] );
 
 					$autoresponder['weekdays'] = ( isset( $autoresponder['weekdays'] )
 						? $autoresponder['weekdays']
@@ -1910,7 +1907,7 @@ class MailsterCampaigns {
 
 					if ( isset( $autoresponder['endschedule'] ) ) {
 
-						$localtime                     = strtotime( $postdata['autoresponder_enddate'] . ' ' . $postdata['autoresponder_endtime'] );
+						$localtime                     = strtotime( $postdata['autoresponder_enddate'] );
 						$autoresponder['endtimestamp'] = max( $meta['timestamp'], $localtime - $timeoffset );
 
 					}
@@ -2014,8 +2011,8 @@ class MailsterCampaigns {
 
 				} elseif ( ( isset( $postdata ) && empty( $meta['timestamp'] ) ) || $meta['active'] ) {
 					// save in UTC
-					if ( isset( $postdata['date'] ) && isset( $postdata['time'] ) ) {
-						$localtime = strtotime( $postdata['date'] . ' ' . $postdata['time'] );
+					if ( isset( $postdata['date'] ) ) {
+						$localtime = strtotime( $postdata['date'] );
 					} else {
 						$localtime = $now;
 					}
@@ -2067,7 +2064,7 @@ class MailsterCampaigns {
 		if ( isset( $meta['active_autoresponder'] ) && $meta['active_autoresponder'] ) {
 			if ( isset( $postdata ) ) {
 				if ( ! $meta['timestamp'] ) {
-					$meta['timestamp'] = max( $now, strtotime( $postdata['date'] . ' ' . $postdata['time'] ) );
+					$meta['timestamp'] = max( $now, strtotime( $postdata['date'] ) );
 				}
 			}
 		}
@@ -2658,7 +2655,7 @@ class MailsterCampaigns {
 		$lists = $this->get_lists( $campaign->ID, true );
 		$meta  = $this->meta( $campaign->ID );
 
-		$meta['active'] = $meta['date'] = $meta['time'] = $meta['timestamp'] = $meta['parent_id'] = $meta['finished'] = $meta['sent'] = $meta['error'] = null;
+		$meta['active'] = $meta['date'] = $meta['timestamp'] = $meta['parent_id'] = $meta['finished'] = $meta['sent'] = $meta['error'] = null;
 
 		unset( $campaign->ID );
 		unset( $campaign->guid );

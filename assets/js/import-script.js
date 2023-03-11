@@ -375,12 +375,6 @@ mailster = (function (mailster, $, window, document) {
 					$('.import-result').eq(0).html(response.data.html).show();
 					$('.import-wrap').hide();
 
-					$('input.datepicker').datepicker({
-						dateFormat: 'yy-mm-dd',
-						showAnim: 'fadeIn',
-						onClose: function () {},
-					});
-
 					$.fn.select2 &&
 						$('.tags-input').select2({
 							placeholder: mailster.l10n.manage.choose_tags,

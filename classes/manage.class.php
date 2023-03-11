@@ -142,11 +142,6 @@ class MailsterManage {
 
 		wp_enqueue_style( 'mailster-manage-style' );
 
-		wp_enqueue_style( 'jquery-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css' );
-		wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css' );
-
-		wp_enqueue_script( 'jquery-ui-datepicker' );
-
 	}
 
 
@@ -432,7 +427,7 @@ class MailsterManage {
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Other', 'mailster' ) . '</h4>';
 		$html .= '<section id="section-other">';
-		$html .= '<p><label><input type="checkbox" id="signup" name="signup" ' . checked( $defaults['signup'], true, false ) . '>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
+		$html .= '<p><label><input type="checkbox" id="signup" name="signup" ' . checked( $defaults['signup'], true, false ) . '>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="date" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
 		$html .= '<br><span class="description">' . esc_html__( 'Some Auto responder require a signup date. Define it here if it is not set or missing', 'mailster' ) . '</span></p>';
 		$html .= '<p><label><input type="checkbox" id="performance" name="performance" ' . checked( $defaults['performance'], true, false ) . '> ' . esc_html__( 'Low memory usage (slower)', 'mailster' ) . '</label></p>';
 		$html .= '<input type="hidden" id="identifier" value="' . esc_attr( $identifier ) . '">';

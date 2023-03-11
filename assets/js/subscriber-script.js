@@ -70,22 +70,6 @@ mailster = (function (mailster, $, window, document) {
 		}
 	});
 
-	$.datepicker &&
-		$('input.datepicker').datepicker({
-			dateFormat: 'yy-mm-dd',
-			firstDay: mailster.l10n.subscribers.start_of_week,
-			dayNames: mailster.l10n.subscribers.day_names,
-			dayNamesMin: mailster.l10n.subscribers.day_names_min,
-			monthNames: mailster.l10n.subscribers.month_names,
-			prevText: mailster.l10n.subscribers.prev,
-			nextText: mailster.l10n.subscribers.next,
-			showAnim: 'fadeIn',
-			onClose: function () {
-				var date = $(this).datepicker('getDate');
-				$('.deliverydate').html($(this).val());
-			},
-		});
-
 	$.fn.select2 &&
 		$('.tags-input').select2({
 			placeholder: mailster.l10n.subscribers.choose_tags,

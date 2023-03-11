@@ -130,12 +130,6 @@ mailster = (function (mailster, $, window, document) {
 						.prop('disabled', false);
 				}
 
-				// if (!value_field.val()) {
-				// 	if (value_field.is('.hasDatepicker')) {
-				// 		value_field.datepicker('setDate', 'yy-mm-dd');
-				// 	}
-				// }
-
 				mailster.trigger('updateCount');
 			})
 			.on('focus', 'input.condition-value', function () {
