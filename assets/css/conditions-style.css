@@ -171,15 +171,8 @@
 .mailster-conditions-wrap .condition-value.autocomplete-loading {
 	background-position: 99% center;
 	background-repeat: no-repeat;
-	background-image: url(../img/loading.gif) !important;
-}
-@media only screen and (min-device-pixel-ratio: 1.5) {
-	mailster-conditions-wrap .condition-value.autocomplete-loading {
-		-webkit-background-size: 20px 20px;
-		-moz-background-size: 20px 20px;
-		background-size: 20px 20px;
-		background-image: url(../img/loading_2x.gif) !important;
-	}
+	background-size: 20px 20px;
+	background-image: url(../img/loading_2x.gif);
 }
 .mailster-condition .mailster-conditions-value-field p,
 .mailster-condition .mailster-conditions-value-field ul {

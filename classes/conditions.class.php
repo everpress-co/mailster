@@ -242,7 +242,7 @@ class MailsterConditions {
 				$fields = array( 'id', 'wp_id' );
 				break;
 			case 'timestamp':
-				$fields = array( 'added', 'updated', 'signup', 'confirm', 'gdpr' );
+				$fields = $this->time_fields;
 				break;
 			case 'campaign_related':
 				$fields = array( '_sent', '_sent__not_in', '_open', '_open__not_in', '_click', '_click__not_in' );

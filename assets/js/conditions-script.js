@@ -93,15 +93,6 @@ mailster = (function (mailster, $, window, document) {
 					.find('.condition-operator')
 					.prop('disabled', true);
 
-				value_field = condition
-					.find(
-						'div.mailster-conditions-value-field[data-fields*=",' +
-							field +
-							',"]'
-					)
-					.addClass('active')
-					.find('.condition-value')
-					.prop('disabled', false);
 				operator_field = condition
 					.find(
 						'div.mailster-conditions-operator-field[data-fields*=",' +
@@ -110,6 +101,16 @@ mailster = (function (mailster, $, window, document) {
 					)
 					.addClass('active')
 					.find('.condition-operator')
+					.prop('disabled', false);
+
+				value_field = condition
+					.find(
+						'div.mailster-conditions-value-field[data-fields*=",' +
+							field +
+							',"]'
+					)
+					.addClass('active')
+					.find('.condition-value')
 					.prop('disabled', false);
 
 				if (!value_field.length) {
