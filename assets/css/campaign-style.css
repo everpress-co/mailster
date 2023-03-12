@@ -614,10 +614,6 @@ textarea#head {
 	background-image: url(../img/inactive.png);
 	z-index: 1;
 }
-.timezone-enabled .utcoffset {
-	text-decoration: line-through;
-	color: #ccc;
-}
 .active_wrap.disabled .active_overlay,
 .autoresponder_active_wrap.disabled .autoresponder_active_overlay {
 	display: none;
@@ -711,7 +707,7 @@ textarea#head {
 input.deliverydate,
 input.deliverytime {
 	font-size: 1.1em;
-	width: 170px;
+	width: 200px;
 	color: #333;
 	cursor: pointer;
 	text-align: center;
@@ -720,11 +716,6 @@ input.deliverydate.inactive,
 input.deliverytime.inactive {
 	color: #585858;
 	background: #fff;
-}
-.utcoffset {
-	white-space: nowrap;
-	font-size: 10px;
-	letter-spacing: -0.05em;
 }
 input.deliverytime {
 	width: 50px;

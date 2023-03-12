@@ -1356,14 +1356,6 @@ mailster = (function (mailster, $, window, document) {
 	mailster.delivery.$ = {};
 
 	mailster.$.delivery
-		.on('change', 'input.timezone', function () {
-			$('.active_wrap').toggleClass('timezone-enabled');
-		})
-		.on('change', 'input.autoresponder-timezone', function () {
-			$(
-				'.autoresponderfield-mailster_autoresponder_timebased'
-			).toggleClass('timezone-enabled');
-		})
 		.on('change', 'input.userexactdate', function () {
 			$(this)
 				.parent()
