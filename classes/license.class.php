@@ -93,8 +93,6 @@ class MailsterLicense {
 			call_user_func_array( array( mailster_freemius(), 'add_action' ), $filter );
 		}
 
-		error_log( print_r( get_option( 'fs_accounts' ), true ) );
-
 		// migrate
 		$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
 
