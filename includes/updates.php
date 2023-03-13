@@ -630,10 +630,6 @@ if ( $old_version ) {
 		case '3.1.6':
 			$mailster_options['db_update_required']   = true;
 			$mailster_options['db_update_background'] = true;
-		case '3.2.0':
-			if ( ! $mailster_options['static_map'] && $mailster_options['google_api_key'] ) {
-				$mailster_options['static_map'] = 'google';
-			}
 
 		case '3.2.0':
 			mailster( 'forms' )->block_forms_message( null, false, null );
@@ -642,7 +638,11 @@ if ( $old_version ) {
 		case '3.2.3':
 		case '3.2.4':
 		case '3.2.5':
+		case '3.2.6':
 			update_option( 'mailster_envato', get_option( 'mailster', time() ) );
+			if ( ! $mailster_options['static_map'] && $mailster_options['google_api_key'] ) {
+				$mailster_options['static_map'] = 'google';
+			}
 
 		default:
 			mailster( 'convert' )->notice();
