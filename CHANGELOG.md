@@ -1,7 +1,7 @@
-### Version 3.2.6 (2023-03-12)
+### Version 3.2.6 (2023-03-13)
 
 -   added: option to bulk add and remove from every list
--   fixed condition on the subscribers over view
+-   fixed: condition on the subscribers over view
 -   fixed: PHP throws error if `str_replace` with a value below 0
 -   fixed: RSS feed missing modified date in some cases change: RSS feed extract images from content first
 -   fixed: issue when bulk confirm/add/delete subscribers from list

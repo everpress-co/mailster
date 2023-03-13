@@ -20,27 +20,30 @@ class MailsterLicense {
 
 			require_once dirname( dirname( __FILE__ ) ) . '/vendor/freemius/wordpress-sdk/start.php';
 
-			$args = array(
-				'id'               => 12184,
-				'slug'             => 'mailster',
-				'public_key'       => 'pk_1efa30140fc34f21e5b89959bb877',
-				'is_premium'       => true,
-				'is_premium_only'  => true,
-				'has_addons'       => false,
-				'has_paid_plans'   => true,
-				'is_org_compliant' => false,
-				'menu'             => array(
-					'slug'        => 'edit.php?post_type=newsletter',
-					'first-path'  => 'admin.php?page=mailster_dashboard',
-					'contact'     => false,
-					'support'     => false,
-					'pricing'     => false,
-					'affiliation' => false,
-					'account'     => true,
-				),
+			$args = apply_filters(
+				'mailster_freemius_args',
+				array(
+					'id'               => 12184,
+					'slug'             => 'mailster',
+					'public_key'       => 'pk_1efa30140fc34f21e5b89959bb877',
+					'is_premium'       => true,
+					'is_premium_only'  => true,
+					'has_addons'       => false,
+					'has_paid_plans'   => true,
+					'is_org_compliant' => false,
+					'menu'             => array(
+						'slug'        => 'edit.php?post_type=newsletter',
+						'first-path'  => 'admin.php?page=mailster_dashboard',
+						'contact'     => false,
+						'support'     => false,
+						'pricing'     => false,
+						'affiliation' => false,
+						'account'     => true,
+					),
+				)
 			);
 
-			$mailster_freemius = fs_dynamic_init( apply_filters( 'mailster_freemius_args', $args ) );
+			$mailster_freemius = fs_dynamic_init( $args );
 
 		}
 

@@ -72,7 +72,7 @@ if ( mailster()->is_verified() ) {
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
 	<?php if ( mailster()->has_support() || ! mailster()->support() ) : ?>
-		<a href="<?php echo mailster_url( 'https://mailster.co/support' ); ?>"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
+		<a href="<?php echo mailster_freemius()->contact_url(); ?>" class="mailster-support"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
 	<?php endif; ?>
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>

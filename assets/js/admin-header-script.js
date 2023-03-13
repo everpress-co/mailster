@@ -19,7 +19,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.document
 		.on('click', '#mailster-admin-help', function () {
 			if (!requireConsent()) {
-				window.open($(this).attr('href'));
+				location.href = $(this).attr('href');
 				return false;
 			}
 
@@ -38,10 +38,10 @@ mailster = (function (mailster, $, window, document) {
 			});
 			return false;
 		})
-		.on('click', 'a[href^="https://mailster.co/support"]', function (e) {
+		.on('click', 'a.mailster-support', function (e) {
 			e.stopImmediatePropagation();
 			if (!requireConsent()) {
-				window.open($(this).attr('href'));
+				location.href = $(this).attr('href');
 				return false;
 			}
 
