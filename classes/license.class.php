@@ -16,16 +16,14 @@ class MailsterLicense {
 
 		global $mailster_freemius;
 
-		if ( $mailster_freemius instanceof Freemius ) {
-			return $mailster_freemius;
-		}
+		if ( false === $mailster_freemius instanceof Freemius ) {
 
-		require_once MAILSTER_DIR . 'vendor/freemius/wordpress-sdk/start.php';
-		$mailster_freemius = fs_dynamic_init(
-			array(
-				'id'               => 12132,
+			require_once dirname( dirname( __FILE__ ) ) . '/vendor/freemius/wordpress-sdk/start.php';
+
+			$args = array(
+				'id'               => 12184,
 				'slug'             => 'mailster',
-				'public_key'       => 'pk_73a8ad525d7ab5e8fd03c90abe4b8',
+				'public_key'       => 'pk_1efa30140fc34f21e5b89959bb877',
 				'is_premium'       => true,
 				'is_premium_only'  => true,
 				'has_addons'       => false,
@@ -40,8 +38,11 @@ class MailsterLicense {
 					'affiliation' => false,
 					'account'     => true,
 				),
-			)
-		);
+			);
+
+			$mailster_freemius = fs_dynamic_init( apply_filters( 'mailster_freemius_args', $args ) );
+
+		}
 
 		// Signal that SDK was initiated.
 		do_action( 'mailster_freemius_loaded' );
@@ -55,14 +56,14 @@ class MailsterLicense {
 	public function _maybe_redirect_to_checkout() {
 
 		if ( ! isset( $_GET['plan_id'] ) ) {
-			mailster_redirect( mailster_freemius_checkout_url() );
+			mailster_redirect( mailster_freemius()->checkout_url() );
 		}
 
 		echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
 
 	}
 
-	public function _add_account_beacon( $hooks ) {
+	public function _add_account_beacon() {
 
 		echo mailster()->beacon( array( '640898cd16d5327537bcb740', '611bb01bb55c2b04bf6df0ae', '64074c66512c5e08fd71ac91' ), true );
 
@@ -91,6 +92,8 @@ class MailsterLicense {
 		foreach ( $this->actions as $action ) {
 			call_user_func_array( array( mailster_freemius(), 'add_action' ), $filter );
 		}
+
+		error_log( print_r( get_option( 'fs_accounts' ), true ) );
 
 		// migrate
 		$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );

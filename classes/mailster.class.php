@@ -1883,7 +1883,7 @@ class Mailster {
 
 			case 403:
 				if ( ! mailster_freemius()->has_active_valid_license() ) {
-					$error_msg = esc_html__( 'You need a valid license to get an update.', 'mailster' ) . ' <a href="' . mailster_freemius_checkout_url() . '">' . esc_html__( 'Renew license now', 'mailster' ) . '</a>';
+					$error_msg = esc_html__( 'You need a valid license to get an update.', 'mailster' ) . ' <a href="' . mailster_freemius()->checkout_url() . '">' . esc_html__( 'Renew license now', 'mailster' ) . '</a>';
 				} else {
 					$error_msg = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
 				}

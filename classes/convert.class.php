@@ -60,8 +60,8 @@ class MailsterConvert {
 			$license = mailster()->license();
 		}
 
-		$endpoint = 'https://staging.mailster.co/wp-json/freemius/v1/api/get';
-		// $endpoint = 'https://mailster.local/wp-json/freemius/v1/api/get';
+		$endpoint = apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' );
+		$endpoint = trailingslashit( $endpoint ) . 'wp-json/freemius/v1/api/get';
 
 		$url = add_query_arg(
 			array(
@@ -111,9 +111,17 @@ class MailsterConvert {
 
 	}
 
-	private function clear_fs_cache( $slug = 'mailster', $plugin_id = 12132 ) {
+	private function clear_fs_cache( $slug = 'mailster', $plugin_id = null ) {
 
 		if ( $fs_accounts = get_option( 'fs_accounts' ) ) {
+
+			if ( is_null( $plugin_id ) ) {
+				$ids       = wp_list_pluck( $fs_accounts['id_slug_type_path_map'], 'slug' );
+				$plugin_id = array_search( $slug, $ids );
+			}
+			if ( empty( $plugin_id ) ) {
+				return;
+			}
 			if ( isset( $fs_accounts['id_slug_type_path_map'][ $plugin_id ] ) ) {
 				unset( $fs_accounts['id_slug_type_path_map'][ $plugin_id ] );
 			}
