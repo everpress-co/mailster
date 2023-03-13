@@ -811,7 +811,6 @@ class MailsterPlaceholder {
 								if ( $relative_to_absolute ) {
 									continue;
 								}
-
 								$post = get_post( $post_id_or_identifier );
 
 							}
@@ -835,7 +834,7 @@ class MailsterPlaceholder {
 
 							if ( ! empty( $post ) ) {
 
-								if ( ! empty( $post->ID ) ) {
+								if ( is_numeric( $post->ID ) ) {
 
 									if ( 'attachment' == $post->post_type ) {
 										$thumb_id = $post->ID;
@@ -1106,7 +1105,11 @@ class MailsterPlaceholder {
 						$preview_text_fix = apply_filters( 'mailster_preview_text_fix', true );
 
 						if ( $preview_text_fix ) {
-							$replace .= str_repeat( ' &#847;', 300 - strlen( $replace ) );
+							$count = 300 - strlen( $replace );
+							// PHP throws an error if $count = 0, preventing the campaign from being sent. This check patch this.
+							if ( $count > 0 ) {
+								$replace .= str_repeat( ' &#847;', $count );
+							}
 						}
 					}
 

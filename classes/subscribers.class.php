@@ -363,27 +363,31 @@ class MailsterSubscribers {
 			default:
 				if ( preg_match( '#^add_list_(\w+)#', $action, $match ) ) {
 					$ids = 'all' == $match[1] ? null : (int) $match[1];
-					if ( $list = mailster( 'lists' )->get( $ids ) ) {
-						$this->assign_lists( $subscriber_ids, $list->ID, false, true );
-						$success_message = sprintf( esc_html__( '%1$d Subscribers added to list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
+					if ( $list = (array) mailster( 'lists' )->get( $ids ) ) {
+						$list_ids = isset( $list['ID'] ) ? array( $list['ID'] ) : wp_list_pluck( $list, 'ID' );
+						$this->assign_lists( $subscriber_ids, $list_ids, false, true );
+						$success_message = sprintf( esc_html__( '%1$d Subscribers confirmed to %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list_ids ) );
 					}
 				} elseif ( preg_match( '#^remove_list_(\w+)#', $action, $match ) ) {
 					$ids = 'all' == $match[1] ? null : (int) $match[1];
-					if ( $list = mailster( 'lists' )->get( $ids ) ) {
-						$this->unassign_lists( $subscriber_ids, $list->ID, false, true );
-						$success_message = sprintf( esc_html__( '%1$d Subscribers removed from list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
+					if ( $list = (array) mailster( 'lists' )->get( $ids ) ) {
+						$list_ids = isset( $list['ID'] ) ? array( $list['ID'] ) : wp_list_pluck( $list, 'ID' );
+						$this->unassign_lists( $subscriber_ids, $list_ids, false, true );
+						$success_message = sprintf( esc_html__( '%1$d Subscribers confirmed to %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list_ids ) );
 					}
 				} elseif ( preg_match( '#^confirm_list_(\w+)#', $action, $match ) ) {
 					$ids = 'all' == $match[1] ? null : (int) $match[1];
-					if ( $list = mailster( 'lists' )->get( $ids ) ) {
-						mailster( 'lists' )->confirm_subscribers( $list->ID, $subscriber_ids );
-						$success_message = sprintf( esc_html__( '%1$d Subscribers confirmed to %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list ) );
+					if ( $list = (array) mailster( 'lists' )->get( $ids ) ) {
+						$list_ids = wp_list_pluck( (array) $list, 'ID' );
+						mailster( 'lists' )->confirm_subscribers( $list_ids, $subscriber_ids );
+						$success_message = sprintf( esc_html__( '%1$d Subscribers confirmed to %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list_ids ) );
 					}
 				} elseif ( preg_match( '#^unconfirm_list_(\w+)#', $action, $match ) ) {
 					$ids = 'all' == $match[1] ? null : (int) $match[1];
-					if ( $list = mailster( 'lists' )->get( $ids ) ) {
+					if ( $list = (array) mailster( 'lists' )->get( $ids ) ) {
+						$list_ids = isset( $list['ID'] ) ? array( $list['ID'] ) : wp_list_pluck( $list, 'ID' );
 						mailster( 'lists' )->unconfirm_subscribers( $list->ID, $subscriber_ids );
-						$success_message = sprintf( esc_html__( '%1$d Subscribers unconfirmed from %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list ) );
+						$success_message = sprintf( esc_html__( '%1$d Subscribers unconfirmed from %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list_ids ) );
 					}
 				}
 

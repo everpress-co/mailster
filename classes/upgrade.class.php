@@ -1492,9 +1492,11 @@ class MailsterUpgrade {
 
 		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
 
+			// check for data younger than one year
 			$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE timestamp > %d", time() - YEAR_IN_SECONDS );
 
-			if ( $wpdb->get_var( $sql ) ) {
+			// no data => delete
+			if ( ! $wpdb->get_var( $sql ) ) {
 				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
 					echo "removed legacy action table\n";
 					return false;
@@ -2269,16 +2271,6 @@ class MailsterUpgrade {
 
 		global $wpdb;
 
-		$action_tables = array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors' );
-
-		foreach ( $action_tables as $table ) {
-
-			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_action_{$table} AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
-				echo 'Removed ' . number_format( $count ) . " actions where's no campaign in $table\n";
-				return false;
-			}
-		}
-
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->postmeta} AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.post_id WHERE p.ID IS NULL AND a.meta_key LIKE '_mailster_%'" ) ) {
 			echo 'Removed ' . number_format( $count ) . " rows of meta where's no campaign\n";
 			return false;
@@ -2287,6 +2279,15 @@ class MailsterUpgrade {
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.meta_value = '' OR a.subscriber_id = 0" ) ) {
 			echo 'Removed ' . number_format( $count ) . " rows of unassigned subscriber meta\n";
 			return false;
+		}
+
+		$tables_with_subscriber_ids = array( 'action_sent', 'action_opens', 'action_clicks', 'action_unsubs', 'action_bounces', 'action_errors', 'subscriber_meta', 'subscriber_fields', 'tags_subscribers', 'subscriber_meta', 'lists_subscribers', 'queue' );
+
+		foreach ( $tables_with_subscriber_ids as $table ) {
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_{$table} AS a LEFT JOIN {$wpdb->prefix}mailster_subscribers AS b ON b.ID = a.subscriber_id WHERE b.ID IS NULL AND a.subscriber_id IS NOT NULL" ) ) {
+				echo 'Removed ' . number_format( $count ) . " rows of table $table where's no subscriber\n";
+				return false;
+			}
 		}
 
 		if ( $count = mailster( 'subscribers' )->wp_id() ) {
@@ -2304,6 +2305,20 @@ class MailsterUpgrade {
 		if ( $wpdb->query( "DELETE a FROM {$wpdb->options} AS a WHERE a.option_name LIKE 'mailster_bulk_import%'" ) ) {
 			echo "Removed temporary import data\n";
 			return false;
+		}
+
+		$action_tables = array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors' );
+
+		foreach ( $action_tables as $table ) {
+
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a WHERE a.subscriber_id IS NULL AND a.campaign_id IS NULL" ) ) {
+				echo 'Removed ' . number_format( $count ) . " actions where's no campaign and no subscriber in $table table.\n";
+				return false;
+			}
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_action_{$table} AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
+				echo 'Removed ' . number_format( $count ) . " actions where's no campaign in $table table.\n";
+				return false;
+			}
 		}
 
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_signup = '' WHERE ip_signup = 0" );
