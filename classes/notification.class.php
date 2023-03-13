@@ -447,6 +447,7 @@ class MailsterNotification {
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->set_subscriber( $subscriber->ID );
 			$placeholder->set_hash( $subscriber->hash );
+			$this->mail->set_subscriber( $subscriber->ID );
 			$placeholder->add_custom();
 			$placeholder->add( $userdata );
 			$placeholder->add(
@@ -746,31 +747,34 @@ class MailsterNotification {
 			</tr>
 		</table>
 
-		<?php if ( ( $loc = mailster_ip2City() ) != 'unknown' ) : ?>
+		<?php $meta = mailster( 'subscribers' )->meta( $subscriber->ID ); ?>
+
+		<?php if ( mailster_option( 'static_map' ) && $meta['coords'] ) : ?>
 
 			<?php
-			$mapurl = add_query_arg(
-				array(
-					'markers'        => $loc->latitude . ',' . $loc->longitude,
-					'zoom'           => 4,
-					'size'           => '276x200',
-					'visual_refresh' => true,
-					'scale'          => 2,
-					'language'       => get_user_locale(),
-					'key'            => mailster_option( 'google_api_key' ),
-				),
-				'https://maps.googleapis.com/maps/api/staticmap'
-			);
-			?>
 
+			$coords = explode( ',', $meta['coords'] );
+
+			$args = array(
+				'zoom'   => 4,
+				'lat'    => $coords[0],
+				'lon'    => $coords[1],
+				'width'  => 300,
+				'height' => 250,
+			);
+
+			$mapurl      = mailster( 'helper' )->static_map( $args, WEEK_IN_SECONDS );
+			$mapurl_zoom = mailster( 'helper' )->static_map( wp_parse_args( array( 'zoom' => 8 ), $args ), WEEK_IN_SECONDS );
+
+			?>
 			<table style="width:100%;table-layout:fixed">
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
-					<td>
-						<img src="<?php echo esc_url( $mapurl ); ?>" width="276" heigth="200">
+					<td align="left">
+						<img src="<?php echo esc_url( $mapurl ); ?>" width="300" heigth="250">
 					</td>
-					<td>
-						<img src="<?php echo esc_url( add_query_arg( 'zoom', 8, $mapurl ) ); ?>" width="276" heigth="200">
+					<td align="right">
+						<img src="<?php echo esc_url( $mapurl_zoom ); ?>" width="300" heigth="250">
 					</td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
@@ -896,12 +900,12 @@ class MailsterNotification {
 					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 					<td valign="center" align="center" width="80">
-						<a href="<?php echo $link; ?>">
+						<a href="<?php echo esc_url( $link ); ?>">
 							<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa"></div>
 						</a>
 					</td>
 					<td valign="center" align="left">
-						<h4 style="margin:0;"><a href="<?php echo $link; ?>"><?php printf( esc_html__( _n( '%s other', '%s others', $count - $limit, 'mailster' ) ), number_format_i18n( $count - $limit ) ); ?></a></h5>
+						<h4 style="margin:0;"><a href="<?php echo esc_url( $link ); ?>"><?php printf( esc_html__( _n( '%s other', '%s others', $count - $limit, 'mailster' ) ), number_format_i18n( $count - $limit ) ); ?></a></h5>
 					</td>
 					</tr>
 					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
@@ -917,20 +921,14 @@ class MailsterNotification {
 		</tr>
 		</table>
 
-
 		<?php
 		$coords = wp_list_pluck( $subscribers, 'coords' );
 		$geo    = wp_list_pluck( $subscribers, 'geo' );
 
 		$coords        = array_values( array_slice( array_filter( $coords ), 0, 30 ) );
 		$locationcount = count( $coords );
-		$link          = 'https://maps.googleapis.com/maps/api/staticmap?' . ( $locationcount > 1 ? 'autoscale=true' : 'zoom=10' ) . '&size=600x300&scale=2&language=' . get_bloginfo( 'language' ) . '&maptype=roadmap&format=png&visual_refresh=true';
 
-		foreach ( $coords as $i => $coord ) {
-			$link .= '&markers=size:small%7Ccolor:0xdc3232%7Clabel:1%7C' . $coord;
-		}
-
-		// sanitation
+		// sanitization
 		$geo = preg_replace( '/^([A-Z]+)|.*/', '$1', $geo );
 		$geo = array_filter( $geo, 'strlen' );
 		$geo = array_count_values( $geo );
@@ -948,53 +946,67 @@ class MailsterNotification {
 				<td valign="top" align="center">
 				<h2><?php printf( esc_html__( 'Subscribers are located in %s different countries', 'mailster' ), '<strong>' . $locationcount . '</strong>' ); ?></h2>
 				</td>
-				</tr>
-				</table>
+			</tr>
+		</table>
 
-				<table style="width:100%;table-layout:fixed">
-				<tr>
+			<?php if ( mailster_option( 'static_map' ) ) : ?>
+
+				<?php
+				$mapurl = mailster( 'helper' )->static_map(
+					array(
+						'zoom'      => 3,
+						'autoscale' => true,
+						'coords'    => $coords,
+						'width'     => 600,
+						'height'    => 300,
+					),
+					WEEK_IN_SECONDS
+				);
+				?>
+
+		<table style="width:100%;table-layout:fixed">
+			<tr>
 				<td valign="top" align="center">
-				<img width="600" height="300" src="<?php echo $link; ?>" alt="<?php printf( esc_html__( _n( 'location of %d subscriber', 'location of %d subscribers', $locationcount, 'mailster' ) ), $locationcount ); ?>">
+				<img width="600" height="300" src="<?php echo esc_url( $mapurl ); ?>" alt="<?php printf( esc_html__( _n( 'location of %d subscriber', 'location of %d subscribers', $locationcount, 'mailster' ) ), $locationcount ); ?>">
 				</td>
 			</tr>
 		</table>
 
+	<?php endif; ?>
 
 		<table style="width:100%;table-layout:fixed"><tr><td valign="top" align="center">&nbsp;</td></tr></table>
 
 		<table cellpadding="0" cellspacing="0" class="o-fix">
 			<tr>
-
-			<td width="552" valign="top" align="center" style="border-top:1px solid #ccc;">
+			<td width="100%" valign="top" align="center" style="border-top:1px solid #ccc;">
 
 			<?php $i = 0; foreach ( $geo as $code => $number ) : ?>
-		<table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">
-		<tr>
-			<td width="264" valign="top" align="left" class="m-b">
-			<table style="width:100%;table-layout:fixed">
-			<tr>
-			<td>&nbsp;</td>
-			<td align="left" width="75%">
-				<?php echo mailster( 'geo' )->code2Country( $code ); ?>
-			</td>
-			<td align="right" width="15%">
-				<strong><?php echo number_format_i18n( $number ); ?></strong>
-			</td>
-			<td>&nbsp;</td>
-			</tr>
-			</table>
-			</td>
-		</tr>
-		</table>
+				<table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">
+				<tr>
+					<td width="264" valign="top" align="left" class="m-b">
+					<table style="width:100%;table-layout:fixed">
+					<tr>
+					<td>&nbsp;</td>
+					<td align="left" width="75%">
+						<?php echo mailster( 'geo' )->code2Country( $code ); ?>
+					</td>
+					<td align="right" width="15%">
+						<strong><?php echo number_format_i18n( $number ); ?></strong>
+					</td>
+					<td>&nbsp;</td>
+					</tr>
+					</table>
+					</td>
+				</tr>
+				</table>
 
 				<?php
-				if ( ! ! ( $i % 2 ) ) {
-					echo '</td></tr></table><table cellpadding="0" cellspacing="0" class="o-fix"><tr><td width="552" valign="top" align="center" style="border-top:1px solid #ccc;">'; }
-				?>
-				<?php
+				if ( ! ! ( $i % 2 ) ) :
+					echo '</td></tr></table><table cellpadding="0" cellspacing="0" class="o-fix"><tr><td width="100%" valign="top" align="center" style="border-top:1px solid #ccc;">';
+				endif;
 				$i++;
-endforeach;
-			?>
+				?>
+				<?php endforeach; ?>
 
 			<?php if ( ! empty( $other ) ) : ?>
 

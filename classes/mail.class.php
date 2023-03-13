@@ -47,6 +47,8 @@ class MailsterMail {
 
 	private $hostname = '';
 
+	private $last_mail_duration;
+
 	private static $_instance = null;
 
 	/**
@@ -176,7 +178,7 @@ class MailsterMail {
 		 *
 		 * @param array $default default values
 		 */
-		$this->server_errors = apply_filters( 'mailster_system_errors', $default );
+		$this->system_errors = apply_filters( 'mailster_system_errors', $default );
 
 		if ( ! get_transient( '_mailster_send_period_timeout' ) ) {
 			set_transient( '_mailster_send_period_timeout', true, mailster_option( 'send_period' ) * 3600 );
@@ -252,6 +254,11 @@ class MailsterMail {
 			$this->error_log[] = $str;
 		}
 
+	}
+
+
+	public function get_last_mail_duration() {
+		return $this->last_mail_duration;
 	}
 
 
@@ -623,7 +630,9 @@ class MailsterMail {
 			return false;
 		}
 
+		$microtime = microtime( true );
 		do_action( 'mailster_dosend', $this );
+		$this->last_mail_duration = microtime( true ) - $microtime;
 
 		if ( $this->sent ) {
 
@@ -634,6 +643,7 @@ class MailsterMail {
 		}
 
 		if ( $this->sent ) {
+			mailster( 'logs' )->add( $this );
 			return $this->messageID;
 		} else {
 			return false;

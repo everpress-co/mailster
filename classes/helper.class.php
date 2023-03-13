@@ -738,6 +738,28 @@ class MailsterHelper {
 
 	}
 
+	public function static_map( $args, $cache = HOUR_IN_SECONDS ) {
+
+		$defaults = array(
+			'zoom'     => 5,
+			'width'    => 300,
+			'height'   => 250,
+			'language' => get_user_locale(),
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$type = mailster_option( 'static_map' );
+
+		// create hash which is hard to guess
+		$hash = md5( NONCE_SALT . $type . serialize( $args ) );
+
+		set_transient( '_mailster_staticmap_' . $hash, $args, $cache );
+
+		return get_rest_url( null, 'mailster/v1/staticmap/' . $hash );
+
+	}
+
 
 	/**
 	 *
@@ -1713,7 +1735,7 @@ class MailsterHelper {
 
 		// get an image from the content if not defined
 		if ( empty( $post->post_image ) ) {
-			if ( preg_match( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $post->post_excerpt . $post_content, $matches ) ) {
+			if ( preg_match( '/< *img[^>]*src *= *["\']?([^"\']*)/i', $post->post_excerpt . $post->post_content, $matches ) ) {
 				$post->post_image = $matches[1];
 			}
 		}

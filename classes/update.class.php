@@ -13,7 +13,7 @@ class MailsterUpdate {
 		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
 		add_filter( 'upgrader_package_options', array( &$this, 'upgrader_package_options' ) );
 
-		add_action( 'install_plugins_pre_plugin-information', array( &$this, 'add_css_for_information_screen' ) );
+		add_action( 'install_plugins_pre_plugin-information', array( &$this, 'add_css_for_information_screen' ), 1 );
 
 		add_action( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
 
@@ -21,6 +21,11 @@ class MailsterUpdate {
 
 
 	public function init() {
+
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+
 		if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
 			require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
 		}
@@ -68,14 +73,14 @@ class MailsterUpdate {
 	}
 
 	public function get_auto_update_url() {
-			$query_args = array(
-				'action' => 'enable-auto-update',
-				'plugin' => MAILSTER_SLUG,
-				's'      => MAILSTER_SLUG,
-			);
-			$url        = add_query_arg( $query_args, 'plugins.php' );
+		$query_args = array(
+			'action' => 'enable-auto-update',
+			'plugin' => MAILSTER_SLUG,
+			's'      => MAILSTER_SLUG,
+		);
+		$url        = add_query_arg( $query_args, 'plugins.php' );
 
-			return wp_nonce_url( $url, 'updates' );
+		return wp_nonce_url( $url, 'updates' );
 
 	}
 
@@ -254,7 +259,10 @@ class MailsterUpdate {
 
 	public function plugins_api_result( $res, $action, $args ) {
 
-		if ( is_wp_error( $res ) || ! $res || $res->slug !== 'mailster' ) {
+		if ( is_wp_error( $res ) || ! $res ) {
+			return $res;
+		}
+		if ( ! isset( $res->slug ) || $res->slug !== 'mailster' ) {
 			return $res;
 		}
 
@@ -263,6 +271,17 @@ class MailsterUpdate {
 		}
 
 		$res->homepage = mailster_url( $res->homepage );
+		$res->author   = strip_tags( $res->author );
+
+		// remove the rating from the repo version
+		$res->rating      = null;
+		$res->ratings     = array();
+		$res->num_ratings = 0;
+
+		$res->banners = array(
+			'low'  => 'https://static.mailster.co/images/plugin-header-772x250.png',
+			'high' => 'https://static.mailster.co/images/plugin-header-1544x500.png',
+		);
 
 		return $res;
 	}

@@ -150,7 +150,7 @@
 #editbar div.type > .mailster-help {
 	position: absolute;
 	right: 0;
-	top: 0;
+	top: -10px;
 }
 .rtl #editbar div.type > .mailster-help {
 	position: absolute;

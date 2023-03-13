@@ -19,7 +19,6 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' ); ?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' ); ?></a></li>
 		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' ); ?></a></li>
-		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' ); ?></a></li>
 		<li class="not-hidden"><a href="#finish"><?php esc_html_e( 'Ready!', 'mailster' ); ?></a></li>
 	</ol>
 
@@ -39,7 +38,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 			<p><?php esc_html_e( 'This wizard helps you to setup Mailster. All options available can be found later in the settings. You can always skip each step and adjust your settings later if you\'re not sure.', 'mailster' ); ?></p>
 
-			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 6 ); ?></p>
+			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 4 ); ?></p>
 
 			<dl>
 				<dt><?php esc_html_e( 'Basic Information', 'mailster' ); ?></dt>
@@ -56,10 +55,6 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 			<dl>
 				<dt><?php esc_html_e( 'Privacy', 'mailster' ); ?></dt>
 				<dd><?php esc_html_e( 'Mailster takes the privacy of your subscribers information seriously. Define which information Mailster should save.', 'mailster' ); ?></dd>
-			</dl>
-			<dl>
-				<dt><?php esc_html_e( 'Validation', 'mailster' ); ?></dt>
-				<dd><?php esc_html_e( 'Updates are important and if you have a valid license for Mailster you can automatically update directly from WordPress.', 'mailster' ); ?></dd>
 			</dl>
 
 			<p><a class="button button-hero button-primary next-step" href="#basics"><?php esc_html_e( 'Start Wizard', 'mailster' ); ?></a> <?php esc_html_e( 'or', 'mailster' ); ?> <a href="admin.php?page=mailster_dashboard&mailster_setup_complete=<?php echo wp_create_nonce( 'mailster_setup_complete' ); ?>"><?php esc_html_e( 'skip it', 'mailster' ); ?></a></p>
@@ -154,7 +149,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 			</table>
 
-			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/611bb5296ffe270af2a99926' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
+			<p><?php printf( esc_html__( 'Wonder what these {placeholders} are for? Read more about tags %s.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co/611bb5296ffe270af2a99926' ) . '" data-article="611bb5296ffe270af2a99926">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
 
 			</div>
 
@@ -444,32 +439,8 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
-				<a class="button button-large button-primary next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
-
-			</div>
-
-		</div>
-
-		<div class="mailster-setup-step" id="step_validation">
-
-			<h2 class="section-title"><?php esc_html_e( 'Validation', 'mailster' ); ?></h2>
-
-			<div class="mailster-setup-step-body">
-
-			<p><?php esc_html_e( 'Updates are important to get new features and security fixes. An outdated version of your plugins can always bring the risk of getting compromised.', 'mailster' ); ?></p>
-
-			<?php mailster( 'register' )->form(); ?>
-
-			</div>
-
-			<div class="mailster-setup-step-buttons">
-
-				<span class="alignleft status"></span>
-				<i class="spinner"></i>
-
-				<a class="button button-large skip-step validation-skip-step<?php echo $is_verified ? ' disabled' : ''; ?>" href="#finish"><?php esc_html_e( 'Remind me later', 'mailster' ); ?></a>
-				<a class="button button-large button-primary next-step validation-next-step<?php echo ! $is_verified ? ' disabled' : ''; ?>" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
+				<a class="button button-large skip-step" href="#finish"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
+				<a class="button button-large button-primary next-step" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
 
 			</div>
 

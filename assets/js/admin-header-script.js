@@ -148,7 +148,7 @@ mailster = (function (mailster, $, window, document) {
 			beacon('suggest', articles);
 		}
 
-		window.mailster.beacon = beacon;
+		mailster.beacon = beacon;
 
 		loaded = true;
 		helpbtn.removeClass('is-loading');

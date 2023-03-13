@@ -313,50 +313,35 @@ if ( $is_new ) {
 				if ( $meta->coords ) :
 					$geo = explode( '|', $meta->geo );
 					?>
-					<div class="map zoomable" data-missingkey="<?php esc_attr_e( 'Please enter a valid Google API key on the settings page if the map is missing!', 'mailster' ); ?>">
-					<?php
-					$mapurl = add_query_arg(
-						array(
-							'markers'        => $meta->coords,
-							'zoom'           => $geo[1] ? 5 : 3,
-							'size'           => '300x250',
-							'visual_refresh' => true,
-							'scale'          => 2,
-							'language'       => get_user_locale(),
-							'key'            => mailster_option( 'google_api_key' ),
-						),
-						'//maps.googleapis.com/maps/api/staticmap'
-					);
-					?>
-					<img src="<?php echo esc_url( $mapurl ); ?>" width="300" heigth="250">
+					<?php if ( mailster_option( 'static_map' ) ) : ?>
+					<div class="map zoomable map-<?php echo esc_attr( mailster_option( 'static_map' ) ); ?>" data-missingkey="<?php esc_attr_e( 'Please enter a valid Google API key on the settings page if the map is missing!', 'mailster' ); ?>">
+
+						<?php
+
+						$coords = explode( ',', $meta->coords );
+
+						$args = array(
+							'zoom'   => $geo[1] ? 4 : 3,
+							'lat'    => $coords[0],
+							'lon'    => $coords[1],
+							'width'  => 300,
+							'height' => 250,
+						);
+
+						$mapurl      = mailster( 'helper' )->static_map( $args );
+						$mapurl_zoom = mailster( 'helper' )->static_map( wp_parse_args( array( 'zoom' => 10 ), $args ) );
+
+						?>
+					<img src="<?php echo esc_url( $mapurl ); ?>" width="300" heigth="250" data-zoom="<?php echo esc_url( $mapurl_zoom ); ?>">
 					</div>
+				<?php endif; ?>
 					<p class="alignright">
 						<?php
-						if ( $geo[1] ) {
-							echo esc_html__( 'from', 'mailster' ) . sprintf( ' %1$s, %2$s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
-						}
+						if ( $geo[1] ) :
+							esc_html_e( 'from', 'mailster' );
+							printf( ' %1$s, %2$s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
+							endif;
 						?>
-				<?php elseif ( $meta->geo ) : ?>
-					<?php $geo = explode( '|', $meta->geo ); ?>
-				<div class="map">
-					<?php
-					$mapurl = add_query_arg(
-						array(
-							'center'         => mailster( 'geo' )->code2Country( $geo[0] ),
-							'zoom'           => 3,
-							'size'           => '300x250',
-							'visual_refresh' => true,
-							'scale'          => 2,
-							'language'       => get_user_locale(),
-							'key'            => mailster_option( 'google_api_key' ),
-						),
-						'//maps.googleapis.com/maps/api/staticmap'
-					);
-					?>
-					<img src="<?php echo esc_url( $mapurl ); ?>" width="300" heigth="250">
-				</div>
-				<p class="alignright">
-					<?php echo esc_html__( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ); ?>
 				<?php endif; ?>
 					<?php
 					if ( ! is_null( $meta->timeoffset ) ) :

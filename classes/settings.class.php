@@ -212,13 +212,15 @@ class MailsterSettings {
 			'dkim_passphrase'                    => '',
 
 			'usage_tracking'                     => false,
-			'ask_usage_tracking'                 => true,
-			'mailster_branding'                  => true,
+			'mailster_branding'                  => false,
 			'disable_cache'                      => false,
 			'shortcodes'                         => false,
 			'remove_data'                        => false,
 			'got_url_rewrite'                    => mailster( 'helper' )->got_url_rewrite(),
 			'post_nonce'                         => wp_create_nonce( uniqid() ),
+
+			'logging_max'                        => 1000,
+			'logging_days'                       => 7,
 
 			'welcome'                            => false,
 			'setup'                              => true,
@@ -1250,6 +1252,12 @@ class MailsterSettings {
 							$this->add_settings_error( esc_html__( 'Your server is not able to validate via SMTP. SMTP check disabled.', 'mailster' ), 'dkim' );
 							$value = false;
 						}
+					}
+					break;
+
+				case 'logging':
+					if ( $old != $value ) {
+						mailster()->dbstructure();
 					}
 					break;
 

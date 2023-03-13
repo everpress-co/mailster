@@ -19,7 +19,10 @@ class Mailster {
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
+		require_once MAILSTER_DIR . 'classes/convert.class.php';
+		require_once MAILSTER_DIR . 'classes/api.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
+		require_once MAILSTER_DIR . 'classes/logs.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
@@ -42,7 +45,6 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/update.class.php';
 		require_once MAILSTER_DIR . 'classes/upgrade.class.php';
 		require_once MAILSTER_DIR . 'classes/helpmenu.class.php';
-		require_once MAILSTER_DIR . 'classes/register.class.php';
 		require_once MAILSTER_DIR . 'classes/geo.class.php';
 		require_once MAILSTER_DIR . 'classes/privacy.class.php';
 		require_once MAILSTER_DIR . 'classes/security.class.php';
@@ -53,7 +55,10 @@ class Mailster {
 			'mailster_classes',
 			array(
 				'settings'     => new MailsterSettings(),
+				'convert'      => new MailsterConvert(),
+				'api'          => new MailsterApi(),
 				'translations' => new MailsterTranslations(),
+				'logs'         => new MailsterLogs(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
 				'lists'        => new MailsterLists(),
@@ -75,7 +80,6 @@ class Mailster {
 				'update'       => new MailsterUpdate(),
 				'upgrade'      => new MailsterUpgrade(),
 				'helpmenu'     => new MailsterHelpmenu(),
-				'register'     => new MailsterRegister(),
 				'geo'          => new MailsterGeo(),
 				'privacy'      => new MailsterPrivacy(),
 				'security'     => new MailsterSecurity(),
@@ -283,8 +287,6 @@ class Mailster {
 
 			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
 
-			add_action( 'load-plugins.php', array( &$this, 'deactivation_survey' ) );
-
 			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
 
 			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
@@ -489,20 +491,25 @@ class Mailster {
 	 */
 	public function maybe_redirect_special_pages() {
 
-		global $pagenow;
-
-		if ( 'edit.php' != $pagenow ) {
-			return;
-		}
 		if ( is_network_admin() ) {
 			return;
 		}
 		if ( ! isset( $_GET['page'] ) ) {
 			return;
 		}
+
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests' ) ) ) {
+		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert' ) ) ) {
 			return;
+		}
+
+		if ( $page === 'mailster' ) {
+			$page = 'mailster_dashboard';
+		}
+
+		if ( $page === 'mailster_convert' ) {
+			mailster_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) );
+			exit;
 		}
 
 		mailster_redirect( 'admin.php?page=' . $page, 302 );
@@ -858,8 +865,13 @@ class Mailster {
 			return false;
 		}
 
+		if ( ! $posts ) {
+			$posts = array();
+		}
+
 		if ( ! isset( $posts[ $campaign_id ] ) ) {
-			$posts[ $campaign_id ] = $stored = array();
+			$posts[ $campaign_id ] = array();
+			$stored                = array();
 		} else {
 			$stored = wp_list_pluck( $posts[ $campaign_id ], 'ID' );
 		}
@@ -1260,7 +1272,7 @@ class Mailster {
 	}
 
 	public function add_admin_header() {
-		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help. If you cancel you will be redirected to our support page.', 'mailster' );
+		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'maislter' ) . "\n" . esc_html( 'If you cancel you will be redirected to our support page.', 'mailster' );
 
 		mailster_localize_script( 'helpscout', array( 'consent' => $consent ) );
 
@@ -1359,6 +1371,7 @@ class Mailster {
 
 	}
 
+
 	public function tests_page() {
 
 		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
@@ -1439,58 +1452,6 @@ class Mailster {
 	}
 
 
-	public function deactivation_survey( $hook ) {
-
-		if ( ! mailster_option( 'usage_tracking' ) ) {
-			return;
-		}
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		if ( isset( $_GET['mailster_deactivation_survey'] ) && wp_verify_nonce( $_POST['mailster_nonce'], 'mailster_deactivation_survey' ) ) {
-
-			if ( ! current_user_can( 'deactivate_plugin', MAILSTER_SLUG ) ) {
-				wp_die( 'You cannot deactivate plugins.' );
-			}
-
-			$reason  = stripslashes( $_POST['mailster_surey_reason'] );
-			$details = stripslashes( $_POST['mailster_surey_extra'] );
-
-			update_option( 'wisdom_deactivation_reason_mailster', '["' . $reason . '"]' );
-			update_option( 'wisdom_deactivation_details_mailster', $details );
-
-			if ( isset( $_POST['delete_data'] ) && $_POST['delete_data'] ) {
-
-				$remove_campaigns    = isset( $_POST['delete_campaigns'] ) && $_POST['delete_campaigns'];
-				$remove_capabilities = isset( $_POST['delete_capabilities'] ) && $_POST['delete_capabilities'];
-				$remove_tables       = isset( $_POST['delete_tables'] ) && $_POST['delete_tables'];
-				$remove_options      = isset( $_POST['delete_options'] ) && $_POST['delete_options'];
-				$remove_files        = isset( $_POST['delete_files'] ) && $_POST['delete_files'];
-
-				$this->uninstall( true, $remove_campaigns, $remove_capabilities, $remove_tables, $remove_options, $remove_files );
-			}
-			deactivate_plugins( MAILSTER_SLUG );
-
-			mailster_redirect( remove_query_arg( 'mailster_deactivation_survey', add_query_arg( 'deactivate', true ) ) );
-			exit;
-
-		}
-
-		wp_enqueue_style( 'mailster-deactivate', MAILSTER_URI . 'assets/css/deactivate-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-deactivate', MAILSTER_URI . 'assets/js/deactivate-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-		mailster_localize_script(
-			'deactivate',
-			array(
-				'select_reason' => esc_html__( 'Please select a reason for the deactivation.', 'mailster' ),
-			)
-		);
-
-		add_action( 'admin_footer', array( &$this, 'deactivation_dialog' ) );
-
-	}
-
-
 	/**
 	 *
 	 *
@@ -1566,6 +1527,7 @@ class Mailster {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1610,8 +1572,6 @@ class Mailster {
 
 
 	public function uninstall( $data = null, $remove_campaigns = true, $remove_capabilities = true, $remove_tables = true, $remove_options = true, $remove_files = true ) {
-
-		$this->reset_license();
 
 		if ( is_null( $data ) ) {
 			$data = mailster_option( 'remove_data' );
@@ -1803,11 +1763,13 @@ class Mailster {
 				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
 				update_option( 'mailster_updated', time() );
-				update_option( 'mailster_license', '' );
-				update_option( 'mailster_username', '' );
 				update_option( 'mailster_hooks', '' );
 				update_option( 'mailster_version_first', MAILSTER_VERSION );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+				update_option( 'mailster_freemius', time() );
+				if ( MAILSTER_ENVATO ) {
+					update_option( 'mailster_envato', time() );
+				}
 
 				if ( ! is_network_admin() ) {
 					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
@@ -1927,6 +1889,14 @@ class Mailster {
 		}
 
 		switch ( $code ) {
+
+			case 403:
+				if ( ! mailster_freemius()->has_active_valid_license() ) {
+					$error_msg = esc_html__( 'You need a valid license to get an update.', 'mailster' ) . ' <a href="' . mailster_freemius()->checkout_url() . '">' . esc_html__( 'Renew license now', 'mailster' ) . '</a>';
+				} else {
+					$error_msg = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
+				}
+				break;
 
 			case 678: // No Licensecode provided
 				$error_msg = $short ? esc_html__( 'Register via the %s.', 'mailster' ) : esc_html__( 'To get automatic updates for Mailster you need to register on the %s.', 'mailster' );
@@ -2279,6 +2249,20 @@ class Mailster {
                 KEY `list_id` (`tag_id`)
             ) $collate;",
 
+			"CREATE TABLE {$wpdb->prefix}mailster_logs (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `subject` longtext NOT NULL,
+                `receivers` longtext NOT NULL,
+                `html` longtext NOT NULL,
+                `text` longtext NOT NULL,
+                `raw` longtext NOT NULL,
+                `message_id` varchar(191) NOT NULL DEFAULT '',
+                PRIMARY KEY  (`ID`)
+            ) $collate;",
+
 		);
 
 		$table_structure = apply_filters( 'mailster_table_structure', $table_structure, $collate );
@@ -2375,7 +2359,7 @@ class Mailster {
 			return;
 		}
 
-		mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
+		mailster_redirect( admin_url( 'admin.php?page=mailster' ), 302 );
 
 		exit;
 
@@ -2868,28 +2852,49 @@ class Mailster {
 	 */
 	public function plugin_info( $field = null, $force = false ) {
 
-		if ( $force ) {
-			do_action( 'updatecenterplugin_check' );
-		}
 		$plugins = get_site_transient( 'update_plugins' );
 
 		if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {
-			$plugin_info = $plugins->response[ MAILSTER_SLUG ];
+			$info = $plugins->response[ MAILSTER_SLUG ];
 		} elseif ( isset( $plugins->no_update[ MAILSTER_SLUG ] ) ) {
-			$plugin_info = $plugins->no_update[ MAILSTER_SLUG ];
+			$info = $plugins->no_update[ MAILSTER_SLUG ];
 		} else {
 			return null;
 		}
 
-		if ( ! $force && ! isset( $plugin_info->support ) ) {
-			return $this->plugin_info( $field, true );
+		if ( $force ) {
+			mailster_freemius()->_sync_licenses();
+			mailster_freemius()->get_update();
 		}
 
-		if ( is_null( $field ) ) {
-			return $plugin_info;
+		$license = mailster_freemius()->_get_license();
+
+		$support = get_option( 'mailster_support' );
+
+		// legacy license
+		if ( $license && $license->plan_id == 20600 ) {
+			if ( $support == -1 ) {
+				$info->support = false;
+			} elseif ( $support ) {
+				$info->support = $support;
+			}
+		} elseif ( $license && $license->expiration ) {
+			$info->support = max( strtotime( $license->expiration ), $support );
+		} else {
+			$info->support = true;
 		}
-		if ( isset( $plugin_info->{$field} ) ) {
-			return $plugin_info->{$field};
+
+		$info->update = false;
+		if ( ! isset( $info->new_version ) ) {
+			$info->new_version = MAILSTER_VERSION;
+		}
+		$info->update = version_compare( MAILSTER_VERSION, $info->new_version, '<' );
+
+		if ( is_null( $field ) ) {
+			return $info;
+		}
+		if ( isset( $info->{$field} ) ) {
+			return $info->{$field};
 		}
 
 		return null;
@@ -2897,100 +2902,41 @@ class Mailster {
 	}
 
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $license (optional)
-	 * @return unknown
-	 */
-	public function maybe_register( $license = null, $license_email = null, $license_user = null ) {
-
-		if ( ! $license ) {
-			$license = $this->license();
-		}
-		if ( ! $license_email ) {
-			$license_email = $this->email();
-		}
-		if ( ! $license_user ) {
-			$license_user = $this->username();
-		}
-
-		if ( ! $license || ! $license_email || ! $license_user ) {
-			return false;
-		}
-
-		$userdata = array(
-			'username' => $license_user,
-			'email'    => $license_email,
-		);
-
-		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::register( 'mailster', $userdata, $license );
-
-	}
-
 	public function license( $fallback = '' ) {
-		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE ) {
-			return MAILSTER_LICENSE;
-		}
-		return get_option( 'mailster_license', $fallback );
+
+		$user = mailster_freemius()->get_user();
+
+		return $user ? $user->secret_key : $fallback;
 	}
 
 	public function email( $fallback = '' ) {
-		if ( defined( 'MAILSTER_EMAIL' ) && MAILSTER_EMAIL ) {
-			return MAILSTER_EMAIL;
-		}
-		return get_option( 'mailster_email', $fallback );
+
+		$user = mailster_freemius()->get_user();
+
+		return $user ? $user->email : $fallback;
 	}
 
 	public function username( $fallback = '' ) {
-		if ( defined( 'MAILSTER_USERNAME' ) && MAILSTER_USERNAME ) {
-			return MAILSTER_USERNAME;
-		}
-		return get_option( 'mailster_username', $fallback );
+
+		$user = mailster_freemius()->get_user();
+
+		return $user ? $user->get_name() : $fallback;
 	}
 
-	/**
-	 *
-	 *
-	 * @param unknown $license (optional)
-	 * @return unknown
-	 */
-	public function reset_license( $license = null ) {
-
-		if ( ! $license ) {
-			$license = $this->license();
-		}
-
-		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE && $this->is_verified() ) {
-			return new WP_Error( 'defined_constants', sprintf( esc_html__( 'The License is defined as constant %s. You have to remove it before you can reset your license.', 'mailster' ), '<code>MAILSTER_LICENSE</code>' ) );
-		}
-
-		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::reset( 'mailster', $license );
-
-	}
 
 
 	public function is_verified( $force = false ) {
 
-		$verified = $this->get_verfied_object( $force );
+		$license = mailster_freemius()->_get_license();
 
-		return is_array( $verified );
+		return is_object( $license );
 
 	}
 
 
 	public function is_email_verified( $force = false ) {
 
-		$verified = $this->get_verfied_object( $force );
-
-		if ( is_array( $verified ) && isset( $verified['email_verfied'] ) ) {
-			 return (bool) $verified['email_verfied'];
-		}
-
-		return true;
+		return $this->is_verified();
 
 	}
 
@@ -3051,19 +2997,30 @@ class Mailster {
 
 	}
 
+	public function lifetime_support( $force = false ) {
+		$support = $this->support( $force );
+
+		return $support === true;
+	}
+
 	public function has_support( $force = false ) {
 
-		return $this->support( $force ) - time() > 0;
+		$support = $this->support( $force );
+
+		if ( $support === true ) {
+			return true;
+		}
+		if ( $support === false ) {
+			return false;
+		}
+
+		return time() < $support;
 
 	}
 
 	public function support( $force = false ) {
 
-		$support = (int) $this->plugin_info( 'support', $force );
-
-		if ( $support ) {
-			$support += DAY_IN_SECONDS;
-		}
+		$support = $this->plugin_info( 'support', $force );
 
 		return $support;
 

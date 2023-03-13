@@ -34,8 +34,9 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	}
 
 	$tab = array(
-		'text' => $sub_item[0],
-		'url'  => $sub_item[2],
+		'text'    => $sub_item[0],
+		'url'     => $sub_item[2],
+		'classes' => '',
 	);
 
 	if ( ! strpos( $sub_item[2], '.php' ) ) {
@@ -45,11 +46,11 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	$is_autoresponder = isset( $_GET['post_status'] ) && $_GET['post_status'] == 'autoresponder';
 
 	if ( $is_autoresponder && $sub_item[1] == 'mailster_edit_autoresponders' ) {
-		$tab['is_active'] = true;
-		$current          = $tab;
+		$tab['classes'] .= ' is-active';
+		$current         = $tab;
 	} elseif ( ! $is_autoresponder && ( $submenu_file === $sub_item[2] || $plugin_page === $sub_item[2] ) && $pagenow !== 'post_new.php' ) {
-		$tab['is_active'] = true;
-		$current          = $tab;
+		$tab['classes'] .= ' is-active';
+		$current         = $tab;
 	}
 	$tabs[] = $tab;
 }
@@ -59,12 +60,12 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 ?>
 <div id="mailster-admin-toolbar">
 	<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="mailster-logo" title="<?php echo esc_attr( sprintf( 'Mailster %s', MAILSTER_VERSION ) ); ?>">
-		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 692.8 611.9" xml:space="preserve"><path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/></svg>
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 692.8 611.9" xml:space="preserve" style="max-width:50px;"><path class="st0" fill="#2BB2E8" d="M471.1,24.3L346.4,176.7L221.7,24.3H0v568.1h194V273.7l152.4,207.8l152.4-207.8v318.6h194V24.3H471.1z"/></svg>
 		<span class="screen-reader-text">Mailster Newsletter Plugin</span>
 	</a>
 	<?php
 	foreach ( $tabs as $tab ) {
-		printf( '<a class="mailster-tab%s" href="%s">%s</a>', ! empty( $tab['is_active'] ) ? ' is-active' : '', esc_url( $tab['url'] ), esc_html( $tab['text'] ) );
+		printf( '<a class="mailster-tab%s" href="%s">%s</a>', $tab['classes'], esc_url( $tab['url'] ), strip_tags( $tab['text'] ) );
 	}
 	?>
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">

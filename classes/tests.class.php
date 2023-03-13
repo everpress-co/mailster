@@ -370,10 +370,8 @@ class MailsterTests {
 	}
 	private function test_update_available() {
 
-		$plugin_info = mailster()->plugin_info();
-
-		if ( $plugin_info->update ) {
-			$this->warning( sprintf( 'A new version of Mailster is available! Please %1$s to version %2$s', '<a href="update.php?action=upgrade-plugin&plugin=' . urlencode( MAILSTER_SLUG ) . '&_wpnonce=' . wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ) . '">update now</a>', $plugin_info->new_version ) );
+		if ( mailster()->plugin_info( 'update' ) ) {
+			$this->warning( sprintf( 'A new version of Mailster is available! Please %1$s to version %2$s', '<a href="update.php?action=upgrade-plugin&plugin=' . urlencode( MAILSTER_SLUG ) . '&_wpnonce=' . wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ) . '">update now</a>', mailster()->plugin_info( 'new_version' ) ) );
 		} else {
 			$this->success( 'You are running the latest version of Mailster!' );
 		}
