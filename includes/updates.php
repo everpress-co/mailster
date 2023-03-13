@@ -585,7 +585,7 @@ if ( $old_version ) {
 
 				}
 
-				mailster_notice( sprintf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="' . mailster_url( 'https://kb.mailster.co/send-your-newsletters-via-gmail/' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'gmail_deprecated' );
+				mailster_notice( sprintf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="' . mailster_url( 'https://kb.mailster.co/send-your-newsletters-via-gmail/' ) . '" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'gmail_deprecated' );
 			}
 
 		case '2.4.11':
@@ -637,7 +637,12 @@ if ( $old_version ) {
 		case '3.2.2':
 		case '3.2.3':
 		case '3.2.4':
+		case '3.2.5':
+			update_option( 'mailster_envato', get_option( 'mailster', time() ) );
+
 		default:
+			mailster( 'convert' )->notice();
+
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
@@ -677,7 +682,7 @@ delete_transient( 'mailster_hash' );
 
 
 // mailster_update_option('welcome', true);
-add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );
+// add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );
 
 if ( $old_version && $show_update_notice ) {
 	mailster_notice(

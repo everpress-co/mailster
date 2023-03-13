@@ -34,8 +34,9 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	}
 
 	$tab = array(
-		'text' => $sub_item[0],
-		'url'  => $sub_item[2],
+		'text'    => $sub_item[0],
+		'url'     => $sub_item[2],
+		'classes' => '',
 	);
 
 	if ( ! strpos( $sub_item[2], '.php' ) ) {
@@ -45,11 +46,11 @@ foreach ( $submenu[ $slug ] as $i => $sub_item ) {
 	$is_autoresponder = isset( $_GET['post_status'] ) && $_GET['post_status'] == 'autoresponder';
 
 	if ( $is_autoresponder && $sub_item[1] == 'mailster_edit_autoresponders' ) {
-		$tab['is_active'] = true;
-		$current          = $tab;
+		$tab['classes'] .= ' is-active';
+		$current         = $tab;
 	} elseif ( ! $is_autoresponder && ( $submenu_file === $sub_item[2] || $plugin_page === $sub_item[2] ) && $pagenow !== 'post_new.php' ) {
-		$tab['is_active'] = true;
-		$current          = $tab;
+		$tab['classes'] .= ' is-active';
+		$current         = $tab;
 	}
 	$tabs[] = $tab;
 }
@@ -64,7 +65,7 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 	</a>
 	<?php
 	foreach ( $tabs as $tab ) {
-		printf( '<a class="mailster-tab%s" href="%s">%s</a>', ! empty( $tab['is_active'] ) ? ' is-active' : '', esc_url( $tab['url'] ), esc_html( $tab['text'] ) );
+		printf( '<a class="mailster-tab%s" href="%s">%s</a>', $tab['classes'], esc_url( $tab['url'] ), strip_tags( $tab['text'] ) );
 	}
 	?>
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
