@@ -1255,6 +1255,14 @@ class MailsterSettings {
 					}
 					break;
 
+				case 'logging':
+					if ( $old != $value ) {
+						mailster()->dbstructure();
+					}
+					break;
+
+
+
 			}
 
 			$options[ $id ] = $value;
