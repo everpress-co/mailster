@@ -187,6 +187,12 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.0
+
+-   new: [Action Required] license provider - please follow the guide to migrate your license
+-   new: Email logs. You can now enable logging for all outgoing mails sent by Mailster
+-   new: option to use OpenStreetMap as an alternative for Google Maps
+
 ### 3.2.6
 
 -   added: option to bulk add and remove from every list
