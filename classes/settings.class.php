@@ -1261,8 +1261,6 @@ class MailsterSettings {
 					}
 					break;
 
-
-
 			}
 
 			$options[ $id ] = $value;
