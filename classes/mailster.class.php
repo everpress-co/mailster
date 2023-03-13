@@ -20,6 +20,7 @@ class Mailster {
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
 		require_once MAILSTER_DIR . 'classes/convert.class.php';
+		require_once MAILSTER_DIR . 'classes/api.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
@@ -54,6 +55,7 @@ class Mailster {
 			array(
 				'settings'     => new MailsterSettings(),
 				'convert'      => new MailsterConvert(),
+				'api'          => new MailsterApi(),
 				'translations' => new MailsterTranslations(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
