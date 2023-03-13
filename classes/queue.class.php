@@ -1187,7 +1187,7 @@ class MailsterQueue {
 				$sql        .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
 			}
 
-			$sql .= 'ORDER BY queue.priority DESC,';
+			$sql .= ' ORDER BY queue.priority DESC,';
 
 			if ( mailster_option( 'split_campaigns' ) ) {
 				$sql .= ' subscribers.rating DESC, RAND()';
