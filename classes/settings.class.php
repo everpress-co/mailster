@@ -219,6 +219,9 @@ class MailsterSettings {
 			'got_url_rewrite'                    => mailster( 'helper' )->got_url_rewrite(),
 			'post_nonce'                         => wp_create_nonce( uniqid() ),
 
+			'logging_max'                        => 1000,
+			'logging_days'                       => 7,
+
 			'welcome'                            => false,
 			'setup'                              => true,
 

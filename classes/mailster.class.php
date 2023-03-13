@@ -22,6 +22,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/convert.class.php';
 		require_once MAILSTER_DIR . 'classes/api.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
+		require_once MAILSTER_DIR . 'classes/logs.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
@@ -57,6 +58,7 @@ class Mailster {
 				'convert'      => new MailsterConvert(),
 				'api'          => new MailsterApi(),
 				'translations' => new MailsterTranslations(),
+				'logs'         => new MailsterLogs(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
 				'lists'        => new MailsterLists(),
@@ -2245,6 +2247,20 @@ class Mailster {
                 UNIQUE KEY `id` (`form_id`,`tag_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`tag_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_logs (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `subject` longtext NOT NULL,
+                `receivers` longtext NOT NULL,
+                `html` longtext NOT NULL,
+                `text` longtext NOT NULL,
+                `raw` longtext NOT NULL,
+                `message_id` varchar(191) NOT NULL DEFAULT '',
+                PRIMARY KEY  (`ID`)
             ) $collate;",
 
 		);

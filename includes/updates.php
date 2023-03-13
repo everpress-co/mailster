@@ -643,6 +643,8 @@ if ( $old_version ) {
 			if ( ! $mailster_options['static_map'] && $mailster_options['google_api_key'] ) {
 				$mailster_options['static_map'] = 'google';
 			}
+			$mailster_options['logging_max']  = 1000;
+			$mailster_options['logging_days'] = 7;
 
 		default:
 			mailster( 'convert' )->notice();

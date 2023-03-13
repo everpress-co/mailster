@@ -43,6 +43,7 @@ $sections = array(
 	'capabilities'    => esc_html__( 'Capabilities', 'mailster' ),
 	'bounce'          => esc_html__( 'Bouncing', 'mailster' ),
 	'authentication'  => esc_html__( 'Authentication', 'mailster' ),
+	'logging'         => esc_html__( 'Logging', 'mailster' ),
 	'advanced'        => esc_html__( 'Advanced', 'mailster' ),
 	'system_info'     => esc_html__( 'System Info', 'mailster' ),
 	'manage-settings' => esc_html__( 'Manage Settings', 'mailster' ),
@@ -61,6 +62,7 @@ $beacons = array(
 	'tags'            => '611bb5296ffe270af2a99926',
 	'frontend'        => '63fa7350e6d6615225473a99',
 	'wordpress-users' => '611bb1fe21ef206e5592c2a9',
+	'logging'         => '640886e6512c5e08fd71b1ef',
 )
 ?>
 
