@@ -86,25 +86,23 @@ class MailsterAutomations {
 			'read_private_posts' => 'mailster_read_private_automations',
 		);
 		$args         = array(
-			'label'               => __( 'Automation', 'mailster' ),
-			'description'         => __( 'Newsletter Automation', 'mailster' ),
-			'labels'              => $labels,
-			'supports'            => array( 'title', 'revisions' ),
-			'hierarchical'        => false,
-			'public'              => false,
-			'show_ui'             => true,
-			'show_in_menu'        => 'edit.php?post_type=newsletter',
-			'show_in_admin_bar'   => false,
-			'show_in_nav_menus'   => true,
-			'can_export'          => false,
-			'has_archive'         => false,
-			'exclude_from_search' => true,
-			'rewrite'             => false,
-			'rewrite'             => array(
-				'with_front' => false,
-				'slug'       => 'newsletter-form',
-			),
+			'label'                => __( 'Automation', 'mailster' ),
+			'description'          => __( 'Newsletter Automation', 'mailster' ),
+			'labels'               => $labels,
+			'supports'             => array( 'title', 'editor', 'revisions' ),
+			'hierarchical'         => false,
+			'public'               => false,
+			'show_ui'              => true,
+			'show_in_menu'         => 'edit.php?post_type=newsletter',
+			'show_in_admin_bar'    => false,
+			'show_in_nav_menus'    => true,
+			'can_export'           => false,
+			'has_archive'          => false,
+			'exclude_from_search'  => true,
+			'rewrite'              => false,
 			// 'capabilities'        => $capabilities,
+			'show_in_rest'        => true,
+			'register_meta_box_cb' => array( &$this, 'meta_boxes' ),
 
 		);
 		register_post_type( 'newsletter_auto', $args );
@@ -114,21 +112,17 @@ class MailsterAutomations {
 
 	public function meta_boxes() {
 
-		return;
+		add_meta_box( 'mailster_workflow', esc_html__( 'Workflow', 'mailster' ), array( &$this, 'workflow' ), 'newsletter_auto', 'normal', 'high' );
+		add_meta_box( 'mailster_options', esc_html__( 'Options', 'mailster' ), array( &$this, 'options' ), 'newsletter_auto', 'side', 'low' );
 
-		global $post;
-		add_meta_box( 'mailster_details', esc_html__( 'Details', 'mailster' ), array( &$this, 'newsletter_details' ), 'newsletter', 'normal', 'high' );
-		add_meta_box( 'mailster_template', ( ! in_array( $post->post_status, array( 'active', 'finished' ) ) && ! isset( $_GET['showstats'] ) ) ? esc_html__( 'Template', 'mailster' ) : esc_html__( 'Clickmap', 'mailster' ), array( &$this, 'newsletter_template' ), 'newsletter', 'normal', 'high' );
-		add_meta_box( 'mailster_submitdiv', esc_html__( 'Save', 'mailster' ), array( &$this, 'newsletter_submit' ), 'newsletter', 'side', 'high' );
+	}
 
-		if ( 'notification' != $post->post_status ) {
-			add_meta_box( 'mailster_delivery', esc_html__( 'Delivery', 'mailster' ), array( &$this, 'newsletter_delivery' ), 'newsletter', 'side', 'high' );
-			add_meta_box( 'mailster_receivers', esc_html__( 'Receivers', 'mailster' ), array( &$this, 'newsletter_receivers' ), 'newsletter', 'side', 'high' );
-		}
 
-		add_meta_box( 'mailster_attachments', esc_html__( 'Attachment', 'mailster' ), array( &$this, 'newsletter_attachment' ), 'newsletter', 'side', 'low' );
-		add_meta_box( 'mailster_options', esc_html__( 'Options', 'mailster' ), array( &$this, 'newsletter_options' ), 'newsletter', 'side', 'high' );
-
+	public function workflow() {
+		include MAILSTER_DIR . 'views/automation/workflow.php';
+	}
+	public function options() {
+		include MAILSTER_DIR . 'views/automation/options.php';
 	}
 
 }
