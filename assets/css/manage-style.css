@@ -1,7 +1,7 @@
-.mailster-manage h2 {
+.mailster-manage .stuffbox h2 {
 	padding: 0.5em 1em;
 }
-.mailster-manage h4 {
+.mailster-manage .stuffbox h4 {
 	margin: 0;
 	padding: 1.5em 1.5em;
 	border-top: 1px solid #dfdfdf;
@@ -14,16 +14,15 @@
 	border-top: 1px solid #dfdfdf;
 	padding: 1em 1.5em;
 }
-
-label > span {
+.mailster-manage label > span {
 	display: inline-block;
 	width: 10vw;
 	min-width: 180px;
 }
-.mailster-conditions-wrap {
+.mailster-manage .mailster-conditions-wrap {
 	max-width: 740px;
 }
-.import-wrap .footer p {
+.mailster-manage .import-wrap .footer p {
 	margin-left: 1.5em;
 	margin-right: 1.5em;
 }

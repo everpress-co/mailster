@@ -982,6 +982,21 @@ function mailster_remove_notice( $key ) {
 }
 
 
+function mailster_beacon_message( $id, $screen = null, $args = array() ) {
+	$mailster_beacon_message = get_option( 'mailster_beacon_message' );
+	if ( ! is_array( $mailster_beacon_message ) ) {
+		$mailster_beacon_message = array();
+	}
+
+	$mailster_beacon_message[ $id ] = array(
+		'screen' => $screen,
+		'args'   => wp_parse_args( $args ),
+	);
+
+	update_option( 'mailster_beacon_message', $mailster_beacon_message, false );
+
+};
+
 /**
  *
  *

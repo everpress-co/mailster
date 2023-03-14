@@ -640,22 +640,21 @@ if ( $old_version ) {
 		case '3.2.5':
 		case '3.2.6':
 			update_option( 'mailster_envato', get_option( 'mailster', time() ) );
-			if ( ! $mailster_options['static_map'] && $mailster_options['google_api_key'] ) {
+			if ( ! isset( $mailster_options['static_map'] ) && $mailster_options['google_api_key'] ) {
 				$mailster_options['static_map'] = 'google';
 			}
 			$mailster_options['logging_max']  = 1000;
 			$mailster_options['logging_days'] = 7;
+
+			// rename custom settings
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `meta_value` = replace(meta_value, %s, %s)", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
+
 
 		default:
 			mailster( 'convert' )->notice();
 
 			// reset translations
 			update_option( 'mailster_translation', '' );
-
-
-			// if ( ! $mailster_options['db_update_required'] ) {
-			// mailster( 'update' )->ask_for_auto_update();
-			// }
 
 
 			$texts = wp_parse_args( $texts, $default_texts );

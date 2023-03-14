@@ -104,7 +104,7 @@
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-static-map-service">
-		<th scope="row"><?php esc_html_e( 'Static Map Service', 'mailster' ); ?>
+		<th scope="row"><?php esc_html_e( 'Static Map Service', 'mailster' ); ?><?php echo mailster()->beacon( '640f62389d7021629be4e707' ); ?>
 		</th>
 		<td>
 		<p><label><input type="radio" name="mailster_options[static_map]" class="static_map" value="0" <?php checked( ! mailster_option( 'static_map' ) ); ?>> <?php esc_html_e( 'Don\'t use any static maps', 'mailster' ); ?></label></p>

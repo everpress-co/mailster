@@ -1272,9 +1272,9 @@ class Mailster {
 	}
 
 	public function add_admin_header() {
-		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'maislter' ) . "\n" . esc_html( 'If you cancel you will be redirected to our support page.', 'mailster' );
+		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ) . "\n" . esc_html( 'If you cancel you will be redirected to our support page.', 'mailster' );
 
-		mailster_localize_script( 'helpscout', array( 'consent' => $consent ) );
+		mailster_localize_script( 'beacon', array( 'consent' => $consent ) );
 
 		wp_enqueue_style( 'mailster-admin-header' );
 		wp_enqueue_script( 'mailster-admin-header' );

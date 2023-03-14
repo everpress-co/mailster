@@ -90,7 +90,7 @@ class MailsterAjax {
 		'wizard_save'                 => 'mailster_dashboard',
 
 		'test'                        => 'manage_options',
-		'get_helpscout_data'          => 'read',
+		'get_beacon_data'             => 'read',
 
 	);
 
@@ -2859,7 +2859,7 @@ class MailsterAjax {
 
 	}
 
-	private function get_helpscout_data() {
+	private function get_beacon_data() {
 
 		$this->ajax_nonce();
 		$user = wp_get_current_user();
@@ -2875,10 +2875,11 @@ class MailsterAjax {
 		}
 
 		$return = array(
-			'name'   => $name,
-			'email'  => $email,
-			'avatar' => get_avatar_url( $user->ID ),
-			'id'     => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
+			'name'     => $name,
+			'email'    => $email,
+			'avatar'   => get_avatar_url( $user->ID ),
+			'id'       => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
+			'messages' => get_option( 'mailster_beacon_message' ),
 		);
 
 		wp_send_json_success( $return );
