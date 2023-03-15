@@ -430,7 +430,7 @@ class MailsterActions {
 			$gmt_offset = mailster( 'helper' )->gmt_offset( true );
 
 			$start_of_day = strtotime( 'midnight' ) - $gmt_offset;
-			$offset       = $start_of_day - $growth_timeframe;
+			$offset       = $growth_timeframe ? ( $start_of_day - $growth_timeframe ) : 0;
 
 			$result = $wpdb->get_results( $wpdb->prepare( $sql, $offset, $start_of_day ) );
 

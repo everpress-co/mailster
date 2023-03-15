@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.1  
-Stable tag: 3.2.6
+Stable tag: 3.3.0
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 3.3.0
+
+-   new: [Action Required] license provider - please follow the guide to migrate your license
+-   new: Email logs. You can now enable logging for all outgoing mails sent by Mailster
+-   new: option to use OpenStreetMap as an alternative for Google Maps
+-   new: emoji picker in campaign editor
 
 ### 3.2.6
 

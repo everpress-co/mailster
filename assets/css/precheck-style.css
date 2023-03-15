@@ -119,6 +119,10 @@
 	background-color: #fafafa;
 	position: relative;
 }
+.score-wrap .score-message {
+	position: relative;
+	z-index: 2;
+}
 .device {
 	transition: all 0.3s;
 }

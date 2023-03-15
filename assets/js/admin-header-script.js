@@ -19,7 +19,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.document
 		.on('click', '#mailster-admin-help', function () {
 			if (!requireConsent()) {
-				window.open($(this).attr('href'));
+				location.href = $(this).attr('href');
 				return false;
 			}
 
@@ -38,10 +38,10 @@ mailster = (function (mailster, $, window, document) {
 			});
 			return false;
 		})
-		.on('click', 'a[href^="https://mailster.co/support"]', function (e) {
+		.on('click', 'a.mailster-support', function (e) {
 			e.stopImmediatePropagation();
 			if (!requireConsent()) {
-				window.open($(this).attr('href'));
+				location.href = $(this).attr('href');
 				return false;
 			}
 
@@ -50,7 +50,9 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		});
 
-	requireConsent(false);
+	mailster.events.push('documentReady', function () {
+		requireConsent(false);
+	});
 
 	beacon('on', 'ready', function () {
 		if (beacon('info').status.isOpened) {
@@ -78,20 +80,20 @@ mailster = (function (mailster, $, window, document) {
 			document.head.appendChild(script);
 		}
 
-		beacondata = mailster.session.get('helpscout');
+		beacondata = mailster.session.get('beacon');
 
-		//reload at least every hour
+		// reload at least every hour
 		if (beacondata && new Date() / 1000 - beacondata.timestamp < 3600) {
 			initBeacon();
 			return;
 		}
 
 		mailster.util.ajax(
-			'get_helpscout_data',
+			'get_beacon_data',
 			function (response) {
 				beacondata = response.data;
 				beacondata.timestamp = Math.round(new Date() / 1000);
-				mailster.session.set('helpscout', beacondata);
+				mailster.session.set('beacon', beacondata);
 				!loaded && initBeacon();
 			},
 			function (jqXHR, textStatus, errorThrown) {}
@@ -148,18 +150,35 @@ mailster = (function (mailster, $, window, document) {
 			beacon('suggest', articles);
 		}
 
-		window.mailster.beacon = beacon;
+		if (beacondata.messages) {
+			Object.keys(beacondata.messages).forEach((messageId, index) => {
+				if (
+					!beacondata.messages[messageId].screen ||
+					mailster.dom.body.classList.contains(
+						beacondata.messages[messageId].screen
+					)
+				) {
+					beacon(
+						'show-message',
+						messageId,
+						beacondata.messages[messageId].args
+					);
+				}
+			});
+		}
+
+		mailster.beacon = beacon;
 
 		loaded = true;
 		helpbtn.removeClass('is-loading');
 	}
 
 	function requireConsent(ask = true) {
-		if (!mailster.user.get('helpscout')) {
-			if (!ask || !confirm(mailster.l10n.helpscout.consent)) {
+		if (!mailster.user.get('beacon')) {
+			if (!ask || !confirm(mailster.l10n.beacon.consent)) {
 				return false;
 			}
-			mailster.user.set('helpscout', true);
+			mailster.user.set('beacon', true);
 		}
 		loadBeaconData();
 		return true;
