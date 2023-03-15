@@ -63,16 +63,15 @@ class MailsterConvert {
 		$endpoint = apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' );
 		$endpoint = trailingslashit( $endpoint ) . 'wp-json/freemius/v1/api/get';
 
-		$url = add_query_arg(
-			array(
-				'version'     => MAILSTER_VERSION,
-				'license'     => $license,
-				'email'       => $email,
-				'whitelabel'  => $user->user_email != $email,
-				'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
-			),
-			$endpoint
+		$args = array(
+			'version'     => MAILSTER_VERSION,
+			'license'     => $license,
+			'email'       => $email,
+			'whitelabel'  => $user->user_email != $email,
+			'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
 		);
+
+		$url = add_query_arg( $args, $endpoint );
 
 		$response = wp_remote_get( $url, array( 'timeout' => 30 ) );
 
