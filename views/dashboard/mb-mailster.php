@@ -52,7 +52,7 @@ if ( mailster()->is_verified() ) {
 		<?php if ( mailster_freemius()->has_active_valid_license() ) : ?>
 			<?php esc_html_e( 'or', 'mailster' ); ?> <a href="update.php?action=upgrade-plugin&plugin=<?php echo urlencode( MAILSTER_SLUG ); ?>&_wpnonce=<?php echo wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ); ?>" class="update-button"><?php printf( esc_html__( 'update to %s now', 'mailster' ), '<span class="update-version">' . esc_html( mailster()->plugin_info( 'new_version' ) ) . '</span>' ); ?></a>
 		<?php else : ?>
-			<?php esc_html_e( 'or', 'mailster' ); ?> <strong><a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Renew your license to update', 'mailster' ); ?></a></strong>
+			<?php esc_html_e( 'or', 'mailster' ); ?> <strong><a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Renew your license to update', 'mailster' ); ?></a> <?php echo mailster()->beacon( '64074c66512c5e08fd71ac91' ); ?></strong>
 		<?php endif; ?>
 	</dd>
 </dl>
@@ -64,9 +64,9 @@ if ( mailster()->is_verified() ) {
 		<?php elseif ( mailster()->has_support() ) : ?>
 		<dd><span class="lighter"><?php printf( esc_html__( 'Your support expires on %s.', 'mailster' ), '<span class="">' . esc_html( date( $dateformat, mailster()->support() ) ) . '</span>' ); ?></span></dd>
 		<?php elseif ( ! mailster()->support() ) : ?>
-		<dd><strong><?php esc_html_e( 'Your license doesn\'t come with support', 'mailster' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
+		<dd><strong><?php esc_html_e( 'Your license doesn\'t come with support', 'mailster' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a> <?php echo mailster()->beacon( '64074c66512c5e08fd71ac91' ); ?></dd>
 		<?php elseif ( mailster()->support() ) : ?>
-		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a></dd>
+		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a><?php echo mailster()->beacon( '64074c66512c5e08fd71ac91' ); ?></dd>
 		<?php endif; ?>
 	<dd>
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
