@@ -64,17 +64,21 @@ function mailster_force_option( $option, $fallback = null ) {
  */
 function mailster_options( $option = null, $fallback = null ) {
 
+	global $mailster_options;
+
 	if ( ! is_null( $option ) ) {
 		return mailster_option( $option, $fallback );
 	}
 
-	if ( ! ( $options = get_option( 'mailster_options', array() ) ) ) {
-		if ( mailster() ) {
-			$options = mailster( 'settings' )->maybe_repair_options( $options );
+	if ( ! $mailster_options ) {
+		if ( ! ( $mailster_options = get_option( 'mailster_options', array() ) ) ) {
+			if ( mailster() ) {
+				$mailster_options = mailster( 'settings' )->maybe_repair_options( $mailster_options );
+			}
 		}
 	}
 
-	return $options;
+	return $mailster_options;
 }
 
 

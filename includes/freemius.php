@@ -53,6 +53,30 @@ function mailster_legacy_license_key( $key ) {
 	}
 	return $key;
 }
+mailster_freemius()->add_filter( 'after_plans_sync', 'mailster_freemius_set_default_options' );
+function mailster_freemius_set_default_options( $plan ) {
+
+	// this prevents loading options on ever page load because they may not exist
+
+	$prefix = defined( 'WP_FS___OPTION_PREFIX' ) ? WP_FS___OPTION_PREFIX : 'fs_';
+
+	$plugin_id = mailster_freemius()->get_id();
+
+	$options = array(
+		'debug_mode'          => '',
+		'storage_logger'      => '',
+		'clone_management'    => '',
+		'cache_' . $plugin_id => '',
+	);
+
+	foreach ( $options as $key => $value ) {
+		$exists = get_option( $prefix . $key );
+		if ( ! $exists ) {
+			update_option( $prefix . $key, $value );
+		}
+	}
+
+}
 
 
 mailster_freemius()->add_filter( 'permission_list', 'mailster_update_permission' );

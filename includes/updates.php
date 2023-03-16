@@ -650,6 +650,10 @@ if ( $old_version ) {
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_value` = replace(meta_value, %s, %s) WHERE meta_key = 'wp_user-settings'", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
 
 
+		case '3.3.0':
+			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_updated', 'mailster_version_first','mailster_dbversion')" );
+
+
 		default:
 			mailster( 'convert' )->notice();
 

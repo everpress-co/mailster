@@ -3,6 +3,7 @@
 class MailsterTranslations {
 
 	private $endpoint = 'https://translate.mailster.co';
+	private $option;
 
 
 	public function __construct() {
@@ -32,6 +33,23 @@ class MailsterTranslations {
 		} else {
 			load_plugin_textdomain( 'mailster' );
 		}
+	}
+
+
+
+	public function get_option() {
+		if ( ! $this->option ) {
+			$this->option = get_option( 'mailster_translation' );
+		}
+		return $this->option;
+	}
+
+	public function update_option( $value ) {
+
+		$this->option = $value;
+
+		return update_option( 'mailster_translation', $value );
+
 	}
 
 
@@ -106,7 +124,7 @@ class MailsterTranslations {
 			$this->get_translation_data( true );
 		}
 
-		$object = get_option( 'mailster_translation' );
+		$object = $this->get_option();
 
 		return isset( $object['set'] ) ? ( ! empty( $object['set'] ) ? $object['set'] : null ) : false;
 
@@ -121,7 +139,7 @@ class MailsterTranslations {
 	 */
 	public function get_translation_data( $force = false ) {
 
-		$object = get_option( 'mailster_translation' );
+		$object = $this->get_option( 'mailster_translation' );
 		$now    = time();
 
 		// if force, not set yet or expired
@@ -130,7 +148,7 @@ class MailsterTranslations {
 			$locale = get_locale();
 
 			if ( 'en_US' == $locale ) {
-				update_option( 'mailster_translation', array( 'expires' => $now + DAY_IN_SECONDS ) );
+				$this->update_option( array( 'expires' => $now + DAY_IN_SECONDS ) );
 				return false;
 			}
 
@@ -156,7 +174,7 @@ class MailsterTranslations {
 
 			if ( empty( $body ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 				$object['expires'] = $now + 3600;
-				update_option( 'mailster_translation', $object );
+				$this->update_option( $object );
 				return false;
 			}
 
@@ -206,7 +224,7 @@ class MailsterTranslations {
 				);
 			}
 
-			update_option( 'mailster_translation', $object );
+			$this->update_option( $object );
 		}
 
 		return isset( $object['data'] ) && is_array( $object['data'] ) ? ( ! empty( $object['data'] ) ? $object['data'] : null ) : false;

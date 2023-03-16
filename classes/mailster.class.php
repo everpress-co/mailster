@@ -1762,10 +1762,10 @@ class Mailster {
 				$this->dbstructure();
 				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
-				update_option( 'mailster_updated', time() );
+				update_option( 'mailster_updated', time(), false );
 				update_option( 'mailster_hooks', '' );
-				update_option( 'mailster_version_first', MAILSTER_VERSION );
-				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+				update_option( 'mailster_version_first', MAILSTER_VERSION, false );
+				update_option( 'mailster_dbversion', MAILSTER_DBVERSION, false );
 				update_option( 'mailster_freemius', time() );
 				if ( MAILSTER_ENVATO ) {
 					update_option( 'mailster_envato', time() );
@@ -2869,7 +2869,8 @@ class Mailster {
 
 		$license = mailster_freemius()->_get_license();
 
-		$support = get_option( 'mailster_support' );
+		//$support = get_option( 'mailster_support' );
+		$support = 0;
 
 		// legacy license
 		if ( $license && $license->plan_id == 20600 ) {
