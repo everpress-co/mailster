@@ -14,6 +14,9 @@
 	zoom: 1;
 	clear: both;
 }
+.convert_form_wrap .notice {
+	display: none;
+}
 .convert_form_wrap form {
 	padding: 10px 0 0 0;
 	transition: opacity 0.25s ease-in-out;
