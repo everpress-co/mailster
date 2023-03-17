@@ -1299,7 +1299,7 @@ class MailsterQueue {
 						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $output_php, $output_mail, $output_total );
 
 					} else {
-						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_time, $output_total );
+						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_mail, $output_total );
 					}
 
 					$sent_this_turn++;
