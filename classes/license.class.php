@@ -45,10 +45,9 @@ class MailsterLicense {
 
 			$mailster_freemius = fs_dynamic_init( $args );
 
+			// Signal that SDK was initiated.
+			do_action( 'mailster_freemius_loaded' );
 		}
-
-		// Signal that SDK was initiated.
-		do_action( 'mailster_freemius_loaded' );
 
 		add_action( 'load-newsletter_page_mailster-pricing', array( $this, '_maybe_redirect_to_checkout' ) );
 		add_action( 'load-newsletter_page_mailster-account', array( $this, '_add_account_beacon' ) );
