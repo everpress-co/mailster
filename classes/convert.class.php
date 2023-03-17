@@ -50,12 +50,13 @@ class MailsterConvert {
 
 	}
 
-	public function convert( $email = null, $license = null ) {
+	public function convert( $email = null, $license = null, $is_marketing_allowed = null ) {
 
 		$user = wp_get_current_user();
 		if ( is_null( $email ) ) {
 			$email = mailster()->email( $user->user_email );
 		}
+
 		if ( is_null( $license ) ) {
 			$license = mailster()->license();
 		}
@@ -70,6 +71,10 @@ class MailsterConvert {
 			'whitelabel'  => $user->user_email != $email,
 			'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
 		);
+
+		if ( ! is_null( $is_marketing_allowed ) ) {
+			$args['marketing'] = $is_marketing_allowed;
+		}
 
 		$url = add_query_arg( $args, $endpoint );
 

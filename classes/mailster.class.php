@@ -2852,43 +2852,50 @@ class Mailster {
 	 */
 	public function plugin_info( $field = null, $force = false ) {
 
-		$plugins = get_site_transient( 'update_plugins' );
+		if ( false === ( $info = mailster_cache_get( 'plugin_info' ) ) || $force ) {
 
-		if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {
-			$info = $plugins->response[ MAILSTER_SLUG ];
-		} elseif ( isset( $plugins->no_update[ MAILSTER_SLUG ] ) ) {
-			$info = $plugins->no_update[ MAILSTER_SLUG ];
-		} else {
-			return null;
-		}
-
-		if ( $force ) {
-			mailster_freemius()->_sync_licenses();
-			mailster_freemius()->get_update();
-		}
-
-		$license = mailster_freemius()->_get_license();
-
-		$support = get_option( 'mailster_support' );
-
-		// legacy license
-		if ( $license && $license->plan_id == 20600 ) {
-			if ( $support == -1 ) {
-				$info->support = false;
-			} elseif ( $support ) {
-				$info->support = $support;
+			if ( $force ) {
+				mailster_freemius()->_sync_licenses();
+				mailster_freemius()->get_update();
 			}
-		} elseif ( $license && $license->expiration ) {
-			$info->support = max( strtotime( $license->expiration ), $support );
-		} else {
-			$info->support = true;
-		}
 
-		$info->update = false;
-		if ( ! isset( $info->new_version ) ) {
-			$info->new_version = MAILSTER_VERSION;
+			$plugins = get_site_transient( 'update_plugins' );
+
+			if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {
+				$info = $plugins->response[ MAILSTER_SLUG ];
+			} elseif ( isset( $plugins->no_update[ MAILSTER_SLUG ] ) ) {
+				$info = $plugins->no_update[ MAILSTER_SLUG ];
+			} else {
+				return null;
+			}
+
+			$license = mailster_freemius()->_get_license();
+
+			if ( $license ) {
+				$plan_name = mailster_freemius()->get_plan_name();
+				$support   = get_option( 'mailster_support' );
+				if ( 'legacy' === $plan_name ) {
+					if ( $support == -1 ) {
+						$info->support = false;
+					} elseif ( $support ) {
+						$info->support = $support;
+					}
+				} else {
+					$info->support = max( strtotime( $license->expiration ), $support );
+				}
+			} else {
+				$info->support = true;
+			}
+
+			$info->update = false;
+			if ( ! isset( $info->new_version ) ) {
+				$info->new_version = MAILSTER_VERSION;
+			}
+			$info->update = version_compare( MAILSTER_VERSION, $info->new_version, '<' );
+
+			mailster_cache_set( 'plugin_info', $info );
+
 		}
-		$info->update = version_compare( MAILSTER_VERSION, $info->new_version, '<' );
 
 		if ( is_null( $field ) ) {
 			return $info;
