@@ -187,6 +187,13 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.1
+
+-   updated: Freemius SDK to 2.5.5
+-   fixed: Undefined variable $output_time in queue.class.php
+-   fixed: CSS issue on Precheck
+-   improved: connect screen for Envato licenses
+
 ### 3.3.0
 
 -   new: [Action Required] license provider - please follow the guide to migrate your license
