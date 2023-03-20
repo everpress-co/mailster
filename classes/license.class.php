@@ -45,10 +45,9 @@ class MailsterLicense {
 
 			$mailster_freemius = fs_dynamic_init( $args );
 
+			// Signal that SDK was initiated.
+			do_action( 'mailster_freemius_loaded' );
 		}
-
-		// Signal that SDK was initiated.
-		do_action( 'mailster_freemius_loaded' );
 
 		add_action( 'load-newsletter_page_mailster-pricing', array( $this, '_maybe_redirect_to_checkout' ) );
 		add_action( 'load-newsletter_page_mailster-account', array( $this, '_add_account_beacon' ) );
@@ -58,7 +57,7 @@ class MailsterLicense {
 
 	public function _maybe_redirect_to_checkout() {
 
-		if ( ! isset( $_GET['plan_id'] ) ) {
+		if ( ! isset( $_GET['checkout'] ) ) {
 			mailster_redirect( mailster_freemius()->checkout_url() );
 		}
 
@@ -97,7 +96,11 @@ class MailsterLicense {
 		}
 
 		// migrate
-		$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
+		try {
+			$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
+		} catch ( Throwable $e ) {
+			 return new WP_Error( 'freemius_error', $e->getMessage() );
+		}
 
 		if ( isset( $migrate['error'] ) && $migrate['error'] ) {
 			if ( is_object( $migrate['error'] ) ) {
@@ -106,7 +109,7 @@ class MailsterLicense {
 			return new WP_Error( 'freemius_error', $migrate['error'] );
 		}
 
-		add_option( 'mailster_freemius', time() );
+		update_option( 'mailster_freemius', time() );
 
 		return $migrate;
 

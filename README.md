@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.1  
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 3.3.1
+
+-   updated: Freemius SDK to 2.5.5
+-   fixed: Undefined variable $output_time in queue.class.php
+-   fixed: CSS issue on Precheck
+-   improved: connect screen for Envato licenses
 
 ### 3.3.0
 
