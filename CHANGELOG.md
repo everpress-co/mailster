@@ -1,3 +1,10 @@
+### Version 3.3.1 (2023-03-20)
+
+-   updated: Freemius SDK to 2.5.5
+-   fixed: Undefined variable $output_time in queue.class.php
+-   fixed: CSS issue on Precheck
+-   improved: connect screen for Envato licenses
+
 ### Version 3.3.0 (2023-03-15)
 
 -   new: [Action Required] license provider - please follow the guide to migrate your license
