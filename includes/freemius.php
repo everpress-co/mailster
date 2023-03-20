@@ -76,6 +76,7 @@ function mailster_add_link_for_envato() {
 	?>
 	<script>
 		jQuery && jQuery(document).ready(function ($) {
+			$('#fs_license_key').attr('placeholder', 'Envato Purchase code');
 			$('#fs_email').on('change', function(){
 				$.ajaxSetup({data:{fs_email:$(this).val()}});
 			}).trigger('change');
@@ -83,11 +84,12 @@ function mailster_add_link_for_envato() {
 	</script>
 	<style>.fs-license-key-container a.show-license-resend-modal{display: none;}#fs_connect .fs-license-key-container{width: 330px}</style>
 	<div class="fs-license-key-container">
-		Please enter the email address for your account
+		<span><?php esc_html_e( 'Please enter the email address for your account', 'mailster' ); ?></span>
 		<input id="fs_email" name="fs_email" type="email" required placeholder="Email Address" value="<?php echo esc_attr( $email ); ?>">
+		<span>(<?php esc_html_e( 'will be used if no account is assigned to your license', 'mailster' ); ?>)</span>
 	</div>
 	<div class="fs-license-key-container">
-		<a href="https://kb.mailster.co/where-is-my-purchasecode/" target="_blank"><?php esc_html_e( "Can't find your license key?", 'mailster' ); ?></a>
+		<a href="<?php echo mailster_url( 'https://kb.mailster.co/where-is-my-purchasecode/' ); ?>" target="_blank"><?php esc_html_e( "Can't find your license key?", 'mailster' ); ?></a>
 	</div>
 	<?php
 
