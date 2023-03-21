@@ -499,7 +499,7 @@ class Mailster {
 		}
 
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert' ) ) ) {
+		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert', 'mailster_dashboard' ) ) ) {
 			return;
 		}
 
@@ -509,6 +509,11 @@ class Mailster {
 
 		if ( $page === 'mailster_convert' ) {
 			mailster_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) );
+			exit;
+		}
+
+		if ( mailster_freemius()->is_activation_mode() ) {
+			mailster_redirect( admin_url( 'admin.php?page=mailster' ) );
 			exit;
 		}
 
