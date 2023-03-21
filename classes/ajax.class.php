@@ -2282,7 +2282,7 @@ class MailsterAjax {
 		$memory_limit       = ini_get( 'memory_limit' );
 		$max_execution_time = ini_get( 'max_execution_time' );
 
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
 			ini_set( 'max_execution_time', 300 );
@@ -2393,7 +2393,7 @@ class MailsterAjax {
 		$memory_limit       = ini_get( 'memory_limit' );
 		$max_execution_time = ini_get( 'max_execution_time' );
 
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
 			ini_set( 'max_execution_time', 300 );
