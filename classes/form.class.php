@@ -12,6 +12,7 @@ class MailsterForm {
 	private $lists   = array();
 	private $message = '';
 
+	private $ID            = null;
 	private $form          = null;
 	private $formkey       = null;
 	private $campaignID    = null;

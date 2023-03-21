@@ -6,8 +6,9 @@ class MailsterCampaigns {
 	private $template;
 	private $templatefile;
 	private $templateobj;
-
 	private $post_changed = array();
+	
+	public $post_data;
 
 	public function __construct() {
 
