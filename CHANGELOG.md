@@ -1,3 +1,12 @@
+### Version 3.3.2 (2023-03-23)
+
+-   fixed: Division by zero on campaign edit screen
+-   fixed: Header already sent error on account page
+-   fixed: dashboard redirects to a blank page if in activation mode
+-   fixed: deprecated notices in PHP 8.2
+-   fixed: missing index in placeholder.class.php
+-   improved: check if `set_time_limit` is disabled
+
 ### Version 3.3.1 (2023-03-20)
 
 -   updated: Freemius SDK to 2.5.5
