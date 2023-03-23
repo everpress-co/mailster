@@ -60,6 +60,9 @@ class MailsterLicense {
 			mailster_redirect( mailster_freemius()->checkout_url() );
 		}
 
+		// add this back as it will get remove from Freemius
+		add_action( 'newsletter_page_mailster-pricing', array( mailster(), 'page_beacon' ), 1 );
+
 	}
 
 

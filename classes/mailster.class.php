@@ -1286,7 +1286,7 @@ class Mailster {
 
 		add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
 		add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
-		add_action( 'admin_notices', array( &$this, 'page_beacon' ), 1 );
+		add_action( 'admin_notices', array( &$this, 'page_beacon' ) );
 
 	}
 
@@ -1336,6 +1336,9 @@ class Mailster {
 				}
 
 				echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
+				break;
+			case 'newsletter_page_mailster-pricing':
+				echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ) );
 				break;
 			case 'newsletter_page_mailster_settings':
 				break;
