@@ -499,7 +499,7 @@ class Mailster {
 		}
 
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert' ) ) ) {
+		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert', 'mailster_dashboard' ) ) ) {
 			return;
 		}
 
@@ -509,6 +509,11 @@ class Mailster {
 
 		if ( $page === 'mailster_convert' ) {
 			mailster_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) );
+			exit;
+		}
+
+		if ( mailster_freemius()->is_activation_mode() ) {
+			mailster_redirect( admin_url( 'admin.php?page=mailster' ) );
 			exit;
 		}
 
@@ -1321,6 +1326,16 @@ class Mailster {
 				break;
 			case 'newsletter_page_mailster_templates':
 				echo mailster()->beacon( array( '63fbb9be81d3090330dcbd64' ) );
+				break;
+			case 'newsletter_page_mailster-account':
+				$plan    = mailster_freemius()->get_plan_name();
+				$license = mailster_freemius()->_get_license();
+
+				if ( $plan === 'legacy' && $license->expiration ) {
+					echo mailster()->beacon( array( '640898cd16d5327537bcb740' ), true );
+				}
+
+				echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
 				break;
 			case 'newsletter_page_mailster_settings':
 				break;

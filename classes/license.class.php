@@ -50,7 +50,6 @@ class MailsterLicense {
 		}
 
 		add_action( 'load-newsletter_page_mailster-pricing', array( $this, '_maybe_redirect_to_checkout' ) );
-		add_action( 'load-newsletter_page_mailster-account', array( $this, '_add_account_beacon' ) );
 
 		return $mailster_freemius;
 	}
@@ -61,15 +60,8 @@ class MailsterLicense {
 			mailster_redirect( mailster_freemius()->checkout_url() );
 		}
 
-		echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
-
 	}
 
-	public function _add_account_beacon() {
-
-		echo mailster()->beacon( array( '640898cd16d5327537bcb740', '611bb01bb55c2b04bf6df0ae', '64074c66512c5e08fd71ac91' ), true );
-
-	}
 
 	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {
 
@@ -110,6 +102,7 @@ class MailsterLicense {
 		}
 
 		update_option( 'mailster_freemius', time() );
+		update_option( 'mailster_envato', false );
 
 		return $migrate;
 

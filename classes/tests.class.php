@@ -8,6 +8,14 @@ class MailsterTests {
 	private $next;
 	private $total;
 
+	private $last_is_error;
+	private $last_error_test;
+	private $last_error_message;
+	private $last_error_type;
+	private $last_error_link;
+
+	private $current_id;
+
 	private $errors;
 
 	public function __construct( $test = null ) {

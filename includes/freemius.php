@@ -70,16 +70,20 @@ function mailster_add_link_for_envato() {
 	if ( ! get_option( 'mailster_envato' ) ) {
 		return;
 	}
-	$user  = wp_get_current_user();
-	$email = mailster()->email( $user->user_email );
+	$email = get_option( 'mailster_email' );
+	if ( ! $email ) {
+		$user  = wp_get_current_user();
+		$email = $user->user_email;
+	}
 
 	?>
 	<script>
 		jQuery && jQuery(document).ready(function ($) {
-			$('#fs_license_key').attr('placeholder', 'Envato Purchase code');
+			$('#fs_license_key').attr('placeholder', 'Envato Purchase code')
 			$('#fs_email').on('change', function(){
 				$.ajaxSetup({data:{fs_email:$(this).val()}});
 			}).trigger('change');
+
 		});
 	</script>
 	<style>.fs-license-key-container a.show-license-resend-modal{display: none;}#fs_connect .fs-license-key-container{width: 330px}</style>

@@ -620,6 +620,20 @@ function mailster_get_ip() {
  *
  * @return unknown
  */
+function mailster_set_time_limit( $seconds ) {
+	$max = (int) ini_get( 'max_execution_time' );
+
+	if ( 0 !== $max && $seconds > $max && strpos( ini_get( 'disable_functions' ), 'set_time_limit' ) === false ) {
+		set_time_limit( $seconds );
+	}
+}
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
 function mailster_is_local( $ip = null ) {
 
 	if ( is_null( $ip ) ) {

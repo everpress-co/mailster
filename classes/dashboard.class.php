@@ -3,6 +3,9 @@
 class MailsterDashboard {
 
 	private $metaboxes = array();
+	private $update;
+	private $verified;
+	private $is_dashboard;
 
 	public function __construct() {
 
@@ -90,8 +93,6 @@ class MailsterDashboard {
 		$this->update       = mailster()->has_update();
 		$this->verified     = mailster()->is_verified();
 		$this->is_dashboard = false;
-
-		$this->screen = get_current_screen();
 
 		include MAILSTER_DIR . 'views/dashboard.php';
 	}

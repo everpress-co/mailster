@@ -198,7 +198,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		$i = 0;
 		foreach ( $countrycodes as $countrycode => $count ) {
 			?>
-			<label title="<?php echo mailster( 'geo' )->code2Country( $countrycode ); ?>"><span class="big"><span class="mailster-flag-24 flag-<?php echo strtolower( $countrycode ); ?>"></span> <?php echo round( $count / $opens * 100, 2 ); ?>%</span></label>
+			<label title="<?php echo mailster( 'geo' )->code2Country( $countrycode ); ?>"><span class="big"><span class="mailster-flag-24 flag-<?php echo strtolower( $countrycode ); ?>"></span> <?php echo ( $opens ? round( $count / $opens * 100, 2 ) : 0 ); ?>%</span></label>
 			<?php
 			if ( ++$i >= 5 ) {
 				break;

@@ -2,6 +2,8 @@
 
 class MailsterCron {
 
+	private $pid;
+
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
