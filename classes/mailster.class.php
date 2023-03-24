@@ -2899,7 +2899,11 @@ class Mailster {
 						$info->support = $support;
 					}
 				} else {
-					$info->support = max( strtotime( $license->expiration ), $support );
+					if ( $license->expiration ) {
+						$info->support = max( strtotime( $license->expiration ), $support );
+					} else {
+						$info->support = true;
+					}
 				}
 			} else {
 				$info->support = true;

@@ -60,7 +60,6 @@ if ( mailster()->is_verified() ) {
 <dl class="mailster-icon mailster-support">
 	<dt><?php esc_html_e( 'Support', 'mailster' ); ?></dt>
 		<?php if ( mailster()->lifetime_support() ) : ?>
-		<dd><strong><?php esc_html_e( 'Your license come with support', 'mailster' ); ?></strong></dd>
 		<?php elseif ( mailster()->has_support() ) : ?>
 		<dd><span class="lighter"><?php printf( esc_html__( 'Your support expires on %s.', 'mailster' ), '<span class="">' . esc_html( date( $dateformat, mailster()->support() ) ) . '</span>' ); ?></span></dd>
 		<?php elseif ( ! mailster()->support() ) : ?>
@@ -68,14 +67,16 @@ if ( mailster()->is_verified() ) {
 		<?php elseif ( mailster()->support() ) : ?>
 		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a><?php echo mailster()->beacon( '64074c66512c5e08fd71ac91' ); ?></dd>
 		<?php endif; ?>
+	<?php if ( mailster()->has_support() ) : ?>
 	<dd>
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
-	<?php if ( mailster()->has_support() || ! mailster()->support() ) : ?>
-		<a href="<?php echo mailster_freemius()->contact_url(); ?>" class="mailster-support"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
+		<?php if ( mailster()->has_support() || ! mailster()->support() ) : ?>
+		<a href="<?php echo mailster_freemius()->contact_url(); ?>" class="mailster-support"><?php esc_html_e( 'Get Help', 'mailster' ); ?></a> |
 	<?php endif; ?>
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>
+	<?php endif; ?>
 </dl>
 <?php if ( current_user_can( 'install_languages' ) && $set = mailster( 'translations' )->get_translation_set() ) : ?>
 <dl class="mailster-icon mailster-translate">

@@ -108,8 +108,6 @@ class MailsterConvert {
 			update_option( 'mailster_support', -1 );
 		}
 
-		mailster_remove_notice( 'mailster_freemius' );
-		update_option( 'mailster_envato', false );
 		$response->migrate = $migrate;
 
 		return $response;

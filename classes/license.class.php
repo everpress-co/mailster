@@ -106,6 +106,7 @@ class MailsterLicense {
 
 		update_option( 'mailster_freemius', time() );
 		update_option( 'mailster_envato', false );
+		mailster_remove_notice( 'mailster_freemius' );
 
 		return $migrate;
 
