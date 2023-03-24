@@ -3032,6 +3032,8 @@ class MailsterSubscribers {
 
 		$sql .= ' WHERE 1=1';
 
+		// only these statuses
+		$sql .= ' AND subscribers.status IN(0,1)';
 		// status is either pending or list assignment is pending
 		$sql .= ' AND (subscribers.status = 0 OR lists_subscribers.added = 0)';
 		// queue doesn't exist or has been sent already (and not removed from queue)
