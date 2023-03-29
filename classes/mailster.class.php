@@ -24,7 +24,6 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
 		require_once MAILSTER_DIR . 'classes/logs.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
-		require_once MAILSTER_DIR . 'classes/automations.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
 		require_once MAILSTER_DIR . 'classes/tags.class.php';
@@ -61,7 +60,6 @@ class Mailster {
 				'translations' => new MailsterTranslations(),
 				'logs'         => new MailsterLogs(),
 				'campaigns'    => new MailsterCampaigns(),
-				'automations'  => new MailsterAutomations(),
 				'subscribers'  => new MailsterSubscribers(),
 				'lists'        => new MailsterLists(),
 				'tags'         => new MailsterTags(),
