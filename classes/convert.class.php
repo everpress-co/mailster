@@ -50,29 +50,33 @@ class MailsterConvert {
 
 	}
 
-	public function convert( $email = null, $license = null ) {
+	public function convert( $email = null, $license = null, $is_marketing_allowed = null ) {
 
 		$user = wp_get_current_user();
 		if ( is_null( $email ) ) {
-			$email = mailster()->email( $user->user_email );
+			$email = mailster()->get_email( $user->user_email );
 		}
+
 		if ( is_null( $license ) ) {
-			$license = mailster()->license();
+			$license = mailster()->get_license();
 		}
 
 		$endpoint = apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' );
 		$endpoint = trailingslashit( $endpoint ) . 'wp-json/freemius/v1/api/get';
 
-		$url = add_query_arg(
-			array(
-				'version'     => MAILSTER_VERSION,
-				'license'     => $license,
-				'email'       => $email,
-				'whitelabel'  => $user->user_email != $email,
-				'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
-			),
-			$endpoint
+		$args = array(
+			'version'     => MAILSTER_VERSION,
+			'license'     => $license,
+			'email'       => $email,
+			'whitelabel'  => $user->user_email != $email,
+			'redirect_to' => rawurlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) ),
 		);
+
+		if ( ! is_null( $is_marketing_allowed ) ) {
+			$args['marketing'] = $is_marketing_allowed;
+		}
+
+		$url = add_query_arg( $args, $endpoint );
 
 		$response = wp_remote_get( $url, array( 'timeout' => 30 ) );
 
@@ -104,7 +108,6 @@ class MailsterConvert {
 			update_option( 'mailster_support', -1 );
 		}
 
-		mailster_remove_notice( 'mailster_freemius' );
 		$response->migrate = $migrate;
 
 		return $response;

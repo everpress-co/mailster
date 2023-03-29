@@ -47,9 +47,14 @@ mailster = (function (mailster, $, window, document) {
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
+					var response =
+						mailster.util.trim(jqXHR.responseText) ||
+						'Unknown error';
+					form.addClass('has-error')
+						.find('.error-msg')
+						.html(response);
 					form.prop('disabled', false);
 					wrap.removeClass('loading');
-					alert(errorThrown);
 				}
 			);
 

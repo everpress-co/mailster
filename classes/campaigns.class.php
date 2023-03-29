@@ -6,8 +6,9 @@ class MailsterCampaigns {
 	private $template;
 	private $templatefile;
 	private $templateobj;
-
 	private $post_changed = array();
+
+	public $post_data;
 
 	public function __construct() {
 
@@ -4521,7 +4522,7 @@ class MailsterCampaigns {
 
 					foreach ( $countrycodes as $countrycode => $count ) {
 
-						$geolocation .= '<label title="' . mailster( 'geo' )->code2Country( $countrycode ) . '"><span class="big"><span class="mailster-flag-24 flag-' . strtolower( $countrycode ) . '"></span> ' . round( $count / $opens * 100, 2 ) . '%</span></label> ';
+						$geolocation .= '<label title="' . mailster( 'geo' )->code2Country( $countrycode ) . '"><span class="big"><span class="mailster-flag-24 flag-' . strtolower( $countrycode ) . '"></span> ' . ( $opens ? round( $count / $opens * 100, 2 ) : 0 ) . '%</span></label> ';
 						if ( ++$i >= 5 ) {
 							break;
 						}

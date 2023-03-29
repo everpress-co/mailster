@@ -1116,7 +1116,7 @@ class MailsterQueue {
 		$max_execution_time_ini = ini_get( 'max_execution_time' );
 
 		ignore_user_abort( true );
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 		$send_at_once       = mailster_option( 'send_at_once' );
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
@@ -1299,7 +1299,7 @@ class MailsterQueue {
 						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $output_php, $output_mail, $output_total );
 
 					} else {
-						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_time, $output_total );
+						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_mail, $output_total );
 					}
 
 					$sent_this_turn++;

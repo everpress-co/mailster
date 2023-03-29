@@ -92,7 +92,7 @@ class Mailster_REST_Staticmap_Controller extends WP_REST_Controller {
 					'scale'          => 2,
 					'key'            => mailster_option( 'google_api_key' ),
 				),
-				'https://maps.googleapis.com/maps/api/staticmap',
+				'https://maps.googleapis.com/maps/api/staticmap'
 			);
 
 			foreach ( $coords as $i => $coord ) {

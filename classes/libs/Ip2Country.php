@@ -123,7 +123,7 @@ class Ip2Country {
 		if ( $do_renew ) {
 
 			$wp_filesystem = mailster_require_filesystem();
-			set_time_limit( 120 );
+			mailster_set_time_limit( 120 );
 
 			if ( ! function_exists( 'download_url' ) ) {
 				include ABSPATH . 'wp-admin/includes/file.php';

@@ -1,3 +1,26 @@
+### Version 3.3.2 (2023-03-23)
+
+-   fixed: Division by zero on campaign edit screen
+-   fixed: Header already sent error on account page
+-   fixed: dashboard redirects to a blank page if in activation mode
+-   fixed: deprecated notices in PHP 8.2
+-   fixed: missing index in placeholder.class.php
+-   improved: check if `set_time_limit` is disabled
+
+### Version 3.3.1 (2023-03-20)
+
+-   updated: Freemius SDK to 2.5.5
+-   fixed: Undefined variable $output_time in queue.class.php
+-   fixed: CSS issue on Precheck
+-   improved: connect screen for Envato licenses
+
+### Version 3.3.0 (2023-03-15)
+
+-   new: [Action Required] license provider - please follow the guide to migrate your license
+-   new: Email logs. You can now enable logging for all outgoing mails sent by Mailster
+-   new: option to use OpenStreetMap as an alternative for Google Maps
+-   new: emoji picker in campaign editor
+
 ### Version 3.2.6 (2023-03-13)
 
 -   added: option to bulk add and remove from every list

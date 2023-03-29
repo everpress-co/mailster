@@ -7,6 +7,12 @@ class MailsterLicense {
 
 	public function __call( $method, $args ) {
 
+		global $mailster_freemius;
+
+		if ( false !== $mailster_freemius instanceof Freemius ) {
+			return call_user_func_array( array( $mailster_freemius, $method ), $args );
+		}
+
 		// always return false to prevent errors
 		return false;
 
@@ -45,32 +51,26 @@ class MailsterLicense {
 
 			$mailster_freemius = fs_dynamic_init( $args );
 
+			// Signal that SDK was initiated.
+			do_action( 'mailster_freemius_loaded' );
 		}
 
-		// Signal that SDK was initiated.
-		do_action( 'mailster_freemius_loaded' );
-
 		add_action( 'load-newsletter_page_mailster-pricing', array( $this, '_maybe_redirect_to_checkout' ) );
-		add_action( 'load-newsletter_page_mailster-account', array( $this, '_add_account_beacon' ) );
 
 		return $mailster_freemius;
 	}
 
 	public function _maybe_redirect_to_checkout() {
 
-		if ( ! isset( $_GET['plan_id'] ) ) {
+		if ( ! isset( $_GET['checkout'] ) ) {
 			mailster_redirect( mailster_freemius()->checkout_url() );
 		}
 
-		echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
+		// add this back as it will get remove from Freemius
+		add_action( 'newsletter_page_mailster-pricing', array( mailster(), 'page_beacon' ), 1 );
 
 	}
 
-	public function _add_account_beacon() {
-
-		echo mailster()->beacon( array( '640898cd16d5327537bcb740', '611bb01bb55c2b04bf6df0ae', '64074c66512c5e08fd71ac91' ), true );
-
-	}
 
 	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {
 
@@ -97,7 +97,11 @@ class MailsterLicense {
 		}
 
 		// migrate
-		$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
+		try {
+			$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
+		} catch ( Throwable $e ) {
+			 return new WP_Error( 'freemius_error', $e->getMessage() );
+		}
 
 		if ( isset( $migrate['error'] ) && $migrate['error'] ) {
 			if ( is_object( $migrate['error'] ) ) {
@@ -106,7 +110,9 @@ class MailsterLicense {
 			return new WP_Error( 'freemius_error', $migrate['error'] );
 		}
 
-		add_option( 'mailster_freemius', time() );
+		update_option( 'mailster_freemius', time() );
+		update_option( 'mailster_envato', false );
+		mailster_remove_notice( 'mailster_freemius' );
 
 		return $migrate;
 
@@ -125,6 +131,24 @@ class MailsterLicense {
 			'version' => MAILSTER_VERSION,
 			'updated' => false,
 		);
+	}
+
+	public function checkout_url( $args = array() ) {
+
+		global $mailster_freemius;
+
+		if ( false === $mailster_freemius instanceof Freemius ) {
+			return false;
+		}
+
+		$url = call_user_func_array( array( $mailster_freemius, 'checkout_url' ), array() );
+
+		$args = wp_parse_args( $args );
+
+		$url = add_query_arg( $args, $url );
+
+		return $url;
+
 	}
 
 	public function get_user() {

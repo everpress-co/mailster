@@ -647,7 +647,7 @@ if ( $old_version ) {
 			$mailster_options['logging_days'] = 7;
 
 			// rename custom settings
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `meta_value` = replace(meta_value, %s, %s)", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_value` = replace(meta_value, %s, %s) WHERE meta_key = 'wp_user-settings'", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
 
 
 		default:

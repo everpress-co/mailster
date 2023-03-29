@@ -137,7 +137,7 @@ class MailsterTemplates {
 		$headers = array(
 			'x-mailster-version' => MAILSTER_VERSION,
 			'x-mailster-site'    => get_bloginfo( 'url' ),
-			'x-mailster-license' => mailster()->license(),
+			'x-mailster-license' => mailster()->get_license(),
 		);
 
 		$parsed_args['headers'] = wp_parse_args( $parsed_args['headers'], $headers );
@@ -890,7 +890,7 @@ class MailsterTemplates {
 			'x-mailster-hash'    => $hash,
 			'x-mailster-version' => MAILSTER_VERSION,
 			'x-mailster-site'    => get_bloginfo( 'url' ),
-			'x-mailster-license' => mailster()->license(),
+			'x-mailster-license' => mailster()->get_license(),
 			'x-mailster-url'     => $fileuri,
 		);
 

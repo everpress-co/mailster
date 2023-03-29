@@ -32,7 +32,7 @@ class MailsterUpdate {
 
 		UpdateCenterPlugin::add(
 			array(
-				'licensecode' => mailster()->license(),
+				'licensecode' => mailster()->get_license(),
 				'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
 				'plugin'      => MAILSTER_SLUG,
 				'slug'        => 'mailster',
