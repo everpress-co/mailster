@@ -7,6 +7,12 @@ class MailsterLicense {
 
 	public function __call( $method, $args ) {
 
+		global $mailster_freemius;
+
+		if ( false !== $mailster_freemius instanceof Freemius ) {
+			return call_user_func_array( array( $mailster_freemius, $method ), $args );
+		}
+
 		// always return false to prevent errors
 		return false;
 
@@ -125,6 +131,24 @@ class MailsterLicense {
 			'version' => MAILSTER_VERSION,
 			'updated' => false,
 		);
+	}
+
+	public function checkout_url( $args = array() ) {
+
+		global $mailster_freemius;
+
+		if ( false === $mailster_freemius instanceof Freemius ) {
+			return false;
+		}
+
+		$url = call_user_func_array( array( $mailster_freemius, 'checkout_url' ), array() );
+
+		$args = wp_parse_args( $args );
+
+		$url = add_query_arg( $args, $url );
+
+		return $url;
+
 	}
 
 	public function get_user() {

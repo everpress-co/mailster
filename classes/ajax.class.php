@@ -2864,7 +2864,7 @@ class MailsterAjax {
 		$this->ajax_nonce();
 		$user = wp_get_current_user();
 
-		$email = mailster()->email();
+		$email = mailster()->get_email();
 		if ( empty( $email ) ) {
 			$email = $user->user_email;
 		}

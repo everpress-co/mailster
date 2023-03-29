@@ -54,11 +54,11 @@ class MailsterConvert {
 
 		$user = wp_get_current_user();
 		if ( is_null( $email ) ) {
-			$email = mailster()->email( $user->user_email );
+			$email = mailster()->get_email( $user->user_email );
 		}
 
 		if ( is_null( $license ) ) {
-			$license = mailster()->license();
+			$license = mailster()->get_license();
 		}
 
 		$endpoint = apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' );

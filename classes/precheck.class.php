@@ -245,7 +245,7 @@ class MailsterPrecheck {
 		if ( $token = get_option( 'mailster_precheck_token' ) ) {
 			$authorization = 'Bearer ' . $token;
 		} else {
-			$authorization = mailster()->license();
+			$authorization = mailster()->get_license();
 		}
 
 		$args = array(

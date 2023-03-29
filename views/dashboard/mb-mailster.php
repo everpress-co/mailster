@@ -6,9 +6,10 @@
 	$license_user  = '';
 
 if ( mailster()->is_verified() ) {
-	$license_user  = mailster()->username( '' );
-	$license_email = mailster()->email( '' );
+	$license_user  = mailster()->get_username( '' );
+	$license_email = mailster()->get_email( '' );
 }
+
 
 ?>
 <div class="locked">
