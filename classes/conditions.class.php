@@ -710,6 +710,12 @@ class MailsterConditions {
 
 	private function value_field_wp_capabilities( $value, $inputname ) {
 		$value = is_array( $value ) ? $value[0] : $value;
+
+		if ( ! function_exists( 'wp_dropdown_roles' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/template.php';
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+		}
+
 		?>
 		<select name="<?php echo esc_attr( $inputname ); ?>" class="condition-value" disabled>
 			<?php wp_dropdown_roles( $value ); ?>
