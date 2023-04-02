@@ -119,6 +119,10 @@
 	background-color: #fafafa;
 	position: relative;
 }
+.score-wrap .score-message {
+	position: relative;
+	z-index: 2;
+}
 .device {
 	transition: all 0.3s;
 }
@@ -250,6 +254,14 @@ details summary::-webkit-details-marker {
 .score-wrap .precheck-score {
 	padding: 1em 2em;
 	filter: blur(3px);
+}
+.score-wrap .precheck-score .mailster-help {
+	right: 8px;
+	position: absolute;
+}
+.precheck-tos-box .mailster-help {
+	right: 33px;
+	position: absolute;
 }
 
 .score-wrap .precheck-status-icon {
@@ -412,7 +424,6 @@ details summary::-webkit-details-marker {
 	width: calc(100% + 4em);
 }
 .score-wrap .assets-table tr:hover {
-	cursor: pointer;
 	background: #efefef;
 }
 .score-wrap .assets-table tr.asset.is-success td {
@@ -453,7 +464,13 @@ details summary::-webkit-details-marker {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	display: block;
-	width: 255px;
+	width: 285px;
+}
+.score-wrap .assets-table .the-location {
+	max-width: 285px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .score-wrap a.open-link {
 	float: right;

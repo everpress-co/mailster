@@ -1,39 +1,39 @@
-<?php if ( mailster( 'subscribers' )->get_count_by_status( null ) ) : ?>
-	<?php
+<?php
+if ( mailster( 'subscribers' )->get_count_by_status( false ) ) :
 
 	$lists   = mailster( 'lists' )->get( null, false );
 	$no_list = mailster( 'lists' )->count( false );
 
 	?>
-<h2><?php echo esc_html__( 'Which subscribers do you like to delete?', 'mailster' ); ?></h2>
+<h2><?php esc_html_e( 'Which subscribers do you like to delete?', 'mailster' ); ?><?php echo mailster()->beacon( '63fbb3fe81d3090330dcbd5e' ); ?></h2>
 
 <form method="post" id="delete-subscribers">
 	<?php wp_nonce_field( 'mailster_nonce' ); ?>
 
 <h4><?php esc_html_e( 'Lists', 'mailster' ); ?></h4>
 <section>
-		<?php if ( ! empty( $lists ) ) : ?>
+	<?php if ( ! empty( $lists ) ) : ?>
 	<ul>
 		<li><label><input type="checkbox" class="list-toggle"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></li>
 		<li>&nbsp;</li>
 			<?php mailster( 'lists' )->print_it( null, false, 'lists', esc_html__( 'total', 'mailster' ) ); ?>
 	</ul>
 	<?php endif; ?>
-		<?php if ( $no_list ) : ?>
+	<?php if ( $no_list ) : ?>
 	<ul>
-		<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1"> <?php echo esc_html__( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>'; ?></label></li>
+		<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1"> <?php esc_html_e( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>'; ?></label></li>
 	</ul>
 	<?php endif; ?>
 </section>
 <h4><?php esc_html_e( 'Conditions', 'mailster' ); ?></h4>
 <section>
 		<p class="howto"> <?php esc_html_e( 'Define conditions to segment your selection further.', 'mailster' ); ?> </p>
-		<?php mailster( 'conditions' )->view( array(), 'conditions' ); ?>
+	<?php mailster( 'conditions' )->view( array(), 'conditions' ); ?>
 </section>
 <h4><?php esc_html_e( 'Status', 'mailster' ); ?></h4>
 <section>
 	<p>
-		<?php foreach ( mailster( 'subscribers' )->get_status( null, true ) as $i => $name ) : ?>
+	<?php foreach ( mailster( 'subscribers' )->get_status( null, true ) as $i => $name ) : ?>
 			<?php
 			if ( 5 == $i ) :
 				continue;

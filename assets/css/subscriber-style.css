@@ -210,7 +210,7 @@ label {
 	border: 1px solid #d3d6db;
 	position: relative;
 }
-.map:before {
+.map.map-google:before {
 	content: attr(data-missingkey);
 	display: block;
 	position: absolute;

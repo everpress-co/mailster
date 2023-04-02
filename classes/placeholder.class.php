@@ -591,7 +591,7 @@ class MailsterPlaceholder {
 
 		if ( preg_match_all( '#<(module|single|multi)[^>]*?condition="([a-z0-9-_]+)([=!GLTE\^$]+)(.*?)".*?</(\\1)>#ms', $this->content, $conditions ) ) {
 
-			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true ) : false;
+			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true, true ) : false;
 
 			foreach ( $conditions[0] as $i => $html ) {
 				$key      = $conditions[2][ $i ];
@@ -636,7 +636,7 @@ class MailsterPlaceholder {
 
 		if ( preg_match_all( '#<if field="([a-z0-9-_]+)" operator="([a-z_]+)+" value="(.*?)">(.*?)</if>#s', $this->content, $if_conditions ) ) {
 
-			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true ) : false;
+			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true, true ) : false;
 
 			foreach ( $if_conditions[0] as $i => $ifhtml ) {
 
@@ -811,7 +811,6 @@ class MailsterPlaceholder {
 								if ( $relative_to_absolute ) {
 									continue;
 								}
-
 								$post = get_post( $post_id_or_identifier );
 
 							}
@@ -835,7 +834,7 @@ class MailsterPlaceholder {
 
 							if ( ! empty( $post ) ) {
 
-								if ( ! empty( $post->ID ) ) {
+								if ( is_numeric( $post->ID ) ) {
 
 									if ( 'attachment' == $post->post_type ) {
 										$thumb_id = $post->ID;
@@ -1106,7 +1105,11 @@ class MailsterPlaceholder {
 						$preview_text_fix = apply_filters( 'mailster_preview_text_fix', true );
 
 						if ( $preview_text_fix ) {
-							$replace .= str_repeat( ' &#847;', 300 - strlen( $replace ) );
+							$preview_text_count = 300 - strlen( $replace );
+							// PHP throws an error if $count = 0, preventing the campaign from being sent. This check patch this.
+							if ( $preview_text_count > 0 ) {
+								$replace .= str_repeat( ' &#847;', $preview_text_count );
+							}
 						}
 					}
 

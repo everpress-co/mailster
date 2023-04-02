@@ -19,23 +19,22 @@ mailster = (function (mailster, $, window, document) {
 
 			if (id) {
 				el.addClass('idle');
-				mailster.util.ajax(
-					type,
-					{
-						id: id,
-					},
-					function (response) {
-						if (response.success) {
-							el.fadeTo(100, 0, function () {
-								el.slideUp(100, function () {
-									el.remove();
-								});
+				mailster.util.ajax(type, { id: id }, function (response) {
+					if (response.success) {
+						el.fadeTo(100, 0, function () {
+							el.slideUp(100, function () {
+								el.remove();
+								if (!$('.mailster-notice').length) {
+									mailster.dom.body.classList.add(
+										'mailster-close-notices'
+									);
+								}
 							});
-						} else {
-							el.removeClass('idle');
-						}
+						});
+					} else {
+						el.removeClass('idle');
 					}
-				);
+				});
 			}
 		}
 	);

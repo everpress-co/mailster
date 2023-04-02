@@ -81,7 +81,7 @@ class MailsterAjax {
 		'get_dashboard_data'          => 'mailster_dashboard',
 		'get_dashboard_chart'         => 'mailster_dashboard',
 
-		'register'                    => 'mailster_dashboard',
+		'convert'                     => 'mailster_dashboard',
 		'envato_verify'               => 'mailster_dashboard',
 		'check_for_update'            => 'mailster_dashboard',
 		'check_language'              => 'mailster_dashboard',
@@ -90,6 +90,7 @@ class MailsterAjax {
 		'wizard_save'                 => 'mailster_dashboard',
 
 		'test'                        => 'manage_options',
+		'get_beacon_data'             => 'read',
 
 	);
 
@@ -396,7 +397,7 @@ class MailsterAjax {
 
 		if ( $subscriber_id ) {
 
-			if ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) {
+			if ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) {
 
 				$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
 
@@ -746,8 +747,8 @@ class MailsterAjax {
 				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
 
 				// check for subscriber by mail
-				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) ) {
-					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
+				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) ) {
+					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true, true );
 				}
 
 				if ( $subscriber ) {
@@ -1817,10 +1818,9 @@ class MailsterAjax {
 
 		} else {
 
-			global $wp_filesystem;
-			mailster_require_filesystem();
-			$path = mailster( 'templates', $return['slug'] )->get_path();
-			$file = $path . '/' . $return['slug'] . '/' . $return['file'];
+			$wp_filesystem = mailster_require_filesystem();
+			$path          = mailster( 'templates', $return['slug'] )->get_path();
+			$file          = $path . '/' . $return['slug'] . '/' . $return['file'];
 
 			$content = mailster()->sanitize_content( $content, null, true );
 
@@ -2282,7 +2282,7 @@ class MailsterAjax {
 		$memory_limit       = ini_get( 'memory_limit' );
 		$max_execution_time = ini_get( 'max_execution_time' );
 
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
 			ini_set( 'max_execution_time', 300 );
@@ -2393,7 +2393,7 @@ class MailsterAjax {
 		$memory_limit       = ini_get( 'memory_limit' );
 		$max_execution_time = ini_get( 'max_execution_time' );
 
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
 			ini_set( 'max_execution_time', 300 );
@@ -2452,9 +2452,7 @@ class MailsterAjax {
 		$file = $path . '/' . esc_attr( $_POST['file'] );
 
 		if ( file_exists( $file ) && current_user_can( 'mailster_delete_templates' ) ) {
-			mailster_require_filesystem();
-
-			global $wp_filesystem;
+			$wp_filesystem = mailster_require_filesystem();
 
 			if ( ! $wp_filesystem->delete( $file ) ) {
 				wp_send_json_error();
@@ -2665,62 +2663,22 @@ class MailsterAjax {
 	}
 
 
-	private function register() {
+	private function convert() {
 
 		$this->ajax_nonce();
-		$purchasecode = trim( $_POST['purchasecode'] );
-		$slug         = trim( $_POST['slug'] );
-		$return       = array();
+		$email   = trim( $_POST['email'] );
+		$license = trim( $_POST['license'] );
+		$return  = array();
 
-		if ( empty( $purchasecode ) ) {
-			$return['error'] = esc_html__( 'Please enter your Purchase Code!', 'mailster' );
-			$return['code']  = 'license';
+		$result = mailster( 'convert' )->convert( $email, $license );
+
+		if ( is_wp_error( $result ) ) {
+			$return['error'] = $result->get_error_message();
+			$return['code']  = $result->get_error_code();
 			wp_send_json_error( $return );
-
-		} elseif ( isset( $_POST['data'] ) ) {
-			parse_str( $_POST['data'], $userdata );
-
-			if ( empty( $userdata['email'] ) ) {
-				$return['error'] = esc_html__( 'Please enter your email address.', 'mailster' );
-				$return['code']  = 'email';
-				wp_send_json_error( $return );
-
-			} elseif ( ! isset( $userdata['tos'] ) ) {
-				$return['error'] = esc_html__( 'You have to accept the terms of service.', 'mailster' );
-				$return['code']  = 'tos';
-				wp_send_json_error( $return );
-
-			} else {
-				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
-
-				if ( is_wp_error( $result ) ) {
-					$return['error'] = mailster()->get_update_error( $result );
-					$return['code']  = str_replace( '_', '', $result->get_error_code() );
-					wp_send_json_error( $return );
-
-				} else {
-					update_option( 'mailster_username', $result['username'] );
-					update_option( 'mailster_email', $result['email'] );
-					update_option( 'mailster_tos_accepted', $userdata['tos'] );
-
-					do_action( 'mailster_register', $result['username'], $result['email'], $purchasecode );
-					do_action( 'mailster_register_' . $slug, $result['username'], $result['email'], $purchasecode );
-
-					$return['username']     = $result['username'];
-					$return['email']        = $result['email'];
-					$return['purchasecode'] = $purchasecode;
-				}
-			}
-		} else {
-			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
-			if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
-				$return['error'] = mailster()->get_update_error( $result );
-				$return['code']  = str_replace( '_', '', $result->get_error_code() );
-				wp_send_json_error( $return );
-			}
 		}
 
-		wp_send_json_success( $return );
+		wp_send_json_success( $result );
 	}
 
 
@@ -2773,13 +2731,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		if ( ! $plugin_info = mailster()->plugin_info( null, true ) ) {
-			wp_send_json_error();
-		}
-		$return['update']      = $plugin_info->update;
-		$return['version']     = $plugin_info->new_version;
-		$return['last_update'] = human_time_diff( $plugin_info->last_update );
-		$return['plugin_info'] = $plugin_info;
+		$return = mailster_freemius()->get_update( false, true, 1 );
 
 		wp_send_json_success( $return );
 	}
@@ -2866,12 +2818,11 @@ class MailsterAjax {
 
 				break;
 
-			case 'validation':
-				break;
 			case 'finish':
 				// maybe
 				mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
 				update_option( 'mailster_setup', time() );
+				// check for updates
 				flush_rewrite_rules();
 				break;
 			case 'delivery':
@@ -2886,7 +2837,6 @@ class MailsterAjax {
 		wp_send_json_success();
 
 	}
-
 
 	private function test() {
 
@@ -2905,6 +2855,33 @@ class MailsterAjax {
 		if ( ! $success ) {
 			wp_send_json_error( $return );
 		}
+		wp_send_json_success( $return );
+
+	}
+
+	private function get_beacon_data() {
+
+		$this->ajax_nonce();
+		$user = wp_get_current_user();
+
+		$email = mailster()->get_email();
+		if ( empty( $email ) ) {
+			$email = $user->user_email;
+		}
+
+		$name = trim( $user->first_name . ' ' . $user->last_name );
+		if ( empty( $name ) ) {
+			$name = $user->nickname;
+		}
+
+		$return = array(
+			'name'     => $name,
+			'email'    => $email,
+			'avatar'   => get_avatar_url( $user->ID ),
+			'id'       => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
+			'messages' => get_option( 'mailster_beacon_message' ),
+		);
+
 		wp_send_json_success( $return );
 
 	}

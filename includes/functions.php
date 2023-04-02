@@ -620,6 +620,20 @@ function mailster_get_ip() {
  *
  * @return unknown
  */
+function mailster_set_time_limit( $seconds ) {
+	$max = (int) ini_get( 'max_execution_time' );
+
+	if ( 0 !== $max && $seconds > $max && strpos( ini_get( 'disable_functions' ), 'set_time_limit' ) === false ) {
+		set_time_limit( $seconds );
+	}
+}
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
 function mailster_is_local( $ip = null ) {
 
 	if ( is_null( $ip ) ) {
@@ -685,6 +699,50 @@ function mailster_get_user_client( $string = null ) {
 	return $client;
 
 }
+
+/**
+ *
+ *
+ * @param unknown $key
+ * @param unknown $default (optional)
+ * @return unknown
+ */
+function mailster_get_user_setting( $key, $default = null ) {
+
+	$key = 'mailster_' . $key;
+	$raw = get_user_setting( $key, $default );
+
+	if ( $raw === 'true' ) {
+		return true;
+	} elseif ( $raw === 'false' ) {
+		return false;
+	}
+
+	return $raw;
+
+}
+
+/**
+ *
+ *
+ * @param unknown $key
+ * @param unknown $value
+ * @return unknown
+ */
+function mailster_set_user_setting( $key, $value ) {
+
+	$key = 'mailster_' . $key;
+	if ( $value === true ) {
+		$value = 'true';
+	} elseif ( $value === false ) {
+		$value = 'false';
+	}
+
+	return set_user_setting( $key, $value );
+
+}
+
+
 
 
 /**
@@ -938,6 +996,21 @@ function mailster_remove_notice( $key ) {
 }
 
 
+function mailster_beacon_message( $id, $screen = null, $args = array() ) {
+	$mailster_beacon_message = get_option( 'mailster_beacon_message' );
+	if ( ! is_array( $mailster_beacon_message ) ) {
+		$mailster_beacon_message = array();
+	}
+
+	$mailster_beacon_message[ $id ] = array(
+		'screen' => $screen,
+		'args'   => wp_parse_args( $args ),
+	);
+
+	update_option( 'mailster_beacon_message', $mailster_beacon_message, false );
+
+};
+
 /**
  *
  *
@@ -1037,29 +1110,31 @@ function mailster_links_add_args( $content, $args = array() ) {
  *
  * @param unknown $id_email_or_hash
  * @param unknown $type             (optional)
+ * @param unknown $include_deleted  (optional)
  * @return unknown
  */
-function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
+function mailster_get_subscriber( $id_email_or_hash, $type = null, $include_deleted = false ) {
 
 	$id_email_or_hash = trim( $id_email_or_hash );
 
 	if ( ! is_null( $type ) ) {
 		if ( $type == 'id' ) {
-			return mailster( 'subscribers' )->get( $id_email_or_hash );
+			return mailster( 'subscribers' )->get( $id_email_or_hash, false, $include_deleted );
 		} elseif ( $type == 'email' ) {
-			return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash );
+			return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash, false, $include_deleted );
 		} elseif ( $type == 'hash' ) {
-			return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash );
+			return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash, false, $include_deleted );
 		}
 	}
 
 	if ( is_numeric( $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get( $id_email_or_hash );
+		return mailster( 'subscribers' )->get( $id_email_or_hash, false, $include_deleted );
 	} elseif ( preg_match( '#[0-9a-f]{32}#', $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash );
+		return mailster( 'subscribers' )->get_by_hash( $id_email_or_hash, false, $include_deleted );
 	} elseif ( mailster_is_email( $id_email_or_hash ) ) {
-		return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash );
+		return mailster( 'subscribers' )->get_by_mail( $id_email_or_hash, false, $include_deleted );
 	}
+
 	return false;
 }
 
@@ -1332,7 +1407,7 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	}
 
 	if ( ! $showform ) {
-		return false;
+		return $wp_filesystem;
 	}
 
 	if ( ! WP_Filesystem( $credentials ) ) {

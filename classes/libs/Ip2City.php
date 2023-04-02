@@ -110,8 +110,8 @@ class Ip2City {
 
 		if ( $do_renew ) {
 
-			mailster_require_filesystem();
-			set_time_limit( 120 );
+			$wp_filesystem = mailster_require_filesystem();
+			mailster_set_time_limit( 120 );
 
 			if ( ! function_exists( 'download_url' ) ) {
 				include ABSPATH . 'wp-admin/includes/file.php';
@@ -156,10 +156,9 @@ class Ip2City {
 	 */
 	public function remove() {
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
-		return $wp_filesystem->delete( $this->dbfile );
+		return $wp_filesystem && $wp_filesystem->delete( $this->dbfile );
 
 	}
 

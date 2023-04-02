@@ -191,6 +191,10 @@ $mailster_capabilities = array(
 		'roles' => array(),
 	),
 
+	'mailster_view_logs'                  => array(
+		'title' => esc_html__( 'view logs', 'mailster' ),
+		'roles' => array(),
+	),
 
 	'mailster_dashboard'                  => array(
 		'title' => esc_html__( 'access dashboard', 'mailster' ),

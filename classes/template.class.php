@@ -13,6 +13,9 @@ class MailsterTemplate {
 	public $slug;
 	private $file;
 
+	private $templateurl;
+	public $exists;
+
 	private $templatepath;
 	private $headers = array(
 		'name'        => 'Template Name',
@@ -354,10 +357,8 @@ class MailsterTemplate {
 			return false;
 		}
 
-		mailster_require_filesystem();
-
-		global $wp_filesystem;
-		if ( $wp_filesystem->delete( $this->templatepath, true ) ) {
+		$wp_filesystem = mailster_require_filesystem();
+		if ( $wp_filesystem && $wp_filesystem->delete( $this->templatepath, true ) ) {
 			mailster( 'templates' )->remove_screenshot( $slug );
 			return true;
 		}
@@ -382,7 +383,7 @@ class MailsterTemplate {
 			return $result;
 		}
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$tempfolder = MAILSTER_UPLOAD_DIR . '/uploads';
 
@@ -463,10 +464,9 @@ class MailsterTemplate {
 
 		$content = mailster()->sanitize_content( $content );
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
-		if ( $wp_filesystem->put_contents( $this->templatepath . '/' . $filename, $pre . $content, FS_CHMOD_FILE ) ) {
+		if ( $wp_filesystem && $wp_filesystem->put_contents( $this->templatepath . '/' . $filename, $pre . $content, FS_CHMOD_FILE ) ) {
 			mailster( 'templates' )->reset_query_cache();
 			return $filename;
 		}

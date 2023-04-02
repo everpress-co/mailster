@@ -19,7 +19,10 @@ class Mailster {
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
+		require_once MAILSTER_DIR . 'classes/convert.class.php';
+		require_once MAILSTER_DIR . 'classes/api.class.php';
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
+		require_once MAILSTER_DIR . 'classes/logs.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
@@ -42,7 +45,6 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/update.class.php';
 		require_once MAILSTER_DIR . 'classes/upgrade.class.php';
 		require_once MAILSTER_DIR . 'classes/helpmenu.class.php';
-		require_once MAILSTER_DIR . 'classes/register.class.php';
 		require_once MAILSTER_DIR . 'classes/geo.class.php';
 		require_once MAILSTER_DIR . 'classes/privacy.class.php';
 		require_once MAILSTER_DIR . 'classes/security.class.php';
@@ -53,7 +55,10 @@ class Mailster {
 			'mailster_classes',
 			array(
 				'settings'     => new MailsterSettings(),
+				'convert'      => new MailsterConvert(),
+				'api'          => new MailsterApi(),
 				'translations' => new MailsterTranslations(),
+				'logs'         => new MailsterLogs(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
 				'lists'        => new MailsterLists(),
@@ -75,7 +80,6 @@ class Mailster {
 				'update'       => new MailsterUpdate(),
 				'upgrade'      => new MailsterUpgrade(),
 				'helpmenu'     => new MailsterHelpmenu(),
-				'register'     => new MailsterRegister(),
 				'geo'          => new MailsterGeo(),
 				'privacy'      => new MailsterPrivacy(),
 				'security'     => new MailsterSecurity(),
@@ -271,7 +275,6 @@ class Mailster {
 			add_action( 'admin_enqueue_scripts', array( &$this, 'admin_scripts_styles' ), 10, 1 );
 			add_action( 'admin_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
 			add_action( 'admin_menu', array( &$this, 'special_pages' ), 60 );
-			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 
 			add_filter( 'plugin_action_links', array( &$this, 'add_action_link' ), 10, 2 );
 			add_filter( 'plugin_row_meta', array( &$this, 'add_plugin_links' ), 10, 2 );
@@ -284,7 +287,9 @@ class Mailster {
 
 			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
 
-			add_action( 'load-plugins.php', array( &$this, 'deactivation_survey' ) );
+			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
+
+			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
 
 		}
 
@@ -293,12 +298,33 @@ class Mailster {
 	}
 
 
+
 	public function register_widgets() {
 
 		register_widget( 'Mailster_Signup_Widget' );
 		register_widget( 'Mailster_Newsletter_List_Widget' );
 		register_widget( 'Mailster_Newsletter_Subscriber_Button_Widget' );
 		register_widget( 'Mailster_Newsletter_Subscribers_Count_Widget' );
+
+	}
+
+
+	public function admin_body_class( $classes = '' ) {
+
+		global $mailster_notices;
+
+		$mailster_notices = get_option( 'mailster_notices' );
+		if ( ! $mailster_notices ) {
+			return $classes;
+		}
+
+		$screens              = wp_list_pluck( $mailster_notices, 'screen' );
+		$displayed_everywhere = array_filter( $screens, 'is_null' );
+		if ( ! empty( $displayed_everywhere ) ) {
+			$classes .= ' mailster-has-notices';
+		}
+
+		return $classes;
 
 	}
 
@@ -316,7 +342,8 @@ class Mailster {
 
 		global $mailster_notices;
 
-		if ( ! ( $mailster_notices = get_option( 'mailster_notices' ) ) ) {
+		$mailster_notices = get_option( 'mailster_notices' );
+		if ( ! $mailster_notices ) {
 			return;
 		}
 
@@ -464,20 +491,30 @@ class Mailster {
 	 */
 	public function maybe_redirect_special_pages() {
 
-		global $pagenow;
-
-		if ( 'edit.php' != $pagenow ) {
-			return;
-		}
 		if ( is_network_admin() ) {
 			return;
 		}
 		if ( ! isset( $_GET['page'] ) ) {
 			return;
 		}
+
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests' ) ) ) {
+		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert', 'mailster_dashboard' ) ) ) {
 			return;
+		}
+
+		if ( $page === 'mailster' ) {
+			$page = 'mailster_dashboard';
+		}
+
+		if ( $page === 'mailster_convert' ) {
+			mailster_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) );
+			exit;
+		}
+
+		if ( mailster_freemius()->is_activation_mode() ) {
+			mailster_redirect( admin_url( 'admin.php?page=mailster' ) );
+			exit;
 		}
 
 		mailster_redirect( 'admin.php?page=' . $page, 302 );
@@ -833,8 +870,13 @@ class Mailster {
 			return false;
 		}
 
+		if ( ! $posts ) {
+			$posts = array();
+		}
+
 		if ( ! isset( $posts[ $campaign_id ] ) ) {
-			$posts[ $campaign_id ] = $stored = array();
+			$posts[ $campaign_id ] = array();
+			$stored                = array();
 		} else {
 			$stored = wp_list_pluck( $posts[ $campaign_id ], 'ID' );
 		}
@@ -1216,10 +1258,98 @@ class Mailster {
 		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
-		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
+		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'manage_options', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
 	}
+
+
+	public function maybe_add_admin_header( $screen ) {
+
+		global $parent_file;
+
+		if ( $parent_file !== 'edit.php?post_type=newsletter' ) {
+			return;
+		}
+
+		$this->add_admin_header();
+
+	}
+
+	public function add_admin_header() {
+		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ) . "\n" . esc_html( 'If you cancel you will be redirected to our support page.', 'mailster' );
+
+		mailster_localize_script( 'beacon', array( 'consent' => $consent ) );
+
+		wp_enqueue_style( 'mailster-admin-header' );
+		wp_enqueue_script( 'mailster-admin-header' );
+
+		add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
+		add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
+		add_action( 'admin_notices', array( &$this, 'page_beacon' ) );
+
+	}
+
+	public function admin_header() {
+
+		include MAILSTER_DIR . 'views/admin_header.php';
+	}
+
+
+	public function page_beacon() {
+
+		$screen = get_current_screen();
+		$tab    = isset( $_GET['tab'] ) ? $_GET['tab'] : null;
+
+		switch ( $screen->id ) {
+			case 'newsletter_page_mailster_dashboard':
+				break;
+			case 'edit-newsletter':
+				echo mailster()->beacon( array( '63fa049c0b394c459d8a5ae4' ) );
+				break;
+			case 'newsletter_page_mailster_subscribers':
+				if ( isset( $_GET['new'] ) || isset( $_GET['ID'] ) ) {
+
+				} else {
+					echo mailster()->beacon( array( '63fb5f4e0b394c459d8a5c1e' ) );
+				}
+				break;
+			case 'newsletter_page_mailster_forms':
+				if ( isset( $_GET['new'] ) || isset( $_GET['ID'] ) ) {
+
+				} else {
+					echo mailster()->beacon( array( '611bb32a6ffe270af2a99911' ) );
+				}
+				break;
+			case 'newsletter':
+				echo mailster()->beacon( array( '63fa63d6e6d6615225473a73' ) );
+				break;
+			case 'newsletter_page_mailster_templates':
+				echo mailster()->beacon( array( '63fbb9be81d3090330dcbd64' ) );
+				break;
+			case 'newsletter_page_mailster-account':
+				$plan    = mailster_freemius()->get_plan_name();
+				$license = mailster_freemius()->_get_license();
+
+				if ( $plan === 'legacy' && $license->expiration ) {
+					echo mailster()->beacon( array( '640898cd16d5327537bcb740' ), true );
+				}
+
+				echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
+				break;
+			case 'newsletter_page_mailster-pricing':
+				echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ) );
+				break;
+			case 'newsletter_page_mailster_settings':
+				break;
+			default:
+				break;
+		}
+
+		do_action( 'mailster_page_beacon_' . $screen->id, $tab );
+
+	}
+
 
 
 	public function remove_menu_entries() {
@@ -1230,7 +1360,14 @@ class Mailster {
 			return;
 		}
 
-		$submenu['edit.php?post_type=newsletter'] = array();
+		$submenu['edit.php?post_type=newsletter'] = array(
+			array(
+				esc_html__( 'Setup', 'mailster' ),
+				'activate_plugins',
+				'admin.php?page=mailster_setup',
+				esc_html__( 'Mailster Setup', 'mailster' ),
+			),
+		);
 
 	}
 
@@ -1252,10 +1389,25 @@ class Mailster {
 
 	}
 
+
 	public function tests_page() {
 
 		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 		include MAILSTER_DIR . 'views/tests.php';
+
+	}
+
+	public function beacon( $ids, $hidden = false ) {
+
+		$return = '';
+		$title  = esc_attr__( 'Get Help. [ALT]-click to open as modal.', 'mailster' );
+		$hidden = $hidden ? 'hidden' : '';
+
+		foreach ( (array) $ids as $id ) {
+			$return .= sprintf( ' <a class="mailster-help" href="%s" data-article="%s" title="%s" %s></a>', mailster_url( 'https://kb.mailster.co/' . $id ), $id, $title, $hidden );
+		}
+
+		return $return;
 
 	}
 
@@ -1279,11 +1431,13 @@ class Mailster {
 			'mailster-script',
 			'mailster',
 			array(
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-				'isrtl'   => is_rtl(),
-				'version' => MAILSTER_VERSION,
-				'colors'  => array(
+				'ajaxurl'     => admin_url( 'admin-ajax.php' ),
+				'wpnonce'     => wp_create_nonce( 'mailster_nonce' ),
+				'isrtl'       => is_rtl(),
+				'version'     => MAILSTER_VERSION,
+				'is_verified' => mailster()->is_verified(),
+				'has_support' => mailster()->has_support(),
+				'colors'      => array(
 					'main'        => '#2BB3E7',
 					'track'       => '#f3f3f3',
 					'track_light' => '#ffffff',
@@ -1295,6 +1449,9 @@ class Mailster {
 
 		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard' ), MAILSTER_VERSION, true );
+
+		wp_register_style( 'mailster-admin-header', MAILSTER_URI . 'assets/css/admin-header-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_script( 'mailster-admin-header', MAILSTER_URI . 'assets/js/admin-header-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'clipboard',
@@ -1313,58 +1470,6 @@ class Mailster {
 	}
 
 
-	public function deactivation_survey( $hook ) {
-
-		if ( ! mailster_option( 'usage_tracking' ) ) {
-			return;
-		}
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		if ( isset( $_GET['mailster_deactivation_survey'] ) && wp_verify_nonce( $_POST['mailster_nonce'], 'mailster_deactivation_survey' ) ) {
-
-			if ( ! current_user_can( 'deactivate_plugin', MAILSTER_SLUG ) ) {
-				wp_die( 'You cannot deactivate plugins.' );
-			}
-
-			$reason  = stripslashes( $_POST['mailster_surey_reason'] );
-			$details = stripslashes( $_POST['mailster_surey_extra'] );
-
-			update_option( 'wisdom_deactivation_reason_mailster', '["' . $reason . '"]' );
-			update_option( 'wisdom_deactivation_details_mailster', $details );
-
-			if ( isset( $_POST['delete_data'] ) && $_POST['delete_data'] ) {
-
-				$remove_campaigns    = isset( $_POST['delete_campaigns'] ) && $_POST['delete_campaigns'];
-				$remove_capabilities = isset( $_POST['delete_capabilities'] ) && $_POST['delete_capabilities'];
-				$remove_tables       = isset( $_POST['delete_tables'] ) && $_POST['delete_tables'];
-				$remove_options      = isset( $_POST['delete_options'] ) && $_POST['delete_options'];
-				$remove_files        = isset( $_POST['delete_files'] ) && $_POST['delete_files'];
-
-				$this->uninstall( true, $remove_campaigns, $remove_capabilities, $remove_tables, $remove_options, $remove_files );
-			}
-			deactivate_plugins( MAILSTER_SLUG );
-
-			mailster_redirect( remove_query_arg( 'mailster_deactivation_survey', add_query_arg( 'deactivate', true ) ) );
-			exit;
-
-		}
-
-		wp_enqueue_style( 'mailster-deactivate', MAILSTER_URI . 'assets/css/deactivate-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-deactivate', MAILSTER_URI . 'assets/js/deactivate-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-		mailster_localize_script(
-			'deactivate',
-			array(
-				'select_reason' => esc_html__( 'Please select a reason for the deactivation.', 'mailster' ),
-			)
-		);
-
-		add_action( 'admin_footer', array( &$this, 'deactivation_dialog' ) );
-
-	}
-
-
 	/**
 	 *
 	 *
@@ -1374,8 +1479,10 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style' ), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script' ), MAILSTER_VERSION, true );
+		$this->add_admin_header();
+
+		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style', 'mailster-admin-header' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script', 'mailster-admin-header' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'setup',
@@ -1432,9 +1539,12 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
+		mailster()->add_admin_header();
+
 		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/welcome-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 	}
+
 
 	/**
 	 *
@@ -1444,6 +1554,8 @@ class Mailster {
 	public function tests_scripts_styles( $hook ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		mailster()->add_admin_header();
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
@@ -1478,8 +1590,6 @@ class Mailster {
 
 
 	public function uninstall( $data = null, $remove_campaigns = true, $remove_capabilities = true, $remove_tables = true, $remove_options = true, $remove_files = true ) {
-
-		$this->reset_license();
 
 		if ( is_null( $data ) ) {
 			$data = mailster_option( 'remove_data' );
@@ -1563,9 +1673,9 @@ class Mailster {
 		if ( $remove_files ) {
 
 			// remove folder in the upload directory
-			if ( $filesystem = mailster_require_filesystem() ) {
+			if ( $wp_filesystem  = mailster_require_filesystem() ) {
 				$upload_folder = wp_upload_dir();
-				$filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
+				$wp_filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
 			}
 		}
 
@@ -1671,11 +1781,13 @@ class Mailster {
 				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
 				update_option( 'mailster_updated', time() );
-				update_option( 'mailster_license', '' );
-				update_option( 'mailster_username', '' );
 				update_option( 'mailster_hooks', '' );
 				update_option( 'mailster_version_first', MAILSTER_VERSION );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+				update_option( 'mailster_freemius', time() );
+				if ( MAILSTER_ENVATO ) {
+					update_option( 'mailster_envato', time() );
+				}
 
 				if ( ! is_network_admin() ) {
 					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
@@ -1795,6 +1907,14 @@ class Mailster {
 		}
 
 		switch ( $code ) {
+
+			case 403:
+				if ( ! mailster_freemius()->has_active_valid_license() ) {
+					$error_msg = esc_html__( 'You need a valid license to get an update.', 'mailster' ) . ' <a href="' . mailster_freemius()->checkout_url() . '">' . esc_html__( 'Renew license now', 'mailster' ) . '</a>';
+				} else {
+					$error_msg = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
+				}
+				break;
 
 			case 678: // No Licensecode provided
 				$error_msg = $short ? esc_html__( 'Register via the %s.', 'mailster' ) : esc_html__( 'To get automatic updates for Mailster you need to register on the %s.', 'mailster' );
@@ -2147,6 +2267,20 @@ class Mailster {
                 KEY `list_id` (`tag_id`)
             ) $collate;",
 
+			"CREATE TABLE {$wpdb->prefix}mailster_logs (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `subject` longtext NOT NULL,
+                `receivers` longtext NOT NULL,
+                `html` longtext NOT NULL,
+                `text` longtext NOT NULL,
+                `raw` longtext NOT NULL,
+                `message_id` varchar(191) NOT NULL DEFAULT '',
+                PRIMARY KEY  (`ID`)
+            ) $collate;",
+
 		);
 
 		$table_structure = apply_filters( 'mailster_table_structure', $table_structure, $collate );
@@ -2243,7 +2377,7 @@ class Mailster {
 			return;
 		}
 
-		mailster_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
+		mailster_redirect( admin_url( 'admin.php?page=mailster' ), 302 );
 
 		exit;
 
@@ -2736,24 +2870,60 @@ class Mailster {
 	 */
 	public function plugin_info( $field = null, $force = false ) {
 
-		if ( $force ) {
-			do_action( 'updatecenterplugin_check' );
-		}
-		$plugins = get_site_transient( 'update_plugins' );
+		if ( false === ( $info = mailster_cache_get( 'plugin_info' ) ) || $force ) {
 
-		if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {
-			$plugin_info = $plugins->response[ MAILSTER_SLUG ];
-		} elseif ( isset( $plugins->no_update[ MAILSTER_SLUG ] ) ) {
-			$plugin_info = $plugins->no_update[ MAILSTER_SLUG ];
-		} else {
-			return null;
+			if ( $force ) {
+				mailster_freemius()->_sync_licenses();
+				mailster_freemius()->get_update();
+			}
+
+			$plugins = get_site_transient( 'update_plugins' );
+
+			if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {
+				$info = $plugins->response[ MAILSTER_SLUG ];
+			} elseif ( isset( $plugins->no_update[ MAILSTER_SLUG ] ) ) {
+				$info = $plugins->no_update[ MAILSTER_SLUG ];
+			} else {
+				return null;
+			}
+
+			$license = mailster_freemius()->_get_license();
+
+			if ( $license ) {
+				$plan_name = mailster_freemius()->get_plan_name();
+				$support   = get_option( 'mailster_support' );
+				if ( 'legacy' === $plan_name ) {
+					if ( $support == -1 ) {
+						$info->support = false;
+					} elseif ( $support ) {
+						$info->support = $support;
+					}
+				} else {
+					if ( $license->expiration ) {
+						$info->support = max( strtotime( $license->expiration ), $support );
+					} else {
+						$info->support = true;
+					}
+				}
+			} else {
+				$info->support = true;
+			}
+
+			$info->update = false;
+			if ( ! isset( $info->new_version ) ) {
+				$info->new_version = MAILSTER_VERSION;
+			}
+			$info->update = version_compare( MAILSTER_VERSION, $info->new_version, '<' );
+
+			mailster_cache_set( 'plugin_info', $info );
+
 		}
 
 		if ( is_null( $field ) ) {
-			return $plugin_info;
+			return $info;
 		}
-		if ( isset( $plugin_info->{$field} ) ) {
-			return $plugin_info->{$field};
+		if ( isset( $info->{$field} ) ) {
+			return $info->{$field};
 		}
 
 		return null;
@@ -2761,100 +2931,41 @@ class Mailster {
 	}
 
 
+	public function get_license( $fallback = '' ) {
 
-	/**
-	 *
-	 *
-	 * @param unknown $license (optional)
-	 * @return unknown
-	 */
-	public function maybe_register( $license = null, $license_email = null, $license_user = null ) {
+		$user = mailster_freemius()->get_user();
 
-		if ( ! $license ) {
-			$license = $this->license();
-		}
-		if ( ! $license_email ) {
-			$license_email = $this->email();
-		}
-		if ( ! $license_user ) {
-			$license_user = $this->username();
-		}
-
-		if ( ! $license || ! $license_email || ! $license_user ) {
-			return false;
-		}
-
-		$userdata = array(
-			'username' => $license_user,
-			'email'    => $license_email,
-		);
-
-		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::register( 'mailster', $userdata, $license );
-
+		return $user ? $user->secret_key : $fallback;
 	}
 
-	public function license( $fallback = '' ) {
-		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE ) {
-			return MAILSTER_LICENSE;
-		}
-		return get_option( 'mailster_license', $fallback );
+	public function get_email( $fallback = '' ) {
+
+		$user = mailster_freemius()->get_user();
+
+		return $user ? $user->email : $fallback;
 	}
 
-	public function email( $fallback = '' ) {
-		if ( defined( 'MAILSTER_EMAIL' ) && MAILSTER_EMAIL ) {
-			return MAILSTER_EMAIL;
-		}
-		return get_option( 'mailster_email', $fallback );
+	public function get_username( $fallback = '' ) {
+
+		$user = mailster_freemius()->get_user();
+
+		return $user ? $user->get_name() : $fallback;
 	}
 
-	public function username( $fallback = '' ) {
-		if ( defined( 'MAILSTER_USERNAME' ) && MAILSTER_USERNAME ) {
-			return MAILSTER_USERNAME;
-		}
-		return get_option( 'mailster_username', $fallback );
-	}
-
-	/**
-	 *
-	 *
-	 * @param unknown $license (optional)
-	 * @return unknown
-	 */
-	public function reset_license( $license = null ) {
-
-		if ( ! $license ) {
-			$license = $this->license();
-		}
-
-		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE && $this->is_verified() ) {
-			return new WP_Error( 'defined_constants', sprintf( esc_html__( 'The License is defined as constant %s. You have to remove it before you can reset your license.', 'mailster' ), '<code>MAILSTER_LICENSE</code>' ) );
-		}
-
-		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::reset( 'mailster', $license );
-
-	}
 
 
 	public function is_verified( $force = false ) {
 
-		$verified = $this->get_verfied_object( $force );
+		$license = mailster_freemius()->_get_license();
 
-		return is_array( $verified );
+		return is_object( $license );
 
 	}
 
 
 	public function is_email_verified( $force = false ) {
 
-		$verified = $this->get_verfied_object( $force );
-
-		if ( is_array( $verified ) && isset( $verified['email_verfied'] ) ) {
-			 return (bool) $verified['email_verfied'];
-		}
-
-		return true;
+		return $this->is_verified();
 
 	}
 
@@ -2915,19 +3026,30 @@ class Mailster {
 
 	}
 
+	public function lifetime_support( $force = false ) {
+		$support = $this->support( $force );
+
+		return $support === true;
+	}
+
 	public function has_support( $force = false ) {
 
-		return $this->support( $force ) - time() > 0;
+		$support = $this->support( $force );
+
+		if ( $support === true ) {
+			return true;
+		}
+		if ( $support === false ) {
+			return false;
+		}
+
+		return time() < $support;
 
 	}
 
 	public function support( $force = false ) {
 
-		$support = (int) $this->plugin_info( 'support', $force );
-
-		if ( $support ) {
-			$support += DAY_IN_SECONDS;
-		}
+		$support = $this->plugin_info( 'support', $force );
 
 		return $support;
 

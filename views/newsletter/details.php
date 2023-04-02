@@ -11,6 +11,9 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 ?>
 
 <?php if ( $editable ) : ?>
+
+	<?php echo mailster()->beacon( array( '611bb545b55c2b04bf6df0f3', '611bb88f21ef206e5592c30e', '611bb745b37d837a3d0e479a', '611bb4cfb37d837a3d0e477b' ), true ); ?>
+
 <table class="form-table">
 		<tbody>
 
@@ -195,7 +198,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		$i = 0;
 		foreach ( $countrycodes as $countrycode => $count ) {
 			?>
-			<label title="<?php echo mailster( 'geo' )->code2Country( $countrycode ); ?>"><span class="big"><span class="mailster-flag-24 flag-<?php echo strtolower( $countrycode ); ?>"></span> <?php echo round( $count / $opens * 100, 2 ); ?>%</span></label>
+			<label title="<?php echo mailster( 'geo' )->code2Country( $countrycode ); ?>"><span class="big"><span class="mailster-flag-24 flag-<?php echo strtolower( $countrycode ); ?>"></span> <?php echo ( $opens ? round( $count / $opens * 100, 2 ) : 0 ); ?>%</span></label>
 			<?php
 			if ( ++$i >= 5 ) {
 				break;

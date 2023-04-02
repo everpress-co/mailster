@@ -155,6 +155,9 @@ class MailsterTinymce {
 						'tag'   => esc_html__( 'Tag', 'mailster' ),
 						'tags'  => esc_html__( 'Tags', 'mailster' ),
 					),
+					'emoji'  => array(
+						'title' => esc_html__( 'Insert Emoji', 'mailster' ),
+					),
 					'remove' => array(
 						'title' => esc_html__( 'Remove Element', 'mailster' ),
 					),

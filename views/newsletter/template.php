@@ -10,7 +10,7 @@ $module_list = $this->templateobj->get_module_list();
 $classes = array( 'load' );
 if ( $editable ) {
 		$classes[] = 'is-editable';
-	if ( ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ) {
+	if ( mailster_get_user_setting( 'showmodules', true ) && ! empty( $module_list ) ) {
 		$classes[] = 'show-modules';
 	}
 	if ( ! empty( $module_list ) ) {

@@ -71,24 +71,8 @@ mailster = (function (mailster, $, window, document) {
 		);
 
 	$(document)
-		.on(
-			'verified.mailster',
-			function (event, purchasecode, username, email) {
-				$('.mailster-purchasecode').html(purchasecode);
-				$('.mailster-username').html(username);
-				$('.mailster-email').html(email);
-
-				$('#mailster-mb-mailster').addClass('verified');
-
-				$('#mailster-register-panel')
-					.delay(2500)
-					.fadeTo(400, 0, function () {
-						$('#mailster-register-panel').slideUp(400);
-					});
-			}
-		)
 		.on('click', '.locked', function () {
-			$('.purchasecode').focus().select();
+			window.location = 'admin.php?page=mailster_convert';
 		})
 		.on('click', '.enable-auto-update', function () {
 			var _this = $(this);
@@ -106,11 +90,13 @@ mailster = (function (mailster, $, window, document) {
 				if (response.success) {
 					_this
 						.closest('.postbox')
-						[response.data.update ? 'addClass' : 'removeClass'](
+						[response.data ? 'addClass' : 'removeClass'](
 							'has-update'
 						);
-					$('.update-version').html(response.data.version);
-					$('.update-last-check').html(response.data.last_update);
+					if (response.data) {
+						$('.update-version').html(response.data.version);
+						$('.update-last-check').html(response.data.updated);
+					}
 				}
 			});
 			return false;
@@ -124,11 +110,6 @@ mailster = (function (mailster, $, window, document) {
 				}
 			});
 			return false;
-		})
-		.on('click', '.reset-license', function () {
-			if (!confirm(mailster.l10n.dashboard.reset_license)) {
-				return false;
-			}
 		});
 
 	var metabox = function (type) {

@@ -333,10 +333,7 @@ mailster = (function (mailster, $, window, document) {
 		toggle = $('a.toggle-modules');
 
 	mailster.modules = mailster.modules || {};
-	mailster.modules.showSelector = !!parseInt(
-		window.getUserSetting('mailstershowmodules', 1),
-		10
-	);
+	mailster.modules.showSelector = mailster.user.get('showmodules', true);
 	mailster.modules.dragging = false;
 	mailster.modules.selected = false;
 
@@ -538,10 +535,8 @@ mailster = (function (mailster, $, window, document) {
 	function toggleModules() {
 		mailster.$.templateWrap.toggleClass('show-modules');
 		mailster.modules.showSelector = !mailster.modules.showSelector;
-		window.setUserSetting(
-			'mailstershowmodules',
-			mailster.modules.showSelector ? 1 : 0
-		);
+		mailster.user.set('showmodules', mailster.modules.showSelector);
+
 		setTimeout(function () {
 			mailster.trigger('resize');
 		}, 200);
@@ -1264,16 +1259,16 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editable &&
 		window.EmojiButton &&
 		mailster.events.push('documentReady', function () {
+			var emojipicker = new EmojiButton({
+				emojiVersion: '3.0',
+				showVariants: false,
+				zIndex: 1000,
+			});
 			$('.emoji-selector').on('click', 'button', function () {
-				var input = document.querySelector('#' + $(this).data('input')),
-					picker = new EmojiButton({
-						emojiVersion: '3.0',
-						showVariants: false,
-						zIndex: 1000,
-					});
+				var input = document.querySelector('#' + $(this).data('input'));
 
-				picker.togglePicker(this);
-				picker.on('emoji', function (emoji) {
+				emojipicker.togglePicker(this);
+				emojipicker.on('emoji', function (emoji) {
 					var caretPos = input.selectionStart;
 					input.value =
 						input.value.substring(0, caretPos) +
