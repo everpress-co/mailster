@@ -1064,6 +1064,7 @@ class MailsterSubscriberQuery {
 					// get sub query
 					if ( $this->args['return_ids'] ) {
 						$sub_result = $wpdb->get_col( $sql . $limit_sql );
+						$sub_result = array_map( 'intval', $sub_result );
 					} else {
 						$sub_result = $wpdb->get_results( $sql . $limit_sql );
 					}

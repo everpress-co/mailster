@@ -2931,21 +2931,21 @@ class Mailster {
 	}
 
 
-	public function license( $fallback = '' ) {
+	public function get_license( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
 		return $user ? $user->secret_key : $fallback;
 	}
 
-	public function email( $fallback = '' ) {
+	public function get_email( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
 		return $user ? $user->email : $fallback;
 	}
 
-	public function username( $fallback = '' ) {
+	public function get_username( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
