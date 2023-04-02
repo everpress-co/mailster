@@ -8,6 +8,14 @@ class MailsterTests {
 	private $next;
 	private $total;
 
+	private $last_is_error;
+	private $last_error_test;
+	private $last_error_message;
+	private $last_error_type;
+	private $last_error_link;
+
+	private $current_id;
+
 	private $errors;
 
 	public function __construct( $test = null ) {
@@ -370,10 +378,8 @@ class MailsterTests {
 	}
 	private function test_update_available() {
 
-		$plugin_info = mailster()->plugin_info();
-
-		if ( $plugin_info->update ) {
-			$this->warning( sprintf( 'A new version of Mailster is available! Please %1$s to version %2$s', '<a href="update.php?action=upgrade-plugin&plugin=' . urlencode( MAILSTER_SLUG ) . '&_wpnonce=' . wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ) . '">update now</a>', $plugin_info->new_version ) );
+		if ( mailster()->plugin_info( 'update' ) ) {
+			$this->warning( sprintf( 'A new version of Mailster is available! Please %1$s to version %2$s', '<a href="update.php?action=upgrade-plugin&plugin=' . urlencode( MAILSTER_SLUG ) . '&_wpnonce=' . wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ) . '">update now</a>', mailster()->plugin_info( 'new_version' ) ) );
 		} else {
 			$this->success( 'You are running the latest version of Mailster!' );
 		}

@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.1  
-Stable tag: 3.2.6
+Stable tag: 3.3.2
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,44 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 3.3.2
+
+-   fixed: Division by zero on campaign edit screen
+-   fixed: Header already sent error on account page
+-   fixed: dashboard redirects to a blank page if in activation mode
+-   fixed: deprecated notices in PHP 8.2
+-   fixed: missing index in placeholder.class.php
+-   improved: check if `set_time_limit` is disabled
+
+### 3.3.1
+
+-   updated: Freemius SDK to 2.5.5
+-   fixed: Undefined variable $output_time in queue.class.php
+-   fixed: CSS issue on Precheck
+-   improved: connect screen for Envato licenses
+
+### 3.3.0
+
+-   new: [Action Required] license provider - please follow the guide to migrate your license
+-   new: Email logs. You can now enable logging for all outgoing mails sent by Mailster
+-   new: option to use OpenStreetMap as an alternative for Google Maps
+-   new: emoji picker in campaign editor
+
+### 3.2.6
+
+-   added: option to bulk add and remove from every list
+-   fixed condition on the subscribers over view
+-   fixed: PHP throws error if `str_replace` with a value below 0
+-   fixed: RSS feed missing modified date in some cases change: RSS feed extract images from content first
+-   fixed: issue when bulk confirm/add/delete subscribers from list
+-   fixed: missing slug on add plugins page
+-   improved: better sql query for growth calculation.
+-   improved: database cleanup mechanism
+-   improved: prevent caching on cron page
+-   improved: speed of delivery is now split into PHP processing and mail sending on the cron page
+-   improved: updated queue SQL to handle campaigns when split campaigns is enabled.
+-   tiny fixes and improvements
 
 ### 3.2.5
 

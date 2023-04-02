@@ -261,7 +261,6 @@ class MailsterForms {
 		else :
 
 			wp_enqueue_style( 'mailster-forms-table', MAILSTER_URI . 'assets/css/forms-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-helpscout' );
 
 		endif;
 

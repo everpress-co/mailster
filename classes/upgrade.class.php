@@ -1492,9 +1492,11 @@ class MailsterUpgrade {
 
 		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
 
+			// check for data younger than one year
 			$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE timestamp > %d", time() - YEAR_IN_SECONDS );
 
-			if ( $wpdb->get_var( $sql ) ) {
+			// no data => delete
+			if ( ! $wpdb->get_var( $sql ) ) {
 				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
 					echo "removed legacy action table\n";
 					return false;

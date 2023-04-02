@@ -1105,7 +1105,11 @@ class MailsterPlaceholder {
 						$preview_text_fix = apply_filters( 'mailster_preview_text_fix', true );
 
 						if ( $preview_text_fix ) {
-							$replace .= str_repeat( ' &#847;', 300 - strlen( $replace ) );
+							$preview_text_count = 300 - strlen( $replace );
+							// PHP throws an error if $count = 0, preventing the campaign from being sent. This check patch this.
+							if ( $preview_text_count > 0 ) {
+								$replace .= str_repeat( ' &#847;', $preview_text_count );
+							}
 						}
 					}
 

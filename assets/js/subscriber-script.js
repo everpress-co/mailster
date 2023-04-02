@@ -55,18 +55,14 @@ mailster = (function (mailster, $, window, document) {
 
 	$('.map.zoomable').on('click', function () {
 		var _this = $(this),
-			_img = _this.find('img');
+			_img = _this.find('img'),
+			_src = _img.attr('src'),
+			_zsrc = _img.data('zoom');
 
 		if (!_img.hasClass('zoomed')) {
-			_img.attr(
-				'src',
-				_img.attr('src').replace(/zoom=\d+/, 'zoom=11')
-			).addClass('zoomed');
+			_img.attr('src', _zsrc).data('zoom', _src).addClass('zoomed');
 		} else {
-			_img.attr(
-				'src',
-				_img.attr('src').replace(/zoom=\d+/, 'zoom=5')
-			).removeClass('zoomed');
+			_img.attr('src', _zsrc).data('zoom', _src).removeClass('zoomed');
 		}
 	});
 

@@ -620,6 +620,20 @@ function mailster_get_ip() {
  *
  * @return unknown
  */
+function mailster_set_time_limit( $seconds ) {
+	$max = (int) ini_get( 'max_execution_time' );
+
+	if ( 0 !== $max && $seconds > $max && strpos( ini_get( 'disable_functions' ), 'set_time_limit' ) === false ) {
+		set_time_limit( $seconds );
+	}
+}
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
 function mailster_is_local( $ip = null ) {
 
 	if ( is_null( $ip ) ) {
@@ -981,6 +995,21 @@ function mailster_remove_notice( $key ) {
 
 }
 
+
+function mailster_beacon_message( $id, $screen = null, $args = array() ) {
+	$mailster_beacon_message = get_option( 'mailster_beacon_message' );
+	if ( ! is_array( $mailster_beacon_message ) ) {
+		$mailster_beacon_message = array();
+	}
+
+	$mailster_beacon_message[ $id ] = array(
+		'screen' => $screen,
+		'args'   => wp_parse_args( $args ),
+	);
+
+	update_option( 'mailster_beacon_message', $mailster_beacon_message, false );
+
+};
 
 /**
  *

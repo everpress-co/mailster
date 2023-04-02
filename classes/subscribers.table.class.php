@@ -369,10 +369,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			return;
 		}
 
-		$add       = '';
-		$remove    = '';
-		$confirm   = '<option value="confirm_list_all">&nbsp;' . esc_html__( 'all', 'mailster' ) . '</option>';
-		$unconfirm = '<option value="unconfirm_list_all">&nbsp;' . esc_html__( 'all', 'mailster' ) . '</option>';
+		$add       = '<option value="add_list_all">&nbsp;' . esc_html__( 'add to all', 'mailster' ) . '</option>';
+		$remove    = '<option value="remove_list_all">&nbsp;' . esc_html__( 'remove from all', 'mailster' ) . '</option>';
+		$confirm   = '<option value="confirm_list_all">&nbsp;' . esc_html__( 'confirm all', 'mailster' ) . '</option>';
+		$unconfirm = '<option value="unconfirm_list_all">&nbsp;' . esc_html__( 'unconfirm all', 'mailster' ) . '</option>';
 		foreach ( $lists as $list ) {
 			$add       .= '<option value="add_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
 			$remove    .= '<option value="remove_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';

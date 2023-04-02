@@ -1116,7 +1116,7 @@ class MailsterQueue {
 		$max_execution_time_ini = ini_get( 'max_execution_time' );
 
 		ignore_user_abort( true );
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 		$send_at_once       = mailster_option( 'send_at_once' );
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
@@ -1187,7 +1187,7 @@ class MailsterQueue {
 				$sql        .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
 			}
 
-			$sql .= 'ORDER BY queue.priority DESC,';
+			$sql .= ' ORDER BY queue.priority DESC,';
 
 			if ( mailster_option( 'split_campaigns' ) ) {
 				$sql .= ' subscribers.rating DESC, RAND()';
@@ -1282,6 +1282,10 @@ class MailsterQueue {
 
 					$wpdb->query( $wpdb->prepare( $queue_update_sql, time(), 0, $data->_priority, $data->_count, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options, $data->_i ) );
 
+					$output_php = round( $php_took, 5 );
+					if ( $php_took > 2 ) {
+						$output_php = sprintf( '<span class="error">%s</span>', $output_php );
+					}
 					$output_mail = round( $mail_took, 5 );
 					if ( $mail_took > 2 ) {
 						$output_mail = sprintf( '<span class="error">%s</span>', $output_mail );
@@ -1290,16 +1294,12 @@ class MailsterQueue {
 					if ( $took > 2 ) {
 						$output_total = sprintf( '<span class="error">%s</span>', $output_total );
 					}
-					$output_php = round( $took, 5 );
-					if ( $php_took > 2 ) {
-						$output_php = sprintf( '<span class="error">%s</span>', $output_php );
-					}
 
 					if ( ! $options ) {
 						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $output_php, $output_mail, $output_total );
 
 					} else {
-						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_time, $output_total );
+						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_mail, $output_total );
 					}
 
 					$sent_this_turn++;
@@ -1531,7 +1531,7 @@ class MailsterQueue {
 				$html .= '<td>' . $log . '</td>';
 			}
 			$html .= str_repeat( '<td>&nbsp;</td>', max( 0, ( $mailster_cron_log_max_fields + 2 ) - $j - 4 ) );
-			$html .= '<td width="50">' . date( 'H:i:s', $time + $timeoffset ) . ':' . round( ( $time - floor( $time ) ) * 10000 ) . '</td>';
+			$html .= '<td width="50">' . date( 'H:i:s', round( $time ) + $timeoffset ) . ':' . round( ( $time - floor( $time ) ) * 10000 ) . '</td>';
 			$html .= '</tr>';
 			$i++;
 		}

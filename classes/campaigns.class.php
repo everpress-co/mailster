@@ -6,8 +6,9 @@ class MailsterCampaigns {
 	private $template;
 	private $templatefile;
 	private $templateobj;
-
 	private $post_changed = array();
+
+	public $post_data;
 
 	public function __construct() {
 
@@ -4518,7 +4519,7 @@ class MailsterCampaigns {
 
 					foreach ( $countrycodes as $countrycode => $count ) {
 
-						$geolocation .= '<label title="' . mailster( 'geo' )->code2Country( $countrycode ) . '"><span class="big"><span class="mailster-flag-24 flag-' . strtolower( $countrycode ) . '"></span> ' . round( $count / $opens * 100, 2 ) . '%</span></label> ';
+						$geolocation .= '<label title="' . mailster( 'geo' )->code2Country( $countrycode ) . '"><span class="big"><span class="mailster-flag-24 flag-' . strtolower( $countrycode ) . '"></span> ' . ( $opens ? round( $count / $opens * 100, 2 ) : 0 ) . '%</span></label> ';
 						if ( ++$i >= 5 ) {
 							break;
 						}
@@ -5365,11 +5366,11 @@ class MailsterCampaigns {
 		);
 
 		if ( $inline ) {
-			$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,mailster_emoji,|,link,unlink,|,removeformat,|,mailster_remove_element' );
 			$toolbar2 = (string) apply_filters( 'mailster_editor_toolbar2', 'fontselect,fontsizeselect|bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' );
 			$toolbar3 = (string) apply_filters( 'mailster_editor_toolbar3', '' );
 
-			$single_toolbar1 = (string) apply_filters( 'mailster_editor_single_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$single_toolbar1 = (string) apply_filters( 'mailster_editor_single_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,mailster_emoji,|,link,unlink,|,removeformat,|,mailster_remove_element' );
 			$single_toolbar2 = (string) apply_filters( 'mailster_editor_single_toolbar2', 'fontselect,fontsizeselect' );
 			$single_toolbar3 = (string) apply_filters( 'mailster_editor_single_toolbar3', '' );
 
@@ -5435,6 +5436,7 @@ class MailsterCampaigns {
 		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );
 		wp_register_script( 'mailster-tinymce-compat', includes_url( 'js/tinymce/plugins/compat3x/' ) . 'plugin' . $suffix . '.js', array(), false, true );
 		wp_register_style( 'mailster-wp-editor', includes_url( 'css/editor' . $suffix . '.css' ) );
+		wp_register_script( 'mailster-emojipicker', MAILSTER_URI . 'assets/js/libs/emoji-button.js', array(), MAILSTER_VERSION );
 
 		ob_start();
 
@@ -5458,6 +5460,7 @@ class MailsterCampaigns {
 		wp_print_scripts( 'jquery-touch-punch' );
 		wp_print_scripts( 'plupload-all' );
 		wp_print_scripts( 'mailster-editor-script' );
+		wp_print_scripts( 'mailster-emojipicker' );
 
 		mailster( 'helper' )->get_mailster_styles( true );
 

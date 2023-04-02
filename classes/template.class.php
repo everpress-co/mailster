@@ -13,6 +13,9 @@ class MailsterTemplate {
 	public $slug;
 	private $file;
 
+	private $templateurl;
+	public $exists;
+
 	private $templatepath;
 	private $headers = array(
 		'name'        => 'Template Name',
