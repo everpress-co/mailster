@@ -682,7 +682,12 @@ class MailsterLists {
 		}
 
 		if ( $remove_old ) {
-			$this->unassign_subscriber( $list_id, $subscriber_id );
+
+			$current_lists = mailster( 'subscribers' )->get_lists( $subscriber_id, true );
+
+			$to_remove = array_diff( $current_lists, array( $list_id ) );
+
+			$this->unassign_subscribers( $to_remove, $subscriber_id );
 		}
 
 		$success = true;
@@ -698,8 +703,10 @@ class MailsterLists {
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_lists_subscribers", $args ) ) {
 
 			do_action( 'mailster_list_added', $list_id, $subscriber_id, $added );
+			error_log( print_r( array( 'mailster_list_added', $list_id, $subscriber_id ), true ) );
 			if ( $added ) {
 				do_action( 'mailster_list_confirmed', $list_id, $subscriber_id );
+				error_log( print_r( array( 'mailster_list_confirmed', $list_id, $subscriber_id ), true ) );
 			}
 		} else {
 			$success = false;
@@ -764,15 +771,19 @@ class MailsterLists {
 			'subscriber_id' => $subscriber_id,
 		);
 
-		$errors                = $wpdb->suppress_errors;
+		$errors = $wpdb->suppress_errors;
+
 		$wpdb->suppress_errors = true;
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_lists_subscribers", $args ) ) {
 
 			do_action( 'mailster_list_removed', $list_id, $subscriber_id );
 
+			error_log( print_r( array( 'mailster_list_removed', $list_id, $subscriber_id ), true ) );
+
 		} else {
 			$success = false;
 		}
+
 		$wpdb->suppress_errors = $errors;
 
 		return $success;

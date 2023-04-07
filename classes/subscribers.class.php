@@ -382,7 +382,7 @@ class MailsterSubscribers {
 					$ids = 'all' == $match[1] ? null : (int) $match[1];
 					if ( $list = (array) mailster( 'lists' )->get( $ids ) ) {
 						$list_ids = isset( $list['ID'] ) ? array( $list['ID'] ) : wp_list_pluck( $list, 'ID' );
-						$this->unassign_lists( $subscriber_ids, $list_ids, false, true );
+						$this->unassign_lists( $subscriber_ids, $list_ids );
 						$success_message = sprintf( esc_html__( '%1$d Subscribers confirmed to %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list_ids ) );
 					}
 				} elseif ( preg_match( '#^confirm_list_(\w+)#', $action, $match ) ) {
@@ -525,8 +525,8 @@ class MailsterSubscribers {
 
 					$current_lists = $this->get_lists( $subscriber->ID, true );
 
-					if ( $unasssign = array_diff( $current_lists, $lists ) ) {
-						$this->unassign_lists( $subscriber->ID, $unasssign );
+					if ( $unassign = array_diff( $current_lists, $lists ) ) {
+						$this->unassign_lists( $subscriber->ID, $unassign );
 					}
 					if ( $assign = array_diff( $lists, $current_lists ) ) {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
@@ -545,11 +545,11 @@ class MailsterSubscribers {
 						$tags = array();
 					}
 
-					if ( $unasssign = array_diff( $current_tags, $tags ) ) {
-						$this->unassign_tags( $subscriber->ID, $unasssign );
+					if ( $unassign = array_diff( $current_tags, $tags ) ) {
+						$this->unassign_tags( $subscriber->ID, $unassign );
 					}
 					if ( $assign = array_diff( $tags, $current_tags ) ) {
-						$this->assign_tags( $subscriber->ID, $assign, false );
+						$this->assign_tags( $subscriber->ID, $assign );
 					}
 
 					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
@@ -1462,15 +1462,6 @@ class MailsterSubscribers {
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
-		if ( ! is_array( $lists ) ) {
-			$lists = array( (int) $lists );
-		}
-
-		if ( $remove_old ) {
-			$this->unassign_lists( $subscriber_ids, null, $lists );
-		}
-
 		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old, $added );
 
 	}
@@ -1486,41 +1477,7 @@ class MailsterSubscribers {
 	 */
 	public function unassign_lists( $subscriber_ids, $lists = null, $not_list = null ) {
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
-		if ( ! is_array( $lists ) ) {
-			$lists = array( (int) $lists );
-		}
-
 		return mailster( 'lists' )->unassign_subscribers( $lists, $subscriber_ids );
-
-		global $wpdb;
-
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
-
-		$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ')';
-
-		if ( ! is_null( $lists ) && ! empty( $lists ) ) {
-			if ( ! is_array( $lists ) ) {
-				$lists = array( $lists );
-			}
-
-			$sql .= ' AND list_id IN (' . implode( ', ', array_filter( $lists, 'is_numeric' ) ) . ')';
-		}
-		if ( ! is_null( $not_list ) && ! empty( $not_list ) ) {
-			if ( ! is_array( $not_list ) ) {
-				$not_list = array( $not_list );
-			}
-
-			$sql .= ' AND list_id NOT IN (' . implode( ', ', array_filter( $not_list, 'is_numeric' ) ) . ')';
-		}
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			do_action( 'mailster_unassign_lists', $subscriber_ids, $lists, $not_list );
-
-			return true;
-		}
-
-		return false;
 
 	}
 
@@ -1535,16 +1492,7 @@ class MailsterSubscribers {
 	 */
 	public function assign_tags( $subscriber_ids, $tags, $remove_old = false ) {
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
-		if ( ! is_array( $tags ) ) {
-			$tags = array( $tags );
-		}
-
-		if ( $remove_old ) {
-			$this->unassign_tags( $subscriber_ids, null, $tags );
-		}
-
-		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids, $remove_old );
+		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids );
 
 	}
 
@@ -1554,39 +1502,23 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $subscriber_ids
 	 * @param unknown $tags          (optional)
-	 * @param unknown $not_tag       (optional)
 	 * @return unknown
 	 */
-	public function unassign_tags( $subscriber_ids, $tags = null, $not_tag = null ) {
+	public function unassign_tags( $subscriber_ids, $tags = null ) {
 
-		global $wpdb;
+		return mailster( 'tags' )->unassign_subscribers( $tags, $subscriber_ids );
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
+	}
 
-		$sql = "DELETE FROM {$wpdb->prefix}mailster_tags_subscribers WHERE subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ')';
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_id
+	 * @return unknown
+	 */
+	public function clear_tags( $subscriber_id ) {
 
-		if ( ! is_null( $tags ) && ! empty( $tags ) ) {
-			if ( ! is_array( $tags ) ) {
-				$tags = array( $tags );
-			}
-
-			$sql .= ' AND tag_id IN (' . implode( ', ', array_filter( $tags, 'is_numeric' ) ) . ')';
-		}
-		if ( ! is_null( $not_tag ) && ! empty( $not_tag ) ) {
-			if ( ! is_array( $not_tag ) ) {
-				$not_tag = array( $not_tag );
-			}
-
-			$sql .= ' AND tag_id NOT IN (' . implode( ', ', array_filter( $not_tag, 'is_numeric' ) ) . ')';
-		}
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			do_action( 'mailster_unassign_tags', $subscriber_ids, $tags, $not_tag );
-
-			return true;
-		}
-
-		return false;
+		return mailster( 'tags' )->clear( $subscriber_id );
 
 	}
 

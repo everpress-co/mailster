@@ -61,7 +61,7 @@ class MailsterTags {
 		if ( is_wp_error( $entry ) ) {
 			return $entry;
 		} elseif ( $entry === false ) {
-				return new WP_Error( 'not_verified', __( 'Tag failed verification', 'mailster' ) );
+			return new WP_Error( 'not_verified', __( 'Tag failed verification', 'mailster' ) );
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -92,7 +92,7 @@ class MailsterTags {
 			$tag_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
 
 			if ( ! empty( $subscriber_ids ) ) {
-				$this->assign_subscribers( $tag_id, $subscriber_ids, false, true );
+				$this->assign_subscribers( $tag_id, $subscriber_ids );
 			}
 
 			do_action( 'mailster_update_tag', $tag_id );
@@ -186,72 +186,84 @@ class MailsterTags {
 
 	}
 
+	private function get_name_by_id( $id ) {
+
+		$tag = $this->get( $id );
+
+		if ( $tag ) {
+			return $tag->name;
+		}
+
+		return false;
+
+	}
 
 	/**
 	 *
 	 *
 	 * @param unknown $ids
 	 * @param unknown $subscriber_ids
-	 * @param unknown $remove_old     (optional)
 	 * @return unknown
 	 */
-	public function assign_subscribers( $ids, $subscriber_ids, $remove_old = false ) {
-
-		global $wpdb;
-
-		if ( ! is_array( $ids ) ) {
-			$ids = array( $ids );
+	public function assign_subscribers( $tag_ids, $subscriber_ids ) {
+		if ( ! is_array( $tag_ids ) ) {
+			$tag_ids = array( (int) $tag_ids );
 		}
-
-		$ids      = array_filter( $ids );
-		$real_ids = array_values( array_filter( $ids, 'is_numeric' ) );
-		$names    = array_values( array_diff( $ids, $real_ids ) );
-		$ids      = $real_ids;
-
-		foreach ( $names as $name ) {
-			if ( $tag_id = $this->get_id_by_name( $name, true ) ) {
-				$ids[] = $tag_id;
-			}
-		}
+		$tag_ids = array_filter( $tag_ids );
 
 		if ( ! is_array( $subscriber_ids ) ) {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
-
 		$subscriber_ids = array_filter( $subscriber_ids );
 
-		if ( $remove_old ) {
-			$this->unassign_subscribers( $ids, $subscriber_ids );
-		}
+		$success = true;
 
-		$inserts = array();
-		foreach ( $ids as $tag_id ) {
-			if ( ! $tag_id ) {
-				continue;
-			}
+		foreach ( $tag_ids as $tag_id ) {
 			foreach ( $subscriber_ids as $subscriber_id ) {
-				$inserts[] = $wpdb->prepare( '(%d, %d, %d)', $tag_id, $subscriber_id, time() );
+				if ( ! $this->assign_subscriber( $tag_id, $subscriber_id ) ) {
+					$success = false;
+				}
 			}
 		}
 
-		if ( empty( $inserts ) ) {
-			return true;
-		}
+		return $success;
+	}
 
-		$chunks = array_chunk( $inserts, 200 );
+
+	/**
+	 *
+	 *
+	 * @param unknown $tag_id
+	 * @param unknown $subscriber_ids
+	 * @return unknown
+	 */
+	public function assign_subscriber( $tag_id, $subscriber_id ) {
+
+		global $wpdb;
+
+		$tag_id = $this->sanitize_tag_id( $tag_id );
 
 		$success = true;
 
-		foreach ( $chunks as $insert ) {
-			$sql = "INSERT INTO {$wpdb->prefix}mailster_tags_subscribers (tag_id, subscriber_id, added) VALUES ";
+		$args = array(
+			'tag_id'        => $tag_id,
+			'subscriber_id' => $subscriber_id,
+		);
 
-			$sql .= ' ' . implode( ',', $insert );
+		$errors                = $wpdb->suppress_errors;
+		$wpdb->suppress_errors = true;
+		if ( $wpdb->insert( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
 
-			$sql .= ' ON DUPLICATE KEY UPDATE tag_id = values(tag_id), subscriber_id = values(subscriber_id)';
+			$name = $this->get_name_by_id( $tag_id );
 
-			$success = $success && ( false !== $wpdb->query( $sql ) );
+			do_action( 'mailster_tag_added', $tag_id, $subscriber_id, $name );
 
+			error_log( print_r( array( 'mailster_tag_added', $tag_id, $subscriber_id, $name ), true ) );
+
+		} else {
+			$success = false;
 		}
+		$wpdb->suppress_errors = $errors;
 
 		return $success;
 
@@ -261,57 +273,77 @@ class MailsterTags {
 	/**
 	 *
 	 *
-	 * @param unknown $ids
+	 * @param unknown $tags
 	 * @param unknown $subscriber_ids
 	 * @return unknown
 	 */
-	public function unassign_subscribers( $ids, $subscriber_ids ) {
 
-		global $wpdb;
+	public function unassign_subscribers( $tags, $subscriber_ids ) {
 
-		if ( ! is_array( $ids ) ) {
-			$ids = array( $ids );
-		}
-
-		$ids      = array_filter( $ids );
-		$real_ids = array_values( array_filter( $ids, 'is_numeric' ) );
-		$names    = array_values( array_diff( $ids, $real_ids ) );
-		$ids      = $real_ids;
-
-		foreach ( $names as $name ) {
-			if ( $tag_id = $this->get_id_by_name( $name, true ) ) {
-				$ids[] = $tag_id;
-			}
+		if ( ! is_array( $tags ) ) {
+			$tags = array( $tags );
 		}
 
 		if ( ! is_array( $subscriber_ids ) ) {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
 
-		$ids            = array_filter( $ids, 'is_numeric' );
 		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
-
-		$chunks = array_chunk( $subscriber_ids, 200 );
 
 		$success = true;
 
-		foreach ( $chunks as $chunk ) {
-			$sql = "DELETE FROM {$wpdb->prefix}mailster_tags_subscribers WHERE";
-
-			$sql .= ' subscriber_id IN (' . implode( ',', $chunk ) . ')';
-
-			if ( ! empty( $ids ) ) {
-				$sql .= ' AND tag_id IN (' . implode( ',', $ids ) . ')';
-			};
-
-			$success = $success && ( false !== $wpdb->query( $sql ) );
-
+		foreach ( $tags as $tag ) {
+			foreach ( $subscriber_ids as $subscriber_id ) {
+				if ( ! $this->unassign_subscriber( $tag, $subscriber_id ) ) {
+					$success = false;
+				}
+			}
 		}
 
 		return $success;
 
 	}
 
+
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $tag
+	 * @param unknown $subscriber_id
+	 * @return unknown
+	 */
+	public function unassign_subscriber( $tag_id, $subscriber_id ) {
+
+		global $wpdb;
+
+		$tag_id = $this->sanitize_tag_id( $tag_id );
+
+		$success = true;
+
+		$args = array(
+			'tag_id'        => $tag_id,
+			'subscriber_id' => $subscriber_id,
+		);
+
+		$errors                = $wpdb->suppress_errors;
+		$wpdb->suppress_errors = true;
+		if ( $wpdb->delete( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
+
+			$name = $this->get_name_by_id( $tag_id );
+
+			do_action( 'mailster_tag_removed', $tag_id, $subscriber_id, $name );
+
+			error_log( print_r( array( 'mailster_tag_removed', $tag_id, $subscriber_id, $name ), true ) );
+
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors = $errors;
+
+		return $success;
+	}
 
 	/**
 	 *
@@ -323,29 +355,95 @@ class MailsterTags {
 
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_id
+	 * @return unknown
+	 */
+	public function clear( $subscriber_id ) {
+		global $wpdb;
+
+		$success = true;
+
+		$args = array(
+			'subscriber_id' => $subscriber_id,
+		);
+
+		$errors                = $wpdb->suppress_errors;
+		$wpdb->suppress_errors = true;
+		if ( $wpdb->delete( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
+
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors = $errors;
+
+		return $success;
+	}
 
 	/**
 	 *
 	 *
-	 * @param unknown $ids
+	 * @param unknown $tag
+	 * @return unknown
+	 */
+	private function sanitize_tag_id( $tag_id ) {
+
+		if ( is_numeric( $tag_id ) ) {
+			return (int) $tag_id;
+		}
+
+		return $this->get_id_by_name( $tag_id, true );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $tag_ids
 	 * @param unknown $subscribers (optional)
 	 * @return unknown
 	 */
-	public function remove( $ids, $subscribers = false ) {
+	public function remove( $tag_ids, $subscribers = false ) {
 
 		global $wpdb;
 
-		$ids = is_numeric( $ids ) ? array( $ids ) : $ids;
+		global $wpdb;
+
+		$tag_ids = is_numeric( $tag_ids ) ? array( (int) $tag_ids ) : array_filter( $tag_ids, 'is_numeric' );
 
 		if ( $subscribers ) {
-			$sql = "DELETE a,b,c,d,e,f,g FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers b ON a.ID = b.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_actions AS e ON a.ID = e.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_queue AS f ON a.ID = f.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS g ON a.ID = g.subscriber_id WHERE b.tag_id IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
 
-			$wpdb->query( $sql );
+			$subscriber_ids = mailster( 'subscribers' )->query(
+				array(
+					'return_ids' => true,
+					'status'     => false,
+					'conditions' => array(
+						array(
+							array(
+								'field'    => '_tags__in',
+								'operator' => 'is',
+								'value'    => $tag_ids,
+							),
+						),
+					),
+				)
+			);
+
 		}
 
-		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_tags AS a LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers b ON a.ID = b.tag_id WHERE a.ID IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
+		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.list_id WHERE a.ID IN (" . implode( ', ', $tag_ids ) . ')';
 
 		if ( false !== $wpdb->query( $sql ) ) {
+
+			foreach ( $tag_ids as $tag_id ) {
+				$this->remove_from_forms( $tag_id );
+			}
+
+			if ( $subscribers ) {
+				mailster( 'subscribers' )->remove( $subscriber_ids );
+			}
 
 			return true;
 		}
