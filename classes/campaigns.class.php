@@ -62,6 +62,93 @@ class MailsterCampaigns {
 
 		add_filter( 'mailster_campaign_action', array( &$this, 'trigger_campaign_action' ), 10, 2 );
 
+		add_action( 'post_action_preview_newsletter', array( &$this, 'preview' ) );
+		add_action( 'redirect_post_location', array( &$this, 'redirect_for_iframe_editing' ), 10, 2 );
+
+	}
+
+
+	public function redirect_for_iframe_editing( $location, $post_id ) {
+
+		$post = get_post( $post_id );
+
+		if ( get_post_type( $post ) !== 'newsletter' ) {
+			return $location;
+		}
+		if ( get_post_status( $post ) !== 'workflow' ) {
+			return $location;
+		}
+
+		wp_parse_str( wp_get_referer(), $params );
+
+		if ( isset( $params['workflow'] ) ) {
+			$location = add_query_arg(
+				array(
+					'workflow'    => $params['workflow'],
+					'close_modal' => true,
+					'nonce'       => $params['nonce'],
+				),
+				$location
+			);
+		}
+
+		return $location;
+	}
+
+
+	public function preview( $post_id ) {
+
+		echo $this->render( $post_id, true );
+
+		exit;
+
+	}
+
+
+	public function render( $post_id, $tags = true ) {
+
+		$post = get_post( $post_id );
+
+		if ( ! $post ) {
+			return;
+		}
+
+		$meta = $this->meta( $post->ID );
+
+		$content = get_the_content( $post->ID );
+
+		$content = mailster()->sanitize_content( $content, $meta['head'] );
+
+		$placeholder = mailster( 'placeholder', $content );
+		$placeholder->excerpt_filters( false );
+		$placeholder->set_campaign( $post->ID );
+
+		if ( $tags && $subscriber = mailster( 'subscribers' )->get_current_user() ) {
+			$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
+
+			$placeholder->set_subscriber( $subscriber->ID );
+			$placeholder->add( $userdata );
+
+			$placeholder->add(
+				array(
+					'firstname' => $subscriber->firstname,
+					'lastname'  => $subscriber->lastname,
+					'fullname'  => $subscriber->fullname,
+				)
+			);
+		}
+
+		$placeholder->add_defaults( $post->ID );
+		$placeholder->add_custom( $post->ID );
+
+		$content = $placeholder->get_content();
+		$content = mailster( 'helper' )->strip_structure_html( $content );
+
+		$content = mailster( 'helper' )->add_mailster_styles( $content );
+		$content = mailster( 'helper' )->handle_shortcodes( $content );
+
+		return $content;
+
 	}
 
 
@@ -336,6 +423,16 @@ class MailsterCampaigns {
 			)
 		);
 
+		register_post_status(
+			'workflow',
+			array(
+				'label'               => esc_html__( 'Workflow', 'mailster' ),
+				'public'              => false,
+				'exclude_from_search' => true,
+				'label_count'         => _n_noop( esc_html__( 'Workflow', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Workflows', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			)
+		);
+
 	}
 
 
@@ -346,7 +443,9 @@ class MailsterCampaigns {
 		add_meta_box( 'mailster_template', ( ! in_array( $post->post_status, array( 'active', 'finished' ) ) && ! isset( $_GET['showstats'] ) ) ? esc_html__( 'Template', 'mailster' ) : esc_html__( 'Clickmap', 'mailster' ), array( &$this, 'newsletter_template' ), 'newsletter', 'normal', 'high' );
 		add_meta_box( 'mailster_submitdiv', esc_html__( 'Save', 'mailster' ), array( &$this, 'newsletter_submit' ), 'newsletter', 'side', 'high' );
 
-		if ( 'notification' != $post->post_status ) {
+		if ( $this->is_workflow() || $this->is_notification() ) {
+			add_meta_box( 'mailster_delivery', esc_html__( 'Test', 'mailster' ), array( &$this, 'newsletter_test' ), 'newsletter', 'side', 'high' );
+		} else {
 			add_meta_box( 'mailster_delivery', esc_html__( 'Delivery', 'mailster' ), array( &$this, 'newsletter_delivery' ), 'newsletter', 'side', 'high' );
 			add_meta_box( 'mailster_receivers', esc_html__( 'Receivers', 'mailster' ), array( &$this, 'newsletter_receivers' ), 'newsletter', 'side', 'high' );
 		}
@@ -411,6 +510,12 @@ class MailsterCampaigns {
 		include MAILSTER_DIR . 'views/newsletter/delivery.php';
 	}
 
+	public function newsletter_test() {
+		global $post;
+		global $post_id;
+		include MAILSTER_DIR . 'views/newsletter/test.php';
+	}
+
 
 	public function newsletter_receivers() {
 		global $post;
@@ -440,6 +545,24 @@ class MailsterCampaigns {
 		$post_type_object = get_post_type_object( $post_type );
 		$can_publish      = current_user_can( $post_type_object->cap->publish_posts );
 		include MAILSTER_DIR . 'views/newsletter/submit.php';
+	}
+
+	public function is_workflow( $post = null ) {
+		if ( is_null( $post ) ) {
+			$post = get_post();
+		}
+
+		return 'workflow' === get_post_status( $post ) || isset( $_REQUEST['workflow'] );
+
+	}
+
+	public function is_notification( $post = null ) {
+		if ( is_null( $post ) ) {
+			$post = get_post();
+		}
+
+		return 'notification' === get_post_status( $post );
+
 	}
 
 
@@ -1017,7 +1140,7 @@ class MailsterCampaigns {
 							}
 						}
 					} else {
-						if ( ! in_array( $post->post_status, array( 'finished', 'notification' ) ) ) {
+						if ( ! in_array( $post->post_status, array( 'finished', 'notification', 'workflow' ) ) ) {
 							echo '<br><span class="mailster-icon warning"></span> ' . esc_html__( 'no lists selected', 'mailster' );
 						}
 					}
@@ -1057,15 +1180,13 @@ class MailsterCampaigns {
 				break;
 
 			case 'total':
-				if ( in_array( $post->post_status, array( 'autoresponder', 'notification' ) ) ) {
+				if ( in_array( $post->post_status, array( 'autoresponder', 'notification', 'workflow' ) ) ) {
 					$total      = $this->get_sent( $post->ID, false );
 					$cumm_total = $this->get_sent( $post->ID, true );
 					echo number_format_i18n( $cumm_total );
 					if ( $total != $cumm_total ) {
 						echo ' <span class="nonessential" title="' . sprintf( esc_attr__( '%d subscribers received this at least one time.', 'mailster' ), $total ) . '">(' . number_format_i18n( $total ) . ')</span>';
 					}
-				} elseif ( 'notification' == $post->post_status ) {
-					echo number_format_i18n( $this->get_sent( $post->ID, true ) );
 				} else {
 					echo number_format_i18n( $this->get_totals( $post->ID ) );
 				}
@@ -1080,7 +1201,7 @@ class MailsterCampaigns {
 			case 'open':
 				if ( ! $this->meta( $post->ID, 'track_opens' ) ) {
 					echo '<span class="mailster-icon mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
-				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification' ) ) ) {
+				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification', 'workflow' ) ) ) {
 					echo '<span class="s-opens">' . number_format_i18n( $this->get_opens( $post->ID ) ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $this->get_sent( $post->ID ) ) . '</span>';
 					$rate = round( $this->get_open_rate( $post->ID ) * 100, 2 );
 					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
@@ -1102,7 +1223,7 @@ class MailsterCampaigns {
 			case 'click':
 				if ( ! $this->meta( $post->ID, 'track_clicks' ) ) {
 					echo '<span class="mailster-icon mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
-				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification' ) ) ) {
+				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification', 'workflow' ) ) ) {
 					$clicks = $this->get_clicks( $post->ID );
 					$rate   = round( $this->get_click_rate( $post->ID ) * 100, 2 );
 					$rate_a = round( $this->get_adjusted_click_rate( $post->ID ) * 100, 2 );
@@ -1133,7 +1254,7 @@ class MailsterCampaigns {
 				break;
 
 			case 'unsubs':
-				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification' ) ) ) {
+				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification', 'workflow' ) ) ) {
 					$unsubscribes = $this->get_unsubscribes( $post->ID );
 					$rate         = round( $this->get_unsubscribe_rate( $post->ID ) * 100, 2 );
 					$rate_a       = round( $this->get_adjusted_unsubscribe_rate( $post->ID ) * 100, 2 );
@@ -1164,7 +1285,7 @@ class MailsterCampaigns {
 				break;
 
 			case 'bounces':
-				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification' ) ) ) {
+				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder', 'notification', 'workflow' ) ) ) {
 					$bounces = $this->get_bounces( $post->ID );
 					$rate    = round( $this->get_bounce_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $bounces );
@@ -1401,6 +1522,11 @@ class MailsterCampaigns {
 			$this->post_data = $this->meta( $post->ID );
 			if ( empty( $this->post_data ) ) {
 				$this->post_data = $this->meta_defaults();
+			}
+
+			if ( isset( $_GET['workflow'] ) ) {
+				wp_enqueue_script( 'mailster-campaign-iframe', MAILSTER_URI . 'assets/js/campaign-iframe-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+				wp_enqueue_style( 'mailster-campaign-iframe', MAILSTER_URI . 'assets/css/campaign-iframe-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			}
 
 			add_action( 'submitpost_box', array( &$this, 'notice' ) );
@@ -1714,8 +1840,11 @@ class MailsterCampaigns {
 		if ( isset( $_POST['notification'] ) ) {
 			$post['post_status'] = 'notification';
 		}
+		if ( isset( $_POST['workflow'] ) ) {
+			$post['post_status'] = 'workflow';
+		}
 
-		if ( ! in_array( $post['post_status'], array( 'pending', 'draft', 'notification', 'auto-draft', 'trash' ) ) ) {
+		if ( ! in_array( $post['post_status'], array( 'pending', 'draft', 'notification', 'workflow', 'auto-draft', 'trash' ) ) ) {
 
 			if ( $post['post_status'] == 'publish' ) {
 				$post['post_status'] = 'paused';
@@ -1794,8 +1923,6 @@ class MailsterCampaigns {
 		}
 
 		if ( isset( $postdata ) ) {
-
-			error_log( print_r( $postdata, true ) );
 
 			$meta['webversion']   = isset( $postdata['webversion'] );
 			$meta['track_opens']  = isset( $postdata['track_opens'] );
@@ -2005,6 +2132,9 @@ class MailsterCampaigns {
 				} elseif ( isset( $_POST['notification'] ) ) {
 					$post->post_status = 'notification';
 					$meta['active']    = false;
+
+				} elseif ( isset( $_POST['workflow'] ) ) {
+					$post->post_status = 'workflow';
 
 				} elseif ( isset( $_POST['draft'] ) ) {
 					$post->post_status = 'draft';
@@ -3199,6 +3329,21 @@ class MailsterCampaigns {
 		return $this->get_campaigns( $args );
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $args (optional)
+	 * @return unknown
+	 */
+	public function get_workflow( $args = '' ) {
+		$defaults = array(
+			'post_status' => 'workflow',
+		);
+		$args     = wp_parse_args( $args, $defaults );
+
+		return $this->get_campaigns( $args );
+	}
+
 
 	/**
 	 *
@@ -3210,7 +3355,7 @@ class MailsterCampaigns {
 
 		$defaults = array(
 			'post_type'              => 'newsletter',
-			'post_status'            => array( 'active', 'paused', 'queued', 'draft', 'finished', 'pending', 'autoresponder', 'notification' ),
+			'post_status'            => array( 'active', 'paused', 'queued', 'draft', 'finished', 'pending', 'autoresponder', 'notification', 'workflow' ),
 			'orderby'                => 'modified',
 			'order'                  => 'DESC',
 			'posts_per_page'         => -1,

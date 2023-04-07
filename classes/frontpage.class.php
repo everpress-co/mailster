@@ -293,6 +293,13 @@ class MailsterFrontpage {
 
 			} else {
 
+				global $wp_query;
+
+				echo '<pre>' . print_r( $wp_query, true ) . '</pre>';
+
+				echo '<pre>' . print_r( 'Asdad', true ) . '</pre>';
+				die();
+
 				$this->do_frontpage();
 			}
 		}
@@ -724,6 +731,7 @@ class MailsterFrontpage {
 	private function do_frontpage() {
 
 		if ( have_posts() ) :
+
 			while ( have_posts() ) :
 				the_post();
 
@@ -766,39 +774,15 @@ class MailsterFrontpage {
 						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
-					$content = mailster()->sanitize_content( $content, $meta['head'] );
-
-					$placeholder = mailster( 'placeholder', $content );
-					$placeholder->excerpt_filters( false );
-					$placeholder->set_campaign( get_the_ID() );
-
-					if ( mailster_option( 'tags_webversion' ) && $subscriber = mailster( 'subscribers' )->get_current_user() ) {
-						$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
-
-						$placeholder->set_subscriber( $subscriber->ID );
-						$placeholder->add( $userdata );
-
-						$placeholder->add(
-							array(
-								'firstname' => $subscriber->firstname,
-								'lastname'  => $subscriber->lastname,
-								'fullname'  => $subscriber->fullname,
-							)
-						);
-					}
-
-					$placeholder->add_defaults( get_the_ID() );
-					$placeholder->add_custom( get_the_ID() );
-
-					$content = $placeholder->get_content();
-					$content = mailster( 'helper' )->strip_structure_html( $content );
-					$content = links_add_target( $content, '_top' );
+					$content = mailster( 'campaings' )->render( get_the_ID(), mailster_option( 'tags_webversion' ) );
 
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
 					}
-					$content = mailster( 'helper' )->add_mailster_styles( $content );
-					$content = mailster( 'helper' )->handle_shortcodes( $content );
+
+					$content = links_add_target( $content, '_top' );
+
+					$content = mailster()->sanitize_content( $content, $meta['head'] );
 
 					echo $content;
 

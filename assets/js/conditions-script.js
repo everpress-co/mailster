@@ -3,9 +3,34 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.conditions = mailster.conditions || {};
 
-	$.each($('.mailster-conditions'), function () {
-		var _self = $(this),
-			conditions = _self.find('.mailster-conditions-wrap'),
+	var targetNode = $('.mailster-conditions')[0];
+
+	function onVisible(element, callback) {
+		if (!element) return;
+		new IntersectionObserver((entries, observer) => {
+			entries.forEach((entry) => {
+				if (entry.intersectionRatio > 0) {
+					callback(element);
+					observer.disconnect();
+				}
+			});
+		}).observe(element);
+	}
+
+	onVisible(targetNode, function (el) {
+		init(el);
+	});
+
+	function init(el) {
+		var _self = $(el);
+
+		if (_self.data('conditions')) return;
+
+		_self.data('conditions', true);
+
+		console.log('INIT CON');
+
+		var conditions = _self.find('.mailster-conditions-wrap'),
 			groups = _self.find('.mailster-condition-group'),
 			cond = _self.find('.mailster-condition');
 
@@ -18,20 +43,13 @@ mailster = (function (mailster, $, window, document) {
 				var id = groups.length,
 					clone = groups.eq(0).clone();
 
-				clone
-					.removeAttr('id')
-					.appendTo(conditions)
-					.data('id', id)
-					.show();
+				clone.removeAttr('id').appendTo(conditions).data('id', id).show();
 				$.each(clone.find('input, select'), function () {
 					var _this = $(this),
 						name = _this.attr('name');
 					name &&
 						_this
-							.attr(
-								'name',
-								name.replace(/\[\d+\]/, '[' + id + ']')
-							)
+							.attr('name', name.replace(/\[\d+\]/, '[' + id + ']'))
 							.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
@@ -205,11 +223,7 @@ mailster = (function (mailster, $, window, document) {
 				function () {
 					if (
 						0 == $(this).val() &&
-						$(this)
-							.parent()
-							.parent()
-							.find('.condition-value')
-							.size() > 1
+						$(this).parent().parent().find('.condition-value').size() > 1
 					)
 						$(this).parent().remove();
 				}
@@ -236,9 +250,7 @@ mailster = (function (mailster, $, window, document) {
 		conditions.find('.is-relative').each(function () {
 			var values = get_relative_values(
 				$(this)
-					.find(
-						'.mailster-conditions-value-field.active .condition-value'
-					)
+					.find('.mailster-conditions-value-field.active .condition-value')
 					.val()
 			);
 			$(this)
@@ -255,9 +267,7 @@ mailster = (function (mailster, $, window, document) {
 				listinputs = $('#list-checkboxes').find('input.list'),
 				extra = $('#list_extra'),
 				data = {},
-				groups = $(
-					'.mailster-conditions-wrap > .mailster-condition-group'
-				),
+				groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
 				i = 0;
 
 			$.each(listinputs, function () {
@@ -314,7 +324,7 @@ mailster = (function (mailster, $, window, document) {
 
 			return data;
 		}
-	});
+	}
 
 	function get_conditions(args) {
 		var lists = [],
@@ -465,6 +475,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.conditions.get = get_conditions;
 	mailster.conditions.serialize = serialize;
+	mailster.conditions.init = init;
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);

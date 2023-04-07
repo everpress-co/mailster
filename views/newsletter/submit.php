@@ -41,6 +41,7 @@ $sent = $this->get_sent( $post->ID );
 				</p>
 				<?php endif; ?>
 			</div>
+			
 		</div>
 
 		<div id="major-publishing-actions">
@@ -56,7 +57,7 @@ $sent = $this->get_sent( $post->ID );
 				<?php endif; ?>
 
 
-			<?php elseif ( ! in_array( $post->post_status, array( 'publish', 'future', 'private', 'paused' ) ) || 0 == $post->ID ) : ?>
+			<?php elseif ( ! in_array( $post->post_status, array( 'publish', 'future', 'private', 'paused', 'notification', 'workflow' ) ) || 0 == $post->ID ) : ?>
 
 				<?php if ( isset( $_GET['showstats'] ) ) : ?>
 
@@ -76,16 +77,21 @@ $sent = $this->get_sent( $post->ID );
 
 						<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID; ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_pause_nonce' ); ?>"><?php esc_html_e( 'Pause', 'mailster' ); ?></a>
 
-					<?php elseif ( 'queued' == $post->post_status ) : ?>
+						<?php elseif ( 'queued' == $post->post_status ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
-						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+							<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
-						<?php if ( $this->post_data['timestamp'] < $now && in_array( $post->post_status, array( 'paused' ) ) && $sent ) : ?>
+							<?php if ( $this->post_data['timestamp'] < $now && in_array( $post->post_status, array( 'paused' ) ) && $sent ) : ?>
 							<input name="resume" type="submit" value="<?php esc_attr_e( 'Resume', 'mailster' ); ?>" class="button resume-button" title="<?php esc_attr_e( 'Save and resume campaign', 'mailster' ); ?>" />
 						<?php else : ?>
 							<input name="sendnow" type="submit" value="<?php esc_attr_e( 'Send now', 'mailster' ); ?>" class="button sendnow-button" title=" <?php esc_attr_e( 'Save and send campaign', 'mailster' ); ?>" />
 						<?php endif; ?>
+
+						<?php elseif ( 'workflow' == $post->post_status ) : ?>
+
+						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
+							<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php elseif ( 'autoresponder' == $post->post_status ) : ?>
 
@@ -109,11 +115,16 @@ $sent = $this->get_sent( $post->ID );
 						<input name="save" type="submit" class="button-primary" id="publish" tabindex="15" accesskey="p" value="<?php esc_attr_e( 'Update', 'mailster' ); ?>" />
 						<a href="<?php echo esc_url( $url ); ?>" class="button statistics"><?php esc_html_e( 'Statistic', 'mailster' ); ?></a>
 
-					<?php elseif ( in_array( $post->post_status, array( 'draft', 'auto-draft' ) ) ) : ?>
+						<?php elseif ( $this->is_workflow() ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
-						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
-						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+							<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'workflow', false, array( 'accesskey' => 'p' ) ); ?>
+						
+						<?php elseif ( in_array( $post->post_status, array( 'draft', 'auto-draft' ) ) ) : ?>
+
+						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
+							<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
+							<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php elseif ( in_array( $post->post_status, array( 'pending' ) ) ) : ?>
 
@@ -149,8 +160,7 @@ $sent = $this->get_sent( $post->ID );
 								'post'      => $post->ID,
 								'action'    => 'edit',
 								'showstats' => 1,
-							),
-							''
+							)
 						);
 						?>
 
@@ -165,8 +175,7 @@ $sent = $this->get_sent( $post->ID );
 							array(
 								'post'   => $post->ID,
 								'action' => 'edit',
-							),
-							''
+							)
 						);
 						?>
 						<a href="<?php echo esc_url( $url ); ?>" class="button statistics edit"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>

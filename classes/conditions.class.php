@@ -24,6 +24,20 @@ class MailsterConditions {
 	}
 
 
+	public function check( $conditions, $subscribers ) {
+
+		$query = mailster( 'subscribers' )->query(
+			array(
+				'return_ids' => true,
+				'include'    => $subscribers,
+				'conditions' => $conditions,
+			)
+		);
+
+		return ! empty( $query );
+	}
+
+
 	public function view( $conditions = array(), $inputname = null ) {
 
 		if ( empty( $conditions ) ) {
