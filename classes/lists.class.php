@@ -541,6 +541,7 @@ class MailsterLists {
 		if ( $wpdb->update( "{$wpdb->prefix}mailster_lists_subscribers", $args, $where ) ) {
 
 			do_action( 'mailster_list_confirmed', $list_id, $subscriber_id );
+			error_log( print_r( array( 'mailster_list_confirmed', $list_id, $subscriber_id ), true ) );
 
 		} else {
 
@@ -614,6 +615,7 @@ class MailsterLists {
 		if ( $wpdb->update( "{$wpdb->prefix}mailster_lists_subscribers", $args, $where ) ) {
 
 			do_action( 'mailster_list_unconfirmed', $list_id, $subscriber_id );
+			error_log( print_r( array( 'mailster_list_unconfirmed', $list_id, $subscriber_id ), true ) );
 
 		} else {
 			$success = false;
