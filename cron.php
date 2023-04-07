@@ -114,10 +114,11 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 		}
 		if ( empty( $worker ) ) {
 			mailster( 'cron' )->run( 'mailster_cron_autoresponder' );
+			mailster( 'cron' )->run( 'mailster_cron_workflow' );
 			mailster( 'cron' )->run( 'mailster_cron_worker' );
 			mailster( 'cron' )->run( 'mailster_cron_bounce', 'mailster_cron_interval' );
 			mailster( 'cron' )->run( 'mailster_cron_cleanup', 'daily' );
-		} elseif ( in_array( $worker, apply_filters( 'mailster_cron_workers', array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) ) {
+		} elseif ( in_array( $worker, apply_filters( 'mailster_cron_workers', array( 'autoresponder', 'workflow', 'worker', 'bounce', 'cleanup' ) ) ) ) {
 			echo '<h2>' . esc_html__( 'Single Cron', 'mailster' ) . ': ' . ucwords( $worker ) . '</h2>';
 			mailster( 'cron' )->run( 'mailster_cron_' . $worker );
 		} else {

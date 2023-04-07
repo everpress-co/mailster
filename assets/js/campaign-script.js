@@ -1356,14 +1356,6 @@ mailster = (function (mailster, $, window, document) {
 	mailster.delivery.$ = {};
 
 	mailster.$.delivery
-		.on('change', 'input.timezone', function () {
-			$('.active_wrap').toggleClass('timezone-enabled');
-		})
-		.on('change', 'input.autoresponder-timezone', function () {
-			$(
-				'.autoresponderfield-mailster_autoresponder_timebased'
-			).toggleClass('timezone-enabled');
-		})
 		.on('change', 'input.userexactdate', function () {
 			$(this)
 				.parent()
@@ -1595,27 +1587,6 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	$('#autoresponder-post_type').trigger('change');
-
-	$.datepicker &&
-		mailster.$.delivery.find('input.datepicker').datepicker({
-			dateFormat: 'yy-mm-dd',
-			minDate: new Date(),
-			firstDay: mailster.l10n.campaigns.start_of_week,
-			showWeek: true,
-			dayNames: mailster.l10n.campaigns.day_names,
-			dayNamesMin: mailster.l10n.campaigns.day_names_min,
-			monthNames: mailster.l10n.campaigns.month_names,
-			prevText: mailster.l10n.campaigns.prev,
-			nextText: mailster.l10n.campaigns.next,
-			showAnim: 'fadeIn',
-			onClose: function () {
-				var date = $(this).datepicker('getDate');
-				$('.deliverydate').html($(this).val());
-			},
-		});
-
-	$.datepicker &&
-		$('input.datepicker.nolimit').datepicker('option', 'minDate', null);
 
 	mailster.$.delivery
 		.find('input.datepicker')

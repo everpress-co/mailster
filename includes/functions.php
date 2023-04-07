@@ -1366,6 +1366,20 @@ function mailster_remove_block_comments( $content ) {
 	return $content;
 }
 
+
+function mailster_add_condition( $id, $label, $args = array() ) {
+
+	global $mailster_custom_conditions;
+
+	$mailster_custom_conditions = (array) $mailster_custom_conditions;
+
+	$mailster_custom_conditions[ $id ] = array(
+		'label' => $label,
+		'args'  => $args,
+	);
+
+}
+
 /**
  *
  *

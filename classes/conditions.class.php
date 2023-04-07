@@ -10,11 +10,31 @@ class MailsterConditions {
 	public function __get( $name ) {
 
 		if ( ! isset( $this->$name ) ) {
-			$this->{$name} = $this->{'get_' . $name}();
+			if ( method_exists( $this, 'get_' . $name ) ) {
+				$this->{$name} = $this->{'get_' . $name}();
+				$this->{$name} = apply_filters( 'mailster_conditions_type_' . $name, $this->{$name} );
+			} else {
+				$this->{$name} = array();
+				$this->{$name} = apply_filters( 'mailster_conditions_type_' . $name, $this->{$name} );
+			}
 		}
 
 		return $this->{$name};
 
+	}
+
+
+	public function check( $conditions, $subscribers ) {
+
+		$query = mailster( 'subscribers' )->query(
+			array(
+				'return_ids' => true,
+				'include'    => $subscribers,
+				'conditions' => $conditions,
+			)
+		);
+
+		return ! empty( $query );
 	}
 
 
@@ -27,7 +47,7 @@ class MailsterConditions {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-autocomplete' ), MAILSTER_VERSION, true );
 
 		if ( is_null( $inputname ) ) {
 			$inputname = 'mailster_data[conditions]';
@@ -71,6 +91,64 @@ class MailsterConditions {
 
 	}
 
+	public function get_autocomplete_source( $field, $search = null ) {
+
+		global $wpdb;
+
+		$query = null;
+		$data  = array();
+
+		if ( isset( $this->fields[ $field ] ) ) {
+			$query = 'SELECT DISTINCT ' . esc_sql( $field ) . " AS %s FROM {$wpdb->prefix}mailster_subscribers WHERE 1";
+			if ( $search ) {
+				$query .= ' AND ' . esc_sql( $field ) . " LIKE '%%%s%%'";
+			}
+			$data = array();
+		} elseif ( isset( $this->custom_fields[ $field ] ) ) {
+			$custom_fields = mailster()->get_custom_fields();
+			switch ( $custom_fields[ $field ]['type'] ) {
+				case 'dropdown':
+					$data = $custom_fields[ $field ]['values'];
+					break;
+
+				default:
+					$query = "SELECT DISTINCT meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE meta_key = %s";
+					if ( $search ) {
+						$query .= " AND meta_value LIKE '%%%s%%'";
+					}
+					break;
+			}
+		} elseif ( isset( $this->tag_related[ $field ] ) ) {
+			$data = array();
+		} elseif ( isset( $this->meta_fields[ $field ] ) ) {
+			$query = "SELECT DISTINCT meta_value FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s";
+			if ( $search ) {
+				$query .= " AND meta_value LIKE '%%%s%%'";
+			}
+		} elseif ( isset( $this->wp_user_meta[ $field ] ) ) {
+			$query = "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s";
+			if ( $search ) {
+				$query .= " AND meta_value LIKE '%%%s%%'";
+			}
+		}
+
+		if ( $query ) {
+			// don't do to much
+			$query .= ' LIMIT 1000';
+			if ( $search ) {
+				$query = $wpdb->prepare( $query, $field, $search );
+			} else {
+				$query = $wpdb->prepare( $query, $field );
+			}
+			$data = $wpdb->get_col( $query );
+		}
+
+		$data = array_filter( $data );
+		$data = array_values( $data );
+
+		return apply_filters( 'mailster_conditions_autocomplete_data', $data, $field, $search );
+	}
+
 	public function fielddropdown() {
 		include MAILSTER_DIR . 'views/conditions/fielddropdown.php';
 	}
@@ -90,7 +168,8 @@ class MailsterConditions {
 			)
 		);
 
-		return $custom_fields;
+		return wp_list_pluck( $custom_fields, 'name' );
+
 	}
 
 	private function get_custom_date_fields() {
@@ -137,14 +216,80 @@ class MailsterConditions {
 		return $meta_fields;
 	}
 
+	private function get_operator_fields( $type ) {
+		$fields = array();
+
+		switch ( $type ) {
+			case 'operators':
+				$fields = array();
+				break;
+			case 'simple_operators':
+				$fields = array( 'rating' );
+				break;
+			case 'string_operators':
+				$fields = array( 'lang', 'client', 'referer', 'firstname', 'lastname', 'email', 'tag' );
+				break;
+			case 'bool_operators':
+				$fields = array( 'wp_capabilities', 'status', 'form', 'clienttype', 'geo' );
+				break;
+			case 'date_operators':
+				$fields = $this->time_fields;
+				break;
+			case 'relative_date_operators':
+				$fields = $this->time_fields;
+				break;
+			case 'hidden':
+				$fields = array( '_sent', '_sent__not_in', '_open', '_open__not_in', '_click', '_click__not_in', '_click_link', '_click_link__not_in', '_lists__not_in', '_lists__in', '_tags__not_in', '_tags__in' );
+				break;
+			default:
+				break;
+		}
+
+		return $fields;
+	}
+
+	private function get_value_fields( $type ) {
+		$fields = array();
+
+		switch ( $type ) {
+			case 'integer':
+				$fields = array( 'id', 'wp_id' );
+				break;
+			case 'timestamp':
+				$fields = $this->time_fields;
+				break;
+			case 'campaign_related':
+				$fields = array( '_sent', '_sent__not_in', '_open', '_open__not_in', '_click', '_click__not_in' );
+				break;
+			case 'list_related':
+				$fields = array( '_lists__not_in', '_lists__in' );
+				break;
+			case 'tag_related':
+				$fields = array( '_tags__not_in', '_tags__in' );
+				break;
+			case 'click_related':
+				$fields = array( '_click_link', '_click_link__not_in' );
+				break;
+			default:
+				$fields = array( $type );
+				break;
+		}
+
+		return $fields;
+	}
+
 	private function get_wp_user_meta() {
+		$wpuser_meta_fields = mailster( 'helper' )->get_wpuser_meta_fields();
+		$wpuser_meta_fields = array_combine( $wpuser_meta_fields, $wpuser_meta_fields );
+
 		$wp_user_meta = wp_parse_args(
-			mailster( 'helper' )->get_wpuser_meta_fields(),
+			$wpuser_meta_fields,
 			array(
 				'wp_user_level'   => esc_html__( 'User Level', 'mailster' ),
 				'wp_capabilities' => esc_html__( 'User Role', 'mailster' ),
 			)
 		);
+
 		// removing custom fields from wp user meta to prevent conflicts
 		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), array_keys( $this->custom_fields ) ) );
 
@@ -177,6 +322,34 @@ class MailsterConditions {
 			'_tags__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
 		);
 
+	}
+	private function get_all_operators() {
+		return array(
+			'operators'        => array( $this->operators ),
+			'simple_operators' => array( $this->simple_operators ),
+			'string_operators' => array( $this->string_operators ),
+			'bool_operators'   => array( $this->bool_operators ),
+			'date_operators'   => array(
+				esc_html__( 'absolute', 'mailster' ) => $this->date_operators,
+				esc_html__( 'relative', 'mailster' ) => $this->relative_date_operators,
+			),
+		);
+	}
+	private function get_all_value_fields() {
+		return array(
+			'integer',
+			'rating',
+			'timestamp',
+			'wp_capabilities',
+			'status',
+			'form',
+			'clienttype',
+			'campaign_related',
+			'list_related',
+			'tag_related',
+			'click_related',
+			'geo',
+		);
 	}
 	private function get_operators() {
 		return array(
@@ -423,7 +596,7 @@ class MailsterConditions {
 					return $this->fields[ $string ];
 				}
 				if ( isset( $this->custom_fields[ $string ] ) ) {
-					return $this->custom_fields[ $string ]['name'];
+					return $this->custom_fields[ $string ];
 				}
 				if ( isset( $this->campaign_related[ $string ] ) ) {
 					return $this->campaign_related[ $string ];
@@ -483,8 +656,303 @@ class MailsterConditions {
 
 		}
 
-		return $string;
+		return apply_filters( 'mailster_conditions_nice_name', $string, $type, $field );
 
+	}
+
+
+	private function render_value_field( $field, $value, $inputname ) {
+		?>
+		<div class="mailster-conditions-value-field mailster-conditions-value-field-<?php echo esc_attr( $field ); ?>"  data-fields=",<?php echo implode( ',', $this->get_value_fields( $field ) ); ?>,">
+		<?php if ( method_exists( $this, 'value_field_' . $field ) ) : ?>
+			<?php call_user_func( array( $this, 'value_field_' . $field ), $value, $inputname ); ?>
+		<?php else : ?>
+			adfsadfasdf
+		<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	private function value_field_integer( $value, $inputname ) {
+		$value = is_array( $value ) ? $value[0] : $value;
+		?>
+		<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $inputname ); ?>">	
+		<?php
+	}
+
+	private function value_field_rating( $value, $inputname ) {
+		$value = is_array( $value ) ? $value[0] : $value;
+
+		$stars = ( round( $this->sanitize_rating( (float) $value ) / 10, 2 ) * 50 );
+		$full  = max( 0, min( 5, floor( $stars ) ) );
+		$half  = max( 0, min( 5, round( $stars - $full ) ) );
+		$empty = max( 0, min( 5, 5 - $full - $half ) );
+		?>
+		<div class="mailster-rating">
+		<?php
+			echo str_repeat( '<span class="mailster-icon enabled"></span>', $full )
+			. str_repeat( '<span class="mailster-icon enabled"></span>', $half )
+			. str_repeat( '<span class="mailster-icon"></span>', $empty )
+		?>
+		</div>
+		<input type="hidden" class="condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $inputname ); ?>">
+
+		<?php
+	}
+
+
+	private function value_field_timestamp( $value, $inputname ) {
+		$value = is_array( $value ) ? $value[0] : $value;
+
+		// determine the type by checking the value
+		$type = ( empty( $value ) || date( 'Y-m-d', strtotime( $value ) ) == $value ) ? 'date' : 'text';
+
+		?>
+					
+		<input type="<?php echo esc_attr( $type ); ?>" class="regular-text datepicker condition-value" disabled autocomplete="off" value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $inputname ); ?>">
+		<input type="number" class="small-text relative-datepicker" autocomplete="off" value="" min="1">
+		<select class="relative-datepicker">
+			<option value="minutes"><?php esc_html_e( 'minute(s)', 'mailster' ); ?></option>
+			<option value="hours"><?php esc_html_e( 'hour(s)', 'mailster' ); ?></option>
+			<option value="days"><?php esc_html_e( 'day(s)', 'mailster' ); ?></option>
+			<option value="weeks"><?php esc_html_e( 'week(s)', 'mailster' ); ?></option>
+			<option value="months"><?php esc_html_e( 'month(s)', 'mailster' ); ?></option>
+		</select>
+		<?php
+	}
+
+
+	private function value_field_wp_capabilities( $value, $inputname ) {
+		$value = is_array( $value ) ? $value[0] : $value;
+
+		if ( ! function_exists( 'wp_dropdown_roles' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/template.php';
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+		}
+
+		?>
+		<select name="<?php echo esc_attr( $inputname ); ?>" class="condition-value" disabled>
+			<?php wp_dropdown_roles( $value ); ?>
+		</select>
+		<?php
+	}
+
+
+	private function value_field_status( $value, $inputname ) {
+		$value    = is_array( $value ) ? $value[0] : $value;
+		$statuses = mailster( 'subscribers' )->get_status( null, true );
+		?>
+		<select name="<?php echo esc_attr( $inputname ); ?>" class="condition-value" disabled>
+			<?php foreach ( $statuses as $key => $name ) : ?>
+				<option value="<?php echo (int) $key; ?>" <?php selected( $key, $value ); ?>><?php echo esc_html( $name ); ?></option>
+			<?php endforeach; ?>
+		</select>
+		<?php
+	}
+
+
+	private function value_field_form( $value, $inputname ) {
+		$value = is_array( $value ) ? $value[0] : $value;
+		$forms = mailster( 'forms' )->get_all();
+		?>
+		<?php if ( $forms ) : ?>
+			<select name="<?php echo esc_attr( $inputname ); ?>" class="condition-value" disabled>
+			<?php foreach ( $forms as $form ) : ?>
+				<option value="<?php echo (int) $form->ID; ?>" <?php selected( $form->ID, $value ); ?>><?php echo esc_html( '#' . $form->ID . ' ' . $form->name ); ?></option>
+			<?php endforeach; ?>
+			</select>
+		<?php else : ?>
+			<p><?php esc_html_e( 'No Form available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo esc_attr( $inputname ); ?>"></p>
+		<?php endif; ?>
+				
+		<?php
+	}
+
+
+	private function value_field_clienttype( $value, $inputname ) {
+		$value = is_array( $value ) ? $value[0] : $value;
+		?>
+		<select name="<?php echo esc_attr( $inputname ); ?>" class="condition-value" disabled>
+			<option value="desktop"<?php selected( $value, 'desktop' ); ?>><?php esc_html_e( 'Desktop', 'mailster' ); ?></option>
+			<option value="webmail"<?php selected( $value, 'webmail' ); ?>><?php esc_html_e( 'Webmail', 'mailster' ); ?></option>
+			<option value="mobile"<?php selected( $value, 'mobile' ); ?>><?php esc_html_e( 'Mobile', 'mailster' ); ?></option>
+		</select>
+		<?php
+	}
+
+
+	private function value_field_campaign_related( $value_arr, $inputname ) {
+		$value_arr = is_array( $value_arr ) ? $value_arr : array( $value_arr );
+		$this->campaign_dropdown( $value_arr, $inputname );
+	}
+
+
+
+	private function value_field_click_related( $value_arr, $inputname ) {
+		$value_arr = is_array( $value_arr ) ? $value_arr : array( $value_arr );
+		?>
+		<div>
+			<?php foreach ( $value_arr as $k => $v ) : ?>
+				<?php
+				if ( is_numeric( $v ) || in_array( $v, array_keys( $this->special_campaigns ) ) ) {
+					continue;
+				}
+				?>
+			<div class="mailster-conditions-value-field-multiselect">
+				<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $v ); ?>" name="<?php echo esc_attr( $inputname ); ?>[]" placeholder="https://example.com">
+				<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+				<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+			</div>
+
+			<?php endforeach; ?>
+		</div>
+			<span><?php esc_html_e( 'in', 'mailster' ); ?> </span>
+
+		<?php $this->campaign_dropdown( $value_arr, $inputname ); ?>
+
+		<?php
+	}
+
+
+
+	private function campaign_dropdown( $value_arr, $inputname ) {
+		global $post, $wp_post_statuses;
+		$all_campaigns       = mailster( 'campaigns' )->get_campaigns(
+			array(
+				'post__not_in' => $post ? array( $post->ID ) : null,
+				'orderby'      => 'post_title',
+				'order'        => 'ASC',
+			)
+		);
+		$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
+		asort( $all_campaigns_stati );
+		?>
+		<?php if ( $all_campaigns ) : ?>
+			<?php foreach ( $value_arr as $k => $v ) : ?>
+			<div class="mailster-conditions-value-field-multiselect">
+				<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+				<select name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled>
+					<option value="0"><?php esc_html_e( 'Any Campaign', 'mailster' ); ?></option>
+					<optgroup label="<?php esc_attr_e( 'Aggregate Campaigns', 'mailster' ); ?>">
+					<?php
+					foreach ( $this->special_campaigns as $key => $name ) :
+						echo '<option value="' . esc_attr( $key ) . '"' . selected( $v, $key, false ) . '>' . esc_attr( $name ) . '</option>';
+					endforeach;
+					?>
+					</optgroup>
+					<?php
+					$status = '';
+					foreach ( $all_campaigns_stati as $cj => $c ) :
+						$c = $all_campaigns[ $cj ];
+						if ( $status != $c->post_status ) :
+							if ( $status ) {
+								echo '</optgroup>';
+							}
+							echo '<optgroup label="' . esc_attr( $wp_post_statuses[ $c->post_status ]->label ) . '">';
+							$status = $c->post_status;
+						endif;
+						?>
+					<option value="<?php echo $c->ID; ?>" <?php selected( $v, $c->ID ); ?>><?php echo ( $c->post_title ? esc_html( $c->post_title ) : '[' . esc_html__( 'no title', 'mailster' ) . ']' ) . ' (# ' . esc_html( $c->ID ) . ')'; ?></option>
+					<?php endforeach; ?>
+					</optgroup>
+				</select>
+				<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+				<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+				</div>
+		<?php endforeach; ?>
+		<?php else : ?>
+			<p><?php esc_html_e( 'No campaigns available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo esc_attr( $inputname ); ?>"></p>
+		<?php endif; ?>
+
+
+		<?php
+	}
+
+	private function value_field_list_related( $value_arr, $inputname ) {
+		$value_arr = is_array( $value_arr ) ? $value_arr : array( $value_arr );
+		$lists     = mailster( 'lists' )->get();
+
+		if ( $lists ) :
+			?>
+			<?php foreach ( $value_arr as $k => $v ) : ?>
+			<div class="mailster-conditions-value-field-multiselect">
+				<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+				<select name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled>
+					<option value="0">---</option>
+					<?php
+					$status = '';
+					foreach ( $lists as $lj => $list ) :
+						?>
+					<option value="<?php echo $list->ID; ?>" <?php selected( $v, $list->ID ); ?>><?php echo ( $list->name ? esc_html( $list->name ) : '[' . esc_html__( 'no title', 'mailster' ) . ']' ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+			<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+			</div>
+			<?php endforeach; ?>
+		<?php else : ?>
+		<p><?php esc_html_e( 'No lists available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo esc_attr( $inputname ); ?>"></p>
+		<?php endif; ?>
+
+		<?php
+	}
+
+
+	private function value_field_tag_related( $value_arr, $inputname ) {
+		$value_arr = is_array( $value_arr ) ? $value_arr : array( $value_arr );
+		$tags      = mailster( 'tags' )->get();
+
+		if ( $tags ) :
+			?>
+			<?php foreach ( $value_arr as $k => $v ) : ?>
+			<div class="mailster-conditions-value-field-multiselect">
+				<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+				<select name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled>
+					<option value="0">---</option>
+					<?php foreach ( $tags as $lj => $tag ) : ?>
+					<option value="<?php echo esc_attr( $tag->ID ); ?>" <?php selected( $v, $tag->ID ); ?>><?php echo ( $tag->name ? esc_html( $tag->name ) : '[' . esc_html__( 'no title', 'mailster' ) . ']' ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+			<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+			</div>
+			<?php endforeach; ?>
+		<?php else : ?>
+		<p><?php esc_html_e( 'No tags available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo esc_attr( $inputname ); ?>"></p>
+		<?php endif; ?>
+		<?php
+	}
+
+
+	private function value_field_geo( $value_arr, $inputname ) {
+		$value_arr  = is_array( $value_arr ) ? $value_arr : array( $value_arr );
+		$countries  = mailster( 'geo' )->get_countries( true );
+		$continents = mailster( 'geo' )->get_continents( true );
+		?>
+		<?php foreach ( $value_arr as $k => $v ) : ?>
+			<div class="mailster-conditions-value-field-multiselect">
+				<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+				<select name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled>
+					<option value="0">---</option>
+					<optgroup label="<?php esc_attr_e( 'Continents', 'mailster' ); ?>">
+					<?php foreach ( $continents as $code => $continent ) : ?>
+						<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $v, $code ); ?>><?php echo esc_attr( $continent ); ?></option>
+					<?php endforeach; ?>
+					</optgroup>
+					<?php foreach ( $countries as $continent => $sub_countries ) : ?>
+					<optgroup label="<?php echo esc_attr( $continent ); ?>">
+						<?php foreach ( $sub_countries as $code => $country ) : ?>
+						<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $v, $code ); ?>><?php echo esc_attr( $country ); ?></option>
+						<?php endforeach; ?>
+					</optgroup>
+					<?php endforeach; ?>
+				</select>
+				<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+				<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+			</div>
+	<?php endforeach; ?>
+		<?php
 	}
 
 }

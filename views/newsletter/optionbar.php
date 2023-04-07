@@ -59,8 +59,7 @@ $current   = $template . '/' . $file;
 												'template' => $slug,
 												'file'     => $name,
 												'message'  => 2,
-											),
-											admin_url( 'post.php?post=' . $post->ID . '&action=edit' )
+											)
 										) : '#';
 										?>
 									<li><a class="file<?php echo ( $is_current ) ? ' active' : ''; ?>" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $data['label'] ); ?></a></li>
