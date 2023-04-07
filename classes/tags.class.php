@@ -205,11 +205,11 @@ class MailsterTags {
 	 * @param unknown $subscriber_ids
 	 * @return unknown
 	 */
-	public function assign_subscribers( $tag_ids, $subscriber_ids ) {
-		if ( ! is_array( $tag_ids ) ) {
-			$tag_ids = array( (int) $tag_ids );
+	public function assign_subscribers( $tags, $subscriber_ids ) {
+		if ( ! is_array( $tags ) ) {
+			$tags = array( $tags );
 		}
-		$tag_ids = array_filter( $tag_ids );
+		$tags = array_filter( $tags );
 
 		if ( ! is_array( $subscriber_ids ) ) {
 			$subscriber_ids = array( (int) $subscriber_ids );
@@ -218,9 +218,9 @@ class MailsterTags {
 
 		$success = true;
 
-		foreach ( $tag_ids as $tag_id ) {
+		foreach ( $tags as $tag ) {
 			foreach ( $subscriber_ids as $subscriber_id ) {
-				if ( ! $this->assign_subscriber( $tag_id, $subscriber_id ) ) {
+				if ( ! $this->assign_subscriber( $tag, $subscriber_id ) ) {
 					$success = false;
 				}
 			}
@@ -248,6 +248,7 @@ class MailsterTags {
 		$args = array(
 			'tag_id'        => $tag_id,
 			'subscriber_id' => $subscriber_id,
+			'added'         => time(),
 		);
 
 		$errors                = $wpdb->suppress_errors;
@@ -438,7 +439,7 @@ class MailsterTags {
 		if ( false !== $wpdb->query( $sql ) ) {
 
 			foreach ( $tag_ids as $tag_id ) {
-				$this->remove_from_forms( $tag_id );
+				// $this->remove_from_forms( $tag_id );
 			}
 
 			if ( $subscribers ) {
