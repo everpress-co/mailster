@@ -98,14 +98,16 @@ class MailsterCampaigns {
 
 	public function preview( $post_id ) {
 
-		echo $this->render( $post_id, true );
+		$replace = isset( $_GET['replace'] ) ? (array) $_GET['replace'] : array();
+
+		echo $this->render( $post_id, true, $replace );
 
 		exit;
 
 	}
 
 
-	public function render( $post_id, $tags = true ) {
+	public function render( $post_id, $tags = true, $replace = array() ) {
 
 		$post = get_post( $post_id );
 
@@ -140,6 +142,7 @@ class MailsterCampaigns {
 
 		$placeholder->add_defaults( $post->ID );
 		$placeholder->add_custom( $post->ID );
+		$placeholder->add( $replace );
 
 		$content = $placeholder->get_content();
 		$content = mailster( 'helper' )->strip_structure_html( $content );
@@ -427,8 +430,10 @@ class MailsterCampaigns {
 			'workflow',
 			array(
 				'label'               => esc_html__( 'Workflow', 'mailster' ),
-				'public'              => false,
+				'public'              => ! is_admin(),
 				'exclude_from_search' => true,
+				// 'show_in_admin_status_list' => false,
+				// 'show_in_admin_all_list'    => false,
 				'label_count'         => _n_noop( esc_html__( 'Workflow', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Workflows', 'mailster' ) . ' <span class="count">(%s)</span>' ),
 			)
 		);
@@ -2806,6 +2811,7 @@ class MailsterCampaigns {
 			$meta['autoresponder']['issue']             = 1;
 			$meta['autoresponder']['post_count_status'] = 0;
 		} elseif ( $campaign->post_status == 'notification' ) {
+		} elseif ( $campaign->post_status == 'workflow' ) {
 		} else {
 			$campaign->post_status = 'draft';
 		}
@@ -3591,7 +3597,7 @@ class MailsterCampaigns {
 			if ( ! $campaign ) {
 				return 0;
 			}
-			if ( 'finished' == $campaign->post_status || 'notification' == $campaign->post_status ) {
+			if ( 'finished' == $campaign->post_status || 'notification' == $campaign->post_status || 'workflow' == $campaign->post_status ) {
 				$subscribers_count  = $this->get_sent( $id, false );
 				$subscribers_count -= $this->get_bounces( $id );
 				return $subscribers_count;

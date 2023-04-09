@@ -21,3 +21,15 @@ body {
 #wpbody .wrap {
 	margin: 20px;
 }
+.wrap > .notice,
+.notice {
+	display: none !important;
+}
+
+.fixed-optionbar .optionbar {
+	top: 0 !important;
+}
+.fixed-optionbar #module-selector {
+	top: 64px !important;
+	right: 334px !important;
+}

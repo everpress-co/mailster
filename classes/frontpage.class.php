@@ -293,13 +293,6 @@ class MailsterFrontpage {
 
 			} else {
 
-				global $wp_query;
-
-				echo '<pre>' . print_r( $wp_query, true ) . '</pre>';
-
-				echo '<pre>' . print_r( 'Asdad', true ) . '</pre>';
-				die();
-
 				$this->do_frontpage();
 			}
 		}
@@ -774,7 +767,7 @@ class MailsterFrontpage {
 						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
-					$content = mailster( 'campaings' )->render( get_the_ID(), mailster_option( 'tags_webversion' ) );
+					$content = mailster( 'campaigns' )->render( get_the_ID(), mailster_option( 'tags_webversion' ) );
 
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
