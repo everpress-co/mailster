@@ -1414,7 +1414,12 @@ class MailsterSubscribers {
 
 		$sql .= ' ON DUPLICATE KEY UPDATE subscriber_id = values(subscriber_id), meta_key = values(meta_key), meta_value = values(meta_value)';
 
-		return false !== $wpdb->query( $sql );
+		if ( false !== $wpdb->query( $sql ) ) {
+			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+			return true;
+		}
+
+		return false;
 
 	}
 
@@ -1434,7 +1439,12 @@ class MailsterSubscribers {
 			$sql .= $wpdb->prepare( ' AND meta_key = %s', (string) $key );
 		}
 
-		return false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) );
+		if ( false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) ) ) {
+			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+			return true;
+		}
+
+		return false;
 
 	}
 
