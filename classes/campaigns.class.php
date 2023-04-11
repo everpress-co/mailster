@@ -150,6 +150,18 @@ class MailsterCampaigns {
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
 		$content = mailster( 'helper' )->handle_shortcodes( $content );
 
+		// add a content blocker
+		if ( is_admin() ) {
+			$styles  = '<style>body::before{content: "";
+				display: block;
+				height: 100vh;
+				width: 100vw;
+				position: absolute;
+				z-index: 1000;
+			}</style>';
+			$content = str_replace( '</head>', '</head>' . $styles, $content );
+		}
+
 		return $content;
 
 	}
