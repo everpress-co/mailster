@@ -1036,7 +1036,7 @@ class MailsterForm {
 							unset( $entry['form'] );
 						}
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true );
 						$message       = $entry['status'] == 0 ? 'confirmation' : 'success';
 						$message       = $double_opt_in ? 'confirmation' : 'success';
 
@@ -1155,7 +1155,7 @@ class MailsterForm {
 							unset( $entry['form'] );
 						}
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true, $subscriber_notification );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, null, $subscriber_notification );
 						if ( is_wp_error( $subscriber_id ) ) {
 							$subscriber_id = $subscriber->ID;
 						}

@@ -726,7 +726,7 @@ class MailsterManage {
 							if ( ! isset( $insert['status'] ) ) {
 								$insert['status'] = $exists->status;
 							}
-							$subscriber_id = mailster( 'subscribers' )->update( $insert, true, true );
+							$subscriber_id = mailster( 'subscribers' )->update( $insert, true );
 
 						} else {
 
@@ -790,7 +790,20 @@ class MailsterManage {
 					if ( $insert['status'] != 0 ) {
 						$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
 					}
-					mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $import_data['existing'] == 'overwrite', $added );
+
+					if ( $import_data['existing'] == 'overwrite' ) {
+
+						$current_lists = mailster( 'subscribers' )->get_lists( $subscriber_id, true );
+						// get only the new ones
+						$diff_lists = array_diff( $list_ids, $current_lists );
+						// get the ones which are not in the new list
+						$to_remove = array_diff( $current_lists, $list_ids );
+
+						mailster( 'subscribers' )->unassign_lists( $subscriber_id, $to_remove );
+
+					}
+					$remove_old = false;
+					mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $remove_old, $added );
 				}
 
 				foreach ( $tag_array as $tag ) {

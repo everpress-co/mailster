@@ -277,7 +277,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				$custom_fields = mailster()->get_custom_fields();
 				if ( in_array( $column_name, array_keys( $custom_fields ) ) ) {
 
-					$value = mailster( 'subscribers' )->get_custom_fields( $item->ID, $column_name );
+					$value = mailster( 'subscribers' )->get_custom_field( $item->ID, $column_name );
 
 					switch ( $custom_fields[ $column_name ]['type'] ) {
 						case 'checkbox':

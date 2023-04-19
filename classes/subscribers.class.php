@@ -664,7 +664,7 @@ class MailsterSubscribers {
 		}
 
 		// delete cache
-		mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+		// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 		$subscriber = $this->get( $subscriber_id, true, true );
 
 		if ( ! $subscriber->wp_id ) {
@@ -812,7 +812,7 @@ class MailsterSubscribers {
 			$meta_value = end( $meta_value );
 		}
 
-		$this->add_custom_value( $subscriber->ID, $key, (string) $meta_value );
+		return $this->add_custom_field( $subscriber->ID, $key, (string) $meta_key );
 
 	}
 
@@ -1009,11 +1009,15 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $entry
 	 * @param unknown $overwrite               (optional)
-	 * @param unknown $merge                   (optional)
+	 * @param unknown $deprecated              (optional)
 	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function update( $entry, $overwrite = true, $merge = false, $subscriber_notification = false ) {
+	public function update( $entry, $overwrite = true, $deprecated = null, $subscriber_notification = false ) {
+
+		if ( ! is_null( $deprecated ) ) {
+			_deprecated_argument( __FUNCTION__, '4.0', 'The $merge argument is deprecated' );
+		}
 
 		global $wpdb;
 
@@ -1129,7 +1133,7 @@ class MailsterSubscribers {
 
 			if ( ! $bulkimport ) {
 				mailster_cache_delete( 'subscriber_' . $subscriber_id );
-				mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+				// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 				mailster_cache_delete( 'subscriber_meta_' . $subscriber_id . '0' );
 			}
 
@@ -1155,7 +1159,14 @@ class MailsterSubscribers {
 				$this->assign_tags( $subscriber_id, $tags );
 			}
 
-			$this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
+			// $this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
+			// if ( ! $merge ) {
+			// $this->remove_custom_value( $subscriber_id );
+			// }
+			foreach ( $customfields as $meta_key => $meta_value ) {
+				$this->add_custom_field( $subscriber_id, $meta_key, $meta_value );
+			}
+
 			$this->update_meta( $subscriber_id, 0, $meta );
 
 			// not on bulk import
@@ -1195,7 +1206,7 @@ class MailsterSubscribers {
 				// handle deleted accounts
 				if ( $exists = $this->get_by_mail( $entry['email'], false, true ) ) {
 					if ( $exists->status === 5 ) {
-						return $this->update( $original_entry, true, $merge, $subscriber_notification );
+						return $this->update( $original_entry, true, null, $subscriber_notification );
 					}
 				}
 
@@ -1212,11 +1223,15 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $entry
 	 * @param unknown $overwrite               (optional)
-	 * @param unknown $merge                   (optional)
+	 * @param unknown $deprecated              (optional)
 	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add( $entry, $overwrite = false, $merge = false, $subscriber_notification = true ) {
+	public function add( $entry, $overwrite = false, $deprecated = null, $subscriber_notification = true ) {
+
+		if ( ! is_null( $deprecated ) ) {
+			_deprecated_argument( __FUNCTION__, '4.0', 'The $merge argument is deprecated' );
+		}
 
 		$now = time();
 
@@ -1268,7 +1283,7 @@ class MailsterSubscribers {
 			return new WP_Error( 'not_verified', esc_html__( 'Subscriber failed verification', 'mailster' ) );
 		}
 
-		$subscriber_id = $this->update( $entry, $overwrite, $merge, $subscriber_notification );
+		$subscriber_id = $this->update( $entry, $overwrite, null, $subscriber_notification );
 
 		if ( ! is_wp_error( $subscriber_id ) ) {
 			do_action( 'mailster_add_subscriber', $subscriber_id );
@@ -1373,6 +1388,14 @@ class MailsterSubscribers {
 	 */
 	public function add_custom_value( $subscriber_id, $key, $value = null, $clear = false ) {
 
+		_deprecated_function( __FUNCTION__, '4.0', 'add_custom_field( $subscriber_id, $key, $value, $update = true )' );
+
+		if ( $clear ) {
+			$this->clear_custom_fields( $subscriber_id );
+		}
+
+		return $this->add_custom_field( $subscriber_id, $key, $value );
+
 		global $wpdb;
 
 		$fields = ! is_array( $key ) ? array( $key => $value ) : $key;
@@ -1382,7 +1405,7 @@ class MailsterSubscribers {
 		}
 
 		if ( $clear ) {
-			$this->remove_custom_value( $subscriber_id );
+			$this->clear_custom_fields( $subscriber_id );
 		}
 
 		$sql = "INSERT INTO {$wpdb->prefix}mailster_subscriber_fields
@@ -1415,7 +1438,7 @@ class MailsterSubscribers {
 		$sql .= ' ON DUPLICATE KEY UPDATE subscriber_id = values(subscriber_id), meta_key = values(meta_key), meta_value = values(meta_value)';
 
 		if ( false !== $wpdb->query( $sql ) ) {
-			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+			// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 			return true;
 		}
 
@@ -1432,6 +1455,14 @@ class MailsterSubscribers {
 	 */
 	public function remove_custom_value( $subscriber_id, $key = null ) {
 
+		if ( is_null( $key ) ) {
+			_deprecated_function( __FUNCTION__, '4.0', 'clear_custom_fields( $subscriber_id )' );
+			return $this->clear_custom_fields( $subscriber_id );
+		}
+
+		_deprecated_function( __FUNCTION__, '4.0', 'remove_custom_field( $subscriber_id, $key )' );
+		return $this->remove_custom_field( $subscriber_id, $key );
+
 		global $wpdb;
 
 		$sql = "DELETE FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d";
@@ -1440,11 +1471,207 @@ class MailsterSubscribers {
 		}
 
 		if ( false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) ) ) {
-			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+			// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 			return true;
 		}
 
 		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added          (optional)
+	 * @return unknown
+	 */
+	public function add_custom_fields( $subscriber_ids, $keys, $value, $update = true ) {
+
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( (int) $subscriber_ids );
+		}
+		$subscriber_ids = array_filter( $subscriber_ids );
+
+		if ( ! is_array( $keys ) ) {
+			$keys = array( $keys );
+		}
+
+		$success = true;
+
+		foreach ( $subscriber_ids as $subscriber_id ) {
+			foreach ( $keys as $key ) {
+				if ( ! $this->add_custom_field( $subscriber_id, $key, $value, $update ) ) {
+					$success = false;
+				}
+			}
+		}
+
+		return $success;
+	}
+
+
+	/**
+	 *
+	 * @param int    $subscriber_id
+	 * @param string $key
+	 * @param string $value
+	 * @param bool   $update
+	 * @return bool
+	 */
+	public function add_custom_field( int $subscriber_id, string $key, string $value, bool $update = true ) {
+
+		global $wpdb;
+
+		$old_value = $this->get_custom_field( $subscriber_id, $key );
+
+		// value is the same => no update
+		if ( $old_value === $value ) {
+			return true;
+		}
+
+		// custom field exists => update
+		if ( ! is_null( $old_value ) ) {
+			if ( ! $update ) {
+				return false;
+			}
+			return $this->update_custom_field( $subscriber_id, $key, $value );
+		}
+
+		// don't add to database if value is empty
+		if ( $value === '' ) {
+			return true;
+		}
+
+		$success = true;
+
+		$args = array(
+			'subscriber_id' => $subscriber_id,
+			'meta_key'      => $key,
+			'meta_value'    => $value,
+		);
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->insert( "{$wpdb->prefix}mailster_subscriber_fields", $args ) ) {
+
+			do_action( 'mailster_add_custom_field', $subscriber_id, $key, $value );
+			error_log( print_r( array( 'mailster_add_custom_field', $subscriber_id, $key, $value ), true ) );
+			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+
+	}
+
+
+	/**
+	 *
+	 * @param int    $subscriber_id
+	 * @param string $key
+	 * @param string $value
+	 * @return bool
+	 */
+	public function update_custom_field( int $subscriber_id, string $key, string $value ) {
+
+		global $wpdb;
+
+		$old_value = $this->get_custom_field( $subscriber_id, $key );
+
+		if ( $old_value === $value ) {
+			return true;
+		}
+
+		$success = true;
+
+		$args = array(
+			'meta_value' => $value,
+		);
+
+		$where = array(
+			'subscriber_id' => $subscriber_id,
+			'meta_key'      => $key,
+		);
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_subscriber_fields", $args, $where ) ) {
+
+			do_action( 'mailster_update_custom_field', $subscriber_id, $key, $value, $old_value );
+			error_log( print_r( array( 'mailster_update_custom_field', $subscriber_id, $key, $value, $old_value ), true ) );
+
+			// remove custom field if value is empty
+			if ( '' === $value ) {
+				$success = $this->remove_custom_field( $subscriber_id, $key );
+			}
+			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+
+	}
+
+
+	public function remove_custom_field( int $subscriber_id, string $key ) {
+
+		global $wpdb;
+
+		$old_value = $this->get_custom_field( $subscriber_id, $key );
+
+		$success = true;
+
+		$where = array(
+			'subscriber_id' => $subscriber_id,
+			'meta_key'      => $key,
+		);
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->delete( "{$wpdb->prefix}mailster_subscriber_fields", $where ) ) {
+
+			do_action( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value );
+			error_log( print_r( array( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value ), true ) );
+			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+
+	}
+
+
+
+	/**
+	 * clear all custom fields of a subscriber
+	 *
+	 * @param int $subscriber_id
+	 * @return bool
+	 */
+	public function clear_custom_fields( int $subscriber_id ) {
+
+		$fields = $this->get_custom_fields( $subscriber_id );
+
+		$success = true;
+		foreach ( $fields as $key => $value ) {
+			if ( ! $this->remove_custom_field( $subscriber_id, $key ) ) {
+				$success = false;
+			}
+		}
+
+		return $success;
 
 	}
 
@@ -3316,21 +3543,33 @@ class MailsterSubscribers {
 	 *
 	 *
 	 * @param unknown $subscriber_id
-	 * @param unknown $field         (optional)
+	 * @param unknown $field
 	 * @return unknown
 	 */
-	public function get_custom_fields( $subscriber_id, $field = null ) {
+	public function get_custom_field( $subscriber_id, $field ) {
+
+		$custom_fields = $this->get_custom_fields( $subscriber_id );
+
+		return isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ] : null;
+
+	}
+
+	public function get_custom_fields( $subscriber_id, $deprecated = false ) {
+
+		if ( $deprecated !== false ) {
+			_deprecated_argument( __FUNCTION__, '4.0', 'MailsterSubscriber::get_custom_fields( $subscriber_id, $field ), use MailsterSubscriber::get_custom_field( $subscriber_id, $field ) instead.' );
+			return $this->get_custom_field( $subscriber_id, $deprecated );
+		}
 
 		global $wpdb;
 
-		if ( false === ( $custom_fields = mailster_cache_get( 'get_custom_fields_' . $subscriber_id ) ) ) {
+		if ( ! ( $custom_fields = mailster_cache_get( 'get_custom_fields_' . $subscriber_id ) ) ) {
 
 			$custom_field_names = mailster()->get_custom_fields( true );
 
 			$custom_fields              = array_fill_keys( $custom_field_names, null );
-			$custom_fields['firstname'] = '';
-			$custom_fields['lastname']  = '';
-			$custom_fields['fullname']  = '';
+			$custom_fields['firstname'] = null;
+			$custom_fields['lastname']  = null;
 
 			$sql = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id );
 
@@ -3346,15 +3585,11 @@ class MailsterSubscribers {
 				: $custom_fields['firstname'] . ' ' . $custom_fields['lastname']
 			);
 
-			if ( is_null( $field ) ) {
-				mailster_cache_set( 'get_custom_fields_' . $subscriber_id, $custom_fields );
-			}
-		}
-		if ( is_null( $field ) ) {
-			return $custom_fields;
+			mailster_cache_set( 'get_custom_fields_' . $subscriber_id, $custom_fields );
+
 		}
 
-		return isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ] : null;
+		return $custom_fields;
 
 	}
 
