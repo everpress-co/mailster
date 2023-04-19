@@ -1396,54 +1396,6 @@ class MailsterSubscribers {
 
 		return $this->add_custom_field( $subscriber_id, $key, $value );
 
-		global $wpdb;
-
-		$fields = ! is_array( $key ) ? array( $key => $value ) : $key;
-
-		if ( ! ( $count = count( $fields ) ) ) {
-			return true;
-		}
-
-		if ( $clear ) {
-			$this->clear_custom_fields( $subscriber_id );
-		}
-
-		$sql = "INSERT INTO {$wpdb->prefix}mailster_subscriber_fields
-        (subscriber_id, meta_key, meta_value) VALUES ";
-
-		$inserts             = array();
-		$british_date_format = mailster( 'helper' )->dateformat() == 'd/m/Y';
-
-		$customfields = mailster()->get_custom_fields();
-
-		foreach ( $fields as $key => $value ) {
-			if ( isset( $customfields[ $key ] ) && $customfields[ $key ]['type'] == 'date' && $value ) {
-				if ( $british_date_format ) {
-					if ( preg_match( '#(\d{1,2})/(\d{1,2})/(\d{2,4})#', $value, $d ) ) {
-						$value = $d[3] . '-' . $d[2] . '-' . $d[1];
-					}
-				}
-				$value = mailster( 'helper' )->do_timestamp( $value, 'Y-m-d' );
-			}
-
-			$inserts[] = $wpdb->prepare( '(%d, %s, %s)', $subscriber_id, $key, $value );
-		}
-
-		if ( empty( $inserts ) ) {
-			return true;
-		}
-
-		$sql .= implode( ', ', $inserts );
-
-		$sql .= ' ON DUPLICATE KEY UPDATE subscriber_id = values(subscriber_id), meta_key = values(meta_key), meta_value = values(meta_value)';
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
-			return true;
-		}
-
-		return false;
-
 	}
 
 	/**
@@ -1541,6 +1493,9 @@ class MailsterSubscribers {
 			return $this->update_custom_field( $subscriber_id, $key, $value );
 		}
 
+		// maybe sanitize the value
+		$value = $this->sanitize_custom_date_field( $key, $value );
+
 		// don't add to database if value is empty
 		if ( $value === '' ) {
 			return true;
@@ -1560,7 +1515,7 @@ class MailsterSubscribers {
 
 			do_action( 'mailster_add_custom_field', $subscriber_id, $key, $value );
 			error_log( print_r( array( 'mailster_add_custom_field', $subscriber_id, $key, $value ), true ) );
-			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+			$this->update_updated( $subscriber_id );
 
 		} else {
 			$success = false;
@@ -1589,6 +1544,9 @@ class MailsterSubscribers {
 			return true;
 		}
 
+		// maybe sanitize the value
+		$value = $this->sanitize_custom_date_field( $key, $value );
+
 		$success = true;
 
 		$args = array(
@@ -1610,8 +1568,9 @@ class MailsterSubscribers {
 			// remove custom field if value is empty
 			if ( '' === $value ) {
 				$success = $this->remove_custom_field( $subscriber_id, $key );
+			} else {
+				$this->update_updated( $subscriber_id );
 			}
-			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 		} else {
 			$success = false;
 		}
@@ -1641,7 +1600,7 @@ class MailsterSubscribers {
 
 			do_action( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value );
 			error_log( print_r( array( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value ), true ) );
-			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+			$this->update_updated( $subscriber_id );
 
 		} else {
 			$success = false;
@@ -1672,6 +1631,53 @@ class MailsterSubscribers {
 		}
 
 		return $success;
+
+	}
+
+	/**
+	 * sanitize custom date fields to return a valid date in the $format
+	 *
+	 * @param string $key
+	 * @param string $value
+	 * @param string $format
+	 */
+	private function sanitize_custom_date_field( $key, $value, $format = 'Y-m-d' ) {
+
+		if ( ! $value ) {
+			return $value;
+		}
+
+		$date_fields = mailster()->get_custom_date_fields( true );
+
+		if ( ! in_array( $key, $date_fields ) ) {
+			return $value;
+		}
+
+		$british_date_format = mailster( 'helper' )->dateformat() == 'd/m/Y';
+
+		if ( $british_date_format ) {
+			if ( preg_match( '#(\d{1,2})/(\d{1,2})/(\d{2,4})#', $value, $d ) ) {
+				$value = $d[3] . '-' . $d[2] . '-' . $d[1];
+			}
+		}
+		$value = mailster( 'helper' )->do_timestamp( $value, $format );
+
+		return $value;
+
+	}
+
+	/**
+	 * update the updated field of the subscriber
+	 *
+	 * @param int $subscriber_id
+	 */
+
+	private function update_updated( $subscriber_id ) {
+
+		global $wpdb;
+		mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+
+		return false !== $wpdb->update( "{$wpdb->prefix}mailster_subscribers", array( 'updated' => time() ), array( 'ID' => $subscriber_id ) );
 
 	}
 
@@ -2774,7 +2780,7 @@ class MailsterSubscribers {
 
 
 	/**
-	 *
+	 * compare time between two actions
 	 *
 	 * @param unknown $id
 	 * @param unknown $actionA
@@ -3098,12 +3104,7 @@ class MailsterSubscribers {
 			return false;
 		}
 
-		return mailster( 'notification' )->add(
-			time(),
-			array(
-				'template' => 'new_subscriber_delayed',
-			)
-		);
+		return mailster( 'notification' )->add( time(), array( 'template' => 'new_subscriber_delayed' ) );
 
 	}
 
@@ -3170,12 +3171,7 @@ class MailsterSubscribers {
 			return false;
 		}
 
-		return mailster( 'notification' )->add(
-			time(),
-			array(
-				'template' => 'unsubscribe_delayed',
-			)
-		);
+		return mailster( 'notification' )->add( time(), array( 'template' => 'unsubscribe_delayed' ) );
 
 	}
 
@@ -3242,6 +3238,7 @@ class MailsterSubscribers {
 			$subscribers[ $entry->ID ]->list_ids[] = $entry->list_id;
 		}
 
+		// TODO: this blocks sending multiple confimrations at once
 		if ( false && ! $force && $subscribers ) {
 			$total       = $this->get_totals();
 			$entry_count = count( $subscribers );
@@ -3335,6 +3332,8 @@ class MailsterSubscribers {
 			return $this->get_by_type( 'ID', $ID, $custom_fields, $include_deleted );
 		}
 
+		return false;
+
 	}
 
 
@@ -3350,7 +3349,7 @@ class MailsterSubscribers {
 
 		if ( isset( $_COOKIE ) && isset( $_COOKIE['mailster'] ) ) {
 			$hash       = $_COOKIE['mailster'];
-			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, $custom_fields );
+			$subscriber = $this->get_by_hash( $hash, $custom_fields );
 		}
 
 		if ( empty( $subscriber ) ) {
@@ -3786,7 +3785,7 @@ class MailsterSubscribers {
 	public function on_activate( $new ) {
 
 		if ( $new ) {
-			$subscriber_id = $this->add_from_wp_user(
+			$this->add_from_wp_user(
 				get_current_user_id(),
 				array(
 					'status'  => 1,
@@ -4348,21 +4347,21 @@ class MailsterSubscribers {
 
 
 	/**
-	 *
+	 * calcuate the hash for a subscriber. This should NOT be simple md5
 	 *
 	 * @param unknown $email
 	 * @return unknown
 	 */
 	private function hash( $email ) {
 
-		$org_email = $email;
+		$hash = $email;
 
 		for ( $i = 0; $i < 10; $i++ ) {
-			$email = sha1( $email );
+			$hash = sha1( $hash );
 		}
 
-		$hash = md5( $email . mailster_option( 'ID', '' ) );
-		return apply_filters( 'mailster_subscriber_hash', $hash, $org_email );
+		$hash = md5( $hash . mailster_option( 'ID', '' ) );
+		return apply_filters( 'mailster_subscriber_hash', $hash, $email );
 
 	}
 
