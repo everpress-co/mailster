@@ -1002,6 +1002,10 @@ class MailsterSettings {
 								$key = '_' . $key;
 							}
 
+							if ( ! isset( $field['id'] ) ) {
+								$field['id'] = $key;
+							}
+
 							$new_value[ $key ] = $field;
 						}
 

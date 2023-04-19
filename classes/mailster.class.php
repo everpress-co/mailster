@@ -289,6 +289,8 @@ class Mailster {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
 
+			add_action( 'mailster_admin_header', array( &$this, 'add_admin_header' ) );
+
 			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
 
 		}
@@ -1272,7 +1274,7 @@ class Mailster {
 			return;
 		}
 
-		$this->add_admin_header();
+		do_action( 'mailster_admin_header' );
 
 	}
 
@@ -1479,7 +1481,7 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		$this->add_admin_header();
+		do_action( 'mailster_admin_header' );
 
 		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style', 'mailster-admin-header' ), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script', 'mailster-admin-header' ), MAILSTER_VERSION, true );
@@ -1539,7 +1541,7 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		mailster()->add_admin_header();
+		do_action( 'mailster_admin_header' );
 
 		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/welcome-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -1554,8 +1556,6 @@ class Mailster {
 	public function tests_scripts_styles( $hook ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		mailster()->add_admin_header();
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
