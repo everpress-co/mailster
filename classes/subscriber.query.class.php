@@ -46,6 +46,8 @@ class MailsterSubscriberQuery {
 		'tags'                => false,
 		'tags__in'            => null,
 		'tags__not_in'        => null,
+		'tagname__in'         => null,
+		'tagname__not_in'     => null,
 
 		'unsubscribe'         => null,
 		'unsubscribe__not_in' => null,
@@ -361,6 +363,12 @@ class MailsterSubscriberQuery {
 		if ( $this->args['tags__not_in'] ) {
 			$this->add_condition( '_tags__not_in', '=', $this->args['tags__not_in'] );
 		}
+		if ( $this->args['tagname__in'] ) {
+			$this->add_condition( '_tagname__in', '=', $this->args['tagname__in'] );
+		}
+		if ( $this->args['tagname__not_in'] ) {
+			$this->add_condition( '_tagname__not_in', '=', $this->args['tagname__not_in'] );
+		}
 
 		if ( ! $this->args['return_count'] ) {
 			if ( ! empty( $this->args['fields'] ) ) {
@@ -514,6 +522,12 @@ class MailsterSubscriberQuery {
 
 						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers AS `mailster_tags_subscribers` ON `mailster_tags_subscribers`.subscriber_id = subscribers.ID";
 						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_tags AS `mailster_tags_{$i}_{$j}` ON `mailster_tags_subscribers`.tag_id = mailster_tags_{$i}_{$j}.ID AND " . $this->get_condition( $field, $this->get_positive_field_operator( $operator ), $value, "mailster_tags_{$i}_{$j}" );
+
+					} elseif ( in_array( $field, array( '_tagname__in', '_tagname__not_in' ) ) ) {
+
+						$joins[]    = "LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers AS `mailster_tags_subscribers` ON `mailster_tags_subscribers`.subscriber_id = subscribers.ID";
+						$joins[]    = "LEFT JOIN {$wpdb->prefix}mailster_tags AS `mailster_tags_{$i}_{$j}` ON `mailster_tags_subscribers`.tag_id = mailster_tags_{$i}_{$j}.ID";
+						$sub_cond[] = '' . $this->get_condition( $field, $this->get_field_operator( $field == '_tagname__in' ? 'is' : 'is_not' ), $value, "mailster_tags_{$i}_{$j}.name" );
 
 					} elseif ( in_array( $field, $this->custom_fields ) ) {
 
@@ -1527,7 +1541,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_action_fields() {
-		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in', '_lists__in', '_lists__not_in', '_tags__in', '_tags__not_in' );
+		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in', '_lists__in', '_lists__not_in', '_tags__in', '_tags__not_in', '_tagname__in', '_tagname__not_in' );
 
 		return $action_fields;
 	}

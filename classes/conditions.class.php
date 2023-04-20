@@ -239,7 +239,7 @@ class MailsterConditions {
 				$fields = $this->time_fields;
 				break;
 			case 'hidden':
-				$fields = array( '_sent', '_sent__not_in', '_open', '_open__not_in', '_click', '_click__not_in', '_click_link', '_click_link__not_in', '_lists__not_in', '_lists__in', '_tags__not_in', '_tags__in' );
+				$fields = array( '_sent', '_sent__not_in', '_open', '_open__not_in', '_click', '_click__not_in', '_click_link', '_click_link__not_in', '_lists__not_in', '_lists__in', '_tags__not_in', '_tags__in', '_tagname__not_in', '_tagname__in' );
 				break;
 			default:
 				break;
@@ -318,8 +318,10 @@ class MailsterConditions {
 	}
 	private function get_tag_related() {
 		return array(
-			'_tags__in'     => esc_html__( 'has Tag', 'mailster' ),
-			'_tags__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
+			'_tagname__in'     => esc_html__( 'has Tag', 'mailster' ),
+			'_tagname__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
+			'_tags__in'        => esc_html__( 'has Tag (deprecated)', 'mailster' ),
+			'_tags__not_in'    => esc_html__( 'doesn\'t have Tag  (deprecated)', 'mailster' ),
 		);
 
 	}
