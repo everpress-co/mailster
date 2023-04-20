@@ -1009,11 +1009,19 @@ class MailsterSubscribers {
 		}
 
 		if ( $new_subscriber ) {
-			return apply_filters( 'mailster_verify_new_subscriber', (array) $entry );
+			$result = apply_filters( 'mailster_verify_new_subscriber', (array) $entry );
+		} else {
+			$result = apply_filters( 'mailster_verify_subscriber', (array) $entry );
 		}
 
-		return apply_filters( 'mailster_verify_subscriber', (array) $entry );
+		// add the initial data to the error object
+		if ( is_wp_error( $result ) ) {
+			$result->add_data( $entry );
+		}
+
+		return $result;
 	}
+
 
 
 	/**
