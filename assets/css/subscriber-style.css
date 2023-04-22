@@ -136,12 +136,13 @@ label {
 	_background-color: #fff;
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 200px 200px;
+	background-size: 100%;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	border-radius: 100%;
 }
 .avatar.wp-user:before {
 	font-family: 'dashicons';

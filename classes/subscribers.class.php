@@ -3493,7 +3493,7 @@ class MailsterSubscribers {
 		$html = '';
 
 		if ( $avatar ) :
-			$html .= '<div class="user_image" title="' . esc_html__( 'Source', 'mailster' ) . ': Gravatar.com" data-email="' . $subscriber->email . '" style="background-image:url(' . $this->get_gravatar_uri( $subscriber->email, 240 ) . ')"></div>';
+			$html .= '<div class="user_image" title="' . esc_html__( 'Source', 'mailster' ) . ': Gravatar.com" data-email="' . $subscriber->email . '" style="background-image:url(' . $this->get_gravatar( $subscriber, 240 ) . ')"></div>';
 		endif;
 
 		$html .= '<div class="receiver-detail-data ' . ( $avatar ? 'has-avatar' : '' ) . '">';
@@ -3874,14 +3874,17 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $id
+	 * @param unknown $subscriber
 	 * @param unknown $size (optional)
 	 * @return unknown
 	 */
-	public function get_gravatar( $id, $size = 120 ) {
+	public function get_gravatar( $subscriber, $size = 120 ) {
 
-		$subscriber = $this->get( $id, false, true );
-		return $this->get_gravatar_uri( $subscriber->email, $size );
+		if ( is_numeric( $subscriber ) ) {
+			$subscriber = $this->get( $subscriber, true, true );
+		}
+
+		return $this->get_gravatar_uri( $subscriber, $size );
 
 	}
 
@@ -3889,17 +3892,22 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $email
+	 * @param unknown $subscriber
 	 * @param unknown $size  (optional)
 	 * @return unknown
 	 */
-	public function get_gravatar_uri( $email, $size = 120 ) {
+	public function get_gravatar_uri( $subscriber, $size = 120 ) {
 
-		$email = strtolower( trim( $email ) );
-		$hash  = md5( $email );
+		$email    = strtolower( trim( $subscriber->email ) );
+		$initials = $this->get_initials( $subscriber );
+
+		$hash = md5( $email );
 		// create a number from 01 to 09 based on the email address
 		$id      = '0' . ( round( abs( crc32( $hash ) ) % 9 ) + 1 );
 		$default = 'https://static.mailster.co/user/user' . $id . '.gif';
+		$default = MAILSTER_UPLOAD_URI . '/users/' . $initials . '.gif';
+
+		return $default;
 
 		$image = get_avatar( $email, $size, $default );
 
@@ -3912,6 +3920,35 @@ class MailsterSubscribers {
 		return $url;
 
 	}
+
+
+	/**
+	 * get initials from name
+	 *
+	 * @param unknown $subscriber
+	 */
+	private function get_initials( $subscriber ) {
+
+		$name = $subscriber->fullname;
+
+		$words = explode( ' ', $name );
+		if ( count( $words ) >= 2 ) {
+			return mb_strtoupper(
+				mb_substr( $words[0], 0, 1, 'UTF-8' ) .
+				mb_substr( end( $words ), 0, 1, 'UTF-8' ),
+				'UTF-8'
+			);
+		}
+
+		// only single word
+		preg_match_all( '#([A-Z]+)#', $name, $capitals );
+		if ( count( $capitals[1] ) >= 2 ) {
+			return mb_substr( implode( '', $capitals[1] ), 0, 2, 'UTF-8' );
+		}
+		return mb_strtoupper( mb_substr( $name, 0, 2, 'UTF-8' ), 'UTF-8' );
+
+	}
+
 
 
 	/**

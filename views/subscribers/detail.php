@@ -83,7 +83,7 @@ if ( $is_new ) {
 	<tr>
 		<td scope="row" class="avatar-wrap">
 			<?php if ( get_option( 'show_avatars' ) ) : ?>
-				<?php $avatar_url = $this->get_gravatar_uri( $subscriber->email, 400 ); ?>
+				<?php $avatar_url = $this->get_gravatar( $subscriber, 400 ); ?>
 				<div class="avatar<?php echo $subscriber->wp_id ? ' wp-user' : ''; ?>" title="<?php esc_attr_e( 'Source', 'mailster' ); ?>: Gravatar.com" style="background-image:url(<?php echo $avatar_url; ?>)"></div>
 				<?php if ( false !== strpos( $avatar_url, 'gravatar.com' ) ) : ?>
 				<p class="info"><?php esc_html_e( 'Source', 'mailster' ); ?>: <a href="https://gravatar.com" rel=”nofollow”>Gravatar.com</a></p>

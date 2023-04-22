@@ -223,7 +223,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			case 'name':
 				if ( get_option( 'show_avatars' ) ) {
 					$initials = trim( preg_replace( '/[^A-Z]+/', '', ucwords( $data['fullname'] ) ) );
-					$avatar   = '<div class="mailster-avatar"><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar_uri( $item->email, 80 ) . ')"></span></a></div>';
+					$avatar   = '<div class="mailster-avatar"><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar( $item->ID, 80 ) . ')"></span></a></div>';
 				} else {
 					$avatar = '';
 				}

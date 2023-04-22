@@ -80,6 +80,8 @@ class MailsterFrontpage {
 
 		$rules['^(index\.php/)?mailster/form$'] = 'index.php?_mailster_form=1';
 
+		$rules[ '^(index\.php/)?' . str_replace( ABSPATH, '', MAILSTER_UPLOAD_DIR ) . '/users/?([0-9A-Za-z]+)?/?.gif$' ] = 'index.php?_mailster_avatar=$matches[2]';
+
 		/**
 		 * Filters Mailster specific rewrite rules
 		 *
@@ -122,6 +124,7 @@ class MailsterFrontpage {
 		$vars[] = '_mailster_extra';
 		$vars[] = '_mailster_cron';
 		$vars[] = '_mailster_form';
+		$vars[] = '_mailster_avatar';
 		return $vars;
 
 	}
@@ -186,6 +189,8 @@ class MailsterFrontpage {
 
 
 	public function template_redirect() {
+
+		global $wp;
 
 		if ( is_404() ) {
 			global $wp;
@@ -259,6 +264,10 @@ class MailsterFrontpage {
 		// convert custom slugs
 		if ( get_query_var( '_mailster_page' ) && mailster( 'helper' )->using_permalinks() ) {
 			set_query_var( '_mailster_page', $this->get_page_by_slug( get_query_var( '_mailster_page' ) ) );
+		}
+		// avatar
+		if ( get_query_var( '_mailster_avatar' ) ) {
+			$this->make_avatar( get_query_var( '_mailster_avatar' ) );
 		}
 
 		if ( get_query_var( '_mailster' ) ) {
@@ -724,6 +733,7 @@ class MailsterFrontpage {
 	private function do_frontpage() {
 
 		if ( have_posts() ) :
+
 			while ( have_posts() ) :
 				the_post();
 
@@ -766,39 +776,15 @@ class MailsterFrontpage {
 						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
-					$content = mailster()->sanitize_content( $content, $meta['head'] );
-
-					$placeholder = mailster( 'placeholder', $content );
-					$placeholder->excerpt_filters( false );
-					$placeholder->set_campaign( get_the_ID() );
-
-					if ( mailster_option( 'tags_webversion' ) && $subscriber = mailster( 'subscribers' )->get_current_user() ) {
-						$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
-
-						$placeholder->set_subscriber( $subscriber->ID );
-						$placeholder->add( $userdata );
-
-						$placeholder->add(
-							array(
-								'firstname' => $subscriber->firstname,
-								'lastname'  => $subscriber->lastname,
-								'fullname'  => $subscriber->fullname,
-							)
-						);
-					}
-
-					$placeholder->add_defaults( get_the_ID() );
-					$placeholder->add_custom( get_the_ID() );
-
-					$content = $placeholder->get_content();
-					$content = mailster( 'helper' )->strip_structure_html( $content );
-					$content = links_add_target( $content, '_top' );
+					$content = mailster( 'campaigns' )->render( get_the_ID(), mailster_option( 'tags_webversion' ) );
 
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
 					}
-					$content = mailster( 'helper' )->add_mailster_styles( $content );
-					$content = mailster( 'helper' )->handle_shortcodes( $content );
+
+					$content = links_add_target( $content, '_top' );
+
+					$content = mailster()->sanitize_content( $content, $meta['head'] );
 
 					echo $content;
 
@@ -1411,6 +1397,100 @@ class MailsterFrontpage {
 		return $rep;
 
 	}
+
+
+	private function make_avatar( $initials ) {
+
+		$width  = 240;
+		$height = 240;
+
+		$text = strtoupper( $initials );
+
+		$im = imagecreatetruecolor( $width, $height );
+
+		$r = mt_rand( 0, 255 );
+		$b = mt_rand( 0, 255 );
+		$g = mt_rand( 0, 255 );
+
+		$colors = array(
+			array( 255, 193, 7 ),
+			array( 63, 81, 181 ),
+			array( 0, 188, 212 ),
+			array( 139, 195, 74 ),
+			array( 255, 64, 129 ),
+			array( 103, 58, 183 ),
+			array( 76, 175, 80 ),
+			array( 255, 87, 34 ),
+			array( 156, 39, 176 ),
+			array( 33, 150, 243 ),
+		);
+		$colors = array(
+			array( 218, 165, 32 ), // #DAA520
+			array( 47, 58, 125 ), // #2F3A7D
+			array( 0, 151, 167 ), // #0097A7
+			array( 124, 179, 66 ), // #7CB342
+			array( 215, 70, 138 ), // #D7468A
+			array( 90, 45, 157 ), // #5A2D9D
+			array( 85, 139, 47 ), // #558B2F
+			array( 216, 67, 21 ), // #D84315
+			array( 155, 27, 158 ), // #9B1B9E
+			array( 25, 118, 210 ), // #1976D2
+		);
+
+		$color = $colors[ array_rand( $colors ) ];
+
+		$bg         = imagecolorallocate( $im, $color[0], $color[1], $color[2] );
+		$font_color = imagecolorallocate( $im, 210, 213, 218 );
+
+		imagefilledrectangle( $im, 0, 0, $width, $height, $bg );
+
+		if ( function_exists( 'imagettftext' ) ) {
+
+			$font_size = max( 8, round( $width / strlen( $text ) * 0.7 ) );
+			$font      = MAILSTER_DIR . 'assets/font/Jost-Regular.ttf';
+			$bbox      = imagettfbbox( $font_size, 0, $font, $text );
+
+			$center_x = $width / 2 - ( abs( $bbox[4] - $bbox[6] ) / 2 );
+			$center_y = $height / 2 + ( abs( $bbox[3] - $bbox[5] ) / 2 );
+
+			imagettftext( $im, $font_size, 0, $center_x, $center_y, $font_color, $font, $text );
+
+		} else {
+
+			$font_size = 5;
+
+			$fw = imagefontwidth( $font_size );
+			$fh = imagefontheight( $font_size );
+			$l  = strlen( $text );
+			$tw = $l * $fw;
+
+			$center_x = ( $width - $tw ) / 2;
+			$center_y = ( $height - $font_size ) / 2;
+
+			imagestring( $im, $font_size, $center_x, $center_y, $text, $font_color );
+
+		}
+
+		// header( 'Expires: Thu, 31 Dec 2050 23:59:59 GMT' );
+		// header( 'Cache-Control: max-age=3600' );
+		// header( 'Pragma: cache' );
+		header( 'Content-Type: image/gif' );
+
+		$file = MAILSTER_UPLOAD_DIR . '/users/' . $initials . '.gif';
+
+		$dir = mailster( 'helper' )->mkdir( MAILSTER_UPLOAD_DIR . '/users' );
+
+		nocache_headers();
+
+		// write file
+		// imagegif( $im, $file );
+
+		imagegif( $im );
+
+		imagedestroy( $im );
+
+	}
+
 
 	private function do_404() {
 		global $wp_query;
