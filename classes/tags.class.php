@@ -85,7 +85,7 @@ class MailsterTags {
 			}
 		}
 
-		$wpdb->suppress_errors();
+		$errors = $wpdb->suppress_errors( true );
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
@@ -97,10 +97,12 @@ class MailsterTags {
 
 			do_action( 'mailster_update_tag', $tag_id );
 
+			$wpdb->suppress_errors( $errors );
 			return $tag_id;
 
 		} else {
 
+			$wpdb->suppress_errors( $errors );
 			return new WP_Error( 'tag_exists', $wpdb->last_error );
 		}
 
@@ -251,20 +253,18 @@ class MailsterTags {
 			'added'         => time(),
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
 
 			$name = $this->get_name_by_id( $tag_id );
 
 			do_action( 'mailster_tag_added', $tag_id, $subscriber_id, $name );
 
-			error_log( print_r( array( 'mailster_tag_added', $tag_id, $subscriber_id, $name ), true ) );
-
 		} else {
 			$success = false;
 		}
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 
@@ -328,20 +328,18 @@ class MailsterTags {
 			'subscriber_id' => $subscriber_id,
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
 
 			$name = $this->get_name_by_id( $tag_id );
 
 			do_action( 'mailster_tag_removed', $tag_id, $subscriber_id, $name );
 
-			error_log( print_r( array( 'mailster_tag_removed', $tag_id, $subscriber_id, $name ), true ) );
-
 		} else {
 			$success = false;
 		}
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 	}
@@ -371,14 +369,14 @@ class MailsterTags {
 			'subscriber_id' => $subscriber_id,
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
 
 		} else {
 			$success = false;
 		}
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 	}
