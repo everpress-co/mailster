@@ -544,34 +544,49 @@ class MailsterActions {
 
 		}
 
-		$sql = "SELECT a.post_id AS ID, a.meta_value AS parent_id FROM {$wpdb->postmeta} AS a WHERE a.meta_key = '_mailster_parent_id'";
+		$campaign_id_md5 = md5( serialize( $campaign_ids ) );
 
-		if ( isset( $campaign_ids ) ) {
-			$sql .= ' AND a.meta_value IN (' . implode( ',', $campaign_ids ) . ')';
+		if ( false === ( $parent_ids = mailster_cache_get( 'campaign_parents_' . $campaign_id_md5 ) ) ) {
+			$sql = "SELECT a.post_id AS ID, a.meta_value AS parent_id FROM {$wpdb->postmeta} AS a WHERE a.meta_key = '_mailster_parent_id'";
+
+			if ( isset( $campaign_ids ) ) {
+				$sql .= ' AND a.meta_value IN (' . implode( ',', $campaign_ids ) . ')';
+			}
+
+			$parent_ids = array();
+			$parents    = $wpdb->get_results( $sql );
+			foreach ( $parents as $parent ) {
+				$parent_ids[ $parent->ID ] = $parent->parent_id;
+			}
+
+			mailster_cache_set( 'campaign_parents_' . $campaign_id_md5, $parent_ids );
 		}
 
-		$parent_ids = array();
-		$parents    = $wpdb->get_results( $sql );
-		foreach ( $parents as $parent ) {
-			$parent_ids[ $parent->ID ] = $parent->parent_id;
+		$mod_action = str_replace( array( '_total', '_deleted' ), '', $action );
+		$table      = $mod_action;
+		$table      = str_replace( array( 'soft' ), '', $table );
+
+		$inner_cache_key = 'action_' . $table . $campaign_id_md5;
+
+		if ( false === ( $result = mailster_cache_get( $inner_cache_key ) ) ) {
+
+			$sql = "SELECT a.campaign_id AS ID, COUNT( DISTINCT COALESCE( a.subscriber_id, 1) ) AS count, COUNT(DISTINCT a.subscriber_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a";
+
+			if ( isset( $campaign_ids ) ) {
+				$sql .= ' WHERE a.campaign_id IN (' . implode( ',', $campaign_ids ) . ')';
+			}
+
+			if ( ! empty( $parent_ids ) ) {
+				$sql .= ' OR a.campaign_id IN (' . implode( ',', array_keys( $parent_ids ) ) . ')';
+			}
+
+			$sql .= ' GROUP BY a.campaign_id';
+
+			$result = $wpdb->get_results( $sql );
+
+			mailster_cache_set( $inner_cache_key, $result );
+
 		}
-
-		$table = $mod_action = str_replace( array( '_total', '_deleted' ), '', $action );
-		$table = str_replace( array( 'soft' ), '', $table );
-
-		$sql = "SELECT a.campaign_id AS ID, COUNT( DISTINCT COALESCE( a.subscriber_id, 1) ) AS count, COUNT(DISTINCT a.subscriber_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a";
-
-		if ( isset( $campaign_ids ) ) {
-			$sql .= ' WHERE a.campaign_id IN (' . implode( ',', $campaign_ids ) . ')';
-		}
-
-		if ( ! empty( $parent_ids ) ) {
-			$sql .= ' OR a.campaign_id IN (' . implode( ',', array_keys( $parent_ids ) ) . ')';
-		}
-
-		$sql .= ' GROUP BY a.campaign_id';
-
-		$result = $wpdb->get_results( $sql );
 
 		foreach ( $campaign_ids as $id ) {
 			if ( ! isset( $action_counts[ $id ] ) ) {
