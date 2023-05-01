@@ -501,7 +501,9 @@ class Mailster {
 		}
 
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster', 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests', 'mailster_convert', 'mailster_dashboard' ) ) ) {
+
+		// ignore if not a mailster page
+		if ( false === strpos( $page, 'mailster' ) ) {
 			return;
 		}
 
@@ -511,6 +513,12 @@ class Mailster {
 
 		if ( $page === 'mailster_convert' ) {
 			mailster_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) );
+			exit;
+		}
+
+		if ( $page === 'mailster-pricing' ) {
+			// TODO go to plans page
+			mailster_redirect( mailster_freemius()->checkout_url() );
 			exit;
 		}
 
@@ -617,9 +625,7 @@ class Mailster {
 		$url = $is_permalink
 			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
 			: add_query_arg(
-				array(
-					'mailster_unsubscribe' => md5( $campaign_id . '_unsubscribe' ),
-				),
+				array( 'mailster_unsubscribe' => md5( $campaign_id . '_unsubscribe' ) ),
 				$baselink
 			);
 
@@ -693,12 +699,7 @@ class Mailster {
 
 		$link = ( $is_permalink )
 			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
-			: add_query_arg(
-				array(
-					'mailster_profile' => $hash,
-				),
-				$baselink
-			);
+			: add_query_arg( array( 'mailster_profile' => $hash ), $baselink );
 
 		return $link;
 
@@ -2484,7 +2485,7 @@ class Mailster {
 				foreach ( $result['newsletter_homepage'] as $error ) {
 					$msg = $error['msg'];
 					if ( isset( $error['data']['link'] ) ) {
-						$msg .= ' (<a href="' . esc_url( $error['data']['link'] ) . '">' . esc_html__( 'Read more', 'mailster' ) . '</a>)';
+						$msg .= mailster()->beacon( $error['data']['link'] );
 					}
 					mailster_notice( $msg, 'error', true, 'homepage_info', true, true );
 				}
