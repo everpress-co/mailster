@@ -259,8 +259,6 @@ class MailsterTags {
 
 			do_action( 'mailster_tag_added', $tag_id, $subscriber_id, $name );
 
-			error_log( print_r( array( 'mailster_tag_added', $tag_id, $subscriber_id, $name ), true ) );
-
 		} else {
 			$success = false;
 		}
@@ -335,8 +333,6 @@ class MailsterTags {
 			$name = $this->get_name_by_id( $tag_id );
 
 			do_action( 'mailster_tag_removed', $tag_id, $subscriber_id, $name );
-
-			error_log( print_r( array( 'mailster_tag_removed', $tag_id, $subscriber_id, $name ), true ) );
 
 		} else {
 			$success = false;
