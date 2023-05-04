@@ -30,6 +30,11 @@
 		$continents = mailster( 'geo' )->get_continents( true );
 	}
 
+	if ( ! function_exists( 'wp_dropdown_roles' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/template.php';
+		require_once ABSPATH . 'wp-admin/includes/user.php';
+	}
+
 	?>
 <div class="mailster-conditions">
 	<?php echo mailster()->beacon( '611bb8346ffe270af2a9994e' ); ?>

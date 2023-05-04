@@ -177,6 +177,16 @@ class MailsterSubscribers {
 
 	public function bulk_actions() {
 
+		if ( isset( $_GET['force_confirmation'] ) ) {
+
+			if ( $this->send_confirmations( null, true ) ) {
+				mailster_remove_notice( 'force_confirmation' );
+				mailster_notice( esc_html__( 'Confirmation has been sent', 'mailster' ), 'success', true );
+				mailster_redirect( remove_query_arg( 'force_confirmation' ) );
+				exit;
+			}
+		}
+
 		if ( empty( $_POST ) ) {
 			return;
 		}
@@ -372,7 +382,7 @@ class MailsterSubscribers {
 					$ids = 'all' == $match[1] ? null : (int) $match[1];
 					if ( $list = (array) mailster( 'lists' )->get( $ids ) ) {
 						$list_ids = isset( $list['ID'] ) ? array( $list['ID'] ) : wp_list_pluck( $list, 'ID' );
-						$this->unassign_lists( $subscriber_ids, $list_ids, false, true );
+						$this->unassign_lists( $subscriber_ids, $list_ids );
 						$success_message = sprintf( esc_html__( '%1$d Subscribers confirmed to %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list_ids ) );
 					}
 				} elseif ( preg_match( '#^confirm_list_(\w+)#', $action, $match ) ) {
@@ -386,7 +396,7 @@ class MailsterSubscribers {
 					$ids = 'all' == $match[1] ? null : (int) $match[1];
 					if ( $list = (array) mailster( 'lists' )->get( $ids ) ) {
 						$list_ids = isset( $list['ID'] ) ? array( $list['ID'] ) : wp_list_pluck( $list, 'ID' );
-						mailster( 'lists' )->unconfirm_subscribers( $list->ID, $subscriber_ids );
+						mailster( 'lists' )->unconfirm_subscribers( $list_ids, $subscriber_ids );
 						$success_message = sprintf( esc_html__( '%1$d Subscribers unconfirmed from %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list_ids ) );
 					}
 				}
@@ -515,8 +525,8 @@ class MailsterSubscribers {
 
 					$current_lists = $this->get_lists( $subscriber->ID, true );
 
-					if ( $unasssign = array_diff( $current_lists, $lists ) ) {
-						$this->unassign_lists( $subscriber->ID, $unasssign );
+					if ( $unassign = array_diff( $current_lists, $lists ) ) {
+						$this->unassign_lists( $subscriber->ID, $unassign );
 					}
 					if ( $assign = array_diff( $lists, $current_lists ) ) {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
@@ -535,11 +545,11 @@ class MailsterSubscribers {
 						$tags = array();
 					}
 
-					if ( $unasssign = array_diff( $current_tags, $tags ) ) {
-						$this->unassign_tags( $subscriber->ID, $unasssign );
+					if ( $unassign = array_diff( $current_tags, $tags ) ) {
+						$this->unassign_tags( $subscriber->ID, $unassign );
 					}
 					if ( $assign = array_diff( $tags, $current_tags ) ) {
-						$this->assign_tags( $subscriber->ID, $assign, false );
+						$this->assign_tags( $subscriber->ID, $assign );
 					}
 
 					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
@@ -999,11 +1009,19 @@ class MailsterSubscribers {
 		}
 
 		if ( $new_subscriber ) {
-			return apply_filters( 'mailster_verify_new_subscriber', (array) $entry );
+			$result = apply_filters( 'mailster_verify_new_subscriber', (array) $entry );
+		} else {
+			$result = apply_filters( 'mailster_verify_subscriber', (array) $entry );
 		}
 
-		return apply_filters( 'mailster_verify_subscriber', (array) $entry );
+		// add the initial data to the error object
+		if ( is_wp_error( $result ) ) {
+			$result->add_data( $entry );
+		}
+
+		return $result;
 	}
+
 
 
 	/**
@@ -1060,7 +1078,7 @@ class MailsterSubscribers {
 		$data          = array();
 		$meta          = array();
 		$customfields  = array();
-		$lists         = null;
+		$lists         = array();
 		$subscriber_id = null;
 		$tags          = null;
 		$meta_keys     = $this->get_meta_keys( true );
@@ -1147,7 +1165,7 @@ class MailsterSubscribers {
 				$form = mailster( 'forms' )->get( $meta['form'], false );
 				// if form exists and is not a user choice and has lists
 				if ( $form && ! $form->userschoice && ! empty( $form->lists ) ) {
-					$this->assign_lists( $subscriber_id, $form->lists, false, $data['status'] == 0 ? false : true );
+					$lists = array_merge( $lists, $form->lists );
 				}
 			}
 			if ( $lists ) {
@@ -1452,15 +1470,6 @@ class MailsterSubscribers {
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
-		if ( ! is_array( $lists ) ) {
-			$lists = array( (int) $lists );
-		}
-
-		if ( $remove_old ) {
-			$this->unassign_lists( $subscriber_ids, null, $lists );
-		}
-
 		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old, $added );
 
 	}
@@ -1476,34 +1485,7 @@ class MailsterSubscribers {
 	 */
 	public function unassign_lists( $subscriber_ids, $lists = null, $not_list = null ) {
 
-		global $wpdb;
-
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
-
-		$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ')';
-
-		if ( ! is_null( $lists ) && ! empty( $lists ) ) {
-			if ( ! is_array( $lists ) ) {
-				$lists = array( $lists );
-			}
-
-			$sql .= ' AND list_id IN (' . implode( ', ', array_filter( $lists, 'is_numeric' ) ) . ')';
-		}
-		if ( ! is_null( $not_list ) && ! empty( $not_list ) ) {
-			if ( ! is_array( $not_list ) ) {
-				$not_list = array( $not_list );
-			}
-
-			$sql .= ' AND list_id NOT IN (' . implode( ', ', array_filter( $not_list, 'is_numeric' ) ) . ')';
-		}
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			do_action( 'mailster_unassign_lists', $subscriber_ids, $lists, $not_list );
-
-			return true;
-		}
-
-		return false;
+		return mailster( 'lists' )->unassign_subscribers( $lists, $subscriber_ids );
 
 	}
 
@@ -1518,16 +1500,7 @@ class MailsterSubscribers {
 	 */
 	public function assign_tags( $subscriber_ids, $tags, $remove_old = false ) {
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
-		if ( ! is_array( $tags ) ) {
-			$tags = array( $tags );
-		}
-
-		if ( $remove_old ) {
-			$this->unassign_tags( $subscriber_ids, null, $tags );
-		}
-
-		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids, $remove_old );
+		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids );
 
 	}
 
@@ -1537,39 +1510,23 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $subscriber_ids
 	 * @param unknown $tags          (optional)
-	 * @param unknown $not_tag       (optional)
 	 * @return unknown
 	 */
-	public function unassign_tags( $subscriber_ids, $tags = null, $not_tag = null ) {
+	public function unassign_tags( $subscriber_ids, $tags = null ) {
 
-		global $wpdb;
+		return mailster( 'tags' )->unassign_subscribers( $tags, $subscriber_ids );
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
+	}
 
-		$sql = "DELETE FROM {$wpdb->prefix}mailster_tags_subscribers WHERE subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ')';
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_id
+	 * @return unknown
+	 */
+	public function clear_tags( $subscriber_id ) {
 
-		if ( ! is_null( $tags ) && ! empty( $tags ) ) {
-			if ( ! is_array( $tags ) ) {
-				$tags = array( $tags );
-			}
-
-			$sql .= ' AND tag_id IN (' . implode( ', ', array_filter( $tags, 'is_numeric' ) ) . ')';
-		}
-		if ( ! is_null( $not_tag ) && ! empty( $not_tag ) ) {
-			if ( ! is_array( $not_tag ) ) {
-				$not_tag = array( $not_tag );
-			}
-
-			$sql .= ' AND tag_id NOT IN (' . implode( ', ', array_filter( $not_tag, 'is_numeric' ) ) . ')';
-		}
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			do_action( 'mailster_unassign_tags', $subscriber_ids, $tags, $not_tag );
-
-			return true;
-		}
-
-		return false;
+		return mailster( 'tags' )->clear( $subscriber_id );
 
 	}
 
@@ -3032,6 +2989,8 @@ class MailsterSubscribers {
 
 		$sql .= ' WHERE 1=1';
 
+		// only these statuses
+		$sql .= ' AND subscribers.status IN(0,1)';
 		// status is either pending or list assignment is pending
 		$sql .= ' AND (subscribers.status = 0 OR lists_subscribers.added = 0)';
 		// queue doesn't exist or has been sent already (and not removed from queue)
@@ -3064,6 +3023,23 @@ class MailsterSubscribers {
 				$subscribers[ $entry->ID ]->list_ids = array();
 			}
 			$subscribers[ $entry->ID ]->list_ids[] = $entry->list_id;
+		}
+
+		if ( false && ! $force && $subscribers ) {
+			$total       = $this->get_totals();
+			$entry_count = count( $subscribers );
+			$p           = $entry_count / $total;
+
+			// if more than 100 confirmation message or over 50% of the total users
+			if ( $entry_count > 100 || $p > 0.5 ) {
+				$msg  = '<h2>' . esc_html__( '[Action Required] An unusual high number of confirmation messages should be sent!', 'mailster' ) . '</h2>';
+				$msg .= '<p>' . sprintf( esc_html__( 'Mailster is about to send %1$s confirmation messages, which is %2$s of your current subscriber base.', 'mailster' ), number_format_i18n( $entry_count ), number_format_i18n( $p * 100 ) . '%' ) . '</p>';
+				$msg .= '<p>' . esc_html__( 'If this is correct please confirm this action. If not please check your subscribers!', 'mailster' ) . '</p>';
+				$msg .= '<p><a class="button button-primary" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . esc_html__( 'Check subscribers', 'mailster' ) . '</a> or <a href="' . wp_nonce_url( 'edit.php?post_type=newsletter&page=mailster_subscribers', -1, 'force_confirmation' ) . '" class="button">' . sprintf( esc_html__( 'Send confirmation messages to %s subscribers', 'mailster' ), number_format_i18n( $entry_count ) ) . '</a></p>';
+
+				mailster_notice( $msg, 'info', false, 'force_confirmation' );
+				return;
+			}
 		}
 
 		$count = 0;

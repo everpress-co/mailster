@@ -824,7 +824,10 @@ class MailsterManage {
 
 				if ( ! empty( $tag_ids ) ) {
 					$tag_ids = array_unique( $tag_ids );
-					mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $import_data['existing'] == 'overwrite' );
+					if ( $import_data['existing'] == 'overwrite' ) {
+						mailster( 'subscribers' )->clear_tags( $subscriber_id );
+					}
+					mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids );
 				}
 
 				mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );

@@ -1,7 +1,7 @@
 <div class="wrap" id="mailster-convert">
 <?php
-$user_email = mailster()->email();
-$license    = mailster()->license();
+$user_email = mailster()->get_email();
+$license    = mailster()->get_license();
 $dateformat = mailster( 'helper' )->dateformat();
 
 if ( empty( $user_email ) ) {

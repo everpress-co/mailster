@@ -86,9 +86,9 @@
 				<div class="customfield">
 					<a class="customfield-move-up" title="<?php esc_attr_e( 'move up', 'mailster' ); ?>">&#9650;</a>
 					<a class="customfield-move-down" title="<?php esc_attr_e( 'move down', 'mailster' ); ?>">&#9660;</a>
-					<div><span class="label"><?php esc_html_e( 'Field Name', 'mailster' ); ?>:</span><label><input type="text" name="mailster_options[custom_field][<?php echo $id; ?>][name]" value="<?php echo esc_attr( $data['name'] ); ?>" class="regular-text customfield-name"></label></div>
-					<div><span class="label"><?php esc_html_e( 'Tag', 'mailster' ); ?>:</span><span><code>{</code><input type="text" name="mailster_options[custom_field][<?php echo $id; ?>][id]" value="<?php echo sanitize_key( $id ); ?>" class="code"><code>}</code></span></div>
-					<div><span class="label"><?php esc_html_e( 'Type', 'mailster' ); ?>:</span><select class="customfield-type" name="mailster_options[custom_field][<?php echo $id; ?>][type]">
+					<div><span class="label"><?php esc_html_e( 'Field Name', 'mailster' ); ?>:</span><label><input type="text" name="mailster_options[custom_field][<?php echo esc_attr( $id ); ?>][name]" value="<?php echo esc_attr( $data['name'] ); ?>" class="regular-text customfield-name"></label></div>
+					<div><span class="label"><?php esc_html_e( 'Tag', 'mailster' ); ?>:</span><span><code>{</code><input type="text" name="mailster_options[custom_field][<?php echo esc_attr( $id ); ?>][id]" value="<?php echo sanitize_key( $id ); ?>" class="code"><code>}</code></span></div>
+					<div><span class="label"><?php esc_html_e( 'Type', 'mailster' ); ?>:</span><select class="customfield-type" name="mailster_options[custom_field][<?php echo esc_attr( $id ); ?>][type]">
 					<?php
 					foreach ( $types as $value => $name ) {
 						echo '<option value="' . $value . '" ' . selected( $data['type'], $value, false ) . '>' . esc_attr( $name ) . '</option>';
@@ -103,8 +103,8 @@
 						<?php foreach ( $values as $value ) : ?>
 						<li>
 							<span>&nbsp;</span>
-							<span class="customfield-value-box"><input type="text" name="mailster_options[custom_field][<?php echo $id; ?>][values][]" class="regular-text customfield-value" value="<?php echo $value; ?>">
-								<label><input type="radio" name="mailster_options[custom_field][<?php echo $id; ?>][default]" value="<?php echo $value; ?>" title="<?php esc_attr_e( 'this field is selected by default', 'mailster' ); ?>" <?php checked( isset( $data['default'] ) && $data['default'], true ); ?><?php disabled( ! in_array( $data['type'], array( 'dropdown', 'radio' ) ) ); ?>>
+							<span class="customfield-value-box"><input type="text" name="mailster_options[custom_field][<?php echo esc_attr( $id ); ?>][values][]" class="regular-text customfield-value" value="<?php echo esc_attr( $value ); ?>">
+								<label><input type="radio" name="mailster_options[custom_field][<?php echo esc_attr( $id ); ?>][default]" value="<?php echo esc_attr( $value ); ?>" title="<?php esc_attr_e( 'this field is selected by default', 'mailster' ); ?>" <?php checked( isset( $data['default'] ) && $data['default'] === $value, true ); ?><?php disabled( ! in_array( $data['type'], array( 'dropdown', 'radio' ) ) ); ?>>
 										<?php esc_html_e( 'default', 'mailster' ); ?>
 								</label> &nbsp; <a class="customfield-value-remove" title="<?php esc_attr_e( 'remove field', 'mailster' ); ?>">&#10005;</a>
 							</span>
@@ -117,7 +117,7 @@
 				<?php if ( 'checkbox' == $data['type'] ) : ?>
 					<div class="customfield-additional customfield-checkbox" style="display:block">
 						<span>&nbsp;</span>
-						<label><input type="hidden" name="mailster_options[custom_field][<?php echo $id; ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo $id; ?>][default]" value="1" title="<?php esc_attr_e( 'this field is selected by default', 'mailster' ); ?>"<?php checked( isset( $data['default'] ) && $data['default'], true ); ?>>
+						<label><input type="hidden" name="mailster_options[custom_field][<?php echo esc_attr( $id ); ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo esc_attr( $id ); ?>][default]" value="1" title="<?php esc_attr_e( 'this field is selected by default', 'mailster' ); ?>"<?php checked( isset( $data['default'] ) && $data['default'], true ); ?>>
 						<?php esc_html_e( 'checked by default', 'mailster' ); ?>
 						</label>
 					</div>

@@ -630,7 +630,8 @@ class MailsterTests {
 			|| ! preg_match( '#\[newsletter_confirm\]#', $hp->post_content )
 			|| ! preg_match( '#\[newsletter_unsubscribe\]#', $hp->post_content ) ) {
 
-			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), '611bbb5fb37d837a3d0e47d4' );
+				// TODO UPDATE FOR BLOCK FORMS
+			// $this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), '611bbb5fb37d837a3d0e47d4' );
 
 		}
 

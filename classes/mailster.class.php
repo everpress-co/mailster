@@ -289,6 +289,8 @@ class Mailster {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'maybe_add_admin_header' ) );
 
+			add_action( 'mailster_admin_header', array( &$this, 'add_admin_header' ) );
+
 			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
 
 		}
@@ -1272,7 +1274,7 @@ class Mailster {
 			return;
 		}
 
-		$this->add_admin_header();
+		do_action( 'mailster_admin_header' );
 
 	}
 
@@ -1286,7 +1288,7 @@ class Mailster {
 
 		add_action( 'in_admin_header', array( &$this, 'admin_header' ) );
 		add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
-		add_action( 'admin_notices', array( &$this, 'page_beacon' ), 1 );
+		add_action( 'admin_notices', array( &$this, 'page_beacon' ) );
 
 	}
 
@@ -1336,6 +1338,9 @@ class Mailster {
 				}
 
 				echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ), true );
+				break;
+			case 'newsletter_page_mailster-pricing':
+				echo mailster()->beacon( array( '64074c66512c5e08fd71ac91' ) );
 				break;
 			case 'newsletter_page_mailster_settings':
 				break;
@@ -1476,7 +1481,7 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		$this->add_admin_header();
+		do_action( 'mailster_admin_header' );
 
 		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style', 'mailster-admin-header' ), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script', 'mailster-admin-header' ), MAILSTER_VERSION, true );
@@ -1536,7 +1541,7 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		mailster()->add_admin_header();
+		do_action( 'mailster_admin_header' );
 
 		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/welcome-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -1551,8 +1556,6 @@ class Mailster {
 	public function tests_scripts_styles( $hook ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		mailster()->add_admin_header();
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
@@ -1815,11 +1818,11 @@ class Mailster {
 
 		$content_dir = dirname( MAILSTER_UPLOAD_DIR );
 
-		if ( version_compare( PHP_VERSION, '5.3' ) < 0 ) {
-			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires PHP version 5.3 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
+		if ( version_compare( PHP_VERSION, '7.2.5' ) < 0 ) {
+			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires PHP version 7.2.5 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
 		}
-		if ( version_compare( get_bloginfo( 'version' ), '3.8' ) < 0 ) {
-			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
+		if ( version_compare( get_bloginfo( 'version' ), '4.6' ) < 0 ) {
+			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires WordPress version 4.6 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
 		}
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			$errors->errors->add( 'DOMDocument', 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank" rel="noopener">DOMDocument</a> library.' );
@@ -2896,7 +2899,11 @@ class Mailster {
 						$info->support = $support;
 					}
 				} else {
-					$info->support = max( strtotime( $license->expiration ), $support );
+					if ( $license->expiration ) {
+						$info->support = max( strtotime( $license->expiration ), $support );
+					} else {
+						$info->support = true;
+					}
 				}
 			} else {
 				$info->support = true;
@@ -2924,21 +2931,21 @@ class Mailster {
 	}
 
 
-	public function license( $fallback = '' ) {
+	public function get_license( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
 		return $user ? $user->secret_key : $fallback;
 	}
 
-	public function email( $fallback = '' ) {
+	public function get_email( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
 		return $user ? $user->email : $fallback;
 	}
 
-	public function username( $fallback = '' ) {
+	public function get_username( $fallback = '' ) {
 
 		$user = mailster_freemius()->get_user();
 
