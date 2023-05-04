@@ -374,7 +374,7 @@ class MailsterLists {
 			}
 		}
 
-		$wpdb->suppress_errors();
+		$errors = $wpdb->suppress_errors( true );
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
@@ -388,10 +388,12 @@ class MailsterLists {
 
 			do_action( 'mailster_update_list', $list_id );
 
+			$wpdb->suppress_errors( $errors );
 			return $list_id;
 
 		} else {
 
+			$wpdb->suppress_errors( $errors );
 			return new WP_Error( 'list_exists', $wpdb->last_error );
 		}
 
@@ -524,9 +526,10 @@ class MailsterLists {
 		global $wpdb;
 
 		$success = true;
+		$added   = time();
 
 		$args  = array(
-			'added' => time(),
+			'added' => $added,
 		);
 		$where = array(
 			'list_id'       => $list_id,
@@ -536,18 +539,18 @@ class MailsterLists {
 			$where['added'] = 0;
 		}
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->update( "{$wpdb->prefix}mailster_lists_subscribers", $args, $where ) ) {
 
-			do_action( 'mailster_list_confirmed', $list_id, $subscriber_id );
+			do_action( 'mailster_list_confirmed', $list_id, $subscriber_id, $added );
 
 		} else {
 
 			$success = false;
 		}
 
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 
@@ -563,7 +566,7 @@ class MailsterLists {
 	public function unconfirm_subscribers( $list_ids, $subscriber_ids ) {
 
 		if ( ! is_array( $list_ids ) ) {
-			$list_ids = array( (int) $idlist_idss );
+			$list_ids = array( (int) $list_ids );
 		}
 
 		if ( ! is_array( $subscriber_ids ) ) {
@@ -609,8 +612,8 @@ class MailsterLists {
 			'subscriber_id' => $subscriber_id,
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->update( "{$wpdb->prefix}mailster_lists_subscribers", $args, $where ) ) {
 
 			do_action( 'mailster_list_unconfirmed', $list_id, $subscriber_id );
@@ -619,7 +622,7 @@ class MailsterLists {
 			$success = false;
 		}
 
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 
@@ -698,18 +701,20 @@ class MailsterLists {
 			'added'         => $added,
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_lists_subscribers", $args ) ) {
 
 			do_action( 'mailster_list_added', $list_id, $subscriber_id, $added );
+
 			if ( $added ) {
-				do_action( 'mailster_list_confirmed', $list_id, $subscriber_id );
+				do_action( 'mailster_list_confirmed', $list_id, $subscriber_id, $added );
+
 			}
 		} else {
 			$success = false;
 		}
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 
@@ -769,9 +774,8 @@ class MailsterLists {
 			'subscriber_id' => $subscriber_id,
 		);
 
-		$errors = $wpdb->suppress_errors;
+		$errors = $wpdb->suppress_errors( true );
 
-		$wpdb->suppress_errors = true;
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_lists_subscribers", $args ) ) {
 
 			do_action( 'mailster_list_removed', $list_id, $subscriber_id );
@@ -780,7 +784,7 @@ class MailsterLists {
 			$success = false;
 		}
 
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 	}
@@ -1576,13 +1580,7 @@ class MailsterLists {
 	public function on_activate( $new ) {
 
 		if ( $new ) {
-			$this->add(
-				array(
-					'name' => esc_html__( 'Default List', 'mailster' ),
-				),
-				false,
-				get_current_user_id()
-			);
+			$this->add( array( 'name' => esc_html__( 'Default List', 'mailster' ) ), false, get_current_user_id() );
 		}
 
 	}
