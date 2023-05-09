@@ -1819,11 +1819,11 @@ class Mailster {
 
 		$content_dir = dirname( MAILSTER_UPLOAD_DIR );
 
-		if ( version_compare( PHP_VERSION, '5.3' ) < 0 ) {
-			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires PHP version 5.3 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
+		if ( version_compare( PHP_VERSION, '7.2.5' ) < 0 ) {
+			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires PHP version 7.2.5 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
 		}
-		if ( version_compare( get_bloginfo( 'version' ), '3.8' ) < 0 ) {
-			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
+		if ( version_compare( get_bloginfo( 'version' ), '4.6' ) < 0 ) {
+			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires WordPress version 4.6 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
 		}
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			$errors->errors->add( 'DOMDocument', 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank" rel="noopener">DOMDocument</a> library.' );

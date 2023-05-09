@@ -9,7 +9,8 @@ if ( ! isset( $submenu[ $slug ] ) ) {
 }
 $current_screen = get_current_screen();
 
-if ( $current_screen->is_block_editor() ) {
+// do not show on any block editor screen
+if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
 	return;
 }
 

@@ -1580,13 +1580,7 @@ class MailsterLists {
 	public function on_activate( $new ) {
 
 		if ( $new ) {
-			$this->add(
-				array(
-					'name' => esc_html__( 'Default List', 'mailster' ),
-				),
-				false,
-				get_current_user_id()
-			);
+			$this->add( array( 'name' => esc_html__( 'Default List', 'mailster' ) ), false, get_current_user_id() );
 		}
 
 	}
