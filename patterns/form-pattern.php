@@ -1,6 +1,6 @@
 <?php
 
-$pattern_files = glob( MAILSTER_FORM_BLOCK_DIR . 'includes/pattern/*.php' );
+$pattern_files = glob( MAILSTER_DIR . 'patterns/forms/*.php' );
 
 $patterns = array();
 foreach ( $pattern_files as $file ) {

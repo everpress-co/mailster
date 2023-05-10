@@ -1044,7 +1044,7 @@ class MailsterBlockForms {
 
 		register_block_pattern_category( 'mailster-forms', array( 'label' => __( 'Mailster Forms', 'mailster' ) ) );
 
-		include MAILSTER_DIR . 'includes/form-pattern.php';
+		include MAILSTER_DIR . 'patterns/form-pattern.php';
 
 		foreach ( $patterns as $key => $pattern ) {
 
