@@ -25,6 +25,8 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/logs.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
+		require_once MAILSTER_DIR . 'classes/automation.class.php';
+		require_once MAILSTER_DIR . 'classes/trigger.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
 		require_once MAILSTER_DIR . 'classes/tags.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
@@ -61,6 +63,8 @@ class Mailster {
 				'logs'         => new MailsterLogs(),
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
+				'automations'  => new MailsterAutomations(),
+				'trigger'      => new MailsterTrigger(),
 				'lists'        => new MailsterLists(),
 				'tags'         => new MailsterTags(),
 				'forms'        => new MailsterForms(),
@@ -2282,6 +2286,22 @@ class Mailster {
                 PRIMARY KEY  (`ID`)
             ) $collate;",
 
+			"CREATE TABLE {$wpdb->prefix}mailster_workflows (
+				`ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				`subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+				`workflow_id` bigint(20) unsigned NULL DEFAULT NULL,
+				`trigger` varchar(40) NOT NULL,
+				`step` varchar(40) NULL DEFAULT '',
+				`added` int(11)  NULL,
+				`timestamp` int(11) NULL,
+				`finished` int(11) NOT NULL DEFAULT 0,
+				`error` varchar(190) NULL DEFAULT '',
+				UNIQUE KEY id (`subscriber_id`,`workflow_id`,`finished`),
+				KEY `subscriber_id` (`subscriber_id`),
+				KEY `workflow_id` (`workflow_id`),
+				KEY `finished` (`finished`),
+				PRIMARY KEY  (`ID`)
+			) $collate;",
 		);
 
 		$table_structure = apply_filters( 'mailster_table_structure', $table_structure, $collate );

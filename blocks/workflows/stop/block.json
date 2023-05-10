@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "mailster-workflow/stop",
+	"version": "0.1.0",
+	"title": "Stop",
+	"category": "mailster-automation-fields",
+	"keywords": ["stop"],
+	"parent": ["mailster-workflow/condition"],
+	"description": "This is a stop block which prevents any further action in the workflow.",
+	"example": {},
+	"supports": {
+		"html": false,
+		"className": false,
+		"customClassName": false,
+		"reusable": false
+	},
+	"attributes": {
+		"id": {
+			"type": "string"
+		},
+		"comment": {
+			"type": "string"
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

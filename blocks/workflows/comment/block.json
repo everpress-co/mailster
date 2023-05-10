@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "mailster-workflow/comment",
+	"version": "0.1.0",
+	"title": "Comment",
+	"category": "mailster-automation-fields",
+	"keywords": ["comment"],
+	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"description": "This is a comment block to better document your workflow. It has no effect on the workflow.",
+	"example": {
+		"attributes": {
+			"comment": "Code is Poetry"
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": false,
+		"customClassName": false,
+		"reusable": false
+	},
+	"attributes": {
+		"comment": {
+			"type": "string"
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

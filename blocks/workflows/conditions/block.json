@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "mailster-workflow/conditions",
+	"version": "0.1.0",
+	"title": "Condition",
+	"category": "mailster-automation-fields",
+	"keywords": ["container", "wrapper", "row", "section"],
+	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"description": "Define a condition",
+	"example": {},
+	"supports": {
+		"html": false,
+		"className": false,
+		"customClassName": false,
+		"reusable": false
+	},
+	"attributes": {
+		"id": {
+			"type": "string"
+		},
+		"weight": {
+			"type": "float",
+			"default": 0.5
+		},
+		"comment": {
+			"type": "string"
+		},
+		"conditions": {
+			"type": "string"
+		},
+		"render": {
+			"type": "boolean"
+		},
+		"plain": {
+			"type": "boolean"
+		}
+	},
+	"providesContext": {
+		"mailster-workflow/weight": "weight"
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

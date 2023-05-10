@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "mailster-workflow/triggers",
+	"version": "0.1.0",
+	"title": "Triggers",
+	"category": "mailster-automation-fields",
+	"description": "Define how this workflow gets triggered.",
+	"example": {},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"multiple": false,
+		"className": false,
+		"customClassName": false,
+		"inserter": false,
+		"lock": false
+	},
+	"attributes": {
+		"lock": {
+			"type": "object",
+			"default": {
+				"remove": true,
+				"move": true
+			}
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

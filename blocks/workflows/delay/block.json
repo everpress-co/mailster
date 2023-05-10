@@ -1,0 +1,49 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "mailster-workflow/delay",
+	"version": "0.1.0",
+	"title": "Delay",
+	"category": "mailster-automation-fields",
+	"keywords": ["delay", "time"],
+	"description": "Delay your workflow and continue at a later point.",
+	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"example": {},
+	"supports": {
+		"html": false,
+		"className": false,
+		"customClassName": false,
+		"reusable": false
+	},
+	"attributes": {
+		"id": {
+			"type": "string"
+		},
+		"amount": {
+			"type": "integer"
+		},
+		"unit": {
+			"type": "string"
+		},
+		"date": {
+			"type": "string"
+		},
+		"weekdays": {
+			"type": "array"
+		},
+		"month": {
+			"type": "integer"
+		},
+		"timezone": {
+			"type": "boolean",
+			"default": false
+		},
+		"comment": {
+			"type": "string"
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

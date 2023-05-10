@@ -1,0 +1,143 @@
+/**
+ * External dependencies
+ */
+
+import classnames from 'classnames';
+
+/**
+ * WordPress dependencies
+ */
+
+import { sprintf, __, _n } from '@wordpress/i18n';
+
+import { useBlockProps, RichText } from '@wordpress/block-editor';
+
+import { useEffect, useMemo, useState, useRef } from '@wordpress/element';
+import { useEntityProp } from '@wordpress/core-data';
+import { useSelect } from '@wordpress/data';
+import { Card, CardBody, CardFooter, CardMedia } from '@wordpress/components';
+import { addQueryArgs } from '@wordpress/url';
+import * as Icons from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
+
+import QueueBadge from '../inspector/QueueBadge';
+import Comment from '../inspector/Comment';
+import StepId from '../inspector/StepId';
+import EmailInspectorControls from './inspector';
+
+export default function Edit(props) {
+	const { attributes, setAttributes, isSelected, clientId } = props;
+	const { id, campaign, subject, preheader, comment, isExample } = attributes;
+	const className = [];
+
+	const [preview_url, setPreviewUrl] = useState(false);
+
+	const { getCampaignStats, getCampaigns, hasFinishedResolution } = useSelect(
+		'mailster/automation'
+	);
+	const allCampaigns = useSelect((select) =>
+		select('mailster/automation').getCampaigns()
+	);
+	const stats = useSelect(
+		(select) => select('mailster/automation').getCampaignStats(campaign),
+		[campaign]
+	);
+
+	const getCampaign = (id) => {
+		const a = allCampaigns.filter((camp) => camp.ID == campaign);
+		return a.length ? a[0] : null;
+	};
+
+	const campaignObj = getCampaign(campaign);
+
+	useEffect(() => {
+		if (!id || document.querySelectorAll('.mailster-step-' + id).length > 1)
+			setAttributes({ id: clientId.substring(30) });
+	});
+
+	useEffect(() => {
+		setPreviewUrl(getPreviewUrl(campaign));
+	}, [campaign]);
+
+	className.push('mailster-step-' + id);
+
+	!campaign && !isExample && className.push('mailster-step-incomplete');
+
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
+
+	const getPreviewUrl = (campaign) => {
+		if (!campaign) return false;
+		const url = new URL(
+			location.origin + location.pathname.replace('post-new.php', 'post.php')
+		);
+		const params = url.searchParams;
+		params.set('post', campaign);
+		params.set('action', 'preview_newsletter');
+		const replace = {
+			subject: subject || campaignObj?.subject,
+			preheader: preheader || campaignObj?.preheader,
+		};
+		for (var key in replace) {
+			if (replace[key]) params.append('replace[' + key + ']', replace[key]);
+		}
+		params.set('_cache', +new Date());
+
+		return url.toString();
+	};
+
+	const title = campaignObj?.title || '';
+
+	return (
+		<>
+			<EmailInspectorControls {...props} campaignObj={campaignObj} />
+			<div {...blockProps}>
+				<Card className="mailster-step">
+					<Comment {...props} />
+					<QueueBadge {...props} />
+					<CardBody>
+						<div className="mailster-step-label">
+							{sprintf(__('Send Email %s', 'mailster'), title)}
+						</div>
+						<div className="mailster-step-info">
+							{subject || campaignObj?.subject}
+						</div>
+					</CardBody>
+					<CardMedia>
+						<div className="email-preview">
+							{preview_url && <iframe src={preview_url} loading="lazy" />}
+							{isExample && <img src="https://dummy.mailster.co/268x262.jpg" />}
+						</div>
+					</CardMedia>
+
+					<CardFooter>
+						<div className="email-stats">
+							<div className="email-stats-sent">
+								<div className="email-stats-label">Sent</div>
+								<div className="email-stats-value">{stats?.sent_total}</div>
+							</div>
+							<div className="email-stats-opens">
+								<div className="email-stats-label">Opened</div>
+								<div className="email-stats-value">{stats?.opens_total}</div>
+							</div>
+							<div className="email-stats-clicks">
+								<div className="email-stats-label">Clicked</div>
+								<div className="email-stats-value">{stats?.clicks_total}</div>
+							</div>
+							<div className="email-stats-unsubs">
+								<div className="email-stats-label">Unsubs</div>
+								<div className="email-stats-value">{stats?.unsubs}</div>
+							</div>
+						</div>
+					</CardFooter>
+				</Card>
+				<div className="end-stop canvas-handle"></div>
+			</div>
+			<StepId {...props} />
+		</>
+	);
+}
