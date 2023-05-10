@@ -42,6 +42,7 @@ class MailsterAutomations {
 
 		add_action( 'classic_editor_plugin_settings', array( &$this, 'enable_on_classic_editor' ) );
 
+		add_shortcode( 'newsletter_block_form', array( &$this, 'block_forms_shortcode' ) );
 	}
 
 
@@ -1059,6 +1060,12 @@ class MailsterAutomations {
 		}
 
 		return $success;
+	}
+
+	public function block_forms_shortcode( $atts, $content ) {
+
+		return $this->render_form_with_options( $atts['id'], array(), false );
+
 	}
 
 }

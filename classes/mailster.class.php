@@ -29,6 +29,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/trigger.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
 		require_once MAILSTER_DIR . 'classes/tags.class.php';
+		require_once MAILSTER_DIR . 'classes/block-forms.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
 		require_once MAILSTER_DIR . 'classes/precheck.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
@@ -67,6 +68,7 @@ class Mailster {
 				'trigger'      => new MailsterTrigger(),
 				'lists'        => new MailsterLists(),
 				'tags'         => new MailsterTags(),
+				'block-forms'  => new MailsterBlockForms(),
 				'forms'        => new MailsterForms(),
 				'precheck'     => new MailsterPrecheck(),
 				'manage'       => new MailsterManage(),
@@ -2162,6 +2164,16 @@ class Mailster {
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_form_actions (
+				`ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				`form_id` bigint(20) unsigned NOT NULL,
+				`post_id` bigint(20) unsigned NOT NULL,
+				`subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+				`timestamp` int(11) NOT NULL DEFAULT 0,
+				`type` tinyint(1) unsigned NOT NULL,
+				PRIMARY KEY  (`ID`)
+			) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_links (
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
