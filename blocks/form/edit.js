@@ -50,13 +50,13 @@ function MailsterFormSelector(props) {
 	const { attributes, setAttributes, isSelected, selectForm, formId } = props;
 
 	const forms = useSelect((select) => {
-		return select('core').getEntityRecords('postType', 'newsletter_form');
+		return select('core').getEntityRecords('postType', 'mailster-form');
 	});
 
 	const isLoading = useSelect((select) => {
 		return select('core/data').isResolving('core', 'getEntityRecords', [
 			'postType',
-			'newsletter_form',
+			'mailster-form',
 		]);
 	});
 
@@ -174,7 +174,7 @@ export default function Edit(props) {
 		setDisplayForm(false);
 		dispatch('core').receiveEntityRecords(
 			'postType',
-			'newsletter_form',
+			'mailster-',
 			[],
 			{},
 			true
@@ -275,7 +275,7 @@ export default function Edit(props) {
 							<Button
 								variant="secondary"
 								icon={plus}
-								href={'post-new.php?post_type=newsletter_form'}
+								href={'post-new.php?post_type=mailster-'}
 								target={'edit_form_new'}
 								text={__('Create new form', 'mailster')}
 							/>

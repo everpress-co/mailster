@@ -649,6 +649,11 @@ if ( $old_version ) {
 			// rename custom settings
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_value` = replace(meta_value, %s, %s) WHERE meta_key = 'wp_user-settings'", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
 
+		case '3.3.3':
+			// change the post type of the forms
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
+
+
 
 		default:
 			mailster( 'convert' )->notice();

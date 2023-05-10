@@ -23,7 +23,6 @@ class MailsterBlockForms {
 		add_action( 'rest_api_init', array( &$this, 'register_settings' ) );
 
 		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
-		add_action( 'admin_print_scripts-edit.php', array( &$this, 'beta_notice' ) );
 
 		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
 
@@ -31,12 +30,12 @@ class MailsterBlockForms {
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
 
-		add_filter( 'manage_newsletter_form_posts_columns', array( &$this, 'columns' ), 1 );
-		add_action( 'manage_newsletter_form_posts_custom_column', array( &$this, 'custom_column' ), 10, 2 );
+		add_filter( 'manage_mailster-form_posts_columns', array( &$this, 'columns' ), 1 );
+		add_action( 'manage_mailster-form_posts_custom_column', array( &$this, 'custom_column' ), 10, 2 );
 
 		add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
 
-		add_action( 'save_post_newsletter_form', array( &$this, 'clear_cache' ) );
+		add_action( 'save_post_mailster-form', array( &$this, 'clear_cache' ) );
 		add_action( 'save_post_page', array( &$this, 'maybe_set_homepage' ), 10, 3 );
 		add_action( 'switch_theme', array( &$this, 'clear_inline_style' ) );
 
@@ -81,7 +80,7 @@ class MailsterBlockForms {
 	public function disable_block_unlocks( $settings, $context ) {
 
 		// just skip if not on our cpt
-		if ( 'newsletter_form' != get_post_type() || $context->name !== 'core/edit-post' ) {
+		if ( 'mailster-form' != get_post_type() || $context->name !== 'core/edit-post' ) {
 			return $settings;
 		}
 
@@ -117,15 +116,6 @@ class MailsterBlockForms {
 			)
 		);
 
-	}
-
-
-	public function beta_notice() {
-		$msg  = '<h2>Welcome to the new Block Forms page.</h2>';
-		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.</p>';
-		$msg .= '<p><strong>Block forms are currently in beta version. Some features are subject to change before the stable release.</strong></p>';
-		$msg .= '<p><a href="' . admin_url( 'post-new.php?post_type=newsletter_form' ) . '" class="button button-primary">' . esc_html__( 'Create new Form' ) . '</a> <a href="https://docs.mailster.co/#/block-forms-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-block-forms/issues" class="button button-link external">Submit feedback on Github</a></p>';
-		mailster_notice( $msg, 'info', true, 'newsletter_form_beta_notice', true, 'edit-newsletter_form' );
 	}
 
 
@@ -278,7 +268,7 @@ class MailsterBlockForms {
 			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'jquery', 'mailster-form-view-script', 'wp-api-fetch' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-form-block-preview', MAILSTER_URI . 'assets/css/form-block-preview' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-		} elseif ( get_post_type() == 'newsletter_form' ) {
+		} elseif ( get_post_type() == 'mailster-form' ) {
 			add_filter( 'the_content', array( &$this, 'render_form_in_content' ) );
 		} elseif ( $forms = $this->query_forms() ) {
 
@@ -447,7 +437,7 @@ class MailsterBlockForms {
 	private function query_forms( $for = array() ) {
 
 		$args = array(
-			'post_type'              => 'newsletter_form',
+			'post_type'              => 'mailster-form',
 			'no_found_rows'          => true,
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
@@ -534,14 +524,14 @@ class MailsterBlockForms {
 			'show_in_rest'        => true,
 
 		);
-		register_post_type( 'newsletter_form', $args );
+		register_post_type( 'mailster-form', $args );
 
 	}
 
 	public function register_post_meta() {
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'doubleoptin',
 			array(
 				'type'         => 'boolean',
@@ -552,7 +542,7 @@ class MailsterBlockForms {
 			)
 		);
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'gdpr',
 			array(
 				'type'         => 'boolean',
@@ -564,7 +554,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'userschoice',
 			array(
 				'type'         => 'boolean',
@@ -576,7 +566,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'redirect',
 			array(
 				'type'         => 'string',
@@ -588,7 +578,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'confirmredirect',
 			array(
 				'type'         => 'string',
@@ -600,7 +590,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'overwrite',
 			array(
 				'type'         => 'boolean',
@@ -612,7 +602,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'lists',
 			array(
 				'type'         => 'array',
@@ -630,7 +620,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'subject',
 			array(
 				'type'         => 'string',
@@ -640,7 +630,7 @@ class MailsterBlockForms {
 			)
 		);
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'headline',
 			array(
 				'type'         => 'string',
@@ -651,7 +641,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'content',
 			array(
 				'type'         => 'string',
@@ -662,7 +652,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'link',
 			array(
 				'type'         => 'string',
@@ -673,7 +663,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'tags',
 			array(
 				'type'         => 'array',
@@ -691,7 +681,7 @@ class MailsterBlockForms {
 		);
 
 		register_post_meta(
-			'newsletter_form',
+			'mailster-form',
 			'placements',
 			array(
 				'type'         => 'string',
@@ -726,7 +716,7 @@ class MailsterBlockForms {
 			}
 
 			register_post_meta(
-				'newsletter_form',
+				'mailster-form',
 				'placement_' . $placement_type,
 				array(
 					'single'       => true,
@@ -803,7 +793,7 @@ class MailsterBlockForms {
 
 	public function get( $id ) {
 		$post = get_post( $id );
-		if ( 'newsletter_form' !== $post->post_type ) {
+		if ( 'mailster-form' !== $post->post_type ) {
 			return false;
 		}
 		return $post;
@@ -813,7 +803,7 @@ class MailsterBlockForms {
 	public function get_all( $args = array() ) {
 
 		$defaults = array(
-			'post_type'      => 'newsletter_form',
+			'post_type'      => 'mailster-form',
 			'posts_per_page' => -1,
 		);
 
@@ -877,7 +867,7 @@ class MailsterBlockForms {
 			}
 		}
 
-		if ( $typenow === 'newsletter_form' ) {
+		if ( $typenow === 'mailster-form' ) {
 
 			// not in use on the form edit page
 			unregister_block_type( 'mailster/form' );
@@ -918,7 +908,7 @@ class MailsterBlockForms {
 			$post_type = get_current_screen()->post_type;
 		}
 
-		if ( 'newsletter_form' != $post_type ) {
+		if ( 'mailster-form' != $post_type ) {
 			return;
 		}
 
@@ -931,7 +921,7 @@ class MailsterBlockForms {
 
 	public function block_script_styles() {
 
-		if ( 'newsletter_form' != get_post_type() ) {
+		if ( 'mailster-form' != get_post_type() ) {
 			return;
 		}
 
@@ -980,7 +970,7 @@ class MailsterBlockForms {
 	public function allowed_block_types( $allowed_block_types, $context ) {
 
 		// just skip if not on our cpt
-		if ( 'newsletter_form' != get_post_type() || $context->name !== 'core/edit-post' ) {
+		if ( 'mailster-form' != get_post_type() || $context->name !== 'core/edit-post' ) {
 			return $allowed_block_types;
 		}
 
@@ -1006,7 +996,7 @@ class MailsterBlockForms {
 
 	public function block_editor_settings( $editor_settings, $block_editor_context ) {
 
-		if ( get_post_type( $block_editor_context->post ) !== 'newsletter_form' ) {
+		if ( get_post_type( $block_editor_context->post ) !== 'mailster-form' ) {
 			return $editor_settings;
 		}
 
@@ -1019,7 +1009,7 @@ class MailsterBlockForms {
 
 	public function block_categories( $categories ) {
 
-		if ( 'newsletter_form' != get_post_type() ) {
+		if ( 'mailster-form' != get_post_type() ) {
 			return $categories;
 		}
 
@@ -1038,7 +1028,7 @@ class MailsterBlockForms {
 
 		$query = wp_parse_url( wp_get_referer(), PHP_URL_QUERY );
 
-		if ( false === strpos( $query, 'post_type=newsletter_form' ) ) {
+		if ( false === strpos( $query, 'post_type=mailster-form' ) ) {
 			return;
 		}
 
@@ -1071,7 +1061,7 @@ class MailsterBlockForms {
 
 		$form = get_post( $form );
 
-		if ( get_post_type( $form ) != 'newsletter_form' ) {
+		if ( get_post_type( $form ) != 'mailster-form' ) {
 			return '';
 		}
 
@@ -1240,7 +1230,7 @@ class MailsterBlockForms {
 		// further checks for revisions
 		if ( get_post_type( $form ) === 'revision' ) {
 			$form = get_post( $form->post_parent );
-			if ( get_post_type( $form ) != 'newsletter_form' ) {
+			if ( get_post_type( $form ) != 'mailster-form' ) {
 				return;
 			}
 		}

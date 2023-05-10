@@ -30,7 +30,7 @@ export default function Edit(props) {
 
 	if (align) className.push('has-text-align-' + align);
 
-	const [meta, setMeta] = useEntityProp('postType', 'newsletter_form', 'meta');
+	const [meta, setMeta] = useEntityProp('postType', 'mailster-form', 'meta');
 
 	const successMessageDefault = meta.doubleoptin
 		? __('Please confirm your subscription!', 'mailster')

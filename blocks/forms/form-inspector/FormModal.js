@@ -53,11 +53,7 @@ const ModalContent = (props) => {
 		return <></>;
 	}
 
-	const [title, setTitle] = useEntityProp(
-		'postType',
-		'newsletter_form',
-		'title'
-	);
+	const [title, setTitle] = useEntityProp('postType', 'mailster-form', 'title');
 
 	return (
 		<>
@@ -84,11 +80,7 @@ function FormPattern({ pattern, setOpen }) {
 	const { content } = pattern;
 	const block = wp.blocks.parse(content);
 
-	const [title, setTitle] = useEntityProp(
-		'postType',
-		'newsletter_form',
-		'title'
-	);
+	const [title, setTitle] = useEntityProp('postType', 'mailster-form', 'title');
 
 	const attributes = block[0].attributes;
 

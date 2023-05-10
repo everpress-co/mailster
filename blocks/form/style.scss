@@ -4,15 +4,15 @@ html.mailster-form-active {
 		overflow: hidden;
 	}
 }
-body.single-newsletter_form * {
+body.single-mailster-form * {
 	visibility: hidden;
 }
-body.single-newsletter_form::after,
-body.single-newsletter_form::before {
+body.single-mailster-form::after,
+body.single-mailster-form::before {
 	display: none;
 }
 
-body.single-newsletter_form {
+body.single-mailster-form {
 	overflow: hidden;
 	.mailster-block-form-type-content:not(.foo) {
 		position: absolute;

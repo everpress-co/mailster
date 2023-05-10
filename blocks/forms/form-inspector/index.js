@@ -35,7 +35,7 @@ import PublishChecks from './PublishChecks';
 import '../store';
 
 function SettingsPanelPlugin() {
-	const [meta, setMeta] = useEntityProp('postType', 'newsletter_form', 'meta');
+	const [meta, setMeta] = useEntityProp('postType', 'mailster-form', 'meta');
 
 	const blocks = useSelect((select) => select('core/block-editor').getBlocks());
 

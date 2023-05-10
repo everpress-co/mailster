@@ -98,7 +98,7 @@ export default function Edit(props) {
 		props;
 	const { css, style, background, inputs } = attributes;
 
-	const [meta, setMeta] = useEntityProp('postType', 'newsletter_form', 'meta');
+	const [meta, setMeta] = useEntityProp('postType', 'mailster-form', 'meta');
 
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);

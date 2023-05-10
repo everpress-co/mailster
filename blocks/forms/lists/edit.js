@@ -32,7 +32,7 @@ export default function Edit(props) {
 	const { lists, vertical } = attributes;
 	const className = ['mailster-wrapper mailster-wrapper-_lists'];
 
-	const [meta, setMeta] = useEntityProp('postType', 'newsletter_form', 'meta');
+	const [meta, setMeta] = useEntityProp('postType', 'mailster-form', 'meta');
 
 	if (vertical) className.push('mailster-wrapper-is-vertical');
 
