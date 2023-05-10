@@ -122,7 +122,6 @@ function mailster_update_permission( $permissions ) {
 }
 
 
-// change length of licenses keys to accept the one from Envato 36 but allow some whitespace
 mailster_freemius()->add_filter( 'opt_in_error_message', 'mailster_freemius_opt_in_error_message' );
 function mailster_freemius_opt_in_error_message( $error ) {
 

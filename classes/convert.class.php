@@ -30,7 +30,7 @@ class MailsterConvert {
 	public function script_styles() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-convert', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-convert', MAILSTER_URI . 'assets/js/convert-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 	}
