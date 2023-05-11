@@ -216,7 +216,7 @@ import apiFetch from '@wordpress/api-fetch';
 					),
 					infoError = querySelector(info, '.mailster-block-form-info-error');
 
-				formEl.classList.remove('has-errors');
+				//formEl.classList.remove('has-errors');
 				formEl.classList.remove('completed');
 				querySelectorAll(formEl, '.is-error').forEach((wrapper) => {
 					wrapper.classList.remove('is-error');
@@ -266,6 +266,7 @@ import apiFetch from '@wordpress/api-fetch';
 						});
 
 						info.classList.remove('is-error');
+						formEl.classList.remove('has-errors');
 
 						if (isSubmission && response.data.redirect) {
 							setTimeout(() => (location.href = response.data.redirect), 150);

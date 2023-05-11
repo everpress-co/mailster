@@ -229,10 +229,11 @@ body.single-mailster-form {
 	.mailster-block-form-inner {
 		max-height: 98vh;
 		max-width: 98vw;
-		_overflow: auto;
 		overflow-y: auto;
-		_-ms-overflow-style: none;
 		scrollbar-width: none;
+	}
+	.wp-block-mailster-form-wrapper.loading .mailster-block-form-inner {
+		overflow: unset;
 	}
 	.mailster-block-form-inner::-webkit-scrollbar {
 		display: none;
@@ -498,7 +499,8 @@ body.single-mailster-form {
 	.mailster-wrapper-required.mailster-wrapper-asterisk
 		.mailster-group-radio
 		label.mailster-label::after {
-		content: '';
+		_content: '';
+		display: none;
 	}
 
 	label.mailster-label {

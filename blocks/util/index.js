@@ -81,85 +81,6 @@ export function useCustomFields(callback, dependencies) {
 	}, dependencies);
 }
 
-export function useEventListener(eventType, callback, element = window) {
-	const callbackRef = useRef(callback);
-
-	useEffect(() => {
-		callbackRef.current = callback;
-	}, [callback]);
-
-	useEffect(() => {
-		if (element == null) return;
-		const handler = (e) => callbackRef.current(e);
-		element.addEventListener(eventType, handler);
-
-		return () => element.removeEventListener(eventType, handler);
-	}, [eventType, element]);
-}
-
-export function useBlockAttributes() {
-	const { clientId } = useBlockEditContext();
-	const { updateBlockAttributes } = useDispatch('core/block-editor');
-
-	const attributes = useSelect(
-		(select) => {
-			const { getBlockAttributes } = select('core/block-editor');
-			const _attributes = getBlockAttributes(clientId) || {};
-
-			return _attributes;
-		},
-		[clientId]
-	);
-
-	const setAttributes = useCallback(
-		(newAttributes) => {
-			updateBlockAttributes(clientId, newAttributes);
-		},
-		[clientId]
-	);
-
-	return [attributes, setAttributes];
-}
-
-export function searchBlock(blockName, clientId = null, deep = true) {
-	const all = select('core/block-editor').getBlocks(clientId);
-
-	var found = all.find((block) => {
-		return new RegExp('^' + blockName, 'g').test(block.name);
-	});
-
-	if (found) {
-		found.rootClientId = clientId;
-		return found;
-	} else if (deep) {
-		for (var i = 0; i < all.length; i++) {
-			if ((found = searchBlock(blockName, all[i].clientId, deep))) {
-				return found;
-			}
-		}
-	}
-
-	return false;
-}
-
-export function searchBlocks(blockName, clientId = null, deep = true) {
-	const blocks = select('core/block-editor').getBlocks(clientId);
-
-	const matchingBlocks = blocks.filter((block) => block.name === blockName);
-
-	for (const block of blocks) {
-		if (deep && block.innerBlocks.length > 0) {
-			for (const innerblock of block.innerBlocks) {
-				matchingBlocks.push(
-					...searchBlocks(blockName, innerblock.clientId, deep)
-				);
-			}
-		}
-	}
-
-	return matchingBlocks;
-}
-
 export function formatLists(lists) {
 	if (!lists || !lists.length) {
 		return __('No list defined.', 'mailster');
@@ -499,3 +420,82 @@ export const getEntitiesInfo = (entities) => {
 		...mapping,
 	};
 };
+
+export function useEventListener(eventType, callback, element = window) {
+	const callbackRef = useRef(callback);
+
+	useEffect(() => {
+		callbackRef.current = callback;
+	}, [callback]);
+
+	useEffect(() => {
+		if (element == null) return;
+		const handler = (e) => callbackRef.current(e);
+		element.addEventListener(eventType, handler);
+
+		return () => element.removeEventListener(eventType, handler);
+	}, [eventType, element]);
+}
+
+export function useBlockAttributes() {
+	const { clientId } = useBlockEditContext();
+	const { updateBlockAttributes } = useDispatch('core/block-editor');
+
+	const attributes = useSelect(
+		(select) => {
+			const { getBlockAttributes } = select('core/block-editor');
+			const _attributes = getBlockAttributes(clientId) || {};
+
+			return _attributes;
+		},
+		[clientId]
+	);
+
+	const setAttributes = useCallback(
+		(newAttributes) => {
+			updateBlockAttributes(clientId, newAttributes);
+		},
+		[clientId]
+	);
+
+	return [attributes, setAttributes];
+}
+
+export function searchBlock(blockName, clientId) {
+	const all = select('core/block-editor').getBlocks(clientId);
+
+	var found = all.find((block) => {
+		return new RegExp(blockName, 'g').test(block.name);
+	});
+
+	if (found) {
+		found.rootClientId = clientId;
+		return found;
+	} else {
+		for (var i = 0; i < all.length; i++) {
+			if ((found = searchBlock(blockName, all[i].clientId))) {
+				return found;
+			}
+		}
+	}
+
+	return false;
+}
+
+export function searchBlocks(blockName, clientId = null, deep = true) {
+	const blocks = select('core/block-editor').getBlocks(clientId);
+
+	const matchingBlocks = blocks.filter((block) => block.name === blockName);
+
+	for (const block of blocks) {
+		if (deep && block.innerBlocks.length > 0) {
+			for (const innerblock of block.innerBlocks) {
+				matchingBlocks.push(
+					...searchBlocks(blockName, innerblock.clientId, deep)
+				);
+			}
+		}
+	}
+
+	return matchingBlocks;
+}

@@ -653,6 +653,9 @@ if ( $old_version ) {
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
+			// enable legacy forms (disabled by default)
+			$mailster_options['legacy_forms'] = true;
+
 
 
 		default:

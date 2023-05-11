@@ -129,6 +129,7 @@ class Mailster_Forms_Table extends WP_List_Table {
 				$actions['design']    = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=design" title="' . esc_html__( 'change design', 'mailster' ) . '">' . esc_html__( 'Design', 'mailster' ) . '</a>';
 				$actions['settings']  = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=settings" title="' . esc_html__( 'change settings', 'mailster' ) . '">' . esc_html__( 'Settings', 'mailster' ) . '</a>';
 				$actions['duplicate'] = '<a href="?post_type=newsletter&page=mailster_forms&duplicate=' . $item->ID . '&_wpnonce=' . wp_create_nonce( 'mailster_duplicate_nonce' ) . '" title="' . esc_html__( 'duplicate Form', 'mailster' ) . '">' . esc_html__( 'Duplicate', 'mailster' ) . '</a>';
+				$actions['convert']   = '<a href="?post_type=newsletter&page=mailster_forms&convert=' . $item->ID . '&_wpnonce=' . wp_create_nonce( 'mailster_convert_nonce' ) . '" title="' . esc_html__( 'convert Form', 'mailster' ) . '">' . esc_html__( 'Convert to Block Form', 'mailster' ) . '</a>';
 
 				echo implode( ' | ', $actions );
 				echo '</div>';

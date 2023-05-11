@@ -39,20 +39,8 @@ class MailsterBlockForms {
 		add_action( 'save_post_page', array( &$this, 'maybe_set_homepage' ), 10, 3 );
 		add_action( 'switch_theme', array( &$this, 'clear_inline_style' ) );
 
-		// add_filter( 'pre_update_option_mailster_inline_styles', array( &$this, 'maybe_add_inline_styles' ) );
 		add_filter( 'block_editor_settings_all', array( &$this, 'disable_block_unlocks' ), 10, 2 );
 
-	}
-
-
-	public function maybe_add_inline_styles( $value ) {
-
-		// remove some browser defaults
-		$value = str_replace( array( 'border: 2px inset rgb(118, 118, 118);', 'border: 2px inset rgb(0, 0, 0);' ), '', $value );
-
-		$value .= $this->get_theme_styles();
-
-		return $value;
 	}
 
 
@@ -932,8 +920,6 @@ class MailsterBlockForms {
 		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_add_inline_style( 'mailster-form-block-editor', $this->get_theme_styles() );
 		wp_add_inline_script( 'wp-blocks', 'var mailster_fields = ' . json_encode( array_values( $this->get_fields() ) ) . ';' );
-		wp_add_inline_script( 'wp-blocks', 'var mailster_inline_styles = ' . json_encode( get_option( 'mailster_inline_styles' ) ) . ';' );
-
 	}
 
 	public function get_fields() {
@@ -998,6 +984,15 @@ class MailsterBlockForms {
 
 		if ( get_post_type( $block_editor_context->post ) !== 'mailster-form' ) {
 			return $editor_settings;
+		}
+
+		// add inline styles
+		if ( $css = get_option( 'mailster_inline_styles' ) ) {
+			$editor_settings['styles'][] = array(
+				'css'            => $css,
+				'__unstableType' => 'user',
+				'isGlobalStyles' => true,
+			);
 		}
 
 		// disable code editor
@@ -1830,6 +1825,73 @@ class MailsterBlockForms {
 		$rate = $impressions ? $conversions / $impressions : 0;
 
 		return max( min( 1, $rate ), 0 );
+
+	}
+
+
+	public function on_activate( $new = false ) {
+
+		error_log( print_r( $new, true ) );
+
+		error_log( print_r( 'Asdasds', true ) );
+
+		if ( $new ) {
+
+			$content = file_get_contents( MAILSTER_DIR . 'patterns/forms/pattern-02.php' );
+
+			wp_insert_post(
+				array(
+					'post_title'   => esc_html__( 'Default Form', 'mailster' ),
+					'post_content' => wp_slash( $content ),
+					'post_status'  => 'publish',
+					'post_type'    => 'mailster-form',
+				)
+			);
+
+			update_option( 'mailster_inline_styles', '', 'no' );
+
+		}
+
+		return;
+
+		if ( $new ) {
+			$form_id = $this->add(
+				array(
+					'name'   => esc_html__( 'Default Form', 'mailster' ),
+					'submit' => esc_html__( 'Subscribe', 'mailster' ),
+				)
+			);
+			if ( ! is_wp_error( $form_id ) ) {
+				$this->update_fields(
+					$form_id,
+					array(
+						'email' => esc_html__( 'Email', 'mailster' ),
+					)
+				);
+				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
+				$this->assign_lists( $form_id, $list_id );
+			}
+			$profile_form_id = $this->add(
+				array(
+					'name'        => esc_html__( 'Profile', 'mailster' ),
+					'submit'      => esc_html__( 'Subscribe', 'mailster' ),
+					'userschoice' => true,
+				)
+			);
+			if ( ! is_wp_error( $profile_form_id ) ) {
+				$this->update_fields(
+					$profile_form_id,
+					array(
+						'email'     => esc_html__( 'Email', 'mailster' ),
+						'firstname' => esc_html__( 'First Name', 'mailster' ),
+						'lastname'  => esc_html__( 'Last Name', 'mailster' ),
+					)
+				);
+				mailster_update_option( 'profile_form', $profile_form_id );
+				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
+				$this->assign_lists( $profile_form_id, $list_id );
+			}
+		}
 
 	}
 }

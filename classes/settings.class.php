@@ -224,6 +224,7 @@ class MailsterSettings {
 
 			'welcome'                            => false,
 			'setup'                              => true,
+			'legacy_forms'                       => false,
 
 			'ID'                                 => md5( uniqid() ),
 

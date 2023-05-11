@@ -177,6 +177,8 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 			<p><?php esc_html_e( 'Mailster needs a Newsletter Homepage were users can subscribe, update and unsubscribe their subscription. It\'s a regular page with some required shortcodes.', 'mailster' ); ?></p>
 
+			<p><?php esc_html_e( 'Mailster will create a page with a default content which you can change later.', 'mailster' ); ?></p>
+
 			<?php
 
 			$buttontext = esc_html__( 'Update Newsletter Homepage', 'mailster' );
@@ -209,7 +211,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 			</p>
 
-			<p><?php echo wp_editor( $homepage['post_content'], 'post_content' ); ?></p>
+			<textarea name="post_content" class="regular-text" rows="10" hidden><?php echo esc_textarea( $homepage['post_content'] ); ?></textarea>
 
 			</form>
 
@@ -461,7 +463,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 				<ol>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_settings"><?php esc_html_e( 'Complete your settings', 'mailster' ); ?></a></li>
 					<li><a href="post-new.php?post_type=newsletter"><?php esc_html_e( 'Create your first campaign', 'mailster' ); ?></a></li>
-					<li><a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'Update your forms', 'mailster' ); ?></a></li>
+					<li><a href="edit.php?post_type=mailster-form"><?php esc_html_e( 'Update your forms', 'mailster' ); ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers"><?php esc_html_e( 'Import your existing subscribers', 'mailster' ); ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_templates"><?php esc_html_e( 'Check out the templates', 'mailster' ); ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Extend Mailster', 'mailster' ); ?></a></li>

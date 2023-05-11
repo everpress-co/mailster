@@ -6,7 +6,8 @@ mailster = (function (mailster, $, window, document) {
 		currentID,
 		status = $('.status'),
 		spinner = $('.spinner'),
-		hash = location.hash.substr(1);
+		hash = location.hash.substring(1),
+		tinymce = window.tinymce || false;
 
 	if (hash && $('#step_' + hash).length) {
 		currentStep = $('#step_' + hash);
@@ -105,37 +106,24 @@ mailster = (function (mailster, $, window, document) {
 		if ($('#deliverytab-' + hash).find('.quick-install').length) {
 			$('.delivery-next-step')
 				.addClass('disabled')
-				.html(
-					sprintf(mailster.l10n.setup.enable_first, $(this).html())
-				);
+				.html(sprintf(mailster.l10n.setup.enable_first, $(this).html()));
 		} else {
 			$('.delivery-next-step')
 				.removeClass('disabled')
-				.html(
-					sprintf(
-						mailster.l10n.setup.use_deliverymethod,
-						$(this).html()
-					)
-				);
+				.html(sprintf(mailster.l10n.setup.use_deliverymethod, $(this).html()));
 		}
 		return false;
 	});
 
 	mailster.$.window.on('hashchange', function () {
 		var id = location.hash.substr(1) || 'start',
-			current = $('.mailster-setup-steps-nav').find(
-				"a[href='#" + id + "']"
-			),
+			current = $('.mailster-setup-steps-nav').find("a[href='#" + id + "']"),
 			next,
 			prev;
 
 		if (current.length) {
 			step(id);
-			current
-				.parent()
-				.parent()
-				.find('a')
-				.removeClass('next prev current');
+			current.parent().parent().find('a').removeClass('next prev current');
 			current.parent().prevAll().find('a').addClass('prev');
 			current.addClass('current');
 			if (tinymce && tinymce.activeEditor)

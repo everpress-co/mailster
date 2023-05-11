@@ -45,6 +45,7 @@ import './editor.scss';
 import HomepageInspectorControls from '../homepage/inspector';
 import { searchBlock, searchBlocks } from '../util';
 import { TABS } from '../homepage/constants';
+import InlineStyles from '../util/InlineStyles';
 
 function MailsterFormSelector(props) {
 	const { attributes, setAttributes, isSelected, selectForm, formId } = props;
@@ -113,7 +114,7 @@ export default function Edit(props) {
 	const blockRef = useRef();
 
 	useEffect(() => {
-		contextAlign && setAttributes({ align: contextAlign });
+		setAttributes({ align: contextAlign });
 	}, [contextAlign]);
 
 	const selectForm = (id) => {
@@ -323,6 +324,7 @@ export default function Edit(props) {
 					</Panel>
 				</InspectorControls>
 			)}
+			<InlineStyles />
 		</>
 	);
 }

@@ -274,7 +274,7 @@ export default function Edit(props) {
 							referenceBlock.clientId,
 							referenceBlock.rootClientId
 					  )
-					: all.length;
+					: 0;
 
 				dispatch('core/block-editor').insertBlock(
 					block,
@@ -302,7 +302,7 @@ export default function Edit(props) {
 							referenceBlock.clientId,
 							referenceBlock.rootClientId
 					  )
-					: all.length;
+					: 0;
 
 				dispatch('core/block-editor').insertBlock(
 					block,
@@ -327,12 +327,6 @@ export default function Edit(props) {
 				hidden // overwritten via CSS
 				style={cleanedFormStyle}
 			>
-				{window.mailster_inline_styles && !inlineStyles && (
-					<style className="mailster-custom-styles">
-						{window.mailster_inline_styles}
-					</style>
-				)}
-
 				{inlineStyles && (
 					<style className="mailster-custom-styles">{inlineStyles}</style>
 				)}
@@ -360,11 +354,7 @@ export default function Edit(props) {
 					'mailster'
 				)}
 			</div>
-			{inEditor && (
-				<div className="mailster-editor-inlinestyles" hidden>
-					<InlineStyles />
-				</div>
-			)}
+			{inEditor && <InlineStyles />}
 			<BlockRecovery {...props} />
 		</>
 	);
