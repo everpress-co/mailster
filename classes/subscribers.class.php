@@ -1017,15 +1017,11 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $entry
 	 * @param unknown $overwrite               (optional)
-	 * @param unknown $deprecated              (optional)
+	 * @param unknown $merge              (optional)
 	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function update( $entry, $overwrite = true, $deprecated = null, $subscriber_notification = false ) {
-
-		if ( ! is_null( $deprecated ) ) {
-			_deprecated_argument( __FUNCTION__, '4.0', 'The $merge argument is deprecated' );
-		}
+	public function update( $entry, $overwrite = true, $merge = false, $subscriber_notification = false ) {
 
 		global $wpdb;
 
@@ -1231,15 +1227,11 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $entry
 	 * @param unknown $overwrite               (optional)
-	 * @param unknown $deprecated              (optional)
+	 * @param unknown $merge                   (optional)
 	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add( $entry, $overwrite = false, $deprecated = null, $subscriber_notification = true ) {
-
-		if ( ! is_null( $deprecated ) ) {
-			_deprecated_argument( __FUNCTION__, '4.0', 'The $merge argument is deprecated' );
-		}
+	public function add( $entry, $overwrite = false, $merge = null, $subscriber_notification = true ) {
 
 		$now = time();
 
@@ -1291,7 +1283,7 @@ class MailsterSubscribers {
 			return new WP_Error( 'not_verified', esc_html__( 'Subscriber failed verification', 'mailster' ) );
 		}
 
-		$subscriber_id = $this->update( $entry, $overwrite, null, $subscriber_notification );
+		$subscriber_id = $this->update( $entry, $overwrite, $merge, $subscriber_notification );
 
 		if ( ! is_wp_error( $subscriber_id ) ) {
 			do_action( 'mailster_add_subscriber', $subscriber_id );

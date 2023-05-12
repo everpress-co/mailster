@@ -13,10 +13,11 @@ import {
 	useState,
 	useCallback,
 } from '@wordpress/element';
-import { select, subscribe, useSelect } from '@wordpress/data';
+import { select, subscribe, useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 import { escape } from 'lodash';
 import { dateI18n } from '@wordpress/date';
+import { useBlockEditContext } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -437,8 +438,7 @@ export function useEventListener(eventType, callback, element = window) {
 	}, [eventType, element]);
 }
 
-export function useBlockAttributes() {
-	const { clientId } = useBlockEditContext();
+export function useBlockAttributes(clientId) {
 	const { updateBlockAttributes } = useDispatch('core/block-editor');
 
 	const attributes = useSelect(

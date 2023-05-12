@@ -17,6 +17,7 @@ import {
 	FlexItem,
 	Spinner,
 	Tip,
+	TextControl,
 } from '@wordpress/components';
 
 import { chevronUp, chevronDown } from '@wordpress/icons';
@@ -27,8 +28,9 @@ import { useSelect } from '@wordpress/data';
  */
 
 export default function ListsPanel(props) {
-	const { meta, setMeta, attributes, setAttributes } = props;
+	const { meta, setMeta, attributes = {}, setAttributes } = props;
 	const { userschoice, lists } = meta;
+	const { showLabel, label } = attributes;
 
 	const allLists = useSelect((select) => select('mailster/form').getLists());
 
@@ -107,10 +109,10 @@ export default function ListsPanel(props) {
 		<>
 			<PanelRow>
 				<CheckboxControl
-					label="Users Choice"
+					label={__('Users Choice', 'mailster')}
 					checked={!!meta.userschoice}
 					onChange={() => setMeta({ userschoice: !meta.userschoice })}
-					help="Users decide which list they subscribe to"
+					help={__('Users decide which list they subscribe to', 'mailster')}
 				/>
 			</PanelRow>
 			{!allLists && <Spinner />}
@@ -171,6 +173,28 @@ export default function ListsPanel(props) {
 						</Flex>
 					</BaseControl>
 				</PanelRow>
+			)}
+			{meta.userschoice && (
+				<>
+					<PanelRow>
+						<CheckboxControl
+							label={__('Show Label', 'mailster')}
+							checked={showLabel}
+							onChange={() => setAttributes({ showLabel: !showLabel })}
+						/>
+					</PanelRow>
+					<PanelRow>
+						<TextControl
+							className="widefat"
+							value={label}
+							onChange={(val) => setAttributes({ label: val })}
+							help={__(
+								'If the label is hidden it will be used for screen readers.',
+								'mailster'
+							)}
+						/>
+					</PanelRow>
+				</>
 			)}
 			{meta.userschoice && lists.length > 0 && (
 				<PanelRow>

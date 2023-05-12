@@ -24,13 +24,23 @@
 			}
 		},
 		"vertical": {
-			"type": "boolean"
+			"type": "boolean",
+			"default": false
 		},
 		"id": {
 			"type": "string",
 			"source": "attribute",
 			"selector": "input",
 			"attribute": "id"
+		},
+		"showLabel": {
+			"type": "boolean",
+			"default": false
+		},
+		"label": {
+			"type": "string",
+			"source": "html",
+			"selector": "legend"
 		},
 		"lists": {
 			"type": "array",
