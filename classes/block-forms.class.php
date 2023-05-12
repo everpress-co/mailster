@@ -41,6 +41,8 @@ class MailsterBlockForms {
 
 		add_filter( 'block_editor_settings_all', array( &$this, 'disable_block_unlocks' ), 10, 2 );
 
+		add_shortcode( 'newsletter_block_form', array( &$this, 'shortcode' ) );
+
 	}
 
 
@@ -321,6 +323,14 @@ class MailsterBlockForms {
 		}
 
 		return false;
+
+	}
+
+
+
+	public function shortcode( $atts, $content ) {
+
+		return $this->render_form( $atts['id'], array(), false );
 
 	}
 
