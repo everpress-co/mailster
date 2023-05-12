@@ -60,3 +60,27 @@
 .status-private td {
 	filter: grayscale(100%);
 }
+
+.empty-table-wrap {
+	position: absolute;
+	background-color: #fff;
+	top: 0;
+	left: -20px;
+	right: -20px;
+	display: flex;
+	clear: both;
+	margin: 0;
+	height: calc(100vh - 92px);
+}
+.empty-table-wrap .empty-table-wrap-inner {
+	margin: 10% auto;
+	width: 600px;
+	text-align: center;
+}
+.empty-table-wrap .empty-table-wrap-inner h2 {
+	font-size: 2em;
+	line-height: 1.3em;
+}
+.empty-table-wrap .empty-table-wrap-inner p {
+	font-size: 110%;
+}

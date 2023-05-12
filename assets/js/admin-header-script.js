@@ -33,8 +33,10 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			}
 
+			var mode = event.altKey ? 'modal' : $(this).data('mode') || 'sidebar';
+
 			beacon('article', $(this).data('article'), {
-				type: event.altKey ? 'modal' : 'sidebar',
+				type: mode,
 			});
 			return false;
 		})

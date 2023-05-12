@@ -32,6 +32,7 @@ class MailsterBlockForms {
 
 		add_filter( 'manage_mailster-form_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_mailster-form_posts_custom_column', array( &$this, 'custom_column' ), 10, 2 );
+		add_filter( 'wp_list_table_class_name', array( &$this, 'wp_list_table_class_name' ), 10, 2 );
 
 		add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
 
@@ -195,6 +196,20 @@ class MailsterBlockForms {
 		$sql .= " AND (wp_posts.post_status = 'publish') ORDER BY wp_posts.post_date DESC LIMIT 0, 1";
 
 		return $wpdb->get_var( $sql );
+
+	}
+
+
+	public function wp_list_table_class_name( $class_name, $args ) {
+
+		if ( $args['screen']->id !== 'edit-mailster-form' ) {
+			return $class_name;
+		}
+
+		require_once MAILSTER_DIR . 'classes/block-forms.table.class.php';
+		$class_name = 'Mailster_Block_Forms_Table';
+
+		return $class_name;
 
 	}
 

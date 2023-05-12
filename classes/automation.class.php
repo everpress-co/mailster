@@ -19,7 +19,6 @@ class MailsterAutomations {
 		add_action( 'rest_api_init', array( &$this, 'register_conditions_block' ) );
 
 		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
-		add_action( 'admin_print_scripts-edit.php', array( &$this, 'beta_notice' ) );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'beta_badge' ) );
 
 		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
@@ -31,6 +30,7 @@ class MailsterAutomations {
 
 		add_filter( 'manage_mailster-workflow_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_mailster-workflow_posts_custom_column', array( &$this, 'columns_content' ), 10, 2 );
+		add_filter( 'wp_list_table_class_name', array( &$this, 'wp_list_table_class_name' ), 10, 2 );
 
 		add_action( 'mailster_cron_workflow', array( &$this, 'wp_schedule' ) );
 
@@ -575,7 +575,7 @@ class MailsterAutomations {
 		$msg  = '<h2>Welcome to the new Automations page.</h2>';
 		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.</p>';
 		$msg .= '<p><strong>Automations are currently in beta version. Some features are subject to change before the stable release.</strong></p>';
-		$msg .= '<p><a href="' . admin_url( 'post-new.php?post_type=mailster-workflow' ) . '" class="button button-primary">' . esc_html__( 'Create new Automation' ) . '</a> <a href="https://docs.mailster.co/#/automations-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-automations/issues" class="button button-link external">Submit feedback on Github</a></p>';
+		$msg .= '<p><a href="' . admin_url( 'post-new.php?post_type=mailster-workflow' ) . '" class="button button-primary">' . esc_html__( 'Create Automation' ) . '</a> <a href="https://docs.mailster.co/#/automations-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-automations/issues" class="button button-link external">Submit feedback on Github</a></p>';
 		mailster_notice( $msg, 'info', true, 'mailster-workflow_beta_notice', true, 'edit-mailster-workflow' );
 	}
 
@@ -617,6 +617,20 @@ class MailsterAutomations {
 		}
 
 		return $post_states;
+	}
+
+
+	public function wp_list_table_class_name( $class_name, $args ) {
+
+		if ( $args['screen']->id !== 'edit-mailster-workflow' ) {
+			return $class_name;
+		}
+
+		require_once MAILSTER_DIR . 'classes/automation.table.class.php';
+		$class_name = 'Mailster_Automations_Table';
+
+		return $class_name;
+
 	}
 
 
