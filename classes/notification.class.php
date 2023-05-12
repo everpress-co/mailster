@@ -211,31 +211,57 @@ class MailsterNotification {
 				return $subscriber->email;
 
 			case 'confirmation_subject':
-				$form = $this->get_form_options( $options['form'], $subscriber );
-				return $form->subject;
+				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+				$form    = get_post( $form_id );
+
+				if ( ! $form || $form->post_type != 'mailster-form' ) {
+
+					// legacy
+					$form = $this->get_form_options( $options['form'], $subscriber );
+					return $form->subject;
+				}
+
+				return get_post_meta( $form_id, 'subject', true );
 
 			case 'confirmation_file':
 				$form = $this->get_form_options( $options['form'], $subscriber );
 				return $form->template;
 
 			case 'confirmation_headline':
-				$form = $this->get_form_options( $options['form'], $subscriber );
-				return $form->headline;
+				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+				$form    = get_post( $form_id );
+
+				if ( ! $form || $form->post_type != 'mailster-form' ) {
+
+					// legacy
+					$form = $this->get_form_options( $options['form'], $subscriber );
+					return $form->headline;
+				}
+
+				return get_post_meta( $form_id, 'headline', true );
 
 			case 'confirmation_replace':
-				if ( isset( $options['form'] ) ) {
-					$form    = $this->get_form_options( $options['form'], $subscriber, false, true );
-					$form_id = $form->ID;
+				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+				$form    = get_post( $form_id );
+
+				if ( ! $form || $form->post_type != 'mailster-form' ) {
+
+					// legacy
+					if ( isset( $options['form'] ) ) {
+						$form    = $this->get_form_options( $options['form'], $subscriber, false, true );
+						$form_id = $form->ID;
+					} else {
+						$form_id = null;
+					}
 				} else {
-					$form_id = null;
+
 				}
 
 				$subscriber_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID );
 				$list_names       = wp_list_pluck( $subscriber_lists, 'name' );
 
 				$list_ids = isset( $options['list_ids'] ) ? array_filter( $options['list_ids'] ) : null;
-
-				$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
+				$link     = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
 
 				return wp_parse_args(
 					array(
@@ -599,18 +625,28 @@ class MailsterNotification {
 	 */
 	private function template_confirmation( $subscriber, $options ) {
 
-		$form = $this->get_form_options( $options['form'], $subscriber );
+		$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+		$form    = get_post( $form_id );
 
-		if ( false === strpos( $form->content, '{link}' ) ) {
-			$form->content .= "\n{link}";
+		if ( ! $form || $form->post_type != 'mailster-form' ) {
+
+			// legacy
+			$form = $this->get_form_options( $options['form'], $subscriber );
+			if ( false === strpos( $form->content, '{link}' ) ) {
+				$form->content .= "\n{link}";
+			}
+			$content = $form->content;
+
+		} else {
+			$content = get_post_meta( $form_id, 'content', true );
 		}
 
-		echo nl2br( $form->content );
+		echo wpautop( $content );
 
 		?>
 		<div itemscope itemtype="http://schema.org/EmailMessage">
 			<div itemprop="action" itemscope itemtype="http://schema.org/ConfirmAction">
-			<meta itemprop="name" content="<?php echo $form->link; ?>"/>
+			<meta itemprop="name" content="<?php echo esc_url( $form->link ); ?>"/>
 			<div itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
 			  <link itemprop="url" href="{linkaddress}"/>
 			</div>

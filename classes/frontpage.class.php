@@ -597,11 +597,24 @@ class MailsterFrontpage {
 					$form_id = mailster( 'subscribers' )->meta( $subscriber_id, 'form' );
 				}
 
-				if ( ! $form_id ) {
-					$form = mailster( 'forms' )->get( null, false, true );
-					$form = $form[0];
+				$form = get_post( $form_id );
+
+				// legacy form
+				if ( ! $form || $form->post_type != 'mailster-form' ) {
+					if ( ! $form_id ) {
+						$form = mailster( 'forms' )->get( null, false, true );
+						$form = $form[0];
+					} else {
+						$form = mailster( 'forms' )->get( $form_id, false, true );
+					}
+					$target = $form->confirmredirect;
 				} else {
-					$form = mailster( 'forms' )->get( $form_id, false, true );
+					$target = get_post_meta( $form_id, 'confirmredirect', true );
+
+				}
+
+				if ( ! $target ) {
+					$target = $this->get_link( 'subscribe', $subscriber->hash, true );
 				}
 
 				if ( isset( $extra[0] ) ) {
@@ -610,8 +623,6 @@ class MailsterFrontpage {
 					// confirm all lists
 					$list_ids = null;
 				}
-
-				$target = ! empty( $form->confirmredirect ) ? $form->confirmredirect : $this->get_link( 'subscribe', $subscriber->hash, true );
 
 				// subscriber no "pending" anymore
 				if ( 0 == $subscriber->status ) {
@@ -637,12 +648,18 @@ class MailsterFrontpage {
 					if ( $subscriber_id = mailster( 'subscribers' )->update( $user_meta, true, false, true ) ) {
 
 						if ( ! is_wp_error( $subscriber_id ) ) {
+							// count conversion (not legacy forms)
+							if ( $form instanceof WP_Post ) {
+								mailster( 'block-forms' )->conversion( $form->ID, $subscriber_id );
+							}
+
 							/**
 							 * Run after the users confirms the subscription
 							 *
 							 * @param int $subscriber_id The ID of the subscriber
 							 */
 							do_action( 'mailster_subscriber_subscribed', $subscriber_id );
+
 						}
 					} else {
 
