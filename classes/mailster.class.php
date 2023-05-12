@@ -515,6 +515,8 @@ class Mailster {
 
 		if ( $page === 'mailster' ) {
 			$page = 'mailster_dashboard';
+			mailster_redirect( 'admin.php?page=mailster_dashboard' );
+			exit;
 		}
 
 		if ( $page === 'mailster_convert' ) {
@@ -533,8 +535,7 @@ class Mailster {
 			exit;
 		}
 
-		mailster_redirect( 'admin.php?page=' . $page, 302 );
-		exit;
+		return;
 
 	}
 
@@ -1264,9 +1265,6 @@ class Mailster {
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'remove_menu_entries' ) );
 
-		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
-		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
-
 		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'manage_options', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
@@ -1386,15 +1384,6 @@ class Mailster {
 		mailster_update_option( 'setup', false );
 		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 		include MAILSTER_DIR . 'views/setup.php';
-
-	}
-
-
-	public function welcome_page() {
-
-		mailster_update_option( 'welcome', false );
-		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
-		include MAILSTER_DIR . 'views/welcome.php';
 
 	}
 
@@ -1538,21 +1527,6 @@ class Mailster {
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $hook
-	 */
-	public function welcome_scripts_styles( $hook ) {
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		do_action( 'mailster_admin_header' );
-
-		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/welcome-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-	}
 
 
 	/**
@@ -2307,6 +2281,7 @@ class Mailster {
 				`added` int(11)  NULL,
 				`timestamp` int(11) NULL,
 				`finished` int(11) NOT NULL DEFAULT 0,
+				`try` int(11) NOT NULL DEFAULT 0,
 				`error` varchar(190) NULL DEFAULT '',
 				UNIQUE KEY id (`subscriber_id`,`workflow_id`,`finished`),
 				KEY `subscriber_id` (`subscriber_id`),

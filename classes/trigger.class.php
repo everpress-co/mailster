@@ -42,6 +42,16 @@ class MailsterTrigger {
 		$this->anniversary();
 	}
 
+	public function run_late( $args ) {
+
+		error_log( print_r( func_get_args(), true ) );
+
+		// _run_delayed_workflow( $workflow_id, $trigger, $step );
+
+		error_log( print_r( 'RUN LATE', true ) );
+
+	}
+
 	public function trigger( $workflow_id, $trigger, $subscriber_id, $step = null ) {
 
 		$this->add_job( $workflow_id, $trigger, $subscriber_id, $step );
@@ -98,6 +108,12 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( 'list_add' );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'list_add' );
+
+			error_log( print_r( $options, true ) );
+
+			if ( ! isset( $options['lists'] ) ) {
+				continue;
+			}
 
 			if ( in_array( $list_id, $options['lists'] ) ) {
 				$this->add_job( $workflow, 'list_add', $subscriber_id );
@@ -325,10 +341,15 @@ class MailsterTrigger {
 
 		$success = $this->queue_job( $job );
 
-		if ( $success && ! $subscriber_id ) {
-			// run this to get the actual subscribers for the workflow
-			// TODO check if working
-			do_action( 'mailster_trigger', $workflow, $trigger, $subscriber_id );
+		if ( $success ) {
+
+			// TODO this will trigger each workflow imidiatly - consider to run it only once a minute
+
+			if ( ! $subscriber_id ) {
+				require_once MAILSTER_DIR . 'classes/workflow.class.php';
+				$wf     = new MailsterWorkflow( $workflow, $trigger, $subscriber_id, $step );
+				$result = $wf->run();
+			}
 		}
 
 		return $success;

@@ -169,7 +169,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 		<div class="mailster-setup-step" id="step_homepage">
 
-			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?><?php echo mailster()->beacon( '611bbb5fb37d837a3d0e47d4' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?><?php echo mailster()->beacon( '6453abdab9f4b70821b98a1b' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -463,6 +463,7 @@ $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 				<ol>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_settings"><?php esc_html_e( 'Complete your settings', 'mailster' ); ?></a></li>
 					<li><a href="post-new.php?post_type=newsletter"><?php esc_html_e( 'Create your first campaign', 'mailster' ); ?></a></li>
+					<li><a href="post-new.php?post_type=mailster-workflow"><?php esc_html_e( 'Create your first automation', 'mailster' ); ?></a></li>
 					<li><a href="edit.php?post_type=mailster-form"><?php esc_html_e( 'Update your forms', 'mailster' ); ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers"><?php esc_html_e( 'Import your existing subscribers', 'mailster' ); ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_templates"><?php esc_html_e( 'Check out the templates', 'mailster' ); ?></a></li>

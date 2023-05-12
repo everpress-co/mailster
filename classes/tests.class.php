@@ -645,10 +645,12 @@ class MailsterTests {
 	}
 	private function test_form_exist() {
 
-		$forms = mailster( 'forms' )->get_all();
+		$legacy_forms = mailster( 'forms' )->get_all();
 
-		if ( ! count( $forms ) ) {
-			$this->error( sprintf( esc_html__( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . esc_html__( 'Create a new form now', 'mailster' ) . '</a>' ) );
+		$block_forms = mailster( 'block-forms' )->get_all();
+
+		if ( ! count( $block_forms ) && ! count( $legacy_forms ) ) {
+			$this->error( sprintf( esc_html__( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="post-new.php?post_type=mailster-form">' . esc_html__( 'Create a new form now', 'mailster' ) . '</a>' ) );
 		}
 
 	}

@@ -1,4 +1,18 @@
 <?php
+
+
+register_block_pattern(
+	'mailster-workflow/webhook',
+	array(
+		'title'         => __( 'Web hook', 'mailster' ),
+		'description'   => __( 'Start with your own workflow.', 'mailster' ),
+		'viewportWidth' => 400,
+		'postTypes'     => array( 'mailster-workflow' ),
+		'categories'    => array( 'mailster-custom-category' ),
+		'content'       => '<!-- wp:mailster-workflow/triggers --><!-- wp:mailster-workflow/trigger  /--><!-- /wp:mailster-workflow/triggers --><!-- wp:mailster-workflow/action {"action":"webhook","webhook":"https://webhook.site/45ef2bb3-5213-419b-9bb0-d959f844fcc4"} /-->',
+	)
+);
+
 register_block_pattern(
 	'mailster-workflow/scratch',
 	array(

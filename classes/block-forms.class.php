@@ -1831,10 +1831,6 @@ class MailsterBlockForms {
 
 	public function on_activate( $new = false ) {
 
-		error_log( print_r( $new, true ) );
-
-		error_log( print_r( 'Asdasds', true ) );
-
 		if ( $new ) {
 
 			$content = file_get_contents( MAILSTER_DIR . 'patterns/default-form.php' );

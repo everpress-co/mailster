@@ -68,11 +68,14 @@ class MailsterWorkflow {
 			$id   = isset( $block['attrs']['id'] ) ? $block['attrs']['id'] : null;
 			$type = str_replace( 'mailster-workflow/', '', $block['blockName'] );
 			$arg  = array(
-				'type'   => $type,
-				'attr'   => $block['attrs'],
-				'id'     => $id,
-				'parent' => $parent,
+				'type' => $type,
+				'attr' => $block['attrs'],
+				'id'   => $id,
 			);
+
+			if ( $parent ) {
+				$arg['parent'] = $parent;
+			}
 
 			if ( $type === 'conditions' ) {
 				$arg['yes'] = $this->parse( $block['innerBlocks'][0]['innerBlocks'], $id );
@@ -155,9 +158,29 @@ class MailsterWorkflow {
 			// more info here
 		} elseif ( is_wp_error( $result ) ) {
 
+			$this->error_notice( $result );
+
 		}
 
 		return $result;
+
+	}
+
+	private function error_notice( WP_Error $error, $notice_id = null ) {
+
+		if ( is_null( $notice_id ) ) {
+			$notice_id = 'workflow_error_' . $this->workflow->ID;
+		}
+
+		$error_code = $error->get_error_code();
+		$error_data = $error->get_error_data();
+		$error_msg  = $error->get_error_message();
+		$link       = admin_url( 'post.php?post=' . $this->workflow->ID . '&action=edit' );
+		$steplink   = $link;
+		if ( isset( $error_data['id'] ) ) {
+			$steplink .= '#step-' . $error_data['id'];
+		}
+		mailster_notice( sprintf( 'Workflow %s had a problem: %s', '"<a href="' . esc_url( $steplink ) . '">' . get_the_title( $this->workflow ) . '</a>"', '<strong>' . $error_msg . '</strong>' ), $error_code, false, $notice_id );
 
 	}
 
@@ -319,14 +342,41 @@ class MailsterWorkflow {
 			case 'action':
 				$result = $this->action( $step );
 
-				// try again
+				// try again wuth logic of retry action
 				if ( is_wp_error( $result ) ) {
+
+					$tries = (int) $this->entry->try;
+					$tries++;
+					$error_msg = $result->get_error_message();
+					$max_tries = 10;
+
+					// Stop after more tries
+					if ( $tries > $max_tries ) {
+
+						$error = new WP_Error( 'error', sprintf( __( 'Action failed with %1$s after %2$d tries. Workflow has been finished.', 'mailster' ), '"' . $error_msg . '"', $tries ), $step );
+						// finish with error
+						$this->finish( array( 'error' => $error_msg ) );
+
+						return $error;
+					}
+
+					$try_again_after = 60 * $tries + 60;
+					$try_again_after = 6;
+
+					$error = new WP_Error( 'warning', sprintf( __( 'Action failed with %1$s', 'mailster' ), '"' . $error_msg . '"', $tries ), $step );
+					$this->error_notice( $error, 'workflow_error_action_' . $step['id'] . '_' . $this->subscriber );
+
 					$this->update(
 						array(
-							'timestamp' => time() + 60,
-							'error'     => $result->get_error_message(),
+							'timestamp' => time() + $try_again_after,
+							'error'     => $error_msg,
+							'try'       => $tries,
 						)
 					);
+
+					// return false to not go to the next step
+					return false;
+
 				}
 
 				return $result;
@@ -372,7 +422,7 @@ class MailsterWorkflow {
 		$action = isset( $step['attr']['action'] ) ? $step['attr']['action'] : null;
 
 		if ( ! $action ) {
-			return new WP_Error( 'info', 'No Action for this step.', $step );
+			return new WP_Error( 'info', 'No Action for this step . ', $step );
 		}
 
 		error_log( print_r( 'ACTION ' . $step['attr']['action'] . ' ' . $step['id'] . ' for ' . $this->subscriber, true ) );
@@ -465,6 +515,10 @@ class MailsterWorkflow {
 				mailster( 'subscribers' )->unsubscribe( $this->subscriber, $this->workflow->ID, 'UNSUBSCRIBED FROM WORKFLOW' );
 				break;
 
+			case 'webhook':
+				return $this->webhook( $step );
+				break;
+
 			default:
 				return new WP_Error( 'info', 'Invalid action', $step );
 				break;
@@ -472,6 +526,58 @@ class MailsterWorkflow {
 
 		return true;
 
+	}
+
+
+
+
+	private function webhook( $step ) {
+
+		$url = isset( $step['attr']['webhook'] ) ? $step['attr']['webhook'] : null;
+
+		if ( ! $url ) {
+			return new WP_Error( 'error', 'No Webhook defined', $step );
+		}
+		$subscriber = mailster( 'subscribers' )->get( $this->subscriber, true );
+
+		$data = array(
+			'workflow'   => array(
+				'id'   => $this->workflow->ID,
+				'name' => $this->workflow->post_title,
+			),
+			'step'       => $step['attr'],
+			'subscriber' => $subscriber,
+		);
+
+		$args = array(
+			'timeout'    => 5,
+			'headers'    => array(
+				'content-type' => 'application/json',
+			),
+			'user-agent' => 'Mailster/' . MAILSTER_VERSION,
+			'method'     => 'POST',
+			'body'       => json_encode( $data ),
+		);
+
+		error_log( print_r( $url, true ) );
+
+		$response = wp_remote_request( $url, $args );
+		$code     = wp_remote_retrieve_response_code( $response );
+		$body     = wp_remote_retrieve_body( $response );
+
+		// if the webhook failed try again after 5 minutes and stop the workflow after 3 tries
+		if ( $code !== 200 ) {
+
+			$error = get_status_header_desc( $code );
+			return new WP_Error( 'error', $error, $step );
+
+		}
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return true;
 	}
 
 
@@ -507,13 +613,13 @@ class MailsterWorkflow {
 				$conditions = $params['conditions'];
 
 				if ( $this->subscriber && ! mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
-					error_log( print_r( 'CONDITION NOT PASSED!!', true ) );
+					error_log( print_r( 'CONDITION NOT PASSED ! ! ', true ) );
 					$this->delete();
 					return false;
 				}
 			}
 
-			error_log( print_r( 'USE TRIGGER ' . $this->trigger, true ) );
+			error_log( print_r( 'use TRIGGER ' . $this->trigger, true ) );
 
 			switch ( $this->trigger ) {
 				case 'date':
@@ -528,7 +634,6 @@ class MailsterWorkflow {
 						}
 
 						$query_args = array(
-							'include'    => $this->subscriber,
 							'return_ids' => true,
 							'conditions' => $conditions,
 						);
@@ -579,7 +684,7 @@ class MailsterWorkflow {
 
 						// $step = isset( $trigger['attr']['id'] ) ? $trigger['attr']['id'] : null;
 						if ( ! empty( $subscriber_ids ) ) {
-							mailster( 'trigger' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, time() );
+							mailster( 'trigger' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
 						}
 						$this->delete();
 						return false;
@@ -587,9 +692,6 @@ class MailsterWorkflow {
 
 					// round it down to second 00
 					$timestamp = strtotime( date( 'Y-m-d H:i', $timestamp ) );
-
-					error_log( print_r( date( 'Y-m-d H:i:s', $timestamp ), true ) );
-					error_log( print_r( date( 'Y-m-d H:i:s' ), true ) );
 
 					if ( time() < $timestamp ) {
 						error_log( print_r( 'TIMESTAMP NOT REACHED', true ) );
@@ -602,7 +704,7 @@ class MailsterWorkflow {
 					if ( ! $this->subscriber ) {
 
 						$query_args = array(
-							'include'    => $this->subscriber,
+							'include '   => $this->subscriber,
 							'return_ids' => true,
 							'conditions' => $conditions,
 						);
@@ -637,7 +739,7 @@ class MailsterWorkflow {
 
 		// no such trigger found in this workflow
 		$this->delete();
-		return new WP_Error( 'error', 'No matching trigger found!', $step );
+		return new WP_Error( 'error', 'No matching trigger found ! ', $step );
 
 	}
 
@@ -692,12 +794,12 @@ class MailsterWorkflow {
 			return false;
 		}
 
-		// TODO check when step is inclomplete and the campaigns hasn't been sent already
+			// TODO check when step is inclomplete and the campaigns hasn't been sent already
 
-		// only continue with the next step if campaign has been sent
-		$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber, 'sent', $campaign->ID );
+			// only continue with the next step if campaign has been sent
+			$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber, 'sent', $campaign->ID );
 
-		return (bool) $has_been_sent;
+			return (bool) $has_been_sent;
 	}
 
 	private function stop( $step ) {
@@ -864,15 +966,21 @@ class MailsterWorkflow {
 
 	}
 
-	private function finish() {
+	private function finish( array $args = array() ) {
 		error_log( print_r( 'FINISHED', true ) );
-		$this->update(
+
+		$args = wp_parse_args(
+			$args,
 			array(
 				'finished'  => time(),
 				'step'      => null,
 				'timestamp' => null,
 				'error'     => '',
-			)
+			),
 		);
+
+		error_log( print_r( $args, true ) );
+
+		$this->update( $args );
 	}
 }

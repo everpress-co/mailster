@@ -96,6 +96,12 @@ class MailsterAutomations {
 				'label' => esc_html__( 'Unsubscribe', 'mailster' ),
 				'info'  => esc_html__( 'Unsubscribes a subscriber.', 'mailster' ),
 			),
+			array(
+				'id'    => 'webhook',
+				'icon'  => 'cog',
+				'label' => esc_html__( 'Webhook', 'mailster' ),
+				'info'  => esc_html__( 'Triggers a webhook.', 'mailster' ),
+			),
 		);
 
 		return apply_filters( 'mailster_workflow_actions', $actions );
@@ -182,8 +188,14 @@ class MailsterAutomations {
 
 		$count = $wpdb->get_var( $wpdb->prepare( $query, 'mailster-workflow', 'publish' ) );
 
+		$limit = 3;
+
+		if ( mailster_freemius()->is_plan( 'standard', true ) ) {
+			$limit = 10;
+		}
+
 		// include the current one so not >=
-		if ( $count > 3 ) {
+		if ( $count > $limit ) {
 
 			$post = array(
 				'ID'          => $post_id,
@@ -319,7 +331,7 @@ class MailsterAutomations {
 
 			// run now if timestamp is now
 			if ( $entry->timestamp <= $now ) {
-				call_user_func_array( array( $this, 'run' ), $args );
+				call_user_func_array( array( $this, 'run_all' ), $args );
 			} else {
 				// add the timestamp to allow multiple events every minute
 				$args['timestamp'] = (int) floor( $entry->timestamp / 60 ) * 60;
@@ -333,7 +345,7 @@ class MailsterAutomations {
 
 	// only used for mailster_workflow hook
 	public function _run_delayed_workflow( $workflow_id, $trigger, $step ) {
-		$this->run( $workflow_id, $trigger, $step );
+		$this->run_all( $workflow_id, $trigger, $step );
 	}
 
 
@@ -361,7 +373,7 @@ class MailsterAutomations {
 
 	}
 
-	private function run( $workflow_id, $trigger, $step = null ) {
+	private function run_all( $workflow_id, $trigger, $step = null ) {
 
 		require_once MAILSTER_DIR . 'classes/workflow.class.php';
 
@@ -410,19 +422,6 @@ class MailsterAutomations {
 			$wf = new MailsterWorkflow( $workflow, $trigger, $subscriber, $step );
 			// messure time
 			$result = $wf->run();
-			if ( is_wp_error( $result ) ) {
-				$error_code = $result->get_error_code();
-
-				$error_data = $result->get_error_data();
-				$error_msg  = $result->get_error_message();
-				$link       = admin_url( 'post.php?post=' . $workflow->ID . '&action=edit' );
-				$steplink   = $link;
-				if ( isset( $error_data['id'] ) ) {
-					$steplink .= '#step-' . $error_data['id'];
-				}
-				mailster_notice( sprintf( 'Workflow %s had a problem: %s', '<strong>"<a href="' . esc_url( $link ) . '">' . get_the_title( $workflow ) . '</a>"</strong>', '<a href="' . esc_url( $steplink ) . '">' . $error_msg . '</a>' ), $error_code, false, 'workflow_error_' . $workflow->ID );
-
-			}
 
 			// stop if it takes to long to prevent timeouts
 			$endtime = microtime( true ) - $start;
