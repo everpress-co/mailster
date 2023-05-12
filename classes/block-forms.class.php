@@ -1837,7 +1837,7 @@ class MailsterBlockForms {
 
 		if ( $new ) {
 
-			$content = file_get_contents( MAILSTER_DIR . 'patterns/forms/pattern-02.php' );
+			$content = file_get_contents( MAILSTER_DIR . 'patterns/default-form.php' );
 
 			wp_insert_post(
 				array(
