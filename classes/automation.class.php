@@ -43,6 +43,7 @@ class MailsterAutomations {
 		add_action( 'classic_editor_plugin_settings', array( &$this, 'enable_on_classic_editor' ) );
 
 		add_shortcode( 'newsletter_block_form', array( &$this, 'block_forms_shortcode' ) );
+		add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 	}
 
 
@@ -180,7 +181,28 @@ class MailsterAutomations {
 	}
 
 
-	public function limit_posts( $post_id, $post, $old_status ) {
+	public function get_limit() {
+
+		$limit = 3;
+
+		if ( mailster_freemius()->is_plan( 'plus', true ) ) {
+			$limit = 10;
+		} elseif ( mailster_freemius()->is_plan( 'pro', true ) ) {
+			$limit = false;
+		}
+
+		return $limit;
+	}
+
+
+
+	public function limit_reached() {
+
+		$limit = $this->get_limit();
+
+		if ( ! $limit ) {
+			return false;
+		}
 
 		global $wpdb;
 
@@ -188,25 +210,31 @@ class MailsterAutomations {
 
 		$count = $wpdb->get_var( $wpdb->prepare( $query, 'mailster-workflow', 'publish' ) );
 
-		$limit = 3;
-
-		if ( mailster_freemius()->is_plan( 'standard', true ) ) {
-			$limit = 10;
+		if ( $count <= $limit ) {
+			return false;
 		}
 
-		// include the current one so not >=
-		if ( $count > $limit ) {
+		return true;
 
+	}
+
+
+	public function limit_posts( $post_id, $post, $old_status ) {
+
+		if ( $this->limit_reached() ) {
 			$post = array(
 				'ID'          => $post_id,
 				'post_status' => 'private',
 			);
 			wp_update_post( $post );
 
-			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of active workflows. Please upgrade to %s to create more workflows.', 'mailster-workflows' ), '<a href="' . admin_url( '?page=mailster-pricing' ) . '">Mailster Pro</a>' ) . '</p>';
+			$msg  = '<h2>' . sprintf( esc_html__( 'Workflow limit reached!', 'mailster' ) ) . '</h2>';
+			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of %1$d active workflows! Please upgrade %2$s to enable more workflows.', 'mailster' ), $this->get_limit(), '<a href="' . admin_url( '?page=mailster-pricing' ) . '">' . esc_html__( 'your plan', 'mailster' ) . '</a>' ) . '</p>';
 			$msg .= '<p><a href="' . admin_url( '?page=mailster-pricing' ) . '" class="button button-primary">' . esc_html__( 'Upgrade now', 'mailster' ) . '</a> <a href="https://docs.mailster.co/#/automations-overview" class="button button-secondary external">' . esc_html__( 'All Pro Features', 'mailster' ) . '</a></p>';
-			mailster_notice( $msg, 'info', false, 'mailster-workflow-limit-reached', true );
+			mailster_notice( $msg, 'warning', false, 'mailster-workflow-limit-reached', true );
 
+		} else {
+			mailster_remove_notice( 'mailster-workflow-limit-reached' );
 		}
 
 	}
@@ -575,6 +603,23 @@ class MailsterAutomations {
 		);
 	}
 
+
+	public function display_post_states( $post_states, $post ) {
+
+		if ( 'mailster-workflow' != $post->post_type ) {
+			return $post_states;
+		}
+
+		if ( $post->post_status == 'private' ) {
+			$post_states['private'] = esc_html__( 'Inactive', 'mailster' );
+		} elseif ( $post->post_status == 'publish' ) {
+			$post_states['publish'] = esc_html__( 'Active', 'mailster' );
+		}
+
+		return $post_states;
+	}
+
+
 	public function columns( $columns ) {
 
 		$columns = array(
@@ -661,6 +706,9 @@ class MailsterAutomations {
 
 			case 'open':
 				$numbers = $this->get_numbers( $post_id );
+				if ( ! $numbers['opens'] ) {
+					return;
+				}
 
 				echo '<span class="s-opens">' . number_format_i18n( $numbers['opens'] ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $numbers['sent'] ) . '</span>';
 				$rate = round( $numbers['open_rate'] * 100, 2 );
@@ -673,8 +721,11 @@ class MailsterAutomations {
 
 			case 'click':
 				$numbers = $this->get_numbers( $post_id );
-				$clicks  = $numbers['clicks'];
-				$rate    = round( $numbers['click_rate'] * 100, 2 );
+				if ( ! $numbers['clicks'] ) {
+					return;
+				}
+				$clicks = $numbers['clicks'];
+				$rate   = round( $numbers['click_rate'] * 100, 2 );
 				echo number_format_i18n( $clicks );
 				if ( $rate ) {
 					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
@@ -690,7 +741,10 @@ class MailsterAutomations {
 				break;
 
 			case 'unsubs':
-				$numbers      = $this->get_numbers( $post_id );
+				$numbers = $this->get_numbers( $post_id );
+				if ( ! $numbers['unsubs'] ) {
+					return;
+				}
 				$unsubscribes = $numbers['unsubs'];
 				$rate         = round( $numbers['unsub_rate'] * 100, 2 );
 
@@ -710,6 +764,9 @@ class MailsterAutomations {
 
 			case 'bounces':
 				$numbers = $this->get_numbers( $post_id );
+				if ( ! $numbers['bounces'] ) {
+					return;
+				}
 				$bounces = $numbers['bounces'];
 				$rate    = round( $numbers['bounce_rate'] * 100, 2 );
 				echo number_format_i18n( $bounces );

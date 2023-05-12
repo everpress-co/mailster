@@ -524,9 +524,12 @@ class Mailster {
 			exit;
 		}
 
-		if ( $page === 'mailster-pricing' ) {
-			// TODO go to plans page
+		if ( $page === 'mailster-checkout' ) {
 			mailster_redirect( mailster_freemius()->checkout_url() );
+			exit;
+		}
+		if ( $page === 'mailster-pricing' ) {
+			mailster_redirect( mailster_freemius()->pricing_url() );
 			exit;
 		}
 
