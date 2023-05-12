@@ -222,7 +222,6 @@ class MailsterSettings {
 			'logging_max'                        => 1000,
 			'logging_days'                       => 7,
 
-			'welcome'                            => false,
 			'setup'                              => true,
 			'legacy_forms'                       => false,
 

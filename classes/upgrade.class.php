@@ -119,13 +119,6 @@ class MailsterUpgrade {
 				mailster_redirect( 'admin.php?page=mailster_setup', 302 );
 				exit;
 			}
-		} elseif ( mailster_option( 'welcome' ) ) {
-
-			if ( ! is_network_admin() &&
-				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_welcome' != $_GET['page'] ) ) {
-				mailster_redirect( 'admin.php?page=mailster_welcome', 302 );
-				exit;
-			}
 		}
 
 	}

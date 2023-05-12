@@ -355,7 +355,7 @@ if ( $old_version ) {
 		case '2.0.33':
 		case '2.0.34':
 			mailster_notice( 'Please clear your cache if you are using page cache on your site', '', false, 'mailsterpagecache' );
-			$mailster_options['welcome'] = true;
+
 
 		case '2.1':
 		case '2.1.1':
@@ -440,7 +440,6 @@ if ( $old_version ) {
 			update_option( 'mailster_templates', '' );
 			update_option( 'mailster_cron_lasthit', '' );
 			delete_option( 'mailster_purchasecode_disabled' );
-			$mailster_options['welcome']              = true;
 			$mailster_options['legacy_hooks']         = true;
 			$mailster_options['_flush_rewrite_rules'] = true;
 			update_option( 'mailster_license', $mailster_options['purchasecode'] );
@@ -483,7 +482,6 @@ if ( $old_version ) {
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 
-			$mailster_options['welcome']              = true;
 			$mailster_options['_flush_rewrite_rules'] = true;
 			$show_update_notice                       = true;
 
@@ -532,7 +530,7 @@ if ( $old_version ) {
 		case '2.3.19':
 			// no longer in use
 			delete_option( 'mailster_template_licenses' );
-			$mailster_options['welcome'] = true;
+
 
 		case '2.4':
 		case '2.4.1':
@@ -695,8 +693,6 @@ mailster_clear_cache();
 // delete plugin hash
 delete_transient( 'mailster_hash' );
 
-
-// mailster_update_option('welcome', true);
 // add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );
 
 if ( $old_version && $show_update_notice ) {
