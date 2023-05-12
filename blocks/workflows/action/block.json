@@ -36,8 +36,8 @@
 		"value": {
 			"type": "string"
 		},
-		"doubleoptin": {
-			"type": "boolean"
+		"webhook": {
+			"type": "string"
 		},
 		"comment": {
 			"type": "string"

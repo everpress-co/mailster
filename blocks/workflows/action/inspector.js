@@ -40,6 +40,7 @@ import * as Icons from '@wordpress/icons';
 import ListSelector from '../inspector/ListSelector';
 import TagSelector from '../inspector/TagSelector';
 import FieldSelector from '../inspector/FieldSelector';
+import WebHookSelector from '../inspector/WebHookSelector';
 
 export default function ActionInspectorControls(props) {
 	const { attributes, setAttributes } = props;
@@ -195,6 +196,7 @@ export default function ActionInspectorControls(props) {
 									)}
 								/>
 							)}
+							{action == 'webhook' && <WebHookSelector {...props} />}
 						</PanelRow>
 					</PanelBody>
 				)}

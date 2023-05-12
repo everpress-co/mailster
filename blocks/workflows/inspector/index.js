@@ -28,7 +28,6 @@ import { BaseControl, Flex, FlexItem, PanelRow } from '@wordpress/components';
 import '../store';
 import Triggers from './Triggers';
 import Options from './Options';
-import WorkflowName from './WorkflowName';
 import PatternModal from './PatternModal';
 import PublishInfo from './PublishInfo';
 import CanvasToolbar from './CanvasToolbar';
@@ -185,7 +184,7 @@ function SettingsPanelPlugin() {
 					</FlexItem>
 				</Flex>
 			</PluginPostStatusInfo>
-			<WorkflowName meta={meta} setMeta={setMeta} />
+
 			<Options meta={meta} setMeta={setMeta} />
 
 			{false && <Triggers meta={meta} setMeta={setMeta} />}

@@ -25,13 +25,25 @@ import { useEntityProp } from '@wordpress/core-data';
 
 export default function Options(props) {
 	const { meta, setMeta } = props;
-
+	const [title, setTitle] = useEntityProp(
+		'postType',
+		'mailster-workflow',
+		'title'
+	);
 	return (
 		<PluginDocumentSettingPanel
 			name="options"
 			title={__('Options', 'mailster')}
 		>
-			<PanelRow></PanelRow>
+			<PanelRow>
+				<TextControl
+					label={__('Workflow Name', 'mailster')}
+					value={title}
+					onChange={(value) => setTitle(value)}
+					help={__('Define a name for your workflow.', 'mailster')}
+					placeholder={__('Add Workflow name', 'mailster')}
+				/>
+			</PanelRow>
 		</PluginDocumentSettingPanel>
 	);
 }
