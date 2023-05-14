@@ -153,10 +153,18 @@ function WorkflowPattern({ pattern, onInsertPattern }) {
 
 	const ref = useRef(null);
 
-	const blockWithExamples = blocks.map((block) => {
-		block.attributes.isExample = true;
-		return block;
-	});
+	const modifiedBlocks = blocks
+		//remove comment block
+		.filter((block) => {
+			return block.name != 'mailster-workflow/comment';
+		})
+		//add exmaple attribute
+		.map((block) => {
+			block.attributes.isExample = true;
+			return block;
+		});
+
+	console.log(modifiedBlocks);
 
 	const insertPattern = () => {
 		onInsertPattern(pattern);
@@ -195,7 +203,7 @@ function WorkflowPattern({ pattern, onInsertPattern }) {
 				>
 					{visible && (
 						<BlockPreview
-							blocks={blockWithExamples}
+							blocks={modifiedBlocks}
 							viewportWidth={viewportWidth}
 						/>
 					)}

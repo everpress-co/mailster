@@ -30,6 +30,7 @@ import { useEntityProp } from '@wordpress/core-data';
 import * as Icons from '@wordpress/icons';
 import { AsyncModeProvider } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
+import { searchBlocks } from '../../util';
 
 /**
  * Internal dependencies
@@ -41,6 +42,10 @@ export default function ConditionsModal(props) {
 
 	const [isLoaded, setLoaded] = useState(false);
 	const [isOpen, setOpen] = useState(false);
+
+	const allEmails = useSelect((select) =>
+		select('mailster/automation').getEmails()
+	);
 
 	useEffect(() => {
 		const i = setInterval(function () {
@@ -68,7 +73,10 @@ export default function ConditionsModal(props) {
 						<ServerSideRender
 							block="mailster-workflow/conditions"
 							className="conditions-preview"
-							attributes={{ ...attributes, ...{ render: true, plain: false } }}
+							attributes={{
+								...attributes,
+								...{ render: true, plain: false, emails: allEmails },
+							}}
 							EmptyResponsePlaceholder={() => <Spinner />}
 						/>
 					</PanelRow>
@@ -100,13 +108,14 @@ export default function ConditionsModal(props) {
 				>
 					<ServerSideRender
 						block="mailster-workflow/conditions"
-						attributes={attributes}
+						attributes={{ ...attributes, ...{ emails: allEmails } }}
 					/>
 					<div className="modal-conditions-buttons">
 						<Button
 							variant="primary"
 							disabled={!isLoaded}
 							onClick={() => {
+								console.log(mailster.conditions.get());
 								setOpen(false);
 								setAttributes({ conditions: mailster.conditions.serialize() });
 							}}

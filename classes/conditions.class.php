@@ -2,6 +2,9 @@
 
 class MailsterConditions {
 
+
+	private $workflow_campaigns = array();
+
 	public function __construct( $conditions = array() ) {
 
 	}
@@ -89,6 +92,13 @@ class MailsterConditions {
 
 		echo $output;
 
+	}
+
+	public function set_workflow_campaigns( $campaigns ) {
+
+		foreach ( $campaigns as $campaign ) {
+			$this->workflow_campaigns[ $campaign['id'] ] = $campaign;
+		}
 	}
 
 	public function get_autocomplete_source( $field, $search = null ) {
@@ -296,6 +306,7 @@ class MailsterConditions {
 		return $wp_user_meta;
 	}
 
+
 	private function get_campaign_related() {
 		return array(
 			'_sent'               => esc_html__( 'has received', 'mailster' ),
@@ -480,12 +491,15 @@ class MailsterConditions {
 		$closing_quote = esc_html_x( '&#8221;', 'closing curly double quote', 'mailster' );
 
 		if ( isset( $this->campaign_related[ $field ] ) ) {
+
 			$special_campaign_keys = array_keys( $this->special_campaigns );
+
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
 			}
 			$urls      = array();
 			$campagins = array();
+
 			if ( strpos( $field, '_click_link' ) !== false ) {
 				foreach ( $value as $k => $v ) {
 					if ( is_numeric( $v ) || in_array( $v, $special_campaign_keys ) ) {
@@ -499,6 +513,7 @@ class MailsterConditions {
 					$return['value'] .= '<br> ' . esc_html__( 'in', 'mailster' ) . ' ' . $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $campagins ) ) . $closing_quote;
 				}
 			} else {
+
 				$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $value ) ) . $closing_quote;
 			}
 		} elseif ( isset( $this->list_related[ $field ] ) ) {
@@ -552,6 +567,14 @@ class MailsterConditions {
 	}
 
 	public function get_campaign_title( $post ) {
+
+		if ( isset( $this->workflow_campaigns[ $post ] ) ) {
+			$title = $this->workflow_campaigns[ $post ]['name'];
+			if ( $this->workflow_campaigns[ $post ]['campaign'] ) {
+				$title .= ' (' . get_the_title( $this->workflow_campaigns[ $post ]['campaign'] ) . ')';
+			}
+			return $title;
+		}
 
 		if ( ! $post ) {
 			return esc_html__( 'Any Campaign', 'mailster' );
@@ -669,7 +692,7 @@ class MailsterConditions {
 		<?php if ( method_exists( $this, 'value_field_' . $field ) ) : ?>
 			<?php call_user_func( array( $this, 'value_field_' . $field ), $value, $inputname ); ?>
 		<?php else : ?>
-			adfsadfasdf
+			
 		<?php endif; ?>
 		</div>
 		<?php
@@ -836,6 +859,17 @@ class MailsterConditions {
 				<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
 				<select name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled>
 					<option value="0"><?php esc_html_e( 'Any Campaign', 'mailster' ); ?></option>
+					<?php
+					if ( ! empty( $this->workflow_campaigns ) ) :
+						?>
+						<optgroup label="<?php esc_attr_e( 'Workflow Campaigns', 'mailster' ); ?>">
+						<?php
+						foreach ( $this->workflow_campaigns as $key => $camp ) :
+							echo '<option value="' . esc_attr( $camp['id'] ) . '"' . selected( $v, $camp['id'], false ) . '>' . esc_attr( $camp['name'] ) . '</option>';
+						endforeach;
+						?>
+						</optgroup>
+					<?php endif; ?>
 					<optgroup label="<?php esc_attr_e( 'Aggregate Campaigns', 'mailster' ); ?>">
 					<?php
 					foreach ( $this->special_campaigns as $key => $name ) :

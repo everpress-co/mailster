@@ -14,7 +14,7 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
 
 import { useEffect, useMemo, useState, useRef } from '@wordpress/element';
 import { useEntityProp } from '@wordpress/core-data';
-import { useSelect } from '@wordpress/data';
+import { dispatch, useSelect } from '@wordpress/data';
 import { Card, CardBody, CardFooter, CardMedia } from '@wordpress/components';
 import { addQueryArgs } from '@wordpress/url';
 import * as Icons from '@wordpress/icons';
@@ -27,11 +27,19 @@ import QueueBadge from '../inspector/QueueBadge';
 import Comment from '../inspector/Comment';
 import StepId from '../inspector/StepId';
 import EmailInspectorControls from './inspector';
+import { set } from 'lodash';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { id, campaign, subject, preheader, comment, isExample } = attributes;
+	const { id, campaign, subject, preheader, comment, isExample, name } =
+		attributes;
 	const className = [];
+
+	const ref = useRef();
+
+	const allEmails = useSelect((select) =>
+		select('mailster/automation').getEmails()
+	);
 
 	const [preview_url, setPreviewUrl] = useState(false);
 
@@ -54,15 +62,29 @@ export default function Edit(props) {
 	const campaignObj = getCampaign(campaign);
 
 	useEffect(() => {
-		if (!id || document.querySelectorAll('.mailster-step-' + id).length > 1)
-			setAttributes({ id: clientId.substring(30) });
-	});
+		setPreviewUrl(getPreviewUrl(campaign));
+		if (campaignObj) {
+			setAttributes({
+				name: campaignObj.title,
+			});
+		}
+	}, [campaign, campaignObj]);
 
 	useEffect(() => {
-		setPreviewUrl(getPreviewUrl(campaign));
-	}, [campaign]);
+		if (!name)
+			setAttributes({
+				name: sprintf(__('Email #%s', 'mailster'), allEmails.length + 1),
+			});
+	}, [allEmails]);
 
-	className.push('mailster-step-' + id);
+	console.log(allEmails);
+
+	//reset cache if one of the attributes changes
+	useEffect(() => {
+		dispatch('mailster/automation').invalidateResolutionForStoreSelector(
+			'getEmails'
+		);
+	}, [campaign, name, id]);
 
 	!campaign && !isExample && className.push('mailster-step-incomplete');
 
@@ -90,25 +112,26 @@ export default function Edit(props) {
 		return url.toString();
 	};
 
-	const title = campaignObj?.title || '';
+	const displaySubject = subject || campaignObj?.subject;
 
 	return (
 		<>
 			<EmailInspectorControls {...props} campaignObj={campaignObj} />
 			<div {...blockProps}>
-				<Card className="mailster-step">
+				<Card className="mailster-step mailster-email-ref" ref={ref}>
 					<Comment {...props} />
 					<QueueBadge {...props} />
 					<CardBody>
-						<div className="mailster-step-label">
-							{sprintf(__('Send Email %s', 'mailster'), title)}
-						</div>
 						<div className="mailster-step-info">
-							{subject || campaignObj?.subject}
+							{__('Send Email', 'mailster')}
 						</div>
+						<div className="mailster-step-label">{name}</div>
 					</CardBody>
 					<CardMedia>
 						<div className="email-preview">
+							{displaySubject && (
+								<div className="email-preview-subject">{displaySubject}</div>
+							)}
 							{preview_url && <iframe src={preview_url} loading="lazy" />}
 							{isExample && <img src="https://dummy.mailster.co/268x262.jpg" />}
 						</div>

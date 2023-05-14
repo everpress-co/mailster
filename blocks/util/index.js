@@ -461,6 +461,31 @@ export function useBlockAttributes(clientId) {
 	return [attributes, setAttributes];
 }
 
+export function useEmailSteps() {
+	const steps = searchBlocks('mailster/email');
+
+	const { updateBlockAttributes } = useDispatch('core/block-editor');
+
+	const attributes = useSelect(
+		(select) => {
+			const { getBlockAttributes } = select('core/block-editor');
+			const _attributes = getBlockAttributes(clientId) || {};
+
+			return _attributes;
+		},
+		[clientId]
+	);
+
+	const setAttributes = useCallback(
+		(newAttributes) => {
+			updateBlockAttributes(clientId, newAttributes);
+		},
+		[clientId]
+	);
+
+	return [attributes, setAttributes];
+}
+
 export function searchBlock(blockName, clientId) {
 	const all = select('core/block-editor').getBlocks(clientId);
 

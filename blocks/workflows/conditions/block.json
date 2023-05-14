@@ -26,6 +26,9 @@
 		"comment": {
 			"type": "string"
 		},
+		"emails": {
+			"type": "array"
+		},
 		"conditions": {
 			"type": "string"
 		},

@@ -57,25 +57,19 @@
 .edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions) {
 	min-width: 1000px;
 }
-.edit-post-visual-editor:has(
-		.wp-block-mailster-workflow-conditions
-			.wp-block-mailster-workflow-conditions
-	) {
+.edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions
+		.wp-block-mailster-workflow-conditions) {
 	min-width: 1600px;
 }
-.edit-post-visual-editor:has(
+.edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
-			.wp-block-mailster-workflow-conditions
-			.wp-block-mailster-workflow-conditions
-	) {
+		.wp-block-mailster-workflow-conditions) {
 	min-width: 2800px;
 }
-.edit-post-visual-editor:has(
+.edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
-			.wp-block-mailster-workflow-conditions
-			.wp-block-mailster-workflow-conditions
-			.wp-block-mailster-workflow-conditions
-	) {
+		.wp-block-mailster-workflow-conditions
+		.wp-block-mailster-workflow-conditions) {
 	min-width: 5200px;
 }
 .is-root-container {
@@ -351,16 +345,30 @@
 }
 .wp-block-mailster-workflow-email .mailster-step {
 	width: 300px;
-	min-height: 320px;
+	min-height: 340px;
 }
 .wp-block-mailster-workflow-email .mailster-step .email-preview {
 	border: 1px solid #d6d6d6;
 	border-radius: 4px;
-	height: 300px;
-	max-height: 260px;
+	height: 320px;
+	max-height: 320px;
 	margin: 0 1em 1em;
 	overflow: hidden;
 	position: relative;
+}
+.wp-block-mailster-workflow-email
+	.mailster-step
+	.email-preview
+	.email-preview-subject {
+	background-color: #f1f1f1;
+	padding: 0.4em 0.8em;
+	min-height: 1em;
+	font-size: 0.8em;
+	text-align: left;
+	white-space: nowrap;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .wp-block-mailster-workflow-email .mailster-step .email-preview::before {
 	content: '';

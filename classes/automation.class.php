@@ -965,11 +965,18 @@ class MailsterAutomations {
 		$render = isset( $block->attributes['render'] ) && $block->attributes['render'];
 		$plain  = isset( $block->attributes['plain'] ) && $block->attributes['plain'];
 
+		$mailster_conditions = mailster( 'conditions' );
+
+		// set the campaings for the current workflow
+		if ( isset( $block->attributes['emails'] ) ) {
+			$mailster_conditions->set_workflow_campaigns( $block->attributes['emails'] );
+		}
+
 		ob_start();
 		if ( $render ) {
-			mailster( 'conditions' )->render( $conditions, true, $plain );
+			$mailster_conditions->render( $conditions, true, $plain );
 		} else {
-			mailster( 'conditions' )->view( $conditions, false );
+			$mailster_conditions->view( $conditions, false );
 		}
 		$output = ob_get_contents();
 		ob_end_clean();

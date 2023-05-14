@@ -26,7 +26,7 @@ register_block_pattern(
 );
 
 register_block_pattern(
-	'mailster-workflow/welcome01',
+	'mailster-workflow/simple-welcome',
 	array(
 		'title'         => __( 'Simple Welcome email', 'mailster' ),
 		'postTypes'     => array( 'mailster-workflow' ),
@@ -42,7 +42,7 @@ register_block_pattern(
 
 
 register_block_pattern(
-	'mailster-workflow/welcome02',
+	'mailster-workflow/improved-welcome',
 	array(
 		'title'         => __( 'Improved Welcome email series', 'mailster' ),
 		'postTypes'     => array( 'mailster-workflow' ),
@@ -57,17 +57,15 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"list_add","lists":[-1]} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/email {" /-->
+		<!-- wp:mailster-workflow/email /-->
 		
-		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"days"} /-->
+		<!-- wp:mailster-workflow/delay {,"amount":2,"unit":"days"} /-->
 		
-		<!-- wp:mailster-workflow/email {" /-->
+		<!-- wp:mailster-workflow/email /-->
 		
-		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"days"} /-->
-		
-		<!-- wp:mailster-workflow/conditions {"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_open\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=_last_5"} -->
+		<!-- wp:mailster-workflow/conditions {,"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_open\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=_last_5"} -->
 		<!-- wp:mailster-workflow/condition {"fulfilled":true} -->
-		<!-- wp:mailster-workflow/action {"action":"nothing"} /-->
+		<!-- wp:mailster-workflow/action {,"action":"nothing"} /-->
 		<!-- /wp:mailster-workflow/condition -->
 		
 		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
@@ -99,34 +97,129 @@ register_block_pattern(
 
 
 register_block_pattern(
-	'mailster-workflow/3my-awesome-pattern',
+	'mailster-workflow/win-back-subscribers',
 	array(
-		'title'         => __( 'Two buttons', 'mailster' ),
-		'description'   => __( 'XXX', 'mailster' ),
+		'title'         => __( 'Win back inactive subscribers', 'mailster' ),
+		'description'   => __( 'Re-engage subscribers who have shown a lack of engagement and remove inactive ones. You can initiate a campaign and update a custom field if they interact, or transfer them to the unsubscribed folder if they do not. This approach effectively purges your list, ensuring that your most active subscribers remain, leading to improved email deliverability.', 'mailster' ),
 		'viewportWidth' => 600,
 		'postTypes'     => array( 'mailster-workflow' ),
 		'categories'    => array( 'mailster-custom-category' ),
 		'content'       => '<!-- wp:mailster-workflow/triggers -->
-		<!-- wp:mailster-workflow/trigger {"trigger":"list_add","lists":[-1]} /-->
+		<!-- wp:mailster-workflow/trigger /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/action {"action":"add_tag"} /-->
+		<!-- wp:mailster-workflow/email {,"comment":"Send an initial offer"} /-->
 		
-		<!-- wp:mailster-workflow/action {"action":"update_field"} /-->
+		<!-- wp:mailster-workflow/delay {,"amount":3,"unit":"days"} /-->
 		
-		<!-- wp:mailster-workflow/conditions {"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=email\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=abc"} -->
+		<!-- wp:mailster-workflow/conditions {,"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=_last_5"} -->
 		<!-- wp:mailster-workflow/condition {"fulfilled":true} -->
-		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"hours"} /-->
+		<!-- wp:mailster-workflow/action {,"action":"add_tag"} /-->
 		<!-- /wp:mailster-workflow/condition -->
 		
 		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
-		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"weeks"} /-->
+		<!-- wp:mailster-workflow/email {,"comment":"Send final offer"} /-->
+		
+		<!-- wp:mailster-workflow/delay {,"amount":3,"unit":"days"} /-->
+		
+		<!-- wp:mailster-workflow/conditions {,"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=_last_5"} -->
+		<!-- wp:mailster-workflow/condition {"fulfilled":true} /-->
+		
+		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
+		<!-- wp:mailster-workflow/action {,"action":"unsubscribe"} /-->
+		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/conditions -->
 		<!-- /wp:mailster-workflow/condition -->
 		<!-- /wp:mailster-workflow/conditions -->',
 	)
 );
 
 
+register_block_pattern(
+	'mailster-workflow/webinar-invitation',
+	array(
+		'title'         => __( 'Webinar invitation', 'mailster' ),
+		'description'   => __( 'Utilize this workflow to extend invitations to subscribers from various signup sources for your webinar event. Following the event, send them a survey email to gather their feedback.', 'mailster' ),
+		'viewportWidth' => 600,
+		'postTypes'     => array( 'mailster-workflow' ),
+		'categories'    => array( 'mailster-custom-category' ),
+		'content'       => '<!-- wp:mailster-workflow/triggers -->
+		<!-- wp:mailster-workflow/trigger {"trigger":"form_conversion","forms":[]} /-->
+		<!-- /wp:mailster-workflow/triggers -->
+		
+		<!-- wp:mailster-workflow/comment {"comment":"Send an RSVP right after they sign up."} /-->
+		
+		<!-- wp:mailster-workflow/email {"name":"RSVP Email"} /-->
+		
+		<!-- wp:mailster-workflow/comment {"comment":"Assuming your Webinar starts on the 10th every month it\'s a good practice to remind them one day upfront with a dedicate email. "} /-->
+		
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"month","date":"2023-05-14T07:00:00.000Z","month":9} /-->
+		
+		<!-- wp:mailster-workflow/email {"name":"Webinar reminder"} /-->
+		
+		<!-- wp:mailster-workflow/comment {"comment":"Send the actual link to the webinar in this step."} /-->
+		
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"days"} /-->
+		
+		<!-- wp:mailster-workflow/email {"name":"Email with CTA to Webinar"} /-->
+		
+		<!-- wp:mailster-workflow/comment {"comment":"Wait some time after the webinar has finished and send a feedback request."} /-->
+		
+		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"hours"} /-->
+		
+		<!-- wp:mailster-workflow/email {"name":"Feedback Survey"} /-->
+		
+		<!-- wp:mailster-workflow/action /-->',
+	)
+);
+register_block_pattern(
+	'mailster-workflow/online-course',
+	array(
+		'title'         => __( 'Online course', 'mailster' ),
+		'description'   => __( 'Commence your online course on a designated date and implement an automated system to deliver lessons to your learners every week. This straightforward workflow proves to be highly productive for your course participants.', 'mailster' ),
+		'viewportWidth' => 600,
+		'postTypes'     => array( 'mailster-workflow' ),
+		'categories'    => array( 'mailster-custom-category' ),
+		'content'       => '<!-- wp:mailster-workflow/triggers -->
+		<!-- wp:mailster-workflow/trigger {"trigger":"list_add"} /-->
+		<!-- /wp:mailster-workflow/triggers -->
+		
+		<!-- wp:mailster-workflow/email {,"comment":"Send a Welcome Email"} /-->
+		
+		<!-- wp:mailster-workflow/delay {,"amount":1,"unit":"week","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
+		
+		<!-- wp:mailster-workflow/email {,"comment":"Lesson 1"} /-->
+		
+		<!-- wp:mailster-workflow/delay {,"amount":1,"unit":"weeks","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
+		
+		<!-- wp:mailster-workflow/email {,"comment":"Lesson 2"} /-->
+		
+		<!-- wp:mailster-workflow/delay {,"amount":1,"unit":"weeks","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
+		
+		<!-- wp:mailster-workflow/email {,"comment":"Final Lesson"} /-->
+		
+		<!-- wp:mailster-workflow/action {,"action":"remove_list","comment":"Remove user from the list again"} /-->
+		
+		<!-- wp:mailster-workflow/action {,"action":"add_tag","tags":["Course #1 finished"]} /-->',
+	)
+);
+register_block_pattern(
+	'mailster-workflow/4my-awesome-pattern',
+	array(
+		'title'         => __( 'Birthday greetings', 'mailster' ),
+		'description'   => __( 'Employ this workflow to pleasantly surprise your subscribers with birthday wishes on their special day! Additionally, you can send birthday reminders a few days in advance to ensure they don\'t miss the celebration.', 'mailster' ),
+		'viewportWidth' => 600,
+		'postTypes'     => array( 'mailster-workflow' ),
+		'categories'    => array( 'mailster-custom-category' ),
+		'content'       => '<!-- wp:mailster-workflow/triggers -->
+		<!-- wp:mailster-workflow/trigger {"trigger":"anniversary","repeat":-1,"date":"2023-05-14T07:00:39.000Z","field":"birthday"} /-->
+		<!-- /wp:mailster-workflow/triggers -->
+		
+		<!-- wp:mailster-workflow/comment {"comment":"Send Birthday wishes to your subscribers. It\'s a common practice to offer a special discount which is only valid for a certain time frame."} /-->
+		
+		<!-- wp:mailster-workflow/email /-->',
+	)
+);
 register_block_pattern(
 	'mailster-workflow/4my-awesome-pattern',
 	array(
@@ -141,11 +234,11 @@ register_block_pattern(
 
 
 register_block_pattern(
-	'mailster-workflow/5my-awesome-pattern',
+	'mailster-workflow/chec-for-eu-member',
 	array(
 		'title'         => __( 'Check for EU Member', 'mailster' ),
 		'description'   => __(
-			'The following process verifies whether the user is a member of the European Union, and then adds or removes a corresponding tag based on the result.',
+			'The following process checks whether the user is a member of the European Union, and then adds or removes a corresponding tag based on the result.',
 			'mailster'
 		),
 		'viewportWidth' => 600,

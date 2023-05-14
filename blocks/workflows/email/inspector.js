@@ -51,6 +51,7 @@ export default function EmailInspectorControls(props) {
 		preheader = '',
 		from = '',
 		from_name = '',
+		name = '',
 	} = attributes;
 
 	return (
@@ -61,6 +62,16 @@ export default function EmailInspectorControls(props) {
 				</PanelBody>
 			</Panel>
 			<Panel>
+				<PanelBody>
+					<PanelRow>
+						<TextControl
+							label={__('Name', 'mailster')}
+							help={__('Set a name of this campaign.', 'mailster')}
+							value={name}
+							onChange={(val) => setAttributes({ name: val ? val : undefined })}
+						/>
+					</PanelRow>
+				</PanelBody>
 				{campaign && (
 					<PanelBody>
 						<PanelRow>

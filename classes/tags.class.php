@@ -562,8 +562,9 @@ class MailsterTags {
 				}
 			}
 
-			mailster_cache_add( $key, $result );
-
+			if ( ! empty( $result ) ) {
+				mailster_cache_add( $key, $result );
+			}
 		}
 
 		return $result;

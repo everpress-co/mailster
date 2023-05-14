@@ -42,6 +42,10 @@ export default function Edit(props) {
 	className.push('mailster-step-' + id);
 	!conditions && className.push('mailster-step-incomplete');
 
+	const allEmails = useSelect((select) =>
+		select('mailster/automation').getEmails()
+	);
+
 	const blockProps = useBlockProps({
 		className: classnames({}, className),
 	});
@@ -76,7 +80,7 @@ export default function Edit(props) {
 									block="mailster-workflow/conditions"
 									attributes={{
 										...attributes,
-										...{ render: true, plain: true },
+										...{ render: true, plain: true, emails: allEmails },
 									}}
 									EmptyResponsePlaceholder={() => <Spinner />}
 								/>

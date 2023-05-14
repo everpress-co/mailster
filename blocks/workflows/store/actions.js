@@ -113,3 +113,15 @@ export function getForms(path) {
 		path,
 	};
 }
+export function setEmails(emails) {
+	return {
+		type: 'SET_EMAILS',
+		emails,
+	};
+}
+export function getEmails(path) {
+	return {
+		type: 'GET_EMAILS',
+		path,
+	};
+}

@@ -34,3 +34,7 @@ export function getForms(state) {
 	const { forms } = state;
 	return forms;
 }
+export function getEmails(state) {
+	const { emails } = state;
+	return emails;
+}

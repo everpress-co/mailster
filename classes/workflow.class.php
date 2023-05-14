@@ -11,6 +11,7 @@ class MailsterWorkflow {
 	private $steps;
 	private $args;
 	private $current_step;
+	private $steps_map = array();
 
 	public function __construct( $workflow, $trigger, $subscriber = null, $step = null ) {
 
@@ -82,6 +83,10 @@ class MailsterWorkflow {
 				$arg['no']  = $this->parse( $block['innerBlocks'][1]['innerBlocks'], $id );
 			} elseif ( $type === 'triggers' ) {
 				$arg['trigger'] = $this->parse( $block['innerBlocks'], $id );
+			}
+
+			if ( $id ) {
+				$this->steps_map[ $id ] = $block['attrs'];
 			}
 
 			$parsed[] = $arg;
@@ -496,6 +501,8 @@ class MailsterWorkflow {
 
 			case 'add_tag':
 				error_log( print_r( 'add_tag', true ) );
+				error_log( print_r( $attr['tags'], true ) );
+				error_log( print_r( $this->subscriber, true ) );
 				if ( isset( $attr['tags'] ) ) {
 					mailster( 'tags' )->assign_subscribers( $attr['tags'], $this->subscriber );
 				}
@@ -559,8 +566,6 @@ class MailsterWorkflow {
 			'body'       => json_encode( $data ),
 		);
 
-		error_log( print_r( $url, true ) );
-
 		$response = wp_remote_request( $url, $args );
 		$code     = wp_remote_retrieve_response_code( $response );
 		$body     = wp_remote_retrieve_body( $response );
@@ -609,8 +614,7 @@ class MailsterWorkflow {
 			$conditions = isset( $trigger['attr']['conditions'] ) ? $trigger['attr']['conditions'] : array();
 
 			if ( $conditions ) {
-				wp_parse_str( $conditions, $params );
-				$conditions = $params['conditions'];
+				$conditions = $this->sanitize_conditions( $conditions );
 
 				if ( $this->subscriber && ! mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
 					error_log( print_r( 'CONDITION NOT PASSED ! ! ', true ) );
@@ -709,8 +713,6 @@ class MailsterWorkflow {
 							'conditions' => $conditions,
 						);
 
-						error_log( print_r( $query_args, true ) );
-						error_log( print_r( $step, true ) );
 						$timestamp = time();
 
 						$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
@@ -950,9 +952,7 @@ class MailsterWorkflow {
 			return new WP_Error( 'missing_arg', 'Condition missing', $step );
 		}
 
-		$conditions = $step['attr']['conditions'];
-		wp_parse_str( $conditions, $params );
-		$conditions = $params['conditions'];
+		$conditions = $this->sanitize_conditions( $step['attr']['conditions'] );
 
 		if ( mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
 			$use = $step['yes'];
@@ -963,6 +963,26 @@ class MailsterWorkflow {
 		}
 
 		return $this->do_steps( $use );
+
+	}
+
+	private function sanitize_conditions( $conditions ) {
+
+		wp_parse_str( $conditions, $params );
+		$conditions = $params['conditions'];
+
+		// replace the step id with the actual campaing id to get the correct condition
+		// TOTO optimze this
+		foreach ( $conditions as $i => $condition_group ) {
+			foreach ( $condition_group as $j => $condition ) {
+				if ( isset( $this->steps_map[ $condition['value'] ] ) ) {
+					$from_map                        = $this->steps_map[ $condition['value'] ];
+					$conditions[ $i ][ $j ]['value'] = $from_map['campaign'] ? $from_map['campaign'] : null;
+				}
+			}
+		}
+
+		return $conditions;
 
 	}
 
@@ -978,8 +998,6 @@ class MailsterWorkflow {
 				'error'     => '',
 			),
 		);
-
-		error_log( print_r( $args, true ) );
 
 		$this->update( $args );
 	}

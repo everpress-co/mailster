@@ -7,6 +7,7 @@ const DEFAULT_STATE = {
 	fields: [],
 	campaigns: [],
 	stats: [],
+	emails: [],
 };
 
 const reducer = (state = DEFAULT_STATE, action) => {
@@ -70,6 +71,12 @@ const reducer = (state = DEFAULT_STATE, action) => {
 			return {
 				...state,
 				forms: action.forms,
+			};
+
+		case 'SET_EMAILS':
+			return {
+				...state,
+				emails: action.emails,
 			};
 
 		case 'FAIL_RESOLUTION':

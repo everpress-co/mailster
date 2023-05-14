@@ -86,7 +86,7 @@ export default function CampaignSelector(props) {
 							setAttributes({ campaign: val ? parseInt(val, 10) : undefined });
 						}}
 					>
-						<option value={0}>{__('Select a campaign', 'mailster')}</option>
+						<option value="">{__('Select a campaign', 'mailster')}</option>
 						{allCampaigns.map((campaign, i) => {
 							return (
 								<option key={i} value={campaign.ID}>

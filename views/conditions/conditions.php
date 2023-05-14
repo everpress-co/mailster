@@ -54,9 +54,16 @@
 				<select name="<?php echo esc_attr( $inputname ); ?>[<?php echo $i; ?>][<?php echo $j; ?>][field]" class="condition-field" disabled>
 
 					<?php foreach ( $groups as $id => $label ) : ?>
+						<?php
+						// skip if group is empty
+						$group_fields = $this->{$id};
+						if ( empty( $group_fields ) ) {
+							continue;
+						}
+						?>
 						<optgroup label="<?php echo esc_attr( $label ); ?>">
 						<?php
-						foreach ( $this->{$id} as $key => $name ) :
+						foreach ( $group_fields as $key => $name ) :
 							echo '<option value="' . esc_attr( $key ) . '"' . selected( $condition['field'], $key, false ) . '>' . esc_html( $name ) . '</option>';
 						endforeach;
 						?>

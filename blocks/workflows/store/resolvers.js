@@ -79,6 +79,10 @@ export function* getForms() {
 	const data = yield actions.getForms('/mailster/v1/automations/forms');
 	return actions.setForms(data);
 }
+export function* getEmails() {
+	const data = yield actions.getEmails();
+	return actions.setEmails(data);
+}
 function clearData(selector) {
 	dispatch('mailster/automation').invalidateResolutionForStoreSelector(
 		selector
