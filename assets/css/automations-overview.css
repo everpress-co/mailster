@@ -66,15 +66,16 @@
 	background-color: #fff;
 	top: 0;
 	left: -20px;
-	right: -20px;
+	right: 0;
 	display: flex;
 	clear: both;
 	margin: 0;
 	height: calc(100vh - 92px);
 }
 .empty-table-wrap .empty-table-wrap-inner {
-	margin: 10% auto;
+	margin: 10vh auto;
 	width: 600px;
+	max-width: 90%;
 	text-align: center;
 }
 .empty-table-wrap .empty-table-wrap-inner h2 {
