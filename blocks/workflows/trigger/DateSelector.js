@@ -90,8 +90,8 @@ export default function Selector(props) {
 							setAttributes({ field: val ? val : undefined });
 						}}
 					>
-						<option value="">{__('Use a specific date')}</option>
-						<optgroup label={__('Use a custom field')}>
+						<option value="">{__('Use a specific date', 'mailster')}</option>
+						<optgroup label={__('Use a custom field', 'mailster')}>
 							{dateFields.map((field, i) => {
 								return (
 									<option key={i} value={field.id}>

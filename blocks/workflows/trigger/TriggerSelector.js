@@ -36,6 +36,7 @@ import TagSelector from '../inspector/TagSelector';
 import PageSelector from './PageSelector';
 import LinkSelector from './LinkSelector';
 import DateSelector from './DateSelector';
+import FieldSelector from './FieldSelector';
 import HookSelector from './HookSelector';
 import PublishSelector from './PublishSelector';
 import { HelpBeacon } from '../../util';
@@ -190,6 +191,7 @@ export default function Selector(props) {
 					)}
 				/>
 			)}
+			{trigger == 'updated_field' && <FieldSelector {...props} />}
 			{trigger == 'page_visit' && <PageSelector {...props} />}
 			{trigger == 'date' && <DateSelector {...props} />}
 			{trigger == 'anniversary' && <DateSelector {...props} isAnniversary />}

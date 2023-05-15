@@ -29,11 +29,11 @@ export default function Edit(props) {
 	const { fulfilled } = attributes;
 	const className = ['mailster-step-condition', 'canvas-handle'];
 
-	const hasStop = () => {
+	const hasStop = (clientId) => {
 		return searchBlock('mailster-workflow/stop', clientId, false);
 	};
 
-	hasStop() && className.push('mailster-has-stop');
+	hasStop(clientId) && className.push('mailster-has-stop');
 
 	className.push(
 		fulfilled ? 'mailster-step-condition-yes' : 'mailster-step-condition-no'

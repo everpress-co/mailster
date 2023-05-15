@@ -34,6 +34,11 @@ class MailsterTrigger {
 
 		add_action( 'mailster_trigger_anniversary', array( &$this, 'anniversary' ) );
 
+		// add/remove/updated custom field
+		add_action( 'mailster_add_custom_field', array( &$this, 'updated_field' ), 10, 2 );
+		add_action( 'mailster_remove_custom_field', array( &$this, 'updated_field' ), 10, 2 );
+		add_action( 'mailster_update_custom_field', array( &$this, 'updated_field' ), 10, 2 );
+
 	}
 
 
@@ -138,6 +143,21 @@ class MailsterTrigger {
 				// any list
 			} elseif ( in_array( '-1', $options['forms'] ) ) {
 				$this->add_job( $workflow, 'form_conversion', $subscriber_id );
+			}
+		}
+
+	}
+
+	public function updated_field( $subscriber_id, $field ) {
+
+		$workflows = $this->get_workflows_by_trigger( 'updated_field' );
+
+		foreach ( $workflows as $workflow ) {
+			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'updated_field' );
+
+			// any field or the defined one
+			if ( '-1' == $options['field'] || $field === $options['field'] ) {
+				$this->add_job( $workflow, 'updated_field', $subscriber_id );
 			}
 		}
 
@@ -281,6 +301,7 @@ class MailsterTrigger {
 		return false;
 
 	}
+
 
 	// this runs running on every pageload so make it as fast as possible
 	public function front_page_hooks() {

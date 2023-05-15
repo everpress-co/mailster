@@ -247,7 +247,22 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 	public function get_fields( $request ) {
 
-		$fields = mailster()->get_custom_fields();
+		$fields              = mailster()->get_custom_fields();
+		$fields['firstname'] = array(
+			'name' => mailster_text( 'firstname' ),
+			'type' => 'text',
+			'id'   => 'firstname',
+		);
+		$fields['lastname']  = array(
+			'name' => mailster_text( 'lastname' ),
+			'type' => 'text',
+			'id'   => 'lastname',
+		);
+		$fields['email']     = array(
+			'name' => mailster_text( 'email' ),
+			'type' => 'text',
+			'id'   => 'email',
+		);
 
 		// Return all of our comment response data.
 		return rest_ensure_response( array_values( (array) $fields ) );

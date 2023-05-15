@@ -88,28 +88,21 @@ export default function Edit(props) {
 		switch (trigger) {
 			case 'list_add':
 				return formatLists(lists);
-				break;
 			case 'form_conversion':
 				return formatForms(forms);
-				break;
 			case 'tag_added':
 				return formatTags(tags);
-				break;
-			case 'update_field':
-				return formatField(field, value);
-				break;
+			case 'updated_field':
+				return formatField(field, false);
 			case 'page_visit':
 				return formatPages(pages);
-				break;
 			case 'link_click':
 				return formatLinks(links);
-				break;
 			case 'hook':
 				return (
 					hook &&
 					'<strong class="mailster-step-badge code">' + hook + '</strong>'
 				);
-				break;
 			case 'date':
 				if (field) {
 					return formatField(
@@ -144,11 +137,9 @@ export default function Edit(props) {
 						dateI18n(TIME_FORMAT, date) +
 						'</strong>'
 				);
-				break;
 
 			default:
 				return trigger;
-				break;
 		}
 		return '';
 	};

@@ -172,7 +172,7 @@ export function formatField(field, value, string) {
 	const allFields = select('mailster/automation').getFields();
 
 	if (!allFields) {
-		return 'EMPTYY FIELDS';
+		return __('No field defined.', 'mailster');
 	}
 	const getField = (id) => {
 		if (!allFields) {
@@ -184,7 +184,8 @@ export function formatField(field, value, string) {
 		return field.length ? field[0] : null;
 	};
 
-	const name = getField(field)?.name;
+	const name =
+		field != -1 ? getField(field)?.name : __('Any field', 'mailster');
 
 	if (!name) return '';
 
@@ -217,7 +218,7 @@ export function formatField(field, value, string) {
 			value = date;
 		}
 	}
-	if (currentField && currentField.type == 'checkbox') {
+	if (value !== false && currentField && currentField.type == 'checkbox') {
 		if (value) {
 			return sprintf(__('Check %s.', 'mailster'), nameStr);
 		} else {
@@ -228,7 +229,9 @@ export function formatField(field, value, string) {
 	const valueStr =
 		'<strong class="mailster-step-badge">' + escape(value) + '</strong>';
 
-	if (!value) {
+	if (value === false) {
+		return sprintf(__('Field %s', 'mailster'), nameStr);
+	} else if (!value) {
 		return sprintf(__('Remove field %s.', 'mailster'), nameStr);
 	} else {
 		return sprintf(
@@ -486,7 +489,7 @@ export function useEmailSteps() {
 	return [attributes, setAttributes];
 }
 
-export function searchBlock(blockName, clientId) {
+export function searchBlock(blockName, clientId, deep = true) {
 	const all = select('core/block-editor').getBlocks(clientId);
 
 	var found = all.find((block) => {
@@ -496,7 +499,7 @@ export function searchBlock(blockName, clientId) {
 	if (found) {
 		found.rootClientId = clientId;
 		return found;
-	} else {
+	} else if (deep) {
 		for (var i = 0; i < all.length; i++) {
 			if ((found = searchBlock(blockName, all[i].clientId))) {
 				return found;

@@ -16,6 +16,9 @@
 	left: 160px;
 	right: 0px;
 }
+.wp-block {
+	_padding: 2px;
+}
 .is-sidebar-opened .components-notice-list {
 	right: 280px;
 }
@@ -260,6 +263,9 @@
 .mailster-step-conditions > .block-editor-block-list__layout {
 	display: flex;
 }
+.mailster-step-triggers + .block-list-appender {
+	padding-top: 6px;
+}
 .mailster-step-triggers .block-editor-block-list__layout {
 	display: flex;
 	gap: 2em;
@@ -307,7 +313,7 @@
 	cursor: pointer;
 }
 .mailster-step {
-	_border: 1px solid #d6d6d6;
+	_outline: 1px solid #d6d6d6;
 	_box-shadow: 0 2px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 5%);
 	border-radius: 4px !important;
 	_background: #fafafa;

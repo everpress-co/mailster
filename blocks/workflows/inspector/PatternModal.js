@@ -48,8 +48,7 @@ export default function PatternModal(props) {
 		__experimentalGetAllowedPatterns,
 	} = useSelect('core/block-editor');
 
-	const { isCleanNewPost, undoManager, __unstableIsEditorReady } =
-		useSelect('core/editor');
+	const { isCleanNewPost } = useSelect('core/editor');
 
 	const [title, setTitle] = useEntityProp(
 		'postType',
@@ -164,7 +163,19 @@ function WorkflowPattern({ pattern, onInsertPattern }) {
 			return block;
 		});
 
-	console.log(modifiedBlocks);
+	const Categories = () => {
+		return (
+			<>
+				{categories.map((category, i) => {
+					return (
+						<span key={i} className="mailster-workflow-badge">
+							{category.replace('mailster', '')}
+						</span>
+					);
+				})}
+			</>
+		);
+	};
 
 	const insertPattern = () => {
 		onInsertPattern(pattern);
@@ -209,7 +220,7 @@ function WorkflowPattern({ pattern, onInsertPattern }) {
 					)}
 				</FlexItem>
 				<FlexItem className={`${baseClassName}-actions`}>
-					<h6 className={`${baseClassName}-category`}>{categories}</h6>
+					<h5 className={`${baseClassName}-category`}></h5>
 					<h3 className={`${baseClassName}-title`}>{title}</h3>
 
 					<p>{pattern.description}</p>

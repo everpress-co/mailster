@@ -29,18 +29,6 @@ export function GET_FORMS(action) {
 	return apiFetch({ path: action.path });
 }
 export function GET_EMAILS(action) {
-	const emails2 = searchBlocks('mailster-workflow/email').map((step) => {
-		return {
-			name: step.attributes.name,
-			campaign: step.attributes.campaign,
-			id: step.attributes.id,
-		};
-	});
-	var arrResult = [];
-	emails2.forEach(function (value) {
-		arrResult[value.id] = value;
-	});
-
 	const emails = searchBlocks('mailster-workflow/email').map((step) => {
 		return {
 			name: step.attributes.name,
@@ -48,7 +36,5 @@ export function GET_EMAILS(action) {
 			id: step.attributes.id,
 		};
 	});
-
-	console.log(emails);
 	return emails;
 }

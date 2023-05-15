@@ -126,6 +126,12 @@ class MailsterAutomations {
 				'info'  => esc_html__( 'When a Tag is added to a subscriber', 'mailster' ),
 			),
 			array(
+				'id'    => 'updated_field',
+				'icon'  => 'update',
+				'label' => esc_html__( 'Field updated', 'mailster' ),
+				'info'  => esc_html__( 'When a Field is added or updated from a subscriber', 'mailster' ),
+			),
+			array(
 				'id'    => 'form_conversion',
 				'icon'  => 'commentEditLink',
 				'label' => esc_html__( 'Form Conversion', 'mailster' ),
@@ -182,6 +188,8 @@ class MailsterAutomations {
 
 
 	public function get_limit() {
+
+		return false;
 
 		$limit = 3;
 
@@ -713,14 +721,17 @@ class MailsterAutomations {
 
 			case 'total':
 				$numbers = $this->get_numbers( $post_id );
-				$total   = $numbers['sent'];
+				if ( ! $numbers['sent'] ) {
+					return;
+				}
+				$total = $numbers['sent'];
 				echo number_format_i18n( $total );
 
 				break;
 
 			case 'open':
 				$numbers = $this->get_numbers( $post_id );
-				if ( ! $numbers['opens'] ) {
+				if ( ! $numbers['sent'] ) {
 					return;
 				}
 
@@ -735,7 +746,7 @@ class MailsterAutomations {
 
 			case 'click':
 				$numbers = $this->get_numbers( $post_id );
-				if ( ! $numbers['clicks'] ) {
+				if ( ! $numbers['sent'] ) {
 					return;
 				}
 				$clicks = $numbers['clicks'];
@@ -756,7 +767,7 @@ class MailsterAutomations {
 
 			case 'unsubs':
 				$numbers = $this->get_numbers( $post_id );
-				if ( ! $numbers['unsubs'] ) {
+				if ( ! $numbers['sent'] ) {
 					return;
 				}
 				$unsubscribes = $numbers['unsubs'];
@@ -778,7 +789,7 @@ class MailsterAutomations {
 
 			case 'bounces':
 				$numbers = $this->get_numbers( $post_id );
-				if ( ! $numbers['bounces'] ) {
+				if ( ! $numbers['sent'] ) {
 					return;
 				}
 				$bounces = $numbers['bounces'];

@@ -570,8 +570,11 @@ class MailsterConditions {
 
 		if ( isset( $this->workflow_campaigns[ $post ] ) ) {
 			$title = $this->workflow_campaigns[ $post ]['name'];
-			if ( $this->workflow_campaigns[ $post ]['campaign'] ) {
-				$title .= ' (' . get_the_title( $this->workflow_campaigns[ $post ]['campaign'] ) . ')';
+			if ( isset( $this->workflow_campaigns[ $post ]['campaign'] ) ) {
+				$campaign_title = get_the_title( $this->workflow_campaigns[ $post ]['campaign'] );
+				if ( $campaign_title != $title ) {
+					$title .= ' (' . $campaign_titl . ')';
+				}
 			}
 			return $title;
 		}

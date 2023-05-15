@@ -77,8 +77,6 @@ export default function Edit(props) {
 			});
 	}, [allEmails]);
 
-	console.log(allEmails);
-
 	//reset cache if one of the attributes changes
 	useEffect(() => {
 		dispatch('mailster/automation').invalidateResolutionForStoreSelector(
@@ -133,26 +131,34 @@ export default function Edit(props) {
 								<div className="email-preview-subject">{displaySubject}</div>
 							)}
 							{preview_url && <iframe src={preview_url} loading="lazy" />}
-							{isExample && <img src="https://dummy.mailster.co/268x262.jpg" />}
+							{isExample && <img src="https://dummy.mailster.co/268x322.jpg" />}
 						</div>
 					</CardMedia>
 
 					<CardFooter>
 						<div className="email-stats">
 							<div className="email-stats-sent">
-								<div className="email-stats-label">Sent</div>
+								<div className="email-stats-label">
+									{__('Sent', 'mailster')}
+								</div>
 								<div className="email-stats-value">{stats?.sent_total}</div>
 							</div>
 							<div className="email-stats-opens">
-								<div className="email-stats-label">Opened</div>
+								<div className="email-stats-label">
+									{__('Opened', 'mailster')}
+								</div>
 								<div className="email-stats-value">{stats?.opens_total}</div>
 							</div>
 							<div className="email-stats-clicks">
-								<div className="email-stats-label">Clicked</div>
+								<div className="email-stats-label">
+									{__('Clicked', 'mailster')}
+								</div>
 								<div className="email-stats-value">{stats?.clicks_total}</div>
 							</div>
 							<div className="email-stats-unsubs">
-								<div className="email-stats-label">Unsubs</div>
+								<div className="email-stats-label">
+									{__('Unsubs', 'mailster')}
+								</div>
 								<div className="email-stats-value">{stats?.unsubs}</div>
 							</div>
 						</div>
