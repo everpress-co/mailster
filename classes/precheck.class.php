@@ -241,7 +241,7 @@ class MailsterPrecheck {
 			return new WP_Error( 503, esc_html__( 'Please verify your Mailster license on the Dashboard!', 'mailster' ) );
 		}
 
-		$url  = 'https://api.precheck.email/v2';
+		$url  = 'https://api.precheck.email/v3';
 		$url .= '/' . $id;
 		if ( $endpoint ) {
 			$url .= '/' . $endpoint;
@@ -254,11 +254,14 @@ class MailsterPrecheck {
 			$authorization = mailster()->get_license();
 		}
 
+		$license = mailster_freemius()->_get_license();
+
 		$args = array(
 			'timeout' => (int) $timeout,
 			'headers' => array(
 				'Authorization' => $authorization,
 				'X-Domain'      => parse_url( is_multisite() ? network_site_url() : site_url(), PHP_URL_HOST ),
+				'X-Plugin'      => $license->plugin_id,
 			),
 		);
 

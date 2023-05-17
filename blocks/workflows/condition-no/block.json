@@ -1,11 +1,11 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
-	"name": "mailster-workflow/condition",
+	"name": "mailster-workflow/condition-no",
 	"version": "0.1.0",
-	"title": "Condition",
+	"title": "Condition not fulfilled",
 	"category": "mailster-automation-fields",
-	"parent": ["mailster-workflow/condition"],
+	"parent": ["mailster-workflow/conditions-no"],
 	"example": {},
 	"supports": {
 		"html": false,
@@ -22,9 +22,6 @@
 				"remove": true,
 				"move": true
 			}
-		},
-		"fulfilled": {
-			"type": "boolean"
 		}
 	},
 	"usesContext": ["mailster-workflow/weight"],

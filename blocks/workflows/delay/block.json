@@ -7,7 +7,11 @@
 	"category": "mailster-automation-fields",
 	"keywords": ["delay", "time"],
 	"description": "Delay your workflow and continue at a later point.",
-	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"parent": [
+		"core/post-content",
+		"mailster-workflow/condition-yes",
+		"mailster-workflow/condition-no"
+	],
 	"example": {},
 	"supports": {
 		"html": false,

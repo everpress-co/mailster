@@ -3,7 +3,7 @@ export default (
 		<g fill="none">
 			<path d="M0 0h24v24H0z"></path>
 			<path
-				stroke="#323232"
+				stroke="#46b450"
 				strokeLinecap="round"
 				strokeLinejoin="round"
 				strokeWidth="1.5"

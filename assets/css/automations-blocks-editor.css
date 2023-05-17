@@ -335,7 +335,7 @@
 .mailster-step-conditions > .mailster-step {
 	max-width: 90%;
 }
-.mailster-step-incomplete .mailster-step::after {
+.mailster-step-incomplete > .mailster-step::after {
 	content: '';
 	width: 30px;
 	height: 30px;
@@ -346,7 +346,7 @@
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M14.029 4.139l7.659 13.404c.89 1.558-.235 3.497-2.029 3.497h-15.318c-1.795 0-2.92-1.939-2.029-3.497l7.659-13.404c.897-1.571 3.161-1.571 4.058 8.88178e-16Z" fill="%23ffffff"></path><path d="M0 0h24v24h-24Z"></path><path stroke="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M12 13.12v-3.74"></path><path stroke="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M11.999 16.125c-.138 0-.25.112-.249.25 0 .138.112.25.25.25 .138 0 .25-.112.25-.25 0-.138-.112-.25-.251-.25"></path></g></svg>');
 	z-index: 2;
 }
-.wp-block-mailster-workflow-trigger.mailster-step-incomplete .mailster-step {
+.wp-block-mailster-workflow-trigger.mailster-step-incomplete > .mailster-step {
 	font-style: italic;
 }
 .wp-block-mailster-workflow-email .mailster-step {
@@ -395,6 +395,10 @@
 	transform-origin: left top;
 	min-width: 300%;
 	height: 300%;
+}
+.wp-block-mailster-workflow-email .mailster-step .email-preview img {
+	max-width: 100%;
+	pointer-events: auto;
 }
 .wp-block-mailster-workflow-email .mailster-step .email-stats {
 	width: 100%;
@@ -587,46 +591,46 @@
 	box-sizing: border-box;
 	border: 4px solid var(--mailster-line-color);
 }
-.mailster-step-conditions .mailster-step-condition-yes > .line-in::after,
-.mailster-step-conditions .mailster-step-condition-no > .line-out::after {
+.mailster-step-conditions .yes > .line-in::after,
+.mailster-step-conditions .no > .line-out::after {
 	border-bottom-right-radius: 8px;
 	border-width: 0 4px 4px 0;
 	_margin-top: 0px;
 	_border-color: red;
 }
-.mailster-step-conditions .mailster-step-condition-yes > .line-out::after,
-.mailster-step-conditions .mailster-step-condition-no > .line-in::after {
+.mailster-step-conditions .yes > .line-out::after,
+.mailster-step-conditions .no > .line-in::after {
 	border-top-right-radius: 8px;
 	border-width: 4px 4px 0 0;
 	align-self: flex-end;
 	_margin-top: 20px;
 	_border-color: green;
 }
-.mailster-step-conditions .mailster-step-condition-yes > .line-out::before,
-.mailster-step-conditions .mailster-step-condition-no > .line-in::before {
+.mailster-step-conditions .yes > .line-out::before,
+.mailster-step-conditions .no > .line-in::before {
 	border-bottom-left-radius: 8px;
 	border-width: 0 0 4px 4px;
 	_margin-top: 0px;
 	_border-color: blue;
 }
-.mailster-step-conditions .mailster-step-condition-yes > .line-in::before,
-.mailster-step-conditions .mailster-step-condition-no > .line-out::before {
+.mailster-step-conditions .yes > .line-in::before,
+.mailster-step-conditions .no > .line-out::before {
 	border-top-left-radius: 8px;
 	border-width: 4px 0 0 4px;
 	align-self: flex-end;
 	_margin-top: 20px;
 	_border-color: tomato;
 }
-.mailster-step-conditions .mailster-step-condition-yes > .line-out::after,
-.mailster-step-conditions .mailster-step-condition-no > .line-out::before {
+.mailster-step-conditions .yes > .line-out::after,
+.mailster-step-conditions .no > .line-out::before {
 	min-height: 20px;
 	_height: 40px;
 	align-self: flex-end;
 }
-.mailster-step-conditions .mailster-step-condition-yes > .line {
+.mailster-step-conditions .yes > .line {
 	margin: 0 -2px 0 auto;
 }
-.mailster-step-conditions .mailster-step-condition-no > .line {
+.mailster-step-conditions .no > .line {
 	margin: 0 auto 0 -2px;
 }
 .mailster-step-conditions .mailster-step-condition .line.line-out {
@@ -659,14 +663,14 @@
 .mailster-step-conditions .mailster-step-condition.mailster-has-stop::before {
 	display: none;
 }
-.mailster-step-conditions .mailster-step-condition.mailster-step-condition-yes {
+.mailster-step-conditions .mailster-step-condition.yes {
 	margin-right: 0 !important;
 }
-.mailster-step-conditions .mailster-step-condition.mailster-step-condition-no {
+.mailster-step-conditions .mailster-step-condition.no {
 	margin-left: 0 !important;
 }
 .mailster-step-conditions
-	.mailster-step-condition.mailster-step-condition-yes.mailster-has-stop
+	.mailster-step-condition.yes.mailster-has-stop
 	> .line-out::after {
 	_border-top: 0;
 	_border-bottom: 0;
@@ -675,16 +679,16 @@
 	transform: scaleX(-1) translateX(-100%);
 }
 .mailster-step-conditions
-	.mailster-step-condition.mailster-step-condition-no.mailster-has-stop
+	.mailster-step-condition.no.mailster-has-stop
 	> .line-out::before {
 	transform-origin: left;
 	transform: scaleX(-1) translateX(-4px);
 }
 .mailster-step-conditions
-	.mailster-step-condition.mailster-step-condition-yes.mailster-has-stop
+	.mailster-step-condition.yes.mailster-has-stop
 	> .line-out::before,
 .mailster-step-conditions
-	.mailster-step-condition.mailster-step-condition-no.mailster-has-stop
+	.mailster-step-condition.no.mailster-has-stop
 	> .line-out::after {
 	border: 0;
 }
@@ -706,10 +710,10 @@
 	margin-top: 8px;
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none"><path d="M0,0h24v24h-24Z"></path><path stroke="%23ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.944,19h-1.888c-0.583,0 -1.056,-0.473 -1.056,-1.056v-7.388c0,-0.583 0.473,-1.056 1.056,-1.056h1.888c0.583,0 1.056,0.473 1.056,1.056v7.388c0,0.583 -0.473,1.056 -1.056,1.056Z"></path><path stroke="%23ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8,10.572l3.649,-4.751c0.679,-0.885 2.005,-0.907 2.714,-0.046v0c0.265,0.321 0.409,0.725 0.409,1.141v3.271h3.096c0.601,0 1.162,0.3 1.496,0.799l0.329,0.491c0.295,0.441 0.381,0.99 0.234,1.499l-1.359,4.722c-0.222,0.771 -0.927,1.302 -1.729,1.302h-6.289c-0.5,0 -0.978,-0.208 -1.318,-0.574l-1.232,-1.326"></path></g></svg>');
 }
-.mailster-step-condition-yes > .line > .condition-label {
+.yes > .line > .condition-label {
 	background-color: #46b450;
 }
-.mailster-step-condition-no > .line > .condition-label {
+.no > .line > .condition-label {
 	background-color: #c3232d;
 	transform: rotate(180deg);
 }
@@ -836,7 +840,7 @@
 	gap: 1em;
 	padding: 1em 0;
 	flex-wrap: wrap;
-	height: 100%;
+	min-height: 100%;
 }
 .mailster-patterns-explorer .mailster-pattern {
 	width: 50%;

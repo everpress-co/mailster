@@ -6,7 +6,11 @@
 	"title": "Action",
 	"category": "mailster-automation-actions",
 	"description": "Execute an action",
-	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"parent": [
+		"core/post-content",
+		"mailster-workflow/condition-yes",
+		"mailster-workflow/condition-no"
+	],
 	"example": {
 		"attributes": {
 			"action": "add_list"

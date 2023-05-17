@@ -6,7 +6,11 @@
 	"title": "Comment",
 	"category": "mailster-automation-fields",
 	"keywords": ["comment"],
-	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"parent": [
+		"core/post-content",
+		"mailster-workflow/condition-yes",
+		"mailster-workflow/condition-no"
+	],
 	"description": "This is a comment block to better document your workflow. It has no effect on the workflow.",
 	"example": {
 		"attributes": {

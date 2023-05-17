@@ -12,8 +12,8 @@ import { registerBlockType } from '@wordpress/blocks';
  * Internal dependencies
  */
 
-import edit from './edit';
-import save from './save';
+import edit from '../condition/edit';
+import save from '../condition/save';
 import icon from './Icon';
 import json from './block.json';
 

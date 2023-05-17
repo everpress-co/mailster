@@ -28,7 +28,9 @@ import { BlockPreview } from '@wordpress/block-editor';
  * Internal dependencies
  */
 
-import { searchBlock } from '../../util';
+import { HelpBeacon, searchBlock } from '../../util';
+import { FlexBlock } from '@wordpress/components';
+import { ExternalLink } from '@wordpress/components';
 
 export default function PatternModal(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
@@ -117,6 +119,7 @@ export default function PatternModal(props) {
 			shouldCloseOnEsc={false}
 			className="mailster-patterns-modal"
 		>
+			<HelpBeacon id="63fb5f4e0b394c459d8a5c1e" align="right" />
 			<div className="mailster-patterns-explorer">
 				{patterns.length == 0 && (
 					<Flex className="mailster-patterns-loader" justify="center">
@@ -148,7 +151,7 @@ export default function PatternModal(props) {
 function WorkflowPattern({ pattern, onInsertPattern }) {
 	const baseClassName = 'mailster-pattern';
 
-	const { title, categories = [], blocks } = pattern;
+	const { title, categories = [], blocks, article } = pattern;
 
 	const ref = useRef(null);
 
@@ -216,6 +219,8 @@ function WorkflowPattern({ pattern, onInsertPattern }) {
 						<BlockPreview
 							blocks={modifiedBlocks}
 							viewportWidth={viewportWidth}
+							minHeight={344}
+							additionalStyles={[{ css: 'body { padding: 16px }' }]}
 						/>
 					)}
 				</FlexItem>
@@ -228,6 +233,14 @@ function WorkflowPattern({ pattern, onInsertPattern }) {
 					<Button variant="secondary" onClick={insertPattern}>
 						{__('Start with this Workflow', 'mailster')}
 					</Button>
+
+					{article && (
+						<p>
+							<ExternalLink href={article} target="_blank">
+								{__('Learn how to use this Workflow', 'mailster')}
+							</ExternalLink>
+						</p>
+					)}
 				</FlexItem>
 			</Flex>
 		</Card>

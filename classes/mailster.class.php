@@ -2944,9 +2944,9 @@ class Mailster {
 
 	public function get_license( $fallback = '' ) {
 
-		$user = mailster_freemius()->get_user();
+		$license = mailster_freemius()->_get_license();
 
-		return $user ? $user->secret_key : $fallback;
+		return $license ? $license->secret_key : $fallback;
 	}
 
 	public function get_email( $fallback = '' ) {

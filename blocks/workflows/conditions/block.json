@@ -6,7 +6,11 @@
 	"title": "Condition",
 	"category": "mailster-automation-fields",
 	"keywords": ["container", "wrapper", "row", "section"],
-	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"parent": [
+		"core/post-content",
+		"mailster-workflow/condition-yes",
+		"mailster-workflow/condition-no"
+	],
 	"description": "Define a condition",
 	"example": {},
 	"supports": {

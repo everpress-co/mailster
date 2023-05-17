@@ -41,6 +41,7 @@ import ListSelector from '../inspector/ListSelector';
 import TagSelector from '../inspector/TagSelector';
 import FieldSelector from '../inspector/FieldSelector';
 import WebHookSelector from '../inspector/WebHookSelector';
+import { HelpBeacon } from '../../util';
 
 export default function ActionInspectorControls(props) {
 	const { attributes, setAttributes } = props;
@@ -103,6 +104,7 @@ export default function ActionInspectorControls(props) {
 				<PanelBody>
 					<PanelRow>
 						<ItemGroup>
+							<HelpBeacon id="646237eb17da4d6b8d6ef0b7" align="right" />
 							{!allActions && <Spinner />}
 							{action && (
 								<BaseControl help={info}>

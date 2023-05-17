@@ -177,10 +177,8 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 	public function get_triggers( $request ) {
 
-		// TODO better nameing for trigger IDs!
 		$triggers = mailster( 'automations' )->get_triggers();
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $triggers );
 	}
 
@@ -190,7 +188,6 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 		$numbers = mailster( 'automations' )->get_numbers( $post_id );
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $numbers );
 	}
 
@@ -198,7 +195,6 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 		$actions = mailster( 'automations' )->get_actions();
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $actions );
 	}
 
@@ -213,7 +209,6 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 			$lists[ $i ]->parent_id = (int) $list->parent_id;
 		}
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $lists );
 	}
 
@@ -226,7 +221,6 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 			$forms[ $i ]->name = $form->post_title;
 		}
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $forms );
 	}
 
@@ -240,32 +234,28 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 			$tags[ $i ]->updated = (int) $list->updated;
 		}
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $tags );
 	}
 
 
 	public function get_fields( $request ) {
 
-		$fields              = mailster()->get_custom_fields();
-		$fields['firstname'] = array(
-			'name' => mailster_text( 'firstname' ),
-			'type' => 'text',
-			'id'   => 'firstname',
-		);
-		$fields['lastname']  = array(
-			'name' => mailster_text( 'lastname' ),
-			'type' => 'text',
-			'id'   => 'lastname',
-		);
-		$fields['email']     = array(
-			'name' => mailster_text( 'email' ),
-			'type' => 'text',
-			'id'   => 'email',
+		$fields = array(
+			'firstname' => array(
+				'name' => mailster_text( 'firstname' ),
+				'type' => 'text',
+				'id'   => 'firstname',
+			),
+			'lastname'  => array(
+				'name' => mailster_text( 'lastname' ),
+				'type' => 'text',
+				'id'   => 'lastname',
+			),
 		);
 
-		// Return all of our comment response data.
-		return rest_ensure_response( array_values( (array) $fields ) );
+		$custom_fields = (array) mailster()->get_custom_fields();
+
+		return rest_ensure_response( array_values( $fields + $custom_fields ) );
 	}
 
 
@@ -290,7 +280,6 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 			);
 		}
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $return );
 	}
 
@@ -301,7 +290,6 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 		$actions = mailster( 'actions' )->get_by_campaign( $post_id );
 
-		// Return all of our comment response data.
 		return rest_ensure_response( $actions );
 	}
 

@@ -6,7 +6,11 @@
 	"title": "Email",
 	"category": "mailster-automation-fields",
 	"description": "Send out an campaign or email.",
-	"parent": ["core/post-content", "mailster-workflow/condition"],
+	"parent": [
+		"core/post-content",
+		"mailster-workflow/condition-yes",
+		"mailster-workflow/condition-no"
+	],
 	"example": {},
 	"supports": {
 		"html": false,

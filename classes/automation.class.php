@@ -27,6 +27,7 @@ class MailsterAutomations {
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
 		// add_action( 'register_block_type_args', array( &$this, 'register_variations' ), 10, 2 );
+		// add_action( 'register_block_type_args', array( &$this, 'register_conditions_variations' ), 10, 2 );
 
 		add_filter( 'manage_mailster-workflow_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_mailster-workflow_posts_custom_column', array( &$this, 'columns_content' ), 10, 2 );
@@ -156,12 +157,6 @@ class MailsterAutomations {
 				'info'  => esc_html__( 'When a subscriber clicks a link', 'mailster' ),
 			),
 			array(
-				'id'    => 'opened_campaign',
-				'icon'  => 'key',
-				'label' => esc_html__( 'Open a campaign', 'mailster' ),
-				'info'  => esc_html__( 'When a users opens a campaign', 'mailster' ),
-			),
-			array(
 				'id'    => 'page_visit',
 				'icon'  => 'page',
 				'label' => esc_html__( 'Visits a page', 'mailster' ),
@@ -172,6 +167,14 @@ class MailsterAutomations {
 				'icon'  => 'shortcode',
 				'label' => esc_html__( 'Custom Hook', 'mailster' ),
 				'info'  => esc_html__( 'When a custom hook is called', 'mailster' ),
+			),
+			array(
+				'id'       => 'opened_campaign',
+				'icon'     => 'key',
+				'label'    => esc_html__( 'Open a campaign', 'mailster' ),
+				'info'     => esc_html__( 'When a users opens a campaign', 'mailster' ),
+				'disabled' => true,
+				'reason'   => esc_html__( 'Comming soon!', 'mailster' ),
 			),
 			array(
 				'id'       => 'published_post',
@@ -954,6 +957,8 @@ class MailsterAutomations {
 
 			$blocks = $this->get_blocks();
 
+			error_log( print_r( $blocks, true ) );
+
 			foreach ( $blocks as $block ) {
 				$args = array();
 
@@ -1089,6 +1094,37 @@ class MailsterAutomations {
 			),
 			$categories
 		);
+	}
+
+
+	public function register_conditions_variations( $args, $block_type ) {
+		if ( $block_type !== 'mailster-workflow/condition' ) {
+			return $args;
+		}
+
+		$args['variations'] = array(
+			array(
+				'name'       => 'fullfilled',
+				'title'      => 'FULLFILLED',
+				'icon'       => 'update',
+				// 'scope'      => array( 'block' ),
+				'attributes' => array(
+					'fulfilled' => true,
+				),
+			),
+			array(
+				'name'       => 'not_fullfilled',
+				'title'      => 'NOT FULLFILED',
+				'icon'       => 'archive',
+				// 'scope'      => array( 'block' ),
+				'attributes' => array(
+					'fulfilled' => false,
+				),
+			),
+
+		);
+
+		return $args;
 	}
 
 

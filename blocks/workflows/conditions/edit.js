@@ -30,8 +30,8 @@ import { searchBlocks, useUpdateEffect } from '../../util';
 import { useSelect, select } from '@wordpress/data';
 
 const BLOCK_TEMPLATE = [
-	['mailster-workflow/condition', { fulfilled: true }],
-	['mailster-workflow/condition', { fulfilled: false }],
+	['mailster-workflow/condition-yes'],
+	['mailster-workflow/condition-no'],
 ];
 
 export default function Edit(props) {

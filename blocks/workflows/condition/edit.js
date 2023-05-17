@@ -16,6 +16,7 @@ import {
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
 import { useEffect, useRef, useState } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -25,9 +26,11 @@ import { searchBlock, searchBlocks } from '../../util';
 import ConditionInspectorControls from './inspector.js';
 
 export default function Edit(props) {
-	const { attributes, setAttributes, isSelected, clientId, context } = props;
-	const { fulfilled } = attributes;
+	const { attributes, setAttributes, isSelected, clientId, context, name } =
+		props;
 	const className = ['mailster-step-condition', 'canvas-handle'];
+
+	const fulfilled = name === 'mailster-workflow/condition-yes';
 
 	const hasStop = (clientId) => {
 		return searchBlock('mailster-workflow/stop', clientId, false);
@@ -35,9 +38,7 @@ export default function Edit(props) {
 
 	hasStop(clientId) && className.push('mailster-has-stop');
 
-	className.push(
-		fulfilled ? 'mailster-step-condition-yes' : 'mailster-step-condition-no'
-	);
+	className.push(fulfilled ? 'yes' : 'no');
 
 	const title = fulfilled
 		? __('Condition is fullfilled', 'mailster')

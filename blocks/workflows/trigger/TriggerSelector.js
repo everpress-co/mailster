@@ -34,6 +34,7 @@ import FormSelector from '../inspector/FormSelector';
 import TagSelector from '../inspector/TagSelector';
 
 import PageSelector from './PageSelector';
+import CampaignSelector from './CampaignSelector';
 import LinkSelector from './LinkSelector';
 import DateSelector from './DateSelector';
 import FieldSelector from './FieldSelector';
@@ -130,7 +131,7 @@ export default function Selector(props) {
 				{!filterTrigger && <Spinner />}
 				{trigger && (
 					<BaseControl help={info}>
-						<HelpBeacon id="63fb5f4e0b394c459d8a5c1e" align="right" />
+						<HelpBeacon id="646232738783627a4ed4c596" align="right" />
 						<DropdownMenu icon={Icons[t_icon] || icon} text={label}>
 							{(props) => <TriggerButtons {...props} />}
 						</DropdownMenu>
@@ -138,7 +139,7 @@ export default function Selector(props) {
 				)}
 				{!trigger && (
 					<BaseControl>
-						<HelpBeacon id="63fb5f4e0b394c459d8a5c1e" align="right" />
+						<HelpBeacon id="646232738783627a4ed4c596" align="right" />
 						<h2>{label}</h2>
 						<div className="components-dropdown-menu__menu">
 							<TriggerButtons onClose={() => {}} />
@@ -180,6 +181,7 @@ export default function Selector(props) {
 					/>
 				</>
 			)}
+			{trigger == 'opened_campaign' && <CampaignSelector {...props} />}
 			{trigger == 'link_click' && <LinkSelector {...props} />}
 			{trigger == 'hook' && <HookSelector {...props} />}
 			{trigger == 'tag_added' && (

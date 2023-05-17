@@ -62,27 +62,27 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/delay {"id":"3dac13","amount":3,"unit":"days"} /-->
 		
 		<!-- wp:mailster-workflow/conditions {"id":"e2447d","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D%5B0%5D=bf5811\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D%5B1%5D=71804e"} -->
-		<!-- wp:mailster-workflow/condition {"fulfilled":true} -->
+		<!-- wp:mailster-workflow/condition-yes -->
 		<!-- wp:mailster-workflow/action {"id":"21ad89","action":"add_tag"} /-->
 		
 		<!-- wp:mailster-workflow/email {"id":"3431f0","name":"Offer #1"} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-yes -->
 		
-		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
+		<!-- wp:mailster-workflow/condition-no -->
 		<!-- wp:mailster-workflow/email {"id":"cf181c","name":"Welcome"} /-->
 		
 		<!-- wp:mailster-workflow/delay {"id":"b7b1fa","amount":3,"unit":"hours"} /-->
 		
 		<!-- wp:mailster-workflow/conditions {"id":"e97c5f","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=cf181c"} -->
-		<!-- wp:mailster-workflow/condition {"fulfilled":true} -->
+		<!-- wp:mailster-workflow/condition-yes -->
 		<!-- wp:mailster-workflow/action {"id":"b426fd","action":"add_tag"} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-yes -->
 		
-		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
+		<!-- wp:mailster-workflow/condition-no -->
 		<!-- wp:mailster-workflow/action {"id":"5b8177","action":"unsubscribe"} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-no -->
 		<!-- /wp:mailster-workflow/conditions -->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-no -->
 		<!-- /wp:mailster-workflow/conditions -->',
 	)
 );
@@ -93,7 +93,7 @@ register_block_pattern(
 	'mailster-workflow/pagevisit',
 	array(
 		'title'         => __( 'Workflow for page visits', 'mailster' ),
-		'description'   => __( 'If you want to focus on subscribers who have visited specific pages, then this workflow will come in handy.', 'mailster' ),
+		'description'   => __( 'This workflow serves as a valuable tool for targeting subscribers who have visited specific pages. By leveraging this workflow, you can segment your audience based on their browsing behavior, enabling you to deliver personalized campaigns, recommend relevant content, and provide targeted offers.', 'mailster' ),
 		'viewportWidth' => 600,
 		'postTypes'     => array( 'mailster-workflow' ),
 		'categories'    => array( 'mailster-custom-category' ),
@@ -103,7 +103,7 @@ register_block_pattern(
 		
 		<!-- wp:mailster-workflow/delay {"amount":10,"unit":"minutes"} /-->
 		
-		<!-- wp:mailster-workflow/email /--><!-- wp:mailster-workflow/action {"action":"add_tag","tags":["Visited"]} /-->',
+		<!-- wp:mailster-workflow/email {"name":"Email #1"} /--><!-- wp:mailster-workflow/action {"action":"add_tag","tags":["Visited"]} /-->',
 	)
 );
 
@@ -112,6 +112,7 @@ register_block_pattern(
 	'mailster-workflow/win-back-subscribers',
 	array(
 		'title'         => __( 'Win back inactive subscribers', 'mailster' ),
+		'article'       => 'https://asdasd.com',
 		'description'   => __( 'Re-engage subscribers who have shown a lack of engagement and remove inactive ones. You can initiate a campaign and update a custom field if they interact, or transfer them to the unsubscribed folder if they do not. This approach effectively purges your list, ensuring that your most active subscribers remain, leading to improved email deliverability.', 'mailster' ),
 		'viewportWidth' => 600,
 		'postTypes'     => array( 'mailster-workflow' ),
@@ -127,13 +128,13 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/delay {"id":"1e5fca","amount":3,"unit":"days"} /-->
 
 		<!-- wp:mailster-workflow/conditions {"id":"fc8a35","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=9869d5"} -->
-		<!-- wp:mailster-workflow/condition {"fulfilled":true} -->
+		<!-- wp:mailster-workflow/condition-yes -->
 		<!-- wp:mailster-workflow/comment {"comment":"if the user clicked in our \u0022Special Offer Campaign you could add a tag."} /-->
 
 		<!-- wp:mailster-workflow/action {"id":"5eeabf","action":"add_tag"} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-yes -->
 
-		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
+		<!-- wp:mailster-workflow/condition-no -->
 		<!-- wp:mailster-workflow/comment {"comment":"Send another campaign if the user haven\'t clicked in our previous message."} /-->
 
 		<!-- wp:mailster-workflow/email {"id":"921df7","name":"Final Offer"} /-->
@@ -141,15 +142,15 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/delay {"id":"590a14","amount":3,"unit":"days"} /-->
 
 		<!-- wp:mailster-workflow/conditions {"id":"c59f3d","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=921df7"} -->
-		<!-- wp:mailster-workflow/condition {"fulfilled":true} -->
+		<!-- wp:mailster-workflow/condition-yes -->
 		<!-- wp:mailster-workflow/action {"id":"3330a6","action":"add_tag"} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-yes -->
 
-		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
+		<!-- wp:mailster-workflow/condition-no -->
 		<!-- wp:mailster-workflow/action {"id":"66caf9","action":"unsubscribe"} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-no -->
 		<!-- /wp:mailster-workflow/conditions -->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-no -->
 		<!-- /wp:mailster-workflow/conditions -->',
 	)
 );
@@ -292,27 +293,14 @@ register_block_pattern(
 		'postTypes'     => array( 'mailster-workflow' ),
 		'categories'    => array( 'mailster-custom-category' ),
 		'content'       => '<!-- wp:mailster-workflow/conditions {"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=geo\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=_EN"} -->
-		<!-- wp:mailster-workflow/condition {"fulfilled":true} -->
+		<!-- wp:mailster-workflow/condition-yes -->
 		<!-- wp:mailster-workflow/action {"action":"add_tag","tags":["EU"]} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-yes -->
 		
-		<!-- wp:mailster-workflow/condition {"fulfilled":false} -->
+		<!-- wp:mailster-workflow/condition-no -->
 		<!-- wp:mailster-workflow/action {"action":"remove_tag","tags":["EU"]} /-->
-		<!-- /wp:mailster-workflow/condition -->
+		<!-- /wp:mailster-workflow/condition-no -->
 		<!-- /wp:mailster-workflow/conditions -->',
-	)
-);
-
-
-register_block_pattern(
-	'mailster-workflow/xxxx',
-	array(
-		'title'         => __( 'Empty', 'mailster' ),
-		'description'   => __( ' ', 'mailster' ),
-		'viewportWidth' => 600,
-		'postTypes'     => array( 'mailster-workflow' ),
-		'categories'    => array( 'mailster-custom-category' ),
-		'content'       => '<!-- wp:mailster-workflow/triggers --><!-- wp:mailster-workflow/trigger /--><!-- /wp:mailster-workflow/triggers --><!-- wp:mailster-workflow/action {,"action":"add_tag","tags":["ABC"]} /--><!-- wp:mailster-workflow/action  /-->',
 	)
 );
 
