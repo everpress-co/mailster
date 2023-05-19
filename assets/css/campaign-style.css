@@ -635,6 +635,10 @@ textarea#head {
 	right: 0;
 	top: -1.5em;
 }
+.rtl .mailster_autoresponder_more > .mailster-help {
+	left: 0;
+	right: unset;
+}
 .autoresponder-mailster_subscriber_insert
 	.autoresponderfield-mailster_subscriber_insert,
 .autoresponder-mailster_subscriber_unsubscribed

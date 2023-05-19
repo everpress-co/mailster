@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.2  
-Stable tag: 3.3.3
+Stable tag: 3.3.4
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,11 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 3.3.4
+
+- fixed: MySQL error on autoresponders which uses "has received but not opened" or "has received and not clicked" condition.
+- fixed: RTL CSS issue on Autoresponder options sidebar (#40)
 
 ### 3.3.3
 
