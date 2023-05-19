@@ -86,6 +86,7 @@ export default function InputFieldInspectorControls(props) {
 			},
 		});
 	}
+
 	return (
 		<>
 			<InspectorControls group="styles">

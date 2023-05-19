@@ -1046,12 +1046,6 @@ class MailsterBlockForms {
 
 	public function register_block_patterns() {
 
-		$query = wp_parse_url( wp_get_referer(), PHP_URL_QUERY );
-
-		if ( false === strpos( $query, 'post_type=mailster-form' ) ) {
-			return;
-		}
-
 		register_block_pattern_category( 'mailster-forms', array( 'label' => __( 'Mailster Forms', 'mailster' ) ) );
 
 		include MAILSTER_DIR . 'patterns/form-pattern.php';
@@ -1061,6 +1055,8 @@ class MailsterBlockForms {
 			$args = wp_parse_args(
 				$pattern,
 				array(
+					'inserter'      => false,
+					'postTypes'     => array( 'mailster-form' ),
 					'keywords'      => array( 'mailster-form' ),
 					'viewportWidth' => 600,
 				)

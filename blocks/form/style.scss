@@ -575,11 +575,17 @@ body.single-mailster-form {
 	}
 	.mailster-wrapper .mailster-group {
 		_padding-right: 0.5em;
-		display: block;
+		_display: block;
+		align-items: center;
+		input {
+			flex-shrink: 0;
+		}
 	}
+
 	.mailster-wrapper-is-vertical .mailster-group {
 		padding-left: inherit;
 		padding-right: inherit;
+		align-items: center;
 		_width: 100%;
 	}
 	.mailster-wrapper-is-vertical > fieldset {

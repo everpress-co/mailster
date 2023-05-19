@@ -30,7 +30,7 @@ import { useSelect } from '@wordpress/data';
 export default function ListsPanel(props) {
 	const { meta, setMeta, attributes = {}, setAttributes } = props;
 	const { userschoice, lists } = meta;
-	const { showLabel, label } = attributes;
+	const { showLabel = false, label = '' } = attributes;
 
 	const allLists = useSelect((select) => select('mailster/form').getLists());
 

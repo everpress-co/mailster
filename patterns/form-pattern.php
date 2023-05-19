@@ -3,7 +3,7 @@
 $pattern_files = glob( MAILSTER_DIR . 'patterns/forms/*.php' );
 
 $patterns = array();
-foreach ( $pattern_files as $file ) {
+foreach ( $pattern_files as $i => $file ) {
 
 	$name = pathinfo( $file, PATHINFO_FILENAME );
 	$name = str_replace( array( '-', '_' ), array( ' ' ), $name );
@@ -14,6 +14,10 @@ foreach ( $pattern_files as $file ) {
 		'title'         => $name,
 		'content'       => file_get_contents( $file ),
 	);
+
+	if ( $i > 2 ) {
+		// break;
+	}
 }
 
 
