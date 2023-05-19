@@ -487,9 +487,9 @@ class MailsterSubscriberQuery {
 						unset( $this->args['conditions'][ $i ][ $j ] );
 						continue;
 					}
-					// requires campaign to be sent
+					// requires campaign to be sent (removed in 3.3.4)
 					if ( in_array( $field, array( '_open__not_in', '_click__not_in' ) ) ) {
-						$this->add_condition( '_sent', '=', $value );
+						 // $this->add_condition( '_sent', '=', $value );
 					}
 				}
 			}
