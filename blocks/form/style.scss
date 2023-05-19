@@ -273,6 +273,9 @@ body.single-mailster-form {
 			display: none;
 		}
 	}
+	.wp-block-spacer {
+		min-width: 1px;
+	}
 	.mailster-show-label legend {
 		display: block;
 	}
@@ -564,6 +567,7 @@ body.single-mailster-form {
 		display: initial;
 		vertical-align: baseline;
 		margin: 0;
+		cursor: pointer;
 	}
 	.mailster-label + .mailster-group {
 		_padding-left: 1rem;

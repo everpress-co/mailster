@@ -221,20 +221,23 @@ class MailsterTrigger {
 					}
 				}
 
-				foreach ( $query['taxQuery'] as $taxonomy => $ids ) {
-					$post_terms = get_the_terms( $post->ID, $taxonomy );
-					$post_terms = wp_list_pluck( $post_terms, 'term_id' );
+				if ( $query['taxQuery'] ) {
+					foreach ( $query['taxQuery'] as $taxonomy => $ids ) {
+						$post_terms = get_the_terms( $post->ID, $taxonomy );
+						$post_terms = wp_list_pluck( $post_terms, 'term_id' );
 
-					// no post_terms set but required => give up (not passed)
-					if ( ! count( array_intersect( $post_terms, $ids ) ) ) {
-						break 2; // break out of both loops
+						// no post_terms set but required => give up (not passed)
+						if ( ! count( array_intersect( $post_terms, $ids ) ) ) {
+							break 2; // break out of both loops
+						}
 					}
 				}
 			}
 
 			// TODO check for the right step if posts should be skipped
+			$context = array( 'query' => $query );
 
-			return $this->add_job( $workflow, 'published_post', null );
+			return $this->add_job( $workflow, 'published_post', null, null, null, $context );
 
 		}
 
@@ -343,7 +346,7 @@ class MailsterTrigger {
 
 	}
 
-	private function add_job( $workflow, $trigger, $subscriber_id, $step = null, $timestamp = null ) {
+	private function add_job( $workflow, $trigger, $subscriber_id, $step = null, $timestamp = null, $context = null ) {
 
 		// only some triggers allow all susbscribers
 		if ( ! $subscriber_id ) {
@@ -352,12 +355,18 @@ class MailsterTrigger {
 			}
 		}
 
+		// serialize context if needed
+		if ( $context && ! is_string( $context ) ) {
+			$context = serialize( $context );
+		}
+
 		$job = array(
 			'subscriber_id' => (int) $subscriber_id,
 			'workflow_id'   => (int) $workflow,
 			'trigger'       => $trigger,
 			'step'          => $step,
 			'timestamp'     => $timestamp,
+			'context'       => $context,
 		);
 
 		$success = $this->queue_job( $job );
@@ -387,10 +396,10 @@ class MailsterTrigger {
 
 	}
 
-	public function bulk_add( $workflow, $trigger, $subscriber_ids, $step, $timestamp = null ) {
+	public function bulk_add( $workflow, $trigger, $subscriber_ids, $step, $timestamp = null, $context = null ) {
 
 		foreach ( (array) $subscriber_ids as $subscriber_id ) {
-			$this->add_job( $workflow, $trigger, $subscriber_id, $step, $timestamp );
+			$this->add_job( $workflow, $trigger, $subscriber_id, $step, $timestamp, $context );
 		}
 
 	}
@@ -410,7 +419,7 @@ class MailsterTrigger {
 		$suppress_errors = $wpdb->suppress_errors( true );
 
 		// if ( $wpdb->insert( "{$wpdb->prefix}mailster_workflows", $job ) ) {
-		if ( $wpdb->query( $sql ) ) {
+		if ( false !== $wpdb->query( $sql ) ) {
 			$success = true;
 		} else {
 			$success = false;

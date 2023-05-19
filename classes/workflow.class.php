@@ -717,11 +717,11 @@ class MailsterWorkflow {
 
 						$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
 
-						error_log( print_r( $subscriber_ids, true ) );
+						$context = $this->entry->context;
 
 						// $step = isset( $trigger['attr']['id'] ) ? $trigger['attr']['id'] : null;
 						if ( ! empty( $subscriber_ids ) ) {
-							mailster( 'trigger' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
+							mailster( 'trigger' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp, $context );
 						}
 						$this->delete();
 						return false;

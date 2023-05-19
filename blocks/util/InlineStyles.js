@@ -109,7 +109,7 @@ const getInlineStyles = (el) => {
 				...properties,
 				...selectors[selector],
 			]);
-			return '' + selector + '{' + style + '}';
+			return selector + '{' + style + '}';
 		})
 		.join('');
 };
@@ -151,15 +151,16 @@ export default function InlineStyles() {
 				if (styles != inlineStyles) {
 					setInlineStyles(styles);
 					dispatch('core').saveEditedEntityRecord('root', 'site');
-					dispatch('core/notices').createNotice(
-						'success',
-						__('Mailster Inline styles have been updated.', 'mailster'),
-						{
-							id: 'mailster-inline-styles-updated',
-							type: 'snackbar',
-							isDismissible: true,
-						}
-					);
+					!inlineStyles &&
+						dispatch('core/notices').createNotice(
+							'success',
+							__('Mailster Inline styles have been updated.', 'mailster'),
+							{
+								id: 'mailster-inline-styles-updated',
+								type: 'snackbar',
+								isDismissible: true,
+							}
+						);
 				}
 				setRender(false);
 			}, 1);

@@ -957,8 +957,6 @@ class MailsterAutomations {
 
 			$blocks = $this->get_blocks();
 
-			error_log( print_r( $blocks, true ) );
-
 			foreach ( $blocks as $block ) {
 				$args = array();
 
