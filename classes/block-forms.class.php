@@ -319,6 +319,11 @@ class MailsterBlockForms {
 			}
 		}
 
+		// only one single pages
+		if ( ! is_single() ) {
+			return false;
+		}
+
 		if ( ! empty( $options['all'] ) && in_array( $post_type, $options['all'] ) ) {
 			return true;
 		}

@@ -50,22 +50,32 @@ function SettingsPanelPlugin() {
 			.pop()
 	);
 
+	const { getBlockIndex, getBlock, getBlocks, getBlockAttributes } =
+		select('core/block-editor');
+	const {
+		insertBlock,
+		removeBlock,
+		updateBlockAttributes,
+		clearSelectedBlock,
+	} = dispatch('core/block-editor');
+	const { openGeneralSidebar } = dispatch('core/edit-post');
+
 	// define articifcially the setAttribute and attribute properties
 	useEffect(() => {
 		if (!root) return;
 
 		if (!blockProps) {
-			const tempBlockProps = select('core/block-editor').getBlock(root) || {};
+			const tempBlockProps = getBlock(root) || {};
 
 			tempBlockProps.setAttributes = (attributes = {}) => {
 				const newBlockProps = { ...tempBlockProps };
-				const current = select('core/block-editor').getBlockAttributes(root);
+				const current = getBlockAttributes(root);
 				const merged = { ...current, ...attributes };
 
 				newBlockProps.attributes = merged;
 				setBlockProps(newBlockProps);
 
-				dispatch('core/block-editor').updateBlockAttributes(root, merged);
+				updateBlockAttributes(root, merged);
 			};
 
 			setBlockProps(tempBlockProps);
@@ -74,12 +84,12 @@ function SettingsPanelPlugin() {
 
 	// enter the root wrapper or replace it with a new one
 	useEffect(() => {
-		const all = select('core/block-editor').getBlocks(),
+		const all = getBlocks(),
 			count = all.length;
 
 		if (count > 1) {
 			console.warn('enter the root wrapper or replace it with a new one');
-			const inserted = select('core/block-editor').getBlock(clientId);
+			const inserted = getBlock(clientId);
 			const current = all.find(
 				(block) =>
 					block.name == 'mailster/form-wrapper' && block.clientId != clientId
@@ -89,9 +99,9 @@ function SettingsPanelPlugin() {
 					'This will replace your current form with the selected one. Continue?'
 				)
 			) {
-				dispatch('core/block-editor').removeBlock(current.clientId);
+				removeBlock(current.clientId);
 			} else {
-				dispatch('core/block-editor').removeBlock(inserted.clientId);
+				removeBlock(inserted.clientId);
 			}
 		}
 	}, []);
@@ -106,24 +116,20 @@ function SettingsPanelPlugin() {
 			if (block && !meta.userschoice) {
 				//remove lock
 				block.attributes.lock.remove = false;
-				dispatch('core/block-editor').removeBlock(block.clientId);
-				dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
+				removeBlock(block.clientId);
+				openGeneralSidebar('edit-post/document');
 			} else if (!block && meta.userschoice) {
 				console.warn('Add lists block');
 				const block = wp.blocks.createBlock('mailster/lists');
-				const referenceBlock = searchBlock('mailster/field-submit');
-				const pos = referenceBlock
-					? select('core/block-editor').getBlockIndex(
-							referenceBlock.clientId,
-							referenceBlock.rootClientId
-					  )
+				const reference =
+					searchBlock('mailster/field-submit') ||
+					searchBlock('mailster/field-email');
+
+				const pos = reference
+					? getBlockIndex(reference.clientId, reference.rootClientId)
 					: 0;
 
-				dispatch('core/block-editor').insertBlock(
-					block,
-					pos,
-					referenceBlock.rootClientId
-				);
+				insertBlock(block, pos, reference.rootClientId);
 			}
 		}, 1);
 	}, [root, meta.userschoice]);
@@ -140,25 +146,20 @@ function SettingsPanelPlugin() {
 				//remove lock
 				block.attributes.lock.remove = false;
 
-				dispatch('core/block-editor').removeBlock(block.clientId);
-				dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
+				removeBlock(block.clientId);
+				openGeneralSidebar('edit-post/document');
 			} else if (!block && meta.gdpr) {
 				console.warn('Add gdpr block');
 				const block = wp.blocks.createBlock('mailster/gdpr');
-				const referenceBlock = searchBlock('mailster/field-submit');
+				const reference =
+					searchBlock('mailster/field-submit') ||
+					searchBlock('mailster/field-email');
 
-				const pos = referenceBlock
-					? select('core/block-editor').getBlockIndex(
-							referenceBlock.clientId,
-							referenceBlock.rootClientId
-					  )
+				const pos = reference
+					? getBlockIndex(reference.clientId, reference.rootClientId)
 					: 0;
 
-				const x = dispatch('core/block-editor').insertBlock(
-					block,
-					pos,
-					referenceBlock.rootClientId
-				);
+				insertBlock(block, pos, reference.rootClientId);
 			}
 		}, 1);
 	}, [root, meta.gdpr]);
@@ -173,25 +174,21 @@ function SettingsPanelPlugin() {
 			if (!messagesBlock) {
 				console.warn('Add message block');
 				const block = wp.blocks.createBlock('mailster/messages');
-				const referenceBlock = searchBlock(/^mailster\/field-/);
-				const pos = referenceBlock
+				const reference = searchBlock(/^mailster\/field-/);
+				console.log(reference);
+				const pos = reference
 					? select('core/block-editor').getBlockIndex(
-							referenceBlock.clientId,
-							referenceBlock.rootClientId
+							reference.clientId,
+							reference.rootClientId
 					  )
 					: 0;
 
-				dispatch('core/block-editor').insertBlock(
-					block,
-					pos,
-					referenceBlock.rootClientId,
-					false
-				);
+				insertBlock(block, pos, reference.rootClientId, false);
 
 				// clear any selected block
-				dispatch('core/block-editor').clearSelectedBlock();
+				clearSelectedBlock();
 				// select "Form" in side panel
-				dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
+				openGeneralSidebar('edit-post/document');
 			}
 		}, 1);
 	}, [root]);
