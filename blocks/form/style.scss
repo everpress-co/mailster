@@ -514,6 +514,19 @@ body.single-mailster-form {
 		align-items: center;
 		margin: initial;
 	}
+	.mailster-wrapper-inline.mailster-wrapper-type-textarea {
+		label.mailster-label {
+			align-items: baseline;
+			top: 0.6em;
+		}
+	}
+	.mailster-wrapper.mailster-wrapper-type-textarea {
+		textarea {
+			resize: vertical;
+			min-height: 4em;
+			max-height: 100vh;
+		}
+	}
 	.mailster-wrapper-inline {
 		label.mailster-label {
 			position: absolute;
@@ -530,14 +543,17 @@ body.single-mailster-form {
 			text-overflow: ellipsis;
 		}
 		input.input:focus + label.mailster-label,
-		input.input:not(:placeholder-shown) + label.mailster-label {
+		input.input:not(:placeholder-shown) + label.mailster-label,
+		textarea.input:focus + label.mailster-label,
+		textarea.input:not(:placeholder-shown) + label.mailster-label {
 			display: none;
 		}
-
-		input.input::placeholder {
+		textarea.input input.input::placeholder,
+		textarea.input::placeholder {
 			visibility: hidden;
 		}
-		input.input::placeholder {
+		input.input::placeholder,
+		textarea.input::placeholder {
 			/* Chrome/Opera/Safari */
 			color: transparent;
 		}

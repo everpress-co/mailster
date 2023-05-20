@@ -227,17 +227,16 @@ import apiFetch from '@wordpress/api-fetch';
 						if (error.data.fields) {
 							formEl.classList.add('has-errors');
 							Object.keys(error.data.fields).map((fieldid) => {
-								let field = querySelector(
-										formEl,
+								const selector =
 										'.wp-block-mailster-' +
-											fieldid +
-											', .wp-block-mailster-field-' +
-											fieldid
-									),
-									hintid = 'h-' + form.identifier + '-' + fieldid,
-									input;
+										fieldid +
+										', .wp-block-mailster-field-' +
+										fieldid,
+									field = querySelector(formEl, selector),
+									hintid = 'hint-' + form.identifier + '-' + fieldid;
+
 								if (field) {
-									input = querySelector(field, 'input');
+									const input = querySelector(field, 'input, select, textarea');
 									input.setAttribute('aria-invalid', 'true');
 									input.setAttribute('aria-describedby', hintid);
 									field.classList.add('is-error');

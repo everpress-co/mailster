@@ -161,7 +161,7 @@ export default function InputFieldInspectorControls(props) {
 								<CheckboxControl
 									label={__('Show asterisk', 'mailster')}
 									help={__(
-										'Enable an asterisk (*) after the label on required fields',
+										'Enable an asterisk (*) after the label on required fields.',
 										'mailster'
 									)}
 									checked={asterisk}
@@ -191,11 +191,27 @@ export default function InputFieldInspectorControls(props) {
 								initialPosition={100}
 								__nextHasNoMarginBottom={true}
 								onChange={(value) => setStyle('width', value)}
-								help={__('Set the width of the input field', 'mailster')}
+								help={__('Set the width of the input field.', 'mailster')}
 								min={10}
 								max={100}
 							/>
 						</PanelRow>
+						{type == 'textarea' && (
+							<PanelRow>
+								<RangeControl
+									className="widefat"
+									label={__('Height', 'mailster')}
+									value={style?.height}
+									allowReset={true}
+									initialPosition={20}
+									__nextHasNoMarginBottom={true}
+									onChange={(value) => setStyle('height', value)}
+									help={__('Set the height of the textarea.', 'mailster')}
+									min={1}
+									max={20}
+								/>
+							</PanelRow>
+						)}
 						{type != 'submit' && (
 							<PanelRow>
 								<TextControl

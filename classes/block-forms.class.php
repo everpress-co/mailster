@@ -319,22 +319,19 @@ class MailsterBlockForms {
 			}
 		}
 
-		// only one single pages
-		if ( ! is_single() ) {
-			return false;
-		}
+		$is_single_or_page = ( is_single() || is_page() );
 
-		if ( ! empty( $options['all'] ) && in_array( $post_type, $options['all'] ) ) {
+		if ( ! empty( $options['all'] ) && in_array( $post_type, $options['all'] ) && $is_single_or_page ) {
 			return true;
 		}
 
 		$current_id = get_the_ID();
 
-		if ( isset( $options['posts'] ) && in_array( $current_id, $options['posts'] ) ) {
+		if ( isset( $options['posts'] ) && in_array( $current_id, $options['posts'] ) && $is_single_or_page ) {
 			return true;
 		}
 
-		if ( ! empty( $options['taxonomies'] ) ) {
+		if ( ! empty( $options['taxonomies'] ) && $is_single_or_page ) {
 			// get all assigned term ids of this post
 			$terms = wp_get_object_terms( $current_id, get_object_taxonomies( $post_type ), array( 'fields' => 'ids' ) );
 			if ( array_intersect( $options['taxonomies'], $terms ) ) {
@@ -1613,22 +1610,18 @@ class MailsterBlockForms {
 			return;
 		}
 
-		$fields = array();
+		// get all input, select or textareas fields which have an required attribute
+		if ( preg_match_all( '/<(input|select|textarea)(.*?)name="(.*?)"(.*?)(aria-required="true")(.*?)>/', $form->post_content, $matches, PREG_SET_ORDER, 0 ) ) {
 
-		$form_block = $this->get_form_block_from_content( $form->post_content );
+			$fields = array_values( array_unique( wp_list_pluck( $matches, 3 ) ) );
 
-		if ( ! isset( $form_block['innerBlocks'] ) ) {
-			return array();
+			error_log( print_r( $fields, true ) );
+
+			return $fields;
+
 		}
 
-		foreach ( $form_block['innerBlocks'] as $block ) {
-
-			if ( false !== strpos( $block['innerHTML'], 'aria-required="true"' ) ) {
-				$fields[] = str_replace( 'mailster/field-', '', $block['blockName'] );
-			}
-		}
-
-		return (array) $fields;
+		return array();
 
 	}
 
