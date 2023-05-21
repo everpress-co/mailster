@@ -1596,7 +1596,7 @@ class MailsterBlockForms {
 
 		// add honeypot field
 		if ( ! $is_backend && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ), $form->ID ) ) {
-			$inject .= '<div style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . $form->ID . '_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></div>';
+			$inject .= '<div style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . $form->ID . '_mail" type="text" tabindex="-1" autocomplete="noton" autofill="off" aria-hidden="true"></div>';
 		}
 		$output = str_replace( '</form>', $inject . '</form>', $output );
 

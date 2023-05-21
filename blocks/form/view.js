@@ -384,10 +384,7 @@ import apiFetch from '@wordpress/api-fetch';
 				}
 				//prevent close buttons from submitting the form
 				if (event.key === 'Enter' || event.keyCode == 13) {
-					//manually triggered if there's no subvmit button
-					if (!querySelector(formEl, '.submit-button')) {
-						formSubmit(event);
-					}
+					formSubmit(event);
 					event.preventDefault();
 				}
 			}
