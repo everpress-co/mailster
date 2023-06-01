@@ -57,7 +57,7 @@
 	float: right;
 	margin: 5px;
 }
-#wpbody-content > .mailster-help {
+.rtl #wpbody-content > .mailster-help {
 	float: left;
 }
 #screen-meta + .mailster-help {
