@@ -190,7 +190,8 @@ Get professional development help from our expert support partner _Codeable_ for
 ### 3.3.4
 
 - fixed: MySQL error on autoresponders which uses "has received but not opened" or "has received and not clicked" condition.
-- fixed: RTL CSS issue on Autoresponder options sidebar (#40)
+- fixed: RTL CSS issue on Autoresponder options sidebar
+- fixed: RTL CSS issue in admin bar and settings
 
 ### 3.3.3
 

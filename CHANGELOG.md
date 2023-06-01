@@ -1,4 +1,10 @@
-### version 3.3.3 (2023-05-04)
+### Version 3.3.4 (2023-06-01)
+
+- fixed: MySQL error on Autoresponder which uses "has received but not opened" or "has received and not clicked" condition.
+- fixed: RTL CSS issue on Autoresponder options sidebar
+- fixed: RTL CSS issue in admin bar and settings
+
+### Version 3.3.3 (2023-05-04)
 
 - added: 'mailster_admin_header' hook
 - added: missing added argument
