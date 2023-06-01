@@ -60,6 +60,9 @@
 input.submit-form.button-primary {
 	float: right;
 }
+.rtl input.submit-form.button-primary {
+	float: left;
+}
 .dark-mode .submitbutton {
 	border-color: #32373c;
 }
