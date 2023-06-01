@@ -6,8 +6,9 @@ class MailsterCampaigns {
 	private $template;
 	private $templatefile;
 	private $templateobj;
-
 	private $post_changed = array();
+
+	public $post_data;
 
 	public function __construct() {
 
@@ -1708,6 +1709,8 @@ class MailsterCampaigns {
 
 		// sanitize the content and remove all content filters
 		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], isset( $postdata['head'] ) ? $postdata['head'] : null );
+		// remove any tinyMCE tag from the content
+		$post['post_content'] = preg_replace( '/ data-mce-([a-z-]+)=\\\"(.*?)\\\"/i', '', $post['post_content'] );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
 			? mailster( 'helper' )->plain_text( $post['post_content'] )
@@ -2690,7 +2693,7 @@ class MailsterCampaigns {
 		}
 
 		kses_remove_filters();
-		$new_id = wp_insert_post( $campaign );
+		$new_id = wp_insert_post( (array) $campaign );
 		kses_init_filters();
 
 		if ( $new_id ) {
@@ -4431,10 +4434,9 @@ class MailsterCampaigns {
 						$meta           = $this->meta( $id );
 						$sent_formatted = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $total ) );
 						if ( is_wp_error( $cron_status ) ) {
-							$status_title = esc_html__( 'Sending Problem!', 'mailster' );
-							if ( current_user_can( 'activate_plugins' ) ) {
-								 $status_title .= ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . esc_html__( 'Self Test', 'mailster' ) . '</a>';
-							}
+							$status_title  = esc_html__( 'Sending Problem!', 'mailster' );
+							$status_title .= mailster()->beacon( '63f91cb252af714471a170de' );
+
 						} else {
 							$status_title = $sent_formatted;
 						}
@@ -4520,7 +4522,7 @@ class MailsterCampaigns {
 
 					foreach ( $countrycodes as $countrycode => $count ) {
 
-						$geolocation .= '<label title="' . mailster( 'geo' )->code2Country( $countrycode ) . '"><span class="big"><span class="mailster-flag-24 flag-' . strtolower( $countrycode ) . '"></span> ' . round( $count / $opens * 100, 2 ) . '%</span></label> ';
+						$geolocation .= '<label title="' . mailster( 'geo' )->code2Country( $countrycode ) . '"><span class="big"><span class="mailster-flag-24 flag-' . strtolower( $countrycode ) . '"></span> ' . ( $opens ? round( $count / $opens * 100, 2 ) : 0 ) . '%</span></label> ';
 						if ( ++$i >= 5 ) {
 							break;
 						}
@@ -4733,14 +4735,27 @@ class MailsterCampaigns {
 			$track = $campaign_meta['track_clicks'];
 		}
 
-		if ( mailster_option( 'mailster_branding' ) ) {
-			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center" width="130"><a href="' . mailster_url( 'https://mailster.co', 'utm_medium=email&utm_term=mailster_branding' ) . '" title="' . esc_attr__( 'Sent with Mailster', 'mailster' ) . '"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33" style="max-width:130px;width:130px;"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
-		}
-
 		if ( $track ) {
 			// always replace links
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID, $campaignindex );
 
+		}
+
+		if ( mailster_option( 'mailster_branding' ) ) {
+
+			$listunsubscribe_link = mailster()->get_unsubscribe_link( $campaign->ID, $subscriber->hash, $campaignindex );
+			$branding_url         =
+				mailster_url(
+					'https://mailster.co/sent-with-mailster',
+					array(
+						'utm_source'       => rawurlencode( wp_parse_url( home_url(), PHP_URL_HOST ) ),
+						'utm_medium'       => 'email',
+						'utm_term'         => 'mailster_branding',
+						'unsubscribe_link' => rawurlencode( $listunsubscribe_link ),
+					)
+				);
+
+			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center" width="130"><a href="' . $branding_url . '" title="' . esc_attr__( 'Sent with Mailster', 'mailster' ) . '"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33" style="max-width:130px;width:130px;"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
 		}
 
 		// strip all unwanted stuff from the content
@@ -4757,8 +4772,6 @@ class MailsterCampaigns {
 			$placeholder->set_content( $campaign->post_excerpt );
 			$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 		}
-
-		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign->ID );
 
 		$MID             = mailster_option( 'ID' );
 		$campaign_string = (string) $campaign->ID;
@@ -5367,11 +5380,11 @@ class MailsterCampaigns {
 		);
 
 		if ( $inline ) {
-			$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,mailster_emoji,|,link,unlink,|,removeformat,|,mailster_remove_element' );
 			$toolbar2 = (string) apply_filters( 'mailster_editor_toolbar2', 'fontselect,fontsizeselect|bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' );
 			$toolbar3 = (string) apply_filters( 'mailster_editor_toolbar3', '' );
 
-			$single_toolbar1 = (string) apply_filters( 'mailster_editor_single_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$single_toolbar1 = (string) apply_filters( 'mailster_editor_single_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,mailster_emoji,|,link,unlink,|,removeformat,|,mailster_remove_element' );
 			$single_toolbar2 = (string) apply_filters( 'mailster_editor_single_toolbar2', 'fontselect,fontsizeselect' );
 			$single_toolbar3 = (string) apply_filters( 'mailster_editor_single_toolbar3', '' );
 
@@ -5437,6 +5450,7 @@ class MailsterCampaigns {
 		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );
 		wp_register_script( 'mailster-tinymce-compat', includes_url( 'js/tinymce/plugins/compat3x/' ) . 'plugin' . $suffix . '.js', array(), false, true );
 		wp_register_style( 'mailster-wp-editor', includes_url( 'css/editor' . $suffix . '.css' ) );
+		wp_register_script( 'mailster-emojipicker', MAILSTER_URI . 'assets/js/libs/emoji-button.js', array(), MAILSTER_VERSION );
 
 		ob_start();
 
@@ -5460,6 +5474,7 @@ class MailsterCampaigns {
 		wp_print_scripts( 'jquery-touch-punch' );
 		wp_print_scripts( 'plupload-all' );
 		wp_print_scripts( 'mailster-editor-script' );
+		wp_print_scripts( 'mailster-emojipicker' );
 
 		mailster( 'helper' )->get_mailster_styles( true );
 

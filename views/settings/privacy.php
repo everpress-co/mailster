@@ -1,6 +1,9 @@
+<?php echo mailster()->beacon( '611bb9bbb37d837a3d0e47c1', true ); ?>
+<?php echo mailster()->beacon( '611bb961b37d837a3d0e47be', true ); ?>
+<?php echo mailster()->beacon( '611bb186b55c2b04bf6df0c3', true ); ?>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-tracking">
-		<th scope="row"><?php esc_html_e( 'Tracking', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Tracking', 'mailster' ); ?><?php echo mailster()->beacon( '611bb9bbb37d837a3d0e47c1' ); ?></th>
 		<td>
 		<p><label><input type="hidden" name="mailster_options[track_opens]" value=""><input type="checkbox" name="mailster_options[track_opens]" value="1" <?php checked( mailster_option( 'track_opens' ) ); ?>> <?php esc_html_e( 'Track opens in your campaigns', 'mailster' ); ?></label></p>
 		<p><label><input type="hidden" name="mailster_options[track_clicks]" value=""><input type="checkbox" name="mailster_options[track_clicks]" value="1" <?php checked( mailster_option( 'track_clicks' ) ); ?>> <?php esc_html_e( 'Track clicks in your campaigns', 'mailster' ); ?></label></p>

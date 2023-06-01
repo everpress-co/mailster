@@ -791,9 +791,7 @@ class MailsterFrontpage {
 
 					$content = $placeholder->get_content();
 					$content = mailster( 'helper' )->strip_structure_html( $content );
-					$search  = array( '<a ', '@media only screen and (max-device-width:' );
-					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );
-					$content = str_replace( $search, $replace, $content );
+					$content = links_add_target( $content, '_top' );
 
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );

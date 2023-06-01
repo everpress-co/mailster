@@ -8,6 +8,14 @@ class MailsterTests {
 	private $next;
 	private $total;
 
+	private $last_is_error;
+	private $last_error_test;
+	private $last_error_message;
+	private $last_error_type;
+	private $last_error_link;
+
+	private $current_id;
+
 	private $errors;
 
 	public function __construct( $test = null ) {
@@ -112,8 +120,12 @@ class MailsterTests {
 			foreach ( $this->errors[ $type ] as $test_id => $test_errors ) {
 
 				foreach ( $test_errors as $i => $error ) {
-					$name  = $this->nicename( $test_id );
-					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ( $error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . esc_html__( 'More Info', 'mailster' ) . '</a>)' : '' ) . ' <a class="retest mailster-icon" href="' . add_query_arg( array( 'test' => $test_id ), admin_url( 'edit.php?post_type=newsletter&page=mailster_tests&autostart' ) ) . '">' . esc_html__( 'Test again', 'mailster' ) . '</a></h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
+					$name = $this->nicename( $test_id );
+					$more = '';
+					if ( $error['data']['link'] ) {
+						$more = ( filter_var( $error['data']['link'], FILTER_VALIDATE_URL ) !== false ) ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . esc_html__( 'More Info', 'mailster' ) . '</a>)' : mailster()->beacon( $error['data']['link'] );
+					}
+					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . $more . ' <a class="retest mailster-icon" href="' . add_query_arg( array( 'test' => $test_id ), admin_url( 'edit.php?post_type=newsletter&page=mailster_tests&autostart' ) ) . '">' . esc_html__( 'Test again', 'mailster' ) . '</a></h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
 					if ( $type != 'success' ) {
 						$text .= '[' . $type . '] ' . $test_id . ': ' . strip_tags( $error['msg'] ) . "\n";
 					}
@@ -275,10 +287,10 @@ class MailsterTests {
 	}
 
 	private function test_php_version() {
-		if ( version_compare( PHP_VERSION, '5.3' ) < 0 ) {
-			$this->error( sprintf( 'Mailster requires PHP version 5.3 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
-		} elseif ( version_compare( PHP_VERSION, '7.0' ) < 0 ) {
-			$this->notice( sprintf( 'Mailster recommends PHP version 7.0 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
+		if ( version_compare( PHP_VERSION, '7.2.5' ) < 0 ) {
+			$this->error( sprintf( 'Mailster requires PHP version 7.2.5 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
+		} elseif ( version_compare( PHP_VERSION, '7.4' ) < 0 ) {
+			$this->notice( sprintf( 'Mailster recommends PHP version 7.4 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
 		} else {
 			$this->success( 'You have version ' . PHP_VERSION );
 		}
@@ -286,8 +298,8 @@ class MailsterTests {
 	private function test_wordpress_version() {
 		$update  = get_preferred_from_update_core();
 		$current = get_bloginfo( 'version' );
-		if ( version_compare( $current, '3.8' ) < 0 ) {
-			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', $current ) );
+		if ( version_compare( $current, '4.6' ) < 0 ) {
+			$this->error( sprintf( 'Mailster requires WordPress version 4.6 or higher. Your current version is %s.', $current ) );
 		} elseif ( $update && $update->response == 'upgrade' && version_compare( $update->current, $current ) ) {
 			$this->warning( sprintf( 'Your WordPress site is not up-to-date! Version %1$s is available. Your current version is %2$s.', $update->current, $current ) );
 		} else {
@@ -366,10 +378,8 @@ class MailsterTests {
 	}
 	private function test_update_available() {
 
-		$plugin_info = mailster()->plugin_info();
-
-		if ( $plugin_info->update ) {
-			$this->warning( sprintf( 'A new version of Mailster is available! Please %1$s to version %2$s', '<a href="update.php?action=upgrade-plugin&plugin=' . urlencode( MAILSTER_SLUG ) . '&_wpnonce=' . wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ) . '">update now</a>', $plugin_info->new_version ) );
+		if ( mailster()->plugin_info( 'update' ) ) {
+			$this->warning( sprintf( 'A new version of Mailster is available! Please %1$s to version %2$s', '<a href="update.php?action=upgrade-plugin&plugin=' . urlencode( MAILSTER_SLUG ) . '&_wpnonce=' . wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ) . '">update now</a>', mailster()->plugin_info( 'new_version' ) ) );
 		} else {
 			$this->success( 'You are running the latest version of Mailster!' );
 		}
@@ -556,10 +566,10 @@ class MailsterTests {
 		if ( is_wp_error( $cron_status ) ) {
 			switch ( $cron_status->get_error_code() ) {
 				case 'cron_error':
-					$this->error( $cron_status->get_error_message(), mailster_url( 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/', 'utm_term=mailster_tests' ) );
+					$this->error( $cron_status->get_error_message(), '611bbcaab55c2b04bf6df153' );
 					break;
 				default:
-					$this->warning( $cron_status->get_error_message(), mailster_url( 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/', 'utm_term=mailster_tests' ) );
+					$this->warning( $cron_status->get_error_message(), '611bbcaab55c2b04bf6df153' );
 					break;
 			}
 		} else {
@@ -574,7 +584,7 @@ class MailsterTests {
 		mailster( 'cron' )->lock();
 
 		if ( ! mailster( 'cron' )->is_locked() ) {
-			$this->warning( 'Cron Lock mechanism is not working with the current method.', mailster_url( 'https://kb.mailster.co/what-is-a-cron-lock/', 'utm_term=mailster_tests' ) );
+			$this->warning( 'Cron Lock mechanism is not working with the current method.', '611bb5e36ffe270af2a9992b' );
 		} else {
 			$this->success( 'No Cron Lock in place!' );
 		}
@@ -591,9 +601,9 @@ class MailsterTests {
 			$mails_per_sec = sprintf( esc_html__( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ) ), $mails_per_sec );
 
 			if ( $last_hit['mail'] > 1 ) {
-				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', mailster_url( 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/', 'utm_term=mailster_tests' ) );
+				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', '611bb9f86ffe270af2a9995c' );
 			} else {
-				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', mailster_url( 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/', 'utm_term=mailster_tests' ) );
+				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', '611bb9f86ffe270af2a9995c' );
 			}
 		}
 	}
@@ -603,12 +613,12 @@ class MailsterTests {
 
 		if ( ! $hp || $hp->post_status == 'trash' ) {
 
-			$this->error( sprintf( esc_html__( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . esc_html__( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) . '">' . esc_html__( 'create it right now', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
+			$this->error( sprintf( esc_html__( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . esc_html__( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) . '">' . esc_html__( 'create it right now', 'mailster' ) . '</a>' ), '611bbb5fb37d837a3d0e47d4' );
 			return;
 
 		} elseif ( $hp->post_status != 'publish' ) {
 
-			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
+			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), '611bbb5fb37d837a3d0e47d4' );
 
 		}
 
@@ -617,14 +627,15 @@ class MailsterTests {
 			|| ! preg_match( '#\[newsletter_confirm\]#', $hp->post_content )
 			|| ! preg_match( '#\[newsletter_unsubscribe\]#', $hp->post_content ) ) {
 
-			$this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
+				// TODO UPDATE FOR BLOCK FORMS
+			// $this->error( sprintf( esc_html__( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), '611bbb5fb37d837a3d0e47d4' );
 
 		}
 
 		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $hp->post_content, $matches ) ) {
 			$form_id = (int) $matches[1];
 			if ( ! mailster( 'forms' )->get( $form_id ) ) {
-				$this->error( sprintf( esc_html__( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), mailster_url( 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/', 'utm_term=mailster_tests' ) );
+				$this->error( sprintf( esc_html__( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), '611bbb5fb37d837a3d0e47d4' );
 			}
 		}
 
@@ -725,9 +736,11 @@ class MailsterTests {
 			$msg           = 'You are not able to send mails with the current delivery settings!';
 
 			if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
-				$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/', 'utm_term=mailster_tests' ) );
+				$this->error( $msg . '<br>' . $error_message, '611bba516ffe270af2a99963' );
 			} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
-				$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-data-not-accepted/', 'utm_term=mailster_tests' ) );
+				$this->error( $msg . '<br>' . $error_message, '611bb6ba6ffe270af2a99935' );
+			} elseif ( false !== stripos( $error_message, 'could not execute' ) ) {
+				$this->error( $msg . '<br>' . $error_message, '611bad7cb55c2b04bf6df0a0' );
 			} else {
 				$this->error( $msg . '<br>' . $error_message );
 			}
@@ -760,9 +773,11 @@ class MailsterTests {
 		$msg           = 'You are not able to use <code>wp_mail()</code> with Mailster';
 
 		if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
-			$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/', 'utm_term=mailster_tests' ) );
+			$this->error( $msg . '<br>' . $error_message, '611bba516ffe270af2a99963' );
 		} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
-			$this->error( $msg . '<br>' . $error_message, mailster_url( 'https://kb.mailster.co/smtp-error-data-not-accepted/', 'utm_term=mailster_tests' ) );
+			$this->error( $msg . '<br>' . $error_message, '611bb6ba6ffe270af2a99935' );
+		} elseif ( false !== stripos( $error_message, 'could not execute' ) ) {
+				$this->error( $msg . '<br>' . $error_message, '611bad7cb55c2b04bf6df0a0' );
 		} else {
 			$this->error( $msg . '<br>' . $error_message );
 		}
@@ -779,7 +794,6 @@ class MailsterTests {
 		}
 	}
 	private function test_bounce_port() {
-
 		if ( mailster_option( 'bounce_active' ) ) {
 			$this->port_test( mailster_option( 'bounce_port' ), mailster_option( 'bounce_server' ), true );
 		}

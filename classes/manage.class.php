@@ -226,8 +226,6 @@ class MailsterManage {
 
 	public function ajax_get_import_data() {
 
-		global $wpdb;
-
 		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_import_subscribers' ) ) {
@@ -289,6 +287,7 @@ class MailsterManage {
 		$html  = '<form id="subscriber-table">';
 		$html .= '<h2>';
 		$html .= sprintf( esc_html__( _n( '%s contact to import.', '%s contacts to import.', $contactcount, 'mailster' ) ), number_format_i18n( $contactcount ) );
+		$html .= mailster()->beacon( '63f5f51ee6d6615225472ab9' );
 		if ( ! empty( $removed ) ) {
 			$html .= ' <span class="howto">' . sprintf( esc_html__( _n( '%s entry without valid email address has been removed.', '%s entries without valid email address have been removed.', $removed, 'mailster' ) ), number_format_i18n( $removed ) ) . '</span>';
 		}
@@ -453,9 +452,7 @@ class MailsterManage {
 
 	public function ajax_do_import() {
 
-		global $wpdb;
-
-		define( 'MAILSTER_DO_BULKIMPORT', true );
+			define( 'MAILSTER_DO_BULKIMPORT', true );
 
 		$this->ajax_nonce();
 
@@ -492,7 +489,7 @@ class MailsterManage {
 
 		ini_set( 'display_errors', 0 );
 
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
 			ini_set( 'max_execution_time', 300 );
@@ -827,7 +824,10 @@ class MailsterManage {
 
 				if ( ! empty( $tag_ids ) ) {
 					$tag_ids = array_unique( $tag_ids );
-					mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $import_data['existing'] == 'overwrite' );
+					if ( $import_data['existing'] == 'overwrite' ) {
+						mailster( 'subscribers' )->clear_tags( $subscriber_id );
+					}
+					mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids );
 				}
 
 				mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );
@@ -904,8 +904,6 @@ class MailsterManage {
 
 	public function ajax_export_contacts() {
 
-		global $wpdb, $wp_filesystem;
-
 		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_export_subscribers' ) ) {
@@ -961,7 +959,7 @@ class MailsterManage {
 						return 'direct';
 					}
 				);
-				mailster_require_filesystem();
+				$wp_filesystem = mailster_require_filesystem();
 
 				if ( ! ( $wp_filesystem->put_contents( $filename, '', FS_CHMOD_FILE ) ) ) {
 					$return['msg'] = sprintf( esc_html__( 'Not able to create file in %s. Please make sure WordPress can write files to your filesystem!', 'mailster' ), MAILSTER_UPLOAD_DIR );
@@ -985,8 +983,6 @@ class MailsterManage {
 
 
 	public function ajax_do_export() {
-
-		global $wpdb;
 
 		$this->ajax_nonce();
 
@@ -1366,11 +1362,9 @@ class MailsterManage {
 			echo '</mailster:Workbook>';
 		}
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
-		global $wp_filesystem;
-
-		$wp_filesystem->delete( $file );
+		$wp_filesystem && $wp_filesystem->delete( $file );
 		exit;
 
 	}
@@ -1462,8 +1456,6 @@ class MailsterManage {
 	}
 
 	public function delete_contacts( $args, $trash = false ) {
-
-		global $wpdb;
 
 		$count          = 0;
 		$nolists        = isset( $args['nolists'] ) ? $args['nolists'] : null;

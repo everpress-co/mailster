@@ -2,6 +2,8 @@
 
 class MailsterCron {
 
+	private $pid;
+
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
@@ -245,7 +247,7 @@ class MailsterCron {
 
 				$this->update();
 
-				return new WP_Error( 'cron_warning', sprintf( esc_html__( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . esc_html__( 'cron settings', 'mailster' ) . '</strong></a>' ) );
+				return new WP_Error( 'cron_warning', sprintf( esc_html__( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . esc_html__( 'cron settings', 'mailster' ) . '</strong></a>' . mailster()->beacon( '611bbaabf886c9486f8d9937' ) ) );
 
 			else :
 

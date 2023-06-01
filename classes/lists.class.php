@@ -374,7 +374,7 @@ class MailsterLists {
 			}
 		}
 
-		$wpdb->suppress_errors();
+		$errors = $wpdb->suppress_errors( true );
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
@@ -388,10 +388,12 @@ class MailsterLists {
 
 			do_action( 'mailster_update_list', $list_id );
 
+			$wpdb->suppress_errors( $errors );
 			return $list_id;
 
 		} else {
 
+			$wpdb->suppress_errors( $errors );
 			return new WP_Error( 'list_exists', $wpdb->last_error );
 		}
 
@@ -479,124 +481,200 @@ class MailsterLists {
 	/**
 	 *
 	 *
-	 * @param unknown $ids
+	 * @param unknown $list_ids
 	 * @param unknown $subscriber_ids
 	 * @param unknown $force     (optional)
 	 * @return unknown
 	 */
-	public function confirm_subscribers( $ids, $subscriber_ids, $force = false ) {
+	public function confirm_subscribers( $list_ids, $subscriber_ids, $force = false ) {
 
-		global $wpdb;
-
-		if ( ! is_null( $ids ) ) {
-			if ( ! is_array( $ids ) ) {
-				$ids = array( (int) $ids );
-			}
-
-			$ids = array_filter( $ids, 'is_numeric' );
-			if ( empty( $ids ) ) {
-				return true;
-			}
-		}
-		if ( ! is_null( $subscriber_ids ) ) {
-			if ( ! is_array( $subscriber_ids ) ) {
-				$subscriber_ids = array( (int) $subscriber_ids );
-			}
-
-			$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
-			if ( empty( $subscriber_ids ) ) {
-				return true;
-			}
-		}
-
-		$confirmed = time();
-
-		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
-
-		if ( ! is_null( $ids ) ) {
-			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
-		}
-		if ( ! is_null( $subscriber_ids ) ) {
-			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
-		}
-		if ( ! $force ) {
-			$sql .= ' AND added = 0';
-		}
-
-		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
-
-	}
-
-	/**
-	 *
-	 *
-	 * @param unknown $ids
-	 * @param unknown $subscriber_ids
-	 * @param unknown $force     (optional)
-	 * @return unknown
-	 */
-	public function unconfirm_subscribers( $ids, $subscriber_ids, $force = false ) {
-
-		global $wpdb;
-
-		if ( ! is_null( $ids ) ) {
-			if ( ! is_array( $ids ) ) {
-				$ids = array( (int) $ids );
-			}
-
-			if ( empty( $ids ) ) {
-				return true;
-			}
-		}
-		if ( ! is_null( $subscriber_ids ) ) {
-			if ( ! is_array( $subscriber_ids ) ) {
-				$subscriber_ids = array( (int) $subscriber_ids );
-			}
-
-			if ( empty( $subscriber_ids ) ) {
-				return true;
-			}
-		}
-
-		$confirmed = 0;
-
-		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
-
-		if ( ! is_null( $ids ) ) {
-			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
-		}
-		if ( ! is_null( $subscriber_ids ) ) {
-			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
-		}
-		if ( ! $force ) {
-			$sql .= ' AND added != 0';
-		}
-
-		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $ids
-	 * @param unknown $subscriber_ids
-	 * @param unknown $remove_old     (optional)
-	 * @param unknown $added     (optional)
-	 * @return unknown
-	 */
-	public function assign_subscribers( $ids, $subscriber_ids, $remove_old = false, $added = null ) {
-
-		global $wpdb;
-
-		if ( ! is_array( $ids ) ) {
-			$ids = array( (int) $ids );
+		if ( ! is_array( $list_ids ) ) {
+			$list_ids = array( (int) $list_ids );
 		}
 
 		if ( ! is_array( $subscriber_ids ) ) {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
+
+		$list_ids       = array_filter( $list_ids, 'is_numeric' );
+		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
+
+		$success = true;
+
+		foreach ( $list_ids as $list_id ) {
+			foreach ( $subscriber_ids as $subscriber_id ) {
+				if ( ! $this->confirm_subscriber( $list_id, $subscriber_id, $force ) ) {
+					$success = false;
+				}
+			}
+		}
+
+		return $success;
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_id
+	 * @param unknown $subscriber_ids
+	 * @param unknown $force     (optional)
+	 * @return unknown
+	 */
+	public function confirm_subscriber( $list_id, $subscriber_id, $force = false ) {
+
+		global $wpdb;
+
+		$success = true;
+		$added   = time();
+
+		$args  = array(
+			'added' => $added,
+		);
+		$where = array(
+			'list_id'       => $list_id,
+			'subscriber_id' => $subscriber_id,
+		);
+		if ( ! $force ) {
+			$where['added'] = 0;
+		}
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_lists_subscribers", $args, $where ) ) {
+
+			do_action( 'mailster_list_confirmed', $list_id, $subscriber_id, $added );
+
+		} else {
+
+			$success = false;
+		}
+
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_ids
+	 * @param unknown $subscriber_ids
+	 * @return unknown
+	 */
+	public function unconfirm_subscribers( $list_ids, $subscriber_ids ) {
+
+		if ( ! is_array( $list_ids ) ) {
+			$list_ids = array( (int) $list_ids );
+		}
+
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( (int) $subscriber_ids );
+		}
+
+		$list_ids       = array_filter( $list_ids, 'is_numeric' );
+		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
+
+		$success = true;
+
+		foreach ( $list_ids as $list_id ) {
+			foreach ( $subscriber_ids as $subscriber_id ) {
+				if ( ! $this->unconfirm_subscriber( $list_id, $subscriber_id ) ) {
+					$success = false;
+				}
+			}
+		}
+
+		return $success;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_id
+	 * @param unknown $subscriber_ids
+	 * @return unknown
+	 */
+	public function unconfirm_subscriber( $list_id, $subscriber_id ) {
+
+		global $wpdb;
+
+		$success = true;
+
+		$args  = array(
+			'added' => 0,
+		);
+		$where = array(
+			'list_id'       => $list_id,
+			'subscriber_id' => $subscriber_id,
+		);
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_lists_subscribers", $args, $where ) ) {
+
+			do_action( 'mailster_list_unconfirmed', $list_id, $subscriber_id );
+
+		} else {
+			$success = false;
+		}
+
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added          (optional)
+	 * @return unknown
+	 */
+	public function assign_subscribers( $list_ids, $subscriber_ids, $remove_old = false, $added = null ) {
+		if ( ! is_array( $list_ids ) ) {
+			$list_ids = array( (int) $list_ids );
+		}
+		$list_ids = array_filter( $list_ids );
+
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( (int) $subscriber_ids );
+		}
+		$subscriber_ids = array_filter( $subscriber_ids );
+
+		$success = true;
+
+		foreach ( $list_ids as $list_id ) {
+			foreach ( $subscriber_ids as $subscriber_id ) {
+				if ( ! $this->assign_subscriber( $list_id, $subscriber_id, $remove_old, $added ) ) {
+					$success = false;
+				}
+			}
+		}
+
+		return $success;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_id
+	 * @param unknown $subscriber_ids
+	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added          (optional)
+	 * @return unknown
+	 */
+	public function assign_subscriber( $list_id, $subscriber_id, $remove_old = false, $added = null ) {
+
+		global $wpdb;
 
 		if ( is_null( $added ) ) {
 			$added = mailster_option( 'list_based_opt_in' ) ? 0 : time();
@@ -606,43 +684,37 @@ class MailsterLists {
 			$added = 0;
 		}
 
-		$ids            = array_filter( $ids );
-		$subscriber_ids = array_filter( $subscriber_ids );
-
 		if ( $remove_old ) {
-			$this->unassign_subscribers( $ids, $subscriber_ids );
-		}
 
-		$inserts = array();
-		foreach ( $ids as $list_id ) {
-			foreach ( $subscriber_ids as $subscriber_id ) {
-				$inserts[] = $wpdb->prepare( '(%d, %d, %d)', $list_id, $subscriber_id, $added );
-			}
-		}
+			$current_lists = mailster( 'subscribers' )->get_lists( $subscriber_id, true );
 
-		if ( empty( $inserts ) ) {
-			return true;
-		}
+			$to_remove = array_diff( $current_lists, array( $list_id ) );
 
-		$chunks = array_chunk( $inserts, 200 );
+			$this->unassign_subscribers( $to_remove, $subscriber_id );
+		}
 
 		$success = true;
 
-		foreach ( $chunks as $insert ) {
-			$sql = "INSERT INTO {$wpdb->prefix}mailster_lists_subscribers (list_id, subscriber_id, added) VALUES ";
+		$args = array(
+			'list_id'       => $list_id,
+			'subscriber_id' => $subscriber_id,
+			'added'         => $added,
+		);
 
-			$sql .= ' ' . implode( ',', $insert );
+		$errors = $wpdb->suppress_errors( true );
 
-			$sql .= ' ON DUPLICATE KEY UPDATE list_id = values(list_id), subscriber_id = values(subscriber_id), added = values(added)';
+		if ( $wpdb->insert( "{$wpdb->prefix}mailster_lists_subscribers", $args ) ) {
 
-			$success = $success && ( false !== $wpdb->query( $sql ) );
+			do_action( 'mailster_list_added', $list_id, $subscriber_id, $added );
 
+			if ( $added ) {
+				do_action( 'mailster_list_confirmed', $list_id, $subscriber_id, $added );
+
+			}
+		} else {
+			$success = false;
 		}
-
-		// set the status for the list from the global status from the user
-		// $sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
-
-		// $success = $success && ( false !== $wpdb->query( $sql ) );
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 
@@ -652,40 +724,31 @@ class MailsterLists {
 	/**
 	 *
 	 *
-	 * @param unknown $ids
+	 * @param unknown $list_ids
 	 * @param unknown $subscriber_ids
 	 * @return unknown
 	 */
-	public function unassign_subscribers( $ids, $subscriber_ids ) {
+	public function unassign_subscribers( $list_ids, $subscriber_ids ) {
 
-		global $wpdb;
-
-		if ( ! is_array( $ids ) ) {
-			$ids = array( (int) $ids );
+		if ( ! is_array( $list_ids ) ) {
+			$list_ids = array( (int) $list_ids );
 		}
 
 		if ( ! is_array( $subscriber_ids ) ) {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
 
-		$ids            = array_filter( $ids, 'is_numeric' );
+		$list_ids       = array_filter( $list_ids, 'is_numeric' );
 		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
-
-		$chunks = array_chunk( $subscriber_ids, 200 );
 
 		$success = true;
 
-		foreach ( $chunks as $chunk ) {
-			$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE";
-
-			$sql .= ' subscriber_id IN (' . implode( ',', $chunk ) . ')';
-
-			if ( ! empty( $ids ) ) {
-				$sql .= ' AND list_id IN (' . implode( ',', $ids ) . ')';
-			};
-
-			$success = $success && ( false !== $wpdb->query( $sql ) );
-
+		foreach ( $list_ids as $list_id ) {
+			foreach ( $subscriber_ids as $subscriber_id ) {
+				if ( ! $this->unassign_subscriber( $list_id, $subscriber_id ) ) {
+					$success = false;
+				}
+			}
 		}
 
 		return $success;
@@ -696,38 +759,80 @@ class MailsterLists {
 	/**
 	 *
 	 *
-	 * @param unknown $ids
-	 * @param unknown $subscribers (optional)
+	 * @param unknown $list_id
+	 * @param unknown $subscriber_id
 	 * @return unknown
 	 */
-	public function remove( $ids, $subscribers = false ) {
+	public function unassign_subscriber( $list_id, $subscriber_id ) {
 
 		global $wpdb;
 
-		$ids = is_numeric( $ids ) ? array( (int) $ids ) : array_filter( $ids, 'is_numeric' );
+		$success = true;
 
-		if ( $subscribers ) {
-			$sql = "DELETE a,b,c,d,e,g,h,i,j,k FROM {$wpdb->prefix}mailster_subscribers AS a
-			LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_queue AS e ON a.ID = e.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_action_sent AS g ON a.ID = g.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_action_opens AS h ON a.ID = h.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS i ON a.ID = i.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS j ON a.ID = j.subscriber_id
-			LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS k ON a.ID = k.subscriber_id
-			WHERE b.list_id IN (" . implode( ', ', $ids ) . ')';
+		$args = array(
+			'list_id'       => $list_id,
+			'subscriber_id' => $subscriber_id,
+		);
 
-			$wpdb->query( $sql );
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->delete( "{$wpdb->prefix}mailster_lists_subscribers", $args ) ) {
+
+			do_action( 'mailster_list_removed', $list_id, $subscriber_id );
+
+		} else {
+			$success = false;
 		}
 
-		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.list_id WHERE a.ID IN (" . implode( ', ', $ids ) . ')';
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_ids
+	 * @param unknown $subscribers (optional)
+	 * @return unknown
+	 */
+	public function remove( $list_ids, $subscribers = false ) {
+
+		global $wpdb;
+
+		$list_ids = is_numeric( $list_ids ) ? array( (int) $list_ids ) : array_filter( $list_ids, 'is_numeric' );
+
+		if ( $subscribers ) {
+
+			$subscriber_ids = mailster( 'subscribers' )->query(
+				array(
+					'return_ids' => true,
+					'status'     => false,
+					'conditions' => array(
+						array(
+							array(
+								'field'    => '_lists__in',
+								'operator' => 'is',
+								'value'    => $list_ids,
+							),
+						),
+					),
+				)
+			);
+
+		}
+
+		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.list_id WHERE a.ID IN (" . implode( ', ', $list_ids ) . ')';
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			foreach ( $ids as $list_id ) {
+			foreach ( $list_ids as $list_id ) {
 				$this->remove_from_forms( $list_id );
+			}
+
+			if ( $subscribers ) {
+				mailster( 'subscribers' )->remove( $subscriber_ids );
 			}
 
 			return true;
@@ -1035,8 +1140,8 @@ class MailsterLists {
 		$sql = "SELECT COUNT(DISTINCT a.ID) FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN ({$wpdb->prefix}mailster_lists AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.list_id) ON a.ID = ab.subscriber_id WHERE 1=1";
 
 		$sql .= ( is_array( $lists ) )
-			? ' AND b.ID IN (' . implode( ',', $lists ) . ')'
-			: ( $lists === false ? ' AND b.ID IS NULL' : '' );
+		? ' AND b.ID IN (' . implode( ',', $lists ) . ')'
+		: ( $lists === false ? ' AND b.ID IS NULL' : '' );
 
 		if ( is_array( $statuses ) ) {
 			$sql .= ' AND a.status IN (' . implode( ',', $statuses ) . ')';
@@ -1095,7 +1200,7 @@ class MailsterLists {
 
 		if ( false === ( $list_counts = mailster_cache_get( $key ) ) ) {
 
-			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND (ab.added != 0 OR b.status = 0)) ON a.ID = ab.list_id";
+			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND (ab.added != 0 OR b.status != 0) AND b.status != 5) ON a.ID = ab.list_id";
 
 			if ( is_array( $statuses ) ) {
 				$sql .= ' AND b.status IN (' . implode( ',', array_filter( $statuses, 'is_numeric' ) ) . ')';
@@ -1475,13 +1580,7 @@ class MailsterLists {
 	public function on_activate( $new ) {
 
 		if ( $new ) {
-			$this->add(
-				array(
-					'name' => esc_html__( 'Default List', 'mailster' ),
-				),
-				false,
-				get_current_user_id()
-			);
+			$this->add( array( 'name' => esc_html__( 'Default List', 'mailster' ) ), false, get_current_user_id() );
 		}
 
 	}

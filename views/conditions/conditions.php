@@ -30,8 +30,14 @@
 		$continents = mailster( 'geo' )->get_continents( true );
 	}
 
+	if ( ! function_exists( 'wp_dropdown_roles' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/template.php';
+		require_once ABSPATH . 'wp-admin/includes/user.php';
+	}
+
 	?>
 <div class="mailster-conditions">
+	<?php echo mailster()->beacon( '611bb8346ffe270af2a9994e' ); ?>
 	<div class="mailster-condition-container"></div>
 	<div class="mailster-conditions-wrap" data-emptytext="<?php esc_attr_e( 'Please add your first condition.', 'mailster' ); ?>">
 	<?php foreach ( $conditions as $i => $condition_group ) : ?>
@@ -245,7 +251,7 @@
 						<div class="mailster-conditions-value-field-multiselect">
 							<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
 							<select name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value][]" class="condition-value" disabled>
-								<option value="0">--</option>
+								<option value="0"><?php esc_html_e( 'Any Campaign', 'mailster' ); ?></option>
 								<optgroup label="<?php esc_attr_e( 'Aggregate Campaigns', 'mailster' ); ?>">
 								<?php
 								foreach ( $this->special_campaigns as $key => $name ) :
@@ -413,7 +419,5 @@
 		</div><?php endforeach; ?>
 	</div>
 		<a class="button add-condition"><?php esc_html_e( 'Add Condition', 'mailster' ); ?></a>
-
-	<div class="mailster-condition-empty">
-	</div>
+	<div class="mailster-condition-empty"></div>
 </div>

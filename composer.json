@@ -2,8 +2,11 @@
 	"require": {
 		"php": "^7.0 || ^8.0",
 		"inlinestyle/inlinestyle": "1.*",
+		"freemius/wordpress-sdk": "^2.5.3",
 		"composer/installers": "^1.12.0",
-		"geoip2/geoip2": "~2.0"
+		"geoip2/geoip2": "~2.0",
+		"php": "^7.0 || ^8.0",
+		"dantsu/php-osm-static-api": "^0.4.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^7.0",
@@ -34,6 +37,9 @@
 		"lint": "@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --show-deprecated --exclude vendor --exclude node_modules --exclude .git"
 	},
 	"config": {
+		"platform": {
+			"php": "7.4"
+		},
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"composer/installers": true,

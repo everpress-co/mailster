@@ -381,6 +381,8 @@ class MailsterUpgrade {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
+		do_action( 'mailster_admin_header' );
+
 		wp_enqueue_style( 'mailster-update-style', MAILSTER_URI . 'assets/css/upgrade-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
@@ -423,9 +425,6 @@ class MailsterUpgrade {
 			<div class="notice-error error inline"><p>Make sure to create a backup before run the Mailster Batch Update. If you experience any issues upgrading please reach out to us via our member area <a href="<?php echo mailster_url( 'https://mailster.co/go/register' ); ?>" class="external">here</a>.<br>
 			<strong>Important: No data can get lost thanks to our smart upgrade process.</strong></p></div>
 			<p>Built: <?php echo date_i18n( 'Y-m-d H:i:s', MAILSTER_BUILT ); ?></p>
-			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_actions" ) ) : ?>
-			<p>Action Table: <?php echo number_format( $count ); ?> entries</p>
-			<?php endif; ?>
 			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers" ) ) : ?>
 			<p>Subscribers Table: <?php echo number_format( $count ); ?> entries</p>
 			<?php endif; ?>
@@ -546,8 +545,7 @@ class MailsterUpgrade {
 			return true;
 		}
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$old_location = MAILSTER_DIR . '/myMail.php';
 		$new_location = MAILSTER_DIR . '/mailster.php';
@@ -743,9 +741,9 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_movefiles() {
 
-		global $wpdb, $wp_filesystem;
+		global $wpdb;
 
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$new_location = MAILSTER_UPLOAD_DIR;
 		$old_location = dirname( MAILSTER_UPLOAD_DIR ) . '/myMail';
@@ -858,8 +856,7 @@ class MailsterUpgrade {
 
 	private function do_pre_mailster_legacy() {
 
-		global $wp_filesystem;
-		mailster_require_filesystem();
+		$wp_filesystem = mailster_require_filesystem();
 
 		$this->deactivate_mymail( false );
 
@@ -1495,9 +1492,11 @@ class MailsterUpgrade {
 
 		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
 
+			// check for data younger than one year
 			$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE timestamp > %d", time() - YEAR_IN_SECONDS );
 
-			if ( $wpdb->get_var( $sql ) ) {
+			// no data => delete
+			if ( ! $wpdb->get_var( $sql ) ) {
 				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" ) ) {
 					echo "removed legacy action table\n";
 					return false;
@@ -2272,16 +2271,6 @@ class MailsterUpgrade {
 
 		global $wpdb;
 
-		$action_tables = array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors' );
-
-		foreach ( $action_tables as $table ) {
-
-			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_action_{$table} AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
-				echo 'Removed ' . number_format( $count ) . " actions where's no campaign in $table\n";
-				return false;
-			}
-		}
-
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->postmeta} AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.post_id WHERE p.ID IS NULL AND a.meta_key LIKE '_mailster_%'" ) ) {
 			echo 'Removed ' . number_format( $count ) . " rows of meta where's no campaign\n";
 			return false;
@@ -2290,6 +2279,15 @@ class MailsterUpgrade {
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.meta_value = '' OR a.subscriber_id = 0" ) ) {
 			echo 'Removed ' . number_format( $count ) . " rows of unassigned subscriber meta\n";
 			return false;
+		}
+
+		$tables_with_subscriber_ids = array( 'action_sent', 'action_opens', 'action_clicks', 'action_unsubs', 'action_bounces', 'action_errors', 'subscriber_meta', 'subscriber_fields', 'tags_subscribers', 'subscriber_meta', 'lists_subscribers', 'queue' );
+
+		foreach ( $tables_with_subscriber_ids as $table ) {
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_{$table} AS a LEFT JOIN {$wpdb->prefix}mailster_subscribers AS b ON b.ID = a.subscriber_id WHERE b.ID IS NULL AND a.subscriber_id IS NOT NULL" ) ) {
+				echo 'Removed ' . number_format( $count ) . " rows of table $table where's no subscriber\n";
+				return false;
+			}
 		}
 
 		if ( $count = mailster( 'subscribers' )->wp_id() ) {
@@ -2307,6 +2305,20 @@ class MailsterUpgrade {
 		if ( $wpdb->query( "DELETE a FROM {$wpdb->options} AS a WHERE a.option_name LIKE 'mailster_bulk_import%'" ) ) {
 			echo "Removed temporary import data\n";
 			return false;
+		}
+
+		$action_tables = array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors' );
+
+		foreach ( $action_tables as $table ) {
+
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a WHERE a.subscriber_id IS NULL AND a.campaign_id IS NULL" ) ) {
+				echo 'Removed ' . number_format( $count ) . " actions where's no campaign and no subscriber in $table table.\n";
+				return false;
+			}
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_action_{$table} AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
+				echo 'Removed ' . number_format( $count ) . " actions where's no campaign in $table table.\n";
+				return false;
+			}
 		}
 
 		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_subscribers SET ip_signup = '' WHERE ip_signup = 0" );

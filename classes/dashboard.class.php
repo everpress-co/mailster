@@ -3,6 +3,9 @@
 class MailsterDashboard {
 
 	private $metaboxes = array();
+	private $update;
+	private $verified;
+	private $is_dashboard;
 
 	public function __construct() {
 
@@ -32,21 +35,6 @@ class MailsterDashboard {
 			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
 			exit;
 
-		}
-
-		if ( isset( $_GET['reset_license'] ) && wp_verify_nonce( $_GET['reset_license'], 'mailster_reset_license' ) && current_user_can( 'mailster_manage_licenses' ) ) {
-
-			$result = mailster()->reset_license();
-
-			if ( is_wp_error( $result ) ) {
-				mailster_notice( esc_html__( 'There was an Error while processing your request!', 'mailster' ) . '<br>' . $result->get_error_message(), 'error', true );
-			} else {
-				update_option( 'mailster_license', '' );
-				mailster_notice( esc_html__( 'Your License has been reset!', 'mailster' ), '', true );
-			}
-
-			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
-			exit;
 		}
 
 		if ( ! get_option( 'mailster_setup' ) ) {
@@ -104,10 +92,7 @@ class MailsterDashboard {
 
 		$this->update       = mailster()->has_update();
 		$this->verified     = mailster()->is_verified();
-		$this->plugin_info  = mailster()->plugin_info();
 		$this->is_dashboard = false;
-
-		$this->screen = get_current_screen();
 
 		include MAILSTER_DIR . 'views/dashboard.php';
 	}

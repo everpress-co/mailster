@@ -5,6 +5,10 @@ $table = new Mailster_Subscribers_Table();
 $table->prepare_items();
 
 ?>
+<?php if ( isset( $_GET['status'] ) && $_GET['status'] == 4 ) : ?>
+	<?php echo mailster()->beacon( '611bbac9b55c2b04bf6df143', true ); ?>
+<?php endif; ?>
+<?php echo mailster()->beacon( '611bb0d3f886c9486f8d98c0', true ); ?>
 <div class="wrap">
 <h1>
 <?php printf( esc_html__( _n( '%s Subscriber found', '%s Subscribers found', $table->total_items, 'mailster' ) ), number_format_i18n( $table->total_items ) ); ?>
@@ -19,7 +23,7 @@ $table->prepare_items();
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>
 	<span class="subtitle"><?php printf( esc_html__( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ); ?></span>
-	<?php endif; ?>
+<?php endif; ?>
 </h1>
 <?php
 $table->search_box( esc_html__( 'Search Subscribers', 'mailster' ), 's' );

@@ -212,13 +212,15 @@ class MailsterSettings {
 			'dkim_passphrase'                    => '',
 
 			'usage_tracking'                     => false,
-			'ask_usage_tracking'                 => true,
-			'mailster_branding'                  => true,
+			'mailster_branding'                  => false,
 			'disable_cache'                      => false,
 			'shortcodes'                         => false,
 			'remove_data'                        => false,
 			'got_url_rewrite'                    => mailster( 'helper' )->got_url_rewrite(),
 			'post_nonce'                         => wp_create_nonce( uniqid() ),
+
+			'logging_max'                        => 1000,
+			'logging_days'                       => 7,
 
 			'welcome'                            => false,
 			'setup'                              => true,
@@ -1000,6 +1002,10 @@ class MailsterSettings {
 								$key = '_' . $key;
 							}
 
+							if ( ! isset( $field['id'] ) ) {
+								$field['id'] = $key;
+							}
+
 							$new_value[ $key ] = $field;
 						}
 
@@ -1214,8 +1220,7 @@ class MailsterSettings {
 					$folder = MAILSTER_UPLOAD_DIR;
 					$file   = MAILSTER_UPLOAD_DIR . '/dkim/' . $hash . '.pem';
 
-					global $wp_filesystem;
-					mailster_require_filesystem();
+					$wp_filesystem = mailster_require_filesystem();
 
 					// remove old
 					if ( isset( $options['dkim_private_hash'] ) && is_file( $folder . '/' . $options['dkim_private_hash'] . '.pem' ) ) {
@@ -1227,7 +1232,7 @@ class MailsterSettings {
 					// create folder
 					if ( ! is_dir( dirname( $file ) ) ) {
 						wp_mkdir_p( dirname( $file ) );
-						$wp_filesystem->put_contents( dirname( $file ) . '/index.php', '<?php //silence is golden ?>', FS_CHMOD_FILE );
+						$wp_filesystem && $wp_filesystem->put_contents( dirname( $file ) . '/index.php', '<?php //silence is golden ?>', FS_CHMOD_FILE );
 					}
 
 					if ( $wp_filesystem->put_contents( $file, $value ) ) {
@@ -1251,6 +1256,12 @@ class MailsterSettings {
 							$this->add_settings_error( esc_html__( 'Your server is not able to validate via SMTP. SMTP check disabled.', 'mailster' ), 'dkim' );
 							$value = false;
 						}
+					}
+					break;
+
+				case 'logging':
+					if ( $old != $value ) {
+						mailster()->dbstructure();
 					}
 					break;
 

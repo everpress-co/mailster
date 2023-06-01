@@ -54,6 +54,8 @@ if ( $request_url && ! headers_sent() ) {
 	header( "Refresh: $interval;url=" . $request_url, true );
 }
 
+nocache_headers();
+
 $text_direction = function_exists( 'is_rtl' ) && is_rtl() ? 'rtl' : 'ltr';
 $simple_output  = false;
 
@@ -71,7 +73,7 @@ if ( $simple_output ) {
 	<meta name='robots' content='noindex,nofollow'>
 	<meta http-equiv="refresh" content="<?php echo (int) $interval; ?>">
 	<style type="text/css">
-html{background:#f1f1f1}body{background:#fff;color:#444;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;margin:50px auto 2em;padding:1em 2em;max-width:700px;box-shadow:0 1px 3px rgba(0,0,0,.13)}h1{border-bottom:1px solid #dadada;clear:both;color:#666;font:24px "Open Sans",sans-serif;margin:30px 0 0;padding:0 0 7px}body p,ul li{font-size:14px}body p{line-height:1.5;margin:25px 0 20px}body code{font-family:Consolas,Monaco,monospace}ul li{margin-bottom:10px}a{color:#0073aa}a:active,a:hover{color:#00a0d2}a:focus{color:#124964;box-shadow:0 0 0 1px #5b9dd9,0 0 2px 1px rgba(30,140,190,.8);outline:0}h2{font-size:18px;font-weight:100}pre{padding:0;font-size:12px;white-space:pre;white-space:pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;white-space:-moz-pre-wrap;word-wrap:break-word}.button{background:#f7f7f7;border:1px solid #ccc;color:#555;display:inline-block;text-decoration:none;font-size:13px;line-height:26px;height:28px;margin:0;padding:0 10px 1px;cursor:pointer;-webkit-appearance:none;border-radius:3px;white-space:nowrap;box-sizing:border-box;box-shadow:0 1px 0 #ccc;vertical-align:top}.button.button-large{height:30px;line-height:28px;padding:0 12px 2px}.button:focus,.button:hover{background:#fafafa;border-color:#999;color:#23282d}.button:focus{border-color:#5b9dd9;box-shadow:0 px rgba(0,115,170,.8);outline:0}.button:active{background:#eee;border-color:#999;box-shadow:inset 0 2px 5px -3px rgba(0,0,0,.5);-webkit-transform:translateY(1px);-ms-transform:translateY(1px);transform:translateY(1px)}table{margin-bottom:20px;border-top:1px solid #ccc}table tr.odd{background-color:#fafafa}table tr.even{background-color:#fff}table,td{font-size:12px;border-collapse:collapse}td{padding:5px 9px;border-bottom:1px solid #ccc;}.error{color:#f33;}
+html{background:#f1f1f1}body{background:#fff;color:#444;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;margin:50px auto 2em;padding:1em 2em;max-width:900px;box-shadow:0 1px 3px rgba(0,0,0,.13)}h1{border-bottom:1px solid #dadada;clear:both;color:#666;font:24px "Open Sans",sans-serif;margin:30px 0 0;padding:0 0 7px}body p,ul li{font-size:14px}body p{line-height:1.5;margin:25px 0 20px}body code{font-family:Consolas,Monaco,monospace}ul li{margin-bottom:10px}a{color:#0073aa}a:active,a:hover{color:#00a0d2}a:focus{color:#124964;box-shadow:0 0 0 1px #5b9dd9,0 0 2px 1px rgba(30,140,190,.8);outline:0}h2{font-size:18px;font-weight:100}pre{padding:0;font-size:12px;white-space:pre;white-space:pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;white-space:-moz-pre-wrap;word-wrap:break-word}.button{background:#f7f7f7;border:1px solid #ccc;color:#555;display:inline-block;text-decoration:none;font-size:13px;line-height:26px;height:28px;margin:0;padding:0 10px 1px;cursor:pointer;-webkit-appearance:none;border-radius:3px;white-space:nowrap;box-sizing:border-box;box-shadow:0 1px 0 #ccc;vertical-align:top}.button.button-large{height:30px;line-height:28px;padding:0 12px 2px}.button:focus,.button:hover{background:#fafafa;border-color:#999;color:#23282d}.button:focus{border-color:#5b9dd9;box-shadow:0 px rgba(0,115,170,.8);outline:0}.button:active{background:#eee;border-color:#999;box-shadow:inset 0 2px 5px -3px rgba(0,0,0,.5);-webkit-transform:translateY(1px);-ms-transform:translateY(1px);transform:translateY(1px)}table{margin-bottom:20px;border-top:1px solid #ccc}table tr.odd{background-color:#fafafa}table tr.even{background-color:#fff}table,td{font-size:12px;border-collapse:collapse}td{padding:5px 9px;border-bottom:1px solid #ccc;}.error{color:#f33;}
 	</style>
 </head>
 <body>
@@ -123,7 +125,7 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 		}
 		?>
 	<p>
-		<a onclick="location.reload();clearInterval(f);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>
+		<a onclick="clearInterval(f);location.reload(true);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>
 	</p>
 	<p>
 		<small><?php echo $time = round( microtime( true ) - $time, 4 ); ?> <?php esc_html_e( 'sec', 'mailster' ); ?>.</small>
@@ -137,6 +139,11 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 <?php endif; ?>
 </div>
 <script type="text/javascript">
+	
+var u = new URL(location.href);
+u.searchParams.delete('_nocache');
+window.history.replaceState({}, document.title, u.toString());
+
 var a = <?php echo max( 1, ceil( $interval - $time ) ); ?>,
 	b = document.getElementById('button'),
 	c = document.title,
@@ -155,7 +162,8 @@ var a = <?php echo max( 1, ceil( $interval - $time ) ); ?>,
 			o = '&#x27F2;';
 			p = '<?php esc_html_e( 'progressing', 'mailster' ); ?>';
 			clearInterval(f);
-			location.reload(true);
+			u.searchParams.set('_nocache', +new Date());
+			location.href = u.toString();
 		}
 	document.title = p+' '+c;
 	b.innerHTML = d+' ('+o+')';

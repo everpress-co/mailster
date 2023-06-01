@@ -41,8 +41,31 @@ mailster = (function (mailster, $, window, document) {
 			load_spf_data();
 			load_dkim_data();
 		}
+		articles();
+
 		return false;
 	});
+
+	function articles() {
+		if (!mailster.beacon) return;
+		var articles = [];
+
+		$('.tab:visible')
+			.find('[data-article]')
+			.each(function () {
+				if (articles.length >= 9) return;
+				var id = $(this).data('article');
+				if (!id) return;
+				if (articles.includes(id)) return;
+				articles.push(id);
+			});
+
+		if (articles.length) {
+			mailster.beacon('suggest', articles);
+		} else {
+			mailster.beacon('reset');
+		}
+	}
 
 	$('.click-to-select').on('click', function (event) {
 		if (document.selection) {
@@ -56,14 +79,23 @@ mailster = (function (mailster, $, window, document) {
 		}
 	});
 
+	$('.static_map').on('change', function () {
+		if ($(this).val() != 'google') {
+			$('.static_map_more').hide();
+		} else {
+			$('.static_map_more').show();
+		}
+	});
+
 	$('#mailster-settings-form').on('click', 'a[href^="#"]', function () {
 		nav.find('a[href="' + $(this).attr('href') + '"]').trigger('click');
 	});
 
-	location.hash && nav.find('a[href="' + location.hash + '"]').length
-		? nav.find('a[href="' + location.hash + '"]').trigger('click')
-		: nav.find('a').eq(0).trigger('click');
-
+	mailster.events.push('documentReady', function () {
+		location.hash && nav.find('a[href="' + location.hash + '"]').length
+			? nav.find('a[href="' + location.hash + '"]').trigger('click')
+			: nav.find('a').eq(0).trigger('click');
+	});
 	$('.system_mail').on('change', function () {
 		$('[name="mailster_options[system_mail_template]"]').prop(
 			'disabled',

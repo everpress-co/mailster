@@ -1116,7 +1116,7 @@ class MailsterQueue {
 		$max_execution_time_ini = ini_get( 'max_execution_time' );
 
 		ignore_user_abort( true );
-		set_time_limit( 0 );
+		mailster_set_time_limit( 0 );
 		$send_at_once       = mailster_option( 'send_at_once' );
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
@@ -1187,9 +1187,13 @@ class MailsterQueue {
 				$sql        .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
 			}
 
-			$sql .= ' ORDER BY queue.priority DESC, subscribers.rating DESC, queue.ID';
+			$sql .= ' ORDER BY queue.priority DESC,';
 
-			$sql .= ! mailster_option( 'split_campaigns' ) ? ', queue.campaign_id ASC' : '';
+			if ( mailster_option( 'split_campaigns' ) ) {
+				$sql .= ' subscribers.rating DESC, RAND()';
+			} else {
+				$sql .= ' queue.campaign_id ASC, subscribers.rating DESC';
+			}
 
 			$sql .= " LIMIT $send_at_once_limit";
 
@@ -1207,7 +1211,7 @@ class MailsterQueue {
 
 			$this->cron_log();
 
-			$this->cron_log( '#', 'email', 'campaign', 'try', 'time (sec.)' );
+			$this->cron_log( '#', 'Email', 'Campaign', 'Try', '<span title="' . esc_attr__( 'How long the processing took', 'mailster' ) . '">PHP</span>', '<span title="' . esc_attr__( 'How long the sending took', 'mailster' ) . '">Mail</span>', '<span title="' . esc_attr__( 'How long the whole process took', 'mailster' ) . '">Total</span>' );
 
 			foreach ( $queue_result as $i => $data ) {
 
@@ -1256,7 +1260,8 @@ class MailsterQueue {
 				} elseif ( $data->_options ) {
 
 					if ( $options = maybe_unserialize( $data->_options ) ) {
-						$result = mailster( 'notification' )->send( $data->subscriber_id, $options );
+						$options = wp_parse_args( $options, array( 'template' => '' ) );
+						$result  = mailster( 'notification' )->send( $data->subscriber_id, $options );
 					} else {
 						continue;
 					}
@@ -1266,7 +1271,9 @@ class MailsterQueue {
 
 				}
 
-				$took = microtime( true ) - $send_start_time;
+				$took      = microtime( true ) - $send_start_time;
+				$mail_took = mailster( 'mail' )->get_last_mail_duration();
+				$php_took  = $took - $mail_took;
 
 				// success
 				if ( ! is_wp_error( $result ) ) {
@@ -1275,13 +1282,24 @@ class MailsterQueue {
 
 					$wpdb->query( $wpdb->prepare( $queue_update_sql, time(), 0, $data->_priority, $data->_count, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options, $data->_i ) );
 
+					$output_php = round( $php_took, 5 );
+					if ( $php_took > 2 ) {
+						$output_php = sprintf( '<span class="error">%s</span>', $output_php );
+					}
+					$output_mail = round( $mail_took, 5 );
+					if ( $mail_took > 2 ) {
+						$output_mail = sprintf( '<span class="error">%s</span>', $output_mail );
+					}
+					$output_total = round( $took, 5 );
+					if ( $took > 2 ) {
+						$output_total = sprintf( '<span class="error">%s</span>', $output_total );
+					}
+
 					if ( ! $options ) {
-						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
+						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $output_php, $output_mail, $output_total );
 
 					} else {
-
-						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
-
+						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_mail, $output_total );
 					}
 
 					$sent_this_turn++;
@@ -1513,7 +1531,7 @@ class MailsterQueue {
 				$html .= '<td>' . $log . '</td>';
 			}
 			$html .= str_repeat( '<td>&nbsp;</td>', max( 0, ( $mailster_cron_log_max_fields + 2 ) - $j - 4 ) );
-			$html .= '<td width="50">' . date( 'H:i:s', $time + $timeoffset ) . ':' . round( ( $time - floor( $time ) ) * 10000 ) . '</td>';
+			$html .= '<td width="50">' . date( 'H:i:s', round( $time ) + $timeoffset ) . ':' . round( ( $time - floor( $time ) ) * 10000 ) . '</td>';
 			$html .= '</tr>';
 			$i++;
 		}

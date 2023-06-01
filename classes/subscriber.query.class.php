@@ -487,9 +487,9 @@ class MailsterSubscriberQuery {
 						unset( $this->args['conditions'][ $i ][ $j ] );
 						continue;
 					}
-					// requires campaign to be sent
+					// requires campaign to be sent (removed in 3.3.4)
 					if ( in_array( $field, array( '_open__not_in', '_click__not_in' ) ) ) {
-						$this->add_condition( '_sent', '=', $value );
+						 // $this->add_condition( '_sent', '=', $value );
 					}
 				}
 			}
@@ -580,7 +580,13 @@ class MailsterSubscriberQuery {
 
 							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_sent AS `$alias` ON subscribers.ID = `$alias`.subscriber_id";
 							if ( ( '_sent' == $field || '_sent__not_in' == $field ) && $value && $value != -1 ) {
-								$join .= " AND `$alias`.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
+								$v     = array_filter( $value, 'is_numeric' );
+								$join .= " AND `$alias`.campaign_id";
+								if ( ! array_sum( $v ) ) {
+									$join .= ' NOT IN (-1)';
+								} else {
+									$join .= ' IN (' . implode( ',', $v ) . ')';
+								}
 							}
 
 							if ( '_sent' === $field ) {
@@ -599,7 +605,13 @@ class MailsterSubscriberQuery {
 
 							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_opens AS `$alias` ON subscribers.ID = `$alias`.subscriber_id";
 							if ( ( '_open' === $field || '_open__not_in' === $field ) && $value && $value != -1 ) {
-								$join .= " AND `$alias`.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
+								$v     = array_filter( $value, 'is_numeric' );
+								$join .= " AND `$alias`.campaign_id";
+								if ( ! array_sum( $v ) ) {
+									$join .= ' NOT IN (-1)';
+								} else {
+									$join .= ' IN (' . implode( ',', $v ) . ')';
+								}
 							}
 
 							if ( '_open' === $field ) {
@@ -619,7 +631,13 @@ class MailsterSubscriberQuery {
 							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS `$alias` ON subscribers.ID = `$alias`.subscriber_id";
 
 							if ( ( '_click' === $field || '_click__not_in' === $field ) && $value && $value != -1 ) {
-								$join .= " AND `$alias`.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
+								$v     = array_filter( $value, 'is_numeric' );
+								$join .= " AND `$alias`.campaign_id";
+								if ( ! array_sum( $v ) ) {
+									$join .= ' NOT IN (-1)';
+								} else {
+									$join .= ' IN (' . implode( ',', $v ) . ')';
+								}
 							} elseif ( '_click_link' === $field || '_click_link__not_in' === $field ) {
 								$join     .= " AND `$alias`.link_id = `{$alias}{$field}`.ID";
 								$campaigns = array();
@@ -1046,6 +1064,7 @@ class MailsterSubscriberQuery {
 					// get sub query
 					if ( $this->args['return_ids'] ) {
 						$sub_result = $wpdb->get_col( $sql . $limit_sql );
+						$sub_result = array_map( 'intval', $sub_result );
 					} else {
 						$sub_result = $wpdb->get_results( $sql . $limit_sql );
 					}

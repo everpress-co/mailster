@@ -126,7 +126,7 @@ class MailsterPrecheck {
 						$html .= '<strong class="the-link" title="' . esc_attr( $link->href ) . '">' . preg_replace( '/^https?:\/\//', '', $link->href );
 						$html .= '</strong>';
 						if ( $link->location ) {
-							$html .= '<span title="' . sprintf( esc_attr__( 'This address redirects to %s.', 'mailster' ), "\n" . esc_attr( $link->location ) ) . '"> ↳ ' . esc_url( $link->location ) . '</span><br>';
+							$html .= '<div class="the-location" title="' . sprintf( esc_attr__( 'This address redirects to %s.', 'mailster' ), "\n" . esc_attr( $link->location ) ) . '"> ↳ ' . esc_url( $link->location ) . '</div>';
 						}
 						$html .= esc_html( $link->message ) . '<br>';
 						if ( $link->text ) {
@@ -235,7 +235,7 @@ class MailsterPrecheck {
 			return new WP_Error( 503, esc_html__( 'Please verify your Mailster license on the Dashboard!', 'mailster' ) );
 		}
 
-		$url  = 'https://api.precheck.email/v1';
+		$url  = 'https://api.precheck.email/v2';
 		$url .= '/' . $id;
 		if ( $endpoint ) {
 			$url .= '/' . $endpoint;
@@ -245,7 +245,7 @@ class MailsterPrecheck {
 		if ( $token = get_option( 'mailster_precheck_token' ) ) {
 			$authorization = 'Bearer ' . $token;
 		} else {
-			$authorization = mailster()->license();
+			$authorization = mailster()->get_license();
 		}
 
 		$args = array(
