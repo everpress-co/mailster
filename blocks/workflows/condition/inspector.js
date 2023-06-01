@@ -20,7 +20,7 @@ import * as Icons from '@wordpress/icons';
  */
 
 export default function ConditionInspectorControls(props) {
-	const { attributes, setAttributes, isSelected, clientId } = props;
+	const { attributes, setAttributes, isSelected, clientId, name } = props;
 
 	const fulfilled = name === 'mailster-workflow/condition-yes';
 
