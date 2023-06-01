@@ -26,8 +26,8 @@
 		<p class="description"><?php esc_html_e( 'If you don\'t find your country down below the geo database is missing or corrupt', 'mailster' ); ?></p>
 		<p>
 	<strong><?php esc_html_e( 'Your IP', 'mailster' ); ?>:</strong> <?php echo esc_html( $ip ); ?><br>
-		<strong><?php esc_html_e( 'Your country', 'mailster' ); ?>:</strong> <?php echo esc_html( $geo->city->name ); ?><br>
-		<strong><?php esc_html_e( 'Your city', 'mailster' ); ?>:</strong> <?php echo esc_html( $geo->country->name ); ?>
+		<strong><?php esc_html_e( 'Your country', 'mailster' ); ?>:</strong> <?php echo esc_html( $geo->country->name ); ?><br>
+		<strong><?php esc_html_e( 'Your city', 'mailster' ); ?>:</strong> <?php echo esc_html( $geo->city->name ); ?>
 		</p>
 		<p><button id="load_location_db" class="button-primary" <?php disabled( ! $geoip ); ?>><?php esc_html_e( 'Update Location Database', 'mailster' ); ?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
 			<em id="location_last_update"><?php esc_html_e( 'Last update', 'mailster' ); ?>: <?php printf( esc_html__( '%s ago', 'mailster' ), human_time_diff( filemtime( $geodb_file ) ) ); ?></em>
