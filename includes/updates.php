@@ -657,7 +657,10 @@ if ( $old_version ) {
 			mailster( 'geo' )->set_cron( 'single' );
 
 
+
+
 		default:
+			mailster( 'geo' )->maybe_update();
 			mailster( 'convert' )->notice();
 
 			// reset translations

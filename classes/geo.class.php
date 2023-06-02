@@ -5,7 +5,8 @@ use GeoIp2\Database\Reader;
 
 class MailsterGeo {
 
-	private $zip = 'https://static.mailster.co/geo/GeoLite2-City.mmdb.gz';
+	private $zip = 'https://static.mailster.co/geo/GeoLite2-City.zip';
+
 	private $reader;
 
 	public function __construct() {
@@ -134,7 +135,7 @@ class MailsterGeo {
 
 		$folder = apply_filters( 'mailster_location_db_folder', MAILSTER_UPLOAD_DIR );
 
-		return apply_filters( 'mailster_location_db_file_city', trailingslashit( $folder ) . 'GeoLite2-City.mmdb' );
+		return apply_filters( 'mailster_location_db_file_city', trailingslashit( $folder ) . 'geo/GeoLite2-City.mmdb' );
 
 	}
 
@@ -158,17 +159,16 @@ class MailsterGeo {
 			$headers  = wp_remote_retrieve_headers( $response );
 
 			// check header
-			if ( ! isset( $headers['content-type'] ) || $headers['content-type'] != 'application/gzip' ) {
+			if ( ! isset( $headers['content-type'] ) || $headers['content-type'] != 'application/zip' ) {
 				return new WP_Error( 'wrong_filetype', 'wrong file type' );
 			}
-
 			$lastmodified = strtotime( $headers['last-modified'] );
 			$do_renew     = $lastmodified - $filemtime > 0;
 		}
 
 		if ( $do_renew ) {
 
-			mailster_require_filesystem();
+			$wp_filesystem = mailster_require_filesystem();
 			set_time_limit( 120 );
 
 			if ( ! function_exists( 'download_url' ) ) {
@@ -183,24 +183,16 @@ class MailsterGeo {
 			}
 
 			// create directory
-			mailster( 'helper' )->mkdir( dirname( $file ), false );
+			mailster( 'helper' )->mkdir( dirname( $file ), true );
 
-			// Open the downloaded file to unzip it.
-			$handle = gzopen( $tempfile, 'rb' );
-
-			// Create the new file to unzip to.
-			$resource = fopen( $file, 'wb' );
-
-			while ( ( $data = gzread( $handle, 4096 ) ) != false ) {
-				fwrite( $resource, $data );
+			// unzip package
+			if ( is_wp_error( unzip_file( $tempfile, dirname( $file ) ) ) ) {
+				$wp_filesystem->delete( $tempfile, true );
+				return new WP_Error( 'unzip', esc_html__( 'Unable to unzip template', 'mailster' ) );
 			}
 
-			// Close the files.
-			gzclose( $handle );
-			fclose( $resource );
-
 			// Delete the temporary file.
-			unlink( $tempfile );
+			$wp_filesystem->delete( $tempfile, true );
 
 		}
 
