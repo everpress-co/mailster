@@ -661,6 +661,15 @@ if ( $old_version ) {
 
 		default:
 			mailster( 'geo' )->maybe_update();
+
+			// remove old files
+			if ( file_exists( MAILSTER_UPLOAD_DIR . '/CityDB.dat' ) ) {
+				unlink( MAILSTER_UPLOAD_DIR . '/CityDB.dat' );
+			}
+			if ( file_exists( MAILSTER_UPLOAD_DIR . '/CountryDB.dat' ) ) {
+				unlink( MAILSTER_UPLOAD_DIR . '/CountryDB.dat' );
+			}
+
 			mailster( 'convert' )->notice();
 
 			// reset translations
