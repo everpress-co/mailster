@@ -29,7 +29,7 @@ const SAMPLEFORM = (
 		<input type="email" className="input" />
 		<input type="date" className="input" />
 		<input type="submit" className="wp-block-button__link" />
-		<textarea>Sample Content</textarea>
+		<textarea defaultValue="Sample Content" />
 	</form>
 );
 
