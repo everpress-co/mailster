@@ -46,6 +46,7 @@ class MailsterNotification {
 		add_filter( 'mailster_notification_preheader', array( &$this, 'filter' ), 1, 4 );
 		add_filter( 'mailster_notification_replace', array( &$this, 'filter' ), 1, 4 );
 		add_filter( 'mailster_notification_attachments', array( &$this, 'filter' ), 1, 4 );
+		add_filter( 'mailster_notification_content', array( &$this, 'filter' ), 1, 4 );
 
 	}
 
@@ -221,11 +222,35 @@ class MailsterNotification {
 					return $form->subject;
 				}
 
+				$notifcation = get_post_meta( $form_id, 'notification', true );
+				$notifcation = 293;
+				if ( $notifcation ) {
+					return get_post_meta( $form_id, '_mailster_subject', true );
+				}
 				return get_post_meta( $form_id, 'subject', true );
 
 			case 'confirmation_file':
-				$form = $this->get_form_options( $options['form'], $subscriber );
-				return $form->template;
+				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+				$form    = get_post( $form_id );
+
+				if ( ! $form || $form->post_type != 'mailster-form' ) {
+
+					// legacy
+					$form = $this->get_form_options( $options['form'], $subscriber );
+					return $form->template;
+				}
+
+				$notifcation = get_post_meta( $form_id, 'notification', true );
+				$notifcation = 293;
+				if ( $notifcation ) {
+					return $notifcation;
+				}
+
+				return 'notification.html';
+
+			case 'confirmation_content':
+				$c = get_post( 293 );
+				return $c->post_content;
 
 			case 'confirmation_headline':
 				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
@@ -236,6 +261,12 @@ class MailsterNotification {
 					// legacy
 					$form = $this->get_form_options( $options['form'], $subscriber );
 					return $form->headline;
+				}
+
+				$notifcation = get_post_meta( $form_id, 'notification', true );
+				$notifcation = 293;
+				if ( $notifcation ) {
+					return get_post_meta( $form_id, '_mailster_subject', true );
 				}
 
 				return get_post_meta( $form_id, 'headline', true );
@@ -443,6 +474,19 @@ class MailsterNotification {
 			$this->file = 'notification.html';
 		}
 
+		if ( is_numeric( $this->file ) ) {
+
+			$track            = null;
+			$force            = true;
+			$log              = true;
+			$tags             = $this->replace;
+			$tags['can-spam'] = $tags['notification'];
+
+			$attachments = array();
+			return mailster( 'campaigns' )->send( $this->file, $subscriber->ID, $track, $force, $log, $tags, $attachments );
+
+		}
+
 		$this->mail = mailster( 'mail' );
 
 		$this->to = (array) $this->to;
@@ -460,6 +504,7 @@ class MailsterNotification {
 		$this->mail->bouncemail  = mailster_option( 'bounce' );
 		$this->mail->attachments = apply_filters( 'mailster_notification_attachments', $this->attachments, $template, $subscriber, $options );
 
+		// legacy
 		$t   = mailster( 'template', null, $this->file );
 		$raw = $t->get( true, true );
 
