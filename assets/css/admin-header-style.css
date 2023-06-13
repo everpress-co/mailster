@@ -7,6 +7,11 @@
 	border-bottom: 1px solid #c3c4c4;
 	display: flex;
 }
+.rtl #mailster-admin-toolbar {
+	margin-left: 0;
+	margin-right: -20px;
+	padding-right: 20px;
+}
 #mailster-admin-toolbar .mailster-logo {
 	padding: 17px 0 5px;
 	margin: 0 10px 0 3px;
@@ -52,6 +57,9 @@
 	float: right;
 	margin: 5px;
 }
+.rtl #wpbody-content > .mailster-help {
+	float: left;
+}
 #screen-meta + .mailster-help {
 	margin: 5px 35px 5px 5px;
 }
@@ -72,11 +80,20 @@
 	display: flex;
 	justify-content: flex-end;
 }
+.rtl #mailster-admin-toolbar .mailster-help {
+	float: left;
+	justify-content: flex-start;
+}
 #mailster-admin-toolbar .panel-tabs {
 	display: flex;
 	justify-content: flex-end;
 	flex-basis: 100px;
 	margin-left: auto;
+}
+.rtl #mailster-admin-toolbar .panel-tabs {
+	justify-content: flex-end;
+	margin-left: 0;
+	margin-right: auto;
 }
 #mailster-admin-toolbar .panel-tabs .panel-tab {
 	display: flex;
