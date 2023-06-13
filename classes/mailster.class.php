@@ -1561,15 +1561,29 @@ class Mailster {
 
 		$isNew = get_option( 'mailster' ) == false;
 
-		$this->on_activate( $isNew );
+		$this->on_install( $isNew );
 
 		foreach ( $this->_classes as $classname => $class ) {
-			if ( method_exists( $class, 'on_activate' ) ) {
-				$class->on_activate( $isNew );
+			if ( method_exists( $class, 'on_install' ) ) {
+				$class->on_install( $isNew );
 			}
 		}
 
 		return true;
+	}
+
+	public function on_install( $new ) {
+
+		$this->dbstructure();
+		mailster( 'helper' )->mkdir();
+		if ( $new ) {
+			update_option( 'mailster', time() );
+			update_option( 'mailster_updated', 0 );
+			update_option( 'mailster_hooks', '' );
+			update_option( 'mailster_version_first', MAILSTER_VERSION );
+			update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+		}
+
 	}
 
 
@@ -1687,8 +1701,16 @@ class Mailster {
 			if ( $blog_id ) {
 				switch_to_blog( $blog_id );
 			}
-			$this->install();
 
+			$isNew = get_option( 'mailster' ) == false;
+
+			$this->on_activate( $isNew );
+
+			foreach ( $this->_classes as $class ) {
+				if ( method_exists( $class, 'on_activate' ) ) {
+					$class->on_activate( $isNew );
+				}
+			}
 		}
 
 		if ( $blog_id ) {
@@ -1720,7 +1742,7 @@ class Mailster {
 				switch_to_blog( $blog_id );
 			}
 
-			foreach ( $this->_classes as $classname => $class ) {
+			foreach ( $this->_classes as $class ) {
 				if ( method_exists( $class, 'on_deactivate' ) ) {
 					$class->on_deactivate();
 				}
@@ -1761,18 +1783,10 @@ class Mailster {
 
 			} else {
 
-				$this->dbstructure();
-				mailster( 'helper' )->mkdir();
-				update_option( 'mailster', time() );
-				update_option( 'mailster_updated', time() );
-				update_option( 'mailster_hooks', '' );
-				update_option( 'mailster_version_first', MAILSTER_VERSION );
-				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 				update_option( 'mailster_freemius', time() );
 				if ( MAILSTER_ENVATO ) {
 					update_option( 'mailster_envato', time() );
 				}
-
 				if ( ! is_network_admin() ) {
 					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
 				}
@@ -1784,6 +1798,7 @@ class Mailster {
 
 	public function on_deactivate() {
 	}
+
 
 
 	/**

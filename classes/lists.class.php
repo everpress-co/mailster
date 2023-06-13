@@ -1577,7 +1577,7 @@ class MailsterLists {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_activate( $new ) {
+	public function on_install( $new ) {
 
 		if ( $new ) {
 			$this->add( array( 'name' => esc_html__( 'Default List', 'mailster' ) ), false, get_current_user_id() );

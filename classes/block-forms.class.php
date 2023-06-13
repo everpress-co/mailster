@@ -1864,7 +1864,7 @@ class MailsterBlockForms {
 	}
 
 
-	public function on_activate( $new = false ) {
+	public function on_install( $new = false ) {
 
 		if ( $new ) {
 
@@ -1881,47 +1881,6 @@ class MailsterBlockForms {
 
 			update_option( 'mailster_inline_styles', '', 'no' );
 
-		}
-
-		return;
-
-		if ( $new ) {
-			$form_id = $this->add(
-				array(
-					'name'   => esc_html__( 'Default Form', 'mailster' ),
-					'submit' => esc_html__( 'Subscribe', 'mailster' ),
-				)
-			);
-			if ( ! is_wp_error( $form_id ) ) {
-				$this->update_fields(
-					$form_id,
-					array(
-						'email' => esc_html__( 'Email', 'mailster' ),
-					)
-				);
-				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
-				$this->assign_lists( $form_id, $list_id );
-			}
-			$profile_form_id = $this->add(
-				array(
-					'name'        => esc_html__( 'Profile', 'mailster' ),
-					'submit'      => esc_html__( 'Subscribe', 'mailster' ),
-					'userschoice' => true,
-				)
-			);
-			if ( ! is_wp_error( $profile_form_id ) ) {
-				$this->update_fields(
-					$profile_form_id,
-					array(
-						'email'     => esc_html__( 'Email', 'mailster' ),
-						'firstname' => esc_html__( 'First Name', 'mailster' ),
-						'lastname'  => esc_html__( 'Last Name', 'mailster' ),
-					)
-				);
-				mailster_update_option( 'profile_form', $profile_form_id );
-				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
-				$this->assign_lists( $profile_form_id, $list_id );
-			}
 		}
 
 	}

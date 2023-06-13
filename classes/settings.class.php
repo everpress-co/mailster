@@ -88,7 +88,7 @@ class MailsterSettings {
 			'tags_webversion'                    => false,
 			'gdpr_forms'                         => false,
 			'gdpr_link'                          => $gdpr_link,
-			'module_thumbnails'                  => false,
+			'module_thumbnails'                  => true,
 			'charset'                            => 'UTF-8',
 			'encoding'                           => '8bit',
 			'post_count'                         => 30,

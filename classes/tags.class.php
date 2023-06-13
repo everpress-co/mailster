@@ -767,7 +767,7 @@ class MailsterTags {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_activate( $new ) {
+	public function on_install( $new ) {
 
 	}
 

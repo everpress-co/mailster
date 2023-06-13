@@ -3781,7 +3781,7 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_activate( $new ) {
+	public function on_install( $new ) {
 
 		if ( $new ) {
 			$this->add_from_wp_user(

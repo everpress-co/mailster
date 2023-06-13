@@ -24,6 +24,11 @@ function mailster_freemius_custom_icon() {
 }
 
 
+mailster_freemius()->add_action( 'after_account_connection', 'mailster_freemius_install' );
+function mailster_freemius_install() {
+	mailster()->install();
+}
+
 mailster_freemius()->add_action( 'after_uninstall', 'mailster_freemius_uninstall_cleanup' );
 function mailster_freemius_uninstall_cleanup() {
 	mailster()->uninstall();

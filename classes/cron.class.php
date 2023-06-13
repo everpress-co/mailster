@@ -127,6 +127,11 @@ class MailsterCron {
 	 */
 	public function update( $hourly_only = false ) {
 
+		// not installed yet
+		if ( ! get_option( 'mailster' ) ) {
+			return;
+		}
+
 		if ( ! wp_next_scheduled( 'mailster_cron' ) ) {
 
 			// main schedule always 5 minutes before full hour
@@ -151,6 +156,11 @@ class MailsterCron {
 
 
 	public function schedule( $unschedule = false ) {
+
+		// not installed yet
+		if ( ! get_option( 'mailster' ) ) {
+			return;
+		}
 
 		if ( $unschedule ) {
 			$this->unschedule();
@@ -478,7 +488,7 @@ class MailsterCron {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_activate( $new ) {
+	public function on_install( $new ) {
 
 		$this->update();
 

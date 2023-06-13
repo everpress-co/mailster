@@ -106,7 +106,7 @@ class MailsterUpgrade {
 		} elseif ( ! $version_match ) {
 
 			// update db structure
-			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
+			if ( get_option( 'mailster_dbversion' ) && MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
 				mailster()->dbstructure();
 			}
 

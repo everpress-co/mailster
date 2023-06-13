@@ -331,16 +331,6 @@ class MailsterAddons {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $new
-	 */
-	public function on_activate( $new ) {
-
-	}
-
-
 
 	public function reset_query_cache() {
 		global $wpdb;
