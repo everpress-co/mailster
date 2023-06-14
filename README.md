@@ -187,6 +187,11 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.5
+
+- updated: Freemius SDK to 2.5.9
+- fixed: small CSS issues on RTL
+
 ### 3.3.4
 
 - fixed: MySQL error on autoresponders which uses "has received but not opened" or "has received and not clicked" condition.
