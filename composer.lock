@@ -159,16 +159,16 @@
         },
         {
             "name": "dantsu/php-image-editor",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DantSu/php-image-editor.git",
-                "reference": "b2bfa292ca1727b6f99cdc31cb7efcbe49bff30a"
+                "reference": "3438934f9d3af6fc662dae94d8bceaf76fa5f14a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DantSu/php-image-editor/zipball/b2bfa292ca1727b6f99cdc31cb7efcbe49bff30a",
-                "reference": "b2bfa292ca1727b6f99cdc31cb7efcbe49bff30a",
+                "url": "https://api.github.com/repos/DantSu/php-image-editor/zipball/3438934f9d3af6fc662dae94d8bceaf76fa5f14a",
+                "reference": "3438934f9d3af6fc662dae94d8bceaf76fa5f14a",
                 "shasum": ""
             },
             "require": {
@@ -206,7 +206,7 @@
             ],
             "support": {
                 "issues": "https://github.com/DantSu/php-image-editor/issues",
-                "source": "https://github.com/DantSu/php-image-editor/tree/1.4.0"
+                "source": "https://github.com/DantSu/php-image-editor/tree/1.4.1"
             },
             "funding": [
                 {
@@ -214,7 +214,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-11-09T13:36:32+00:00"
+            "time": "2023-05-25T13:55:50+00:00"
         },
         {
             "name": "dantsu/php-osm-static-api",
@@ -277,16 +277,16 @@
         },
         {
             "name": "freemius/wordpress-sdk",
-            "version": "2.5.7",
+            "version": "2.5.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freemius/wordpress-sdk.git",
-                "reference": "78b876e227905373b94fecdd5e5449bcc4d63407"
+                "reference": "e9e3b37d165a881326991a672af0269a6e2b2cda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freemius/wordpress-sdk/zipball/78b876e227905373b94fecdd5e5449bcc4d63407",
-                "reference": "78b876e227905373b94fecdd5e5449bcc4d63407",
+                "url": "https://api.github.com/repos/Freemius/wordpress-sdk/zipball/e9e3b37d165a881326991a672af0269a6e2b2cda",
+                "reference": "e9e3b37d165a881326991a672af0269a6e2b2cda",
                 "shasum": ""
             },
             "require": {
@@ -310,9 +310,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Freemius/wordpress-sdk/issues",
-                "source": "https://github.com/Freemius/wordpress-sdk/tree/2.5.7"
+                "source": "https://github.com/Freemius/wordpress-sdk/tree/2.5.9"
             },
-            "time": "2023-04-24T06:32:35+00:00"
+            "time": "2023-06-12T06:57:05+00:00"
         },
         {
             "name": "inlinestyle/inlinestyle",
@@ -784,25 +784,29 @@
         },
         {
             "name": "doctrine/deprecations",
-            "version": "v1.0.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "0e2a4f1f8cdfc7a92ec3b01c9334898c806b30de"
+                "reference": "612a3ee5ab0d5dd97b7cf3874a6efe24325efac3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/0e2a4f1f8cdfc7a92ec3b01c9334898c806b30de",
-                "reference": "0e2a4f1f8cdfc7a92ec3b01c9334898c806b30de",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/612a3ee5ab0d5dd97b7cf3874a6efe24325efac3",
+                "reference": "612a3ee5ab0d5dd97b7cf3874a6efe24325efac3",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1|^8.0"
+                "php": "^7.1 || ^8.0"
             },
             "require-dev": {
                 "doctrine/coding-standard": "^9",
-                "phpunit/phpunit": "^7.5|^8.5|^9.5",
-                "psr/log": "^1|^2|^3"
+                "phpstan/phpstan": "1.4.10 || 1.10.15",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "psalm/plugin-phpunit": "0.18.4",
+                "psr/log": "^1 || ^2 || ^3",
+                "vimeo/psalm": "4.30.0 || 5.12.0"
             },
             "suggest": {
                 "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
@@ -821,9 +825,9 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/v1.0.0"
+                "source": "https://github.com/doctrine/deprecations/tree/v1.1.1"
             },
-            "time": "2022-05-02T15:47:09+00:00"
+            "time": "2023-06-03T09:27:29+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -1289,16 +1293,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.15.4",
+            "version": "v4.15.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "6bb5176bc4af8bcb7d926f88718db9b96a2d4290"
+                "reference": "11e2663a5bc9db5d714eedb4277ee300403b4a9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/6bb5176bc4af8bcb7d926f88718db9b96a2d4290",
-                "reference": "6bb5176bc4af8bcb7d926f88718db9b96a2d4290",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/11e2663a5bc9db5d714eedb4277ee300403b4a9e",
+                "reference": "11e2663a5bc9db5d714eedb4277ee300403b4a9e",
                 "shasum": ""
             },
             "require": {
@@ -1339,9 +1343,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.4"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.5"
             },
-            "time": "2023-03-05T19:49:14+00:00"
+            "time": "2023-05-19T20:20:00+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1852,16 +1856,16 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "1.7.1",
+            "version": "1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "dfc078e8af9c99210337325ff5aa152872c98714"
+                "reference": "b2fe4d22a5426f38e014855322200b97b5362c0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/dfc078e8af9c99210337325ff5aa152872c98714",
-                "reference": "dfc078e8af9c99210337325ff5aa152872c98714",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/b2fe4d22a5426f38e014855322200b97b5362c0d",
+                "reference": "b2fe4d22a5426f38e014855322200b97b5362c0d",
                 "shasum": ""
             },
             "require": {
@@ -1904,9 +1908,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.7.1"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.7.2"
             },
-            "time": "2023-03-27T19:02:04+00:00"
+            "time": "2023-05-30T18:13:47+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -1978,22 +1982,24 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.20.4",
+            "version": "1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd"
+                "reference": "ec58baf7b3c7f1c81b3b00617c953249fb8cf30c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd",
-                "reference": "7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/ec58baf7b3c7f1c81b3b00617c953249fb8cf30c",
+                "reference": "ec58baf7b3c7f1c81b3b00617c953249fb8cf30c",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
+                "doctrine/annotations": "^2.0",
+                "nikic/php-parser": "^4.15",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^1.5",
@@ -2017,9 +2023,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.20.4"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.22.0"
             },
-            "time": "2023-05-02T09:19:37+00:00"
+            "time": "2023-06-01T12:35:21+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2752,16 +2758,16 @@
         },
         {
             "name": "sebastian/diff",
-            "version": "3.0.3",
+            "version": "3.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "14f72dd46eaf2f2293cbe79c93cc0bc43161a211"
+                "reference": "6296a0c086dd0117c1b78b059374d7fcbe7545ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/14f72dd46eaf2f2293cbe79c93cc0bc43161a211",
-                "reference": "14f72dd46eaf2f2293cbe79c93cc0bc43161a211",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/6296a0c086dd0117c1b78b059374d7fcbe7545ae",
+                "reference": "6296a0c086dd0117c1b78b059374d7fcbe7545ae",
                 "shasum": ""
             },
             "require": {
@@ -2806,7 +2812,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/diff/issues",
-                "source": "https://github.com/sebastianbergmann/diff/tree/3.0.3"
+                "source": "https://github.com/sebastianbergmann/diff/tree/3.0.4"
             },
             "funding": [
                 {
@@ -2814,7 +2820,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-30T07:59:04+00:00"
+            "time": "2023-05-07T05:30:20+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -3344,16 +3350,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v5.4.23",
+            "version": "v5.4.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "90f21e27d0d88ce38720556dd164d4a1e4c3934c"
+                "reference": "560fc3ed7a43e6d30ea94a07d77f9a60b8ed0fb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/90f21e27d0d88ce38720556dd164d4a1e4c3934c",
-                "reference": "90f21e27d0d88ce38720556dd164d4a1e4c3934c",
+                "url": "https://api.github.com/repos/symfony/console/zipball/560fc3ed7a43e6d30ea94a07d77f9a60b8ed0fb8",
+                "reference": "560fc3ed7a43e6d30ea94a07d77f9a60b8ed0fb8",
                 "shasum": ""
             },
             "require": {
@@ -3423,7 +3429,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v5.4.23"
+                "source": "https://github.com/symfony/console/tree/v5.4.24"
             },
             "funding": [
                 {
@@ -3439,7 +3445,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-04-24T18:47:29+00:00"
+            "time": "2023-05-26T05:13:16+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
