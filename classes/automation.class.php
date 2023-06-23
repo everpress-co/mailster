@@ -192,8 +192,6 @@ class MailsterAutomations {
 
 	public function get_limit() {
 
-		return false;
-
 		$limit = 3;
 
 		if ( mailster_freemius()->is_plan( 'plus', true ) ) {
