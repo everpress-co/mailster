@@ -18,6 +18,7 @@ class MailsterForms {
 			return;
 		}
 
+		add_action( 'admin_enqueue_scripts', array( &$this, 'legacy_badge' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 15 );
 		add_action( 'wp', array( &$this, 'form' ) );
 
@@ -271,6 +272,29 @@ class MailsterForms {
 
 	}
 
+
+	public function legacy_badge() {
+		wp_add_inline_style(
+			'admin-menu',
+			"#menu-posts-newsletter
+				a[href='edit.php?post_type=newsletter&page=mailster_forms']::after {
+					content: '(" . esc_attr__( 'Legacy', 'mailster' ) . ")';
+					display: inline-block;
+					vertical-align: top;
+					box-sizing: border-box;
+					margin: 1px 1px -1px 1px;
+					padding: 0 5px;
+					min-width: 18px;
+					height: 18px;
+					color: #fff;
+					opacity: .5;
+					font-size: 11px;
+					line-height: 1.6;
+					text-align: center;
+					z-index: 26;
+				}"
+		);
+	}
 
 	/**
 	 *

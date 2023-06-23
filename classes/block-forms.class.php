@@ -478,12 +478,14 @@ class MailsterBlockForms {
 
 	public function register_post_type() {
 
+		$name = mailster_option( 'legacy_forms' ) ? _x( 'Block Forms', 'Post Type General Name', 'mailster' ) : _x( 'Forms', 'Post Type General Name', 'mailster' );
+
 		$labels = array(
-			'name'                     => _x( 'Block Forms', 'Post Type General Name', 'mailster' ),
+			'name'                     => $name,
 			'singular_name'            => _x( 'Form', 'Post Type Singular Name', 'mailster' ),
-			'menu_name'                => __( 'Block Forms', 'mailster' ),
+			'menu_name'                => $name,
 			'attributes'               => __( 'Form Attributes', 'mailster' ),
-			'all_items'                => __( 'Block Forms', 'mailster' ),
+			'all_items'                => $name,
 			'add_new_item'             => __( 'Add New Form', 'mailster' ),
 			'add_new'                  => __( 'Add New', 'mailster' ),
 			'new_item'                 => __( 'New Form', 'mailster' ),
@@ -944,7 +946,7 @@ class MailsterBlockForms {
 
 		do_action( 'mailster_admin_header' );
 
-		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/forms-blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_add_inline_style( 'mailster-form-block-editor', $this->get_theme_styles() );
 		wp_add_inline_script( 'wp-blocks', 'var mailster_fields = ' . json_encode( array_values( $this->get_fields() ) ) . ';' );
 	}
