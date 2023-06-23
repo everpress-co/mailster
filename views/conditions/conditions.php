@@ -11,8 +11,6 @@
 		)
 	);
 
-
-
 	$groups = array(
 		'fields'           => __( 'Fields', 'mailster' ),
 		'custom_fields'    => __( 'User related', 'mailster' ),
@@ -24,9 +22,6 @@
 	);
 
 	$groups = apply_filters( 'mailster_condition_groups', $groups );
-
-	$all_operators    = $this->all_operators;
-	$all_value_fields = $this->all_value_fields;
 
 	if ( ! function_exists( 'wp_dropdown_roles' ) ) {
 		require_once ABSPATH . 'wp-admin/includes/template.php';
@@ -75,7 +70,7 @@
 
 			<div class="mailster-conditions-operator-fields">
 
-				<?php foreach ( $all_operators as $type => $operators ) : ?>
+				<?php foreach ( $this->all_operators as $type => $operators ) : ?>
 				<div class="mailster-conditions-operator-field mailster-conditions-operator-field-<?php echo esc_attr( $type ); ?>" data-fields=",<?php echo implode( ',', $this->get_operator_fields( $type ) ); ?>,">
 					<select name="<?php echo esc_attr( $inputname ); ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php if ( count( $operators ) == 1 ) : ?>
@@ -111,7 +106,7 @@
 
 			<div class="mailster-conditions-value-fields">
 
-				<?php foreach ( $all_value_fields as $value_field ) : ?>
+				<?php foreach ( $this->all_value_fields as $value_field ) : ?>
 					<?php $this->render_value_field( $value_field, $value, $inputname . '[' . $i . '][' . $j . '][value]' ); ?>
 				<?php endforeach ?>
 					

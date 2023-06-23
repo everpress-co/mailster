@@ -157,8 +157,38 @@ mailster = (function (mailster, $, window, document) {
 					.parent()
 					.find('.condition-field')
 					.val();
-				var value = $(this);
-				autocomplete(field, value);
+				var el = $(this);
+				autocomplete(field, el);
+			})
+			.on('focus', 'input.token-helper', function () {
+				var field = $(this)
+					.parent()
+					.parent()
+					.parent()
+					.find('.condition-field')
+					.val();
+				var el = $(this);
+				autocomplete(field, el);
+			})
+			.on('change', 'input.token-helper', function () {
+				var el = $(this);
+				var data = el.val().split(',');
+				var helper = el.next('.token-helper-fields');
+				var name = helper.data('inputname');
+				var html = '';
+
+				for (var i = 0; i < data.length; i++) {
+					if (!data[i].trim()) continue;
+					html +=
+						'<input type="hidden_" name="' +
+						name +
+						'[]" class="condition-value" value="' +
+						data[i].trim() +
+						'">';
+				}
+
+				helper.html(html);
+				mailster.trigger('updateCount');
 			})
 			.on('change', '.relative-datepicker', function () {
 				var field = $(this).closest('.mailster-conditions-value-field');
@@ -450,9 +480,30 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function autocomplete(field, el) {
+		var token = el.data('token');
+
 		if (el.data('ui-autocomplete') != undefined) {
 			el.autocomplete('destroy');
 		}
+
+		function extractTerm(value) {
+			if (!token) {
+				return value;
+			}
+			return value.split(/,\s*/).pop();
+		}
+
+		function selectTerm(current, value) {
+			if (!token) {
+				return value;
+			}
+			var terms = current.split(/,\s*/);
+			terms.pop();
+			terms.push(value);
+			terms.push('');
+			return terms.join(', ');
+		}
+
 		el.autocomplete({
 			classes: {
 				'ui-autocomplete': 'mailster-condition-autocomplete',
@@ -461,7 +512,7 @@ mailster = (function (mailster, $, window, document) {
 				el.addClass('autocomplete-loading');
 				mailster.util.ajax(
 					'get_autocomplete_source',
-					{ field: field, search: request.term },
+					{ field: field, search: extractTerm(request.term) },
 					function (response) {
 						if (response.success) {
 							cb(response.data);
@@ -469,6 +520,10 @@ mailster = (function (mailster, $, window, document) {
 						el.removeClass('autocomplete-loading');
 					}
 				);
+			},
+			select: function (event, ui) {
+				this.value = selectTerm(this.value, ui.item.value);
+				return false;
 			},
 		});
 	}

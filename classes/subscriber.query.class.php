@@ -525,10 +525,12 @@ class MailsterSubscriberQuery {
 
 					} elseif ( in_array( $field, array( '_tagname__in', '_tagname__not_in' ) ) ) {
 
-						$joins[]    = "LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers AS `mailster_tags_subscribers` ON `mailster_tags_subscribers`.subscriber_id = subscribers.ID";
-						$joins[]    = "LEFT JOIN {$wpdb->prefix}mailster_tags AS `mailster_tags_{$i}_{$j}` ON `mailster_tags_subscribers`.tag_id = mailster_tags_{$i}_{$j}.ID";
-						$sub_cond[] = '' . $this->get_condition( $field, $this->get_field_operator( $field == '_tagname__in' ? 'is' : 'is_not' ), $value, "mailster_tags_{$i}_{$j}.name" );
+						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers AS `mailster_tags_subscribers` ON `mailster_tags_subscribers`.subscriber_id = subscribers.ID";
+						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_tags AS `mailster_tags_{$i}_{$j}` ON `mailster_tags_subscribers`.tag_id = mailster_tags_{$i}_{$j}.ID";
 
+						foreach ( (array) $value as $tag_value ) {
+							$sub_cond[] = '' . $this->get_condition( $field, $this->get_field_operator( $field == '_tagname__in' ? 'is' : 'is_not' ), trim( $tag_value ), "mailster_tags_{$i}_{$j}.name" );
+						}
 					} elseif ( in_array( $field, $this->custom_fields ) ) {
 
 						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS `field_$field` ON `field_$field`.subscriber_id = subscribers.ID AND `field_$field`.meta_key = '$field'";

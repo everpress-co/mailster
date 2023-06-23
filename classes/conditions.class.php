@@ -283,6 +283,9 @@ class MailsterConditions {
 			case 'tag_related':
 				$fields = array( '_tags__not_in', '_tags__in' );
 				break;
+			case 'tagname_related':
+				$fields = array( '_tagname__not_in', '_tagname__in' );
+				break;
 			case 'click_related':
 				$fields = array( '_click_link', '_click_link__not_in' );
 				break;
@@ -356,6 +359,7 @@ class MailsterConditions {
 	}
 	private function get_all_value_fields() {
 		return array(
+			'text',
 			'integer',
 			'rating',
 			'timestamp',
@@ -366,6 +370,7 @@ class MailsterConditions {
 			'campaign_related',
 			'list_related',
 			'tag_related',
+			'tagname_related',
 			'click_related',
 			'geo',
 		);
@@ -529,8 +534,9 @@ class MailsterConditions {
 			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_list_title' ), $value ) ) . $closing_quote;
 		} elseif ( isset( $this->tag_related[ $field ] ) ) {
 			if ( ! is_array( $value ) ) {
-				$value = array( $value );
+				$value = array_map( 'trim', explode( ',', $value ) );
 			}
+			$value           = array_filter( $value );
 			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_tag_title' ), $value ) ) . $closing_quote;
 		} elseif ( 'geo' == $field ) {
 			if ( ! is_array( $value ) ) {
@@ -707,11 +713,15 @@ class MailsterConditions {
 		<?php
 	}
 
-	private function value_field_integer( $value, $inputname ) {
+	private function value_field_text( $value, $inputname ) {
 		$value = is_array( $value ) ? $value[0] : $value;
 		?>
 		<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $inputname ); ?>">	
 		<?php
+	}
+
+	private function value_field_integer( $value, $inputname ) {
+		$this->value_field_text( $value, $inputname );
 	}
 
 	private function value_field_rating( $value, $inputname ) {
@@ -966,6 +976,25 @@ class MailsterConditions {
 		<?php else : ?>
 		<p><?php esc_html_e( 'No tags available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo esc_attr( $inputname ); ?>"></p>
 		<?php endif; ?>
+		<?php
+	}
+
+
+	private function value_field_tagname_related( $value_arr, $inputname ) {
+
+		$value_arr = is_array( $value_arr ) ? $value_arr : array( $value_arr );
+		$value_arr = array_map( 'trim', $value_arr );
+		$value_arr = array_filter( $value_arr );
+		$value_arr = array_unique( $value_arr );
+		?>
+		s<input type="text" class="regular-text token-helper" data-token="true" value="<?php echo esc_attr( implode( ', ', $value_arr ) ); ?>">
+		<div class="token-helper-fields" data-inputname="<?php echo esc_attr( $inputname ); ?>">
+		<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled value="">
+		<?php foreach ( $value_arr as $key => $value ) : ?>
+			<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled value="<?php echo esc_attr( $value ); ?>">
+		<?php endforeach; ?>
+		</div>
+		<div class="description"><?php esc_html_e( 'Separate tags with commas', 'mailster' ); ?></div>
 		<?php
 	}
 
