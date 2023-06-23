@@ -116,7 +116,10 @@ class MailsterConditions {
 			$data = array();
 		} elseif ( isset( $this->custom_fields[ $field ] ) ) {
 			$custom_fields = mailster()->get_custom_fields();
-			switch ( $custom_fields[ $field ]['type'] ) {
+
+			$type = isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ]['type'] : 'text';
+
+			switch ( $type ) {
 				case 'dropdown':
 					$data = $custom_fields[ $field ]['values'];
 					break;
@@ -129,7 +132,10 @@ class MailsterConditions {
 					break;
 			}
 		} elseif ( isset( $this->tag_related[ $field ] ) ) {
-			$data = array();
+			$query = "SELECT DISTINCT `name` FROM {$wpdb->prefix}mailster_tags WHERE `ID` != %s"; // artifical for prepared statement
+			if ( $search ) {
+				$query .= " AND `name` LIKE '%%%s%%'";
+			}
 		} elseif ( isset( $this->meta_fields[ $field ] ) ) {
 			$query = "SELECT DISTINCT meta_value FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s";
 			if ( $search ) {
