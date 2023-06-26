@@ -64,6 +64,7 @@ mailster = (function (mailster, $, window, document) {
 				'export_contacts',
 				{
 					data: data,
+					conditions: mailster.conditions.serialize(),
 				},
 				function (response) {
 					if (response.success) {
@@ -90,11 +91,7 @@ mailster = (function (mailster, $, window, document) {
 			percentage = Math.min(1, (limit * offset) / count) * 100;
 
 		exportstatus.html(
-			mailster.util.sprintf(
-				mailster.l10n.manage.prepare_download,
-				count,
-				''
-			)
+			mailster.util.sprintf(mailster.l10n.manage.prepare_download, count, '')
 		);
 
 		mailster.util.ajax(
@@ -103,6 +100,7 @@ mailster = (function (mailster, $, window, document) {
 				limit: limit,
 				offset: offset,
 				data: data,
+				conditions: mailster.conditions.serialize(),
 			},
 			function (response) {
 				var finished = percentage >= 100 && response.data.finished;
@@ -124,10 +122,7 @@ mailster = (function (mailster, $, window, document) {
 						exportstatus.html(mailster.l10n.manage.export_finished);
 
 						exportstatus.html(
-							mailster.util.sprintf(
-								mailster.l10n.manage.downloading,
-								count
-							)
+							mailster.util.sprintf(mailster.l10n.manage.downloading, count)
 						);
 						if (response.data.filename) {
 							setTimeout(function () {
@@ -154,6 +149,8 @@ mailster = (function (mailster, $, window, document) {
 		);
 	}
 
+	mailster.events.push('updateConditions', update_export_count);
+
 	function update_export_count() {
 		setTimeout(function () {
 			var data = $('#export-subscribers').serialize();
@@ -163,6 +160,7 @@ mailster = (function (mailster, $, window, document) {
 				'get_subscriber_count',
 				{
 					data: data,
+					conditions: mailster.conditions.serialize(),
 				},
 				function (response) {
 					if (response.success) {

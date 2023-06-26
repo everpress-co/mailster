@@ -498,9 +498,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		);
 
 		$items = mailster( 'subscribers' )->query( $args );
-		$query = mailster( 'subscribers' )->query( wp_parse_args( $args, array( 'return_sql' => true ) ) );
-
-		echo '<pre>' . print_r( $query, true ) . '</pre>';
 
 		$this->items       = $items;
 		$this->total_items = $wpdb->get_var( 'SELECT FOUND_ROWS();' );

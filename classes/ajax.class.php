@@ -2250,12 +2250,18 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		parse_str( $_POST['data'], $data );
+		wp_parse_str( $_POST['data'], $data );
 
 		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : array();
 		$nolists    = isset( $data['nolists'] ) ? (bool) $data['nolists'] : null;
-		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
-		$status     = isset( $data['status'] ) ? (array) $data['status'] : -1;
+		$conditions = false;
+		if ( isset( $_POST['conditions'] ) ) {
+			wp_parse_str( $_POST['conditions'], $conditions );
+			if ( isset( $conditions['conditions'] ) ) {
+				$conditions = $conditions['conditions'];
+			}
+		}
+		$status = isset( $data['status'] ) ? (array) $data['status'] : -1;
 
 		$args = array(
 			'return_count' => true,

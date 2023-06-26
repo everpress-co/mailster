@@ -88,8 +88,7 @@ mailster = (function (mailster, $, window, document) {
 
 			if (length >= mailster.l10n.campaigns.undosteps)
 				mailster.optionbar.undos.shift();
-			mailster.optionbar.currentUndo =
-				mailster.optionbar.undos.length - 1;
+			mailster.optionbar.currentUndo = mailster.optionbar.undos.length - 1;
 
 			if (mailster.optionbar.currentUndo)
 				mailster.$.optionbar.find('a.undo').removeClass('disabled');
@@ -134,17 +133,12 @@ mailster = (function (mailster, $, window, document) {
 				parent = $this.parent();
 			parent.find('.button').remove();
 			if (val != -1) {
-				if (
-					parent.find('select').length <
-					$this.find('option').length - 1
-				)
+				if (parent.find('select').length < $this.find('option').length - 1)
 					$(
 						' <a class="button button-small add_embed_options_taxonomy">' +
 							mailster.l10n.campaigns.add +
 							'</a>'
-					).appendTo(
-						$this.closest('.dynamic_embed_options_taxonomy_wrap')
-					);
+					).appendTo($this.closest('.dynamic_embed_options_taxonomy_wrap'));
 			} else {
 				parent.find('select').select2('destroy');
 				parent.html('').append($this);
@@ -164,9 +158,7 @@ mailster = (function (mailster, $, window, document) {
 			select.select2();
 
 			el.insertBefore($this).val('-1');
-			$('<span> ' + mailster.l10n.campaigns.or + ' </span>').insertBefore(
-				el
-			);
+			$('<span> ' + mailster.l10n.campaigns.or + ' </span>').insertBefore(el);
 			el.select2();
 			$this.remove();
 
@@ -578,8 +570,7 @@ mailster = (function (mailster, $, window, document) {
 						var selectedmodule = $(event.target).closest('module');
 						if (
 							!selectedmodule.length ||
-							(currentmodule &&
-								currentmodule[0] === selectedmodule[0])
+							(currentmodule && currentmodule[0] === selectedmodule[0])
 						)
 							return;
 						currentmodule = selectedmodule;
@@ -588,15 +579,9 @@ mailster = (function (mailster, $, window, document) {
 						setTimeout(function () {
 							post_dropzone.addClass('visible');
 							pre_dropzone.addClass('visible');
-							mailster.editor.$.modules.removeClass(
-								'drag-up drag-down'
-							);
-							selectedmodule
-								.prevAll('module')
-								.addClass('drag-up');
-							selectedmodule
-								.nextAll('module')
-								.addClass('drag-down');
+							mailster.editor.$.modules.removeClass('drag-up drag-down');
+							selectedmodule.prevAll('module').addClass('drag-up');
+							selectedmodule.nextAll('module').addClass('drag-down');
 						}, 1);
 					})
 					.on('dragover.mailster', function (event) {
@@ -608,8 +593,7 @@ mailster = (function (mailster, $, window, document) {
 							colorSwap(html),
 							mailster.editor.$.modules.length
 								? currentmodule &&
-								  currentmodule[0] ===
-										mailster.editor.$.container
+								  currentmodule[0] === mailster.editor.$.container
 									? false
 									: currentmodule
 								: false,
@@ -835,21 +819,16 @@ mailster = (function (mailster, $, window, document) {
 							callback: function () {
 								var hash;
 
-								googledata.map =
-									new google.visualization.GeoChart(
-										document.getElementById('countries_map')
-									);
-								google.countrydata =
-									google.visualization.arrayToDataTable(
-										response.data.countrydata
-									);
+								googledata.map = new google.visualization.GeoChart(
+									document.getElementById('countries_map')
+								);
+								google.countrydata = google.visualization.arrayToDataTable(
+									response.data.countrydata
+								);
 
 								if (
 									location.hash &&
-									(hash =
-										location.hash.match(
-											/region=([A-Z]{2})/
-										))
+									(hash = location.hash.match(/region=([A-Z]{2})/))
 								) {
 									regionClick(hash[1]);
 								} else {
@@ -874,9 +853,7 @@ mailster = (function (mailster, $, window, document) {
 							.find('tr')
 							.on('click', function () {
 								var code = $(this).data('code');
-								code == 'unknown' || !code
-									? showWorld()
-									: regionClick(code);
+								code == 'unknown' || !code ? showWorld() : regionClick(code);
 
 								return false;
 							});
@@ -968,9 +945,7 @@ mailster = (function (mailster, $, window, document) {
 						})
 						.get(),
 					orderby = $('select.recipients-order').val(),
-					order = $('a.recipients-order').hasClass('asc')
-						? 'ASC'
-						: 'DESC';
+					order = $('a.recipients-order').hasClass('asc') ? 'ASC' : 'DESC';
 
 				loader.css('display', 'inline');
 				$('input.recipients-limit').prop('disabled', true);
@@ -1194,8 +1169,7 @@ mailster = (function (mailster, $, window, document) {
 					top: _position.top - 85,
 					left:
 						_position.left -
-						(mailster.clickmap.$.popup.width() / 2 -
-							_this.width() / 2),
+						(mailster.clickmap.$.popup.width() / 2 - _this.width() / 2),
 				});
 		})
 		.on('mouseleave', 'a.clickbadge', function () {
@@ -1223,10 +1197,7 @@ mailster = (function (mailster, $, window, document) {
 						top = offset.top,
 						left = offset.left + 5,
 						percentage = (counts.clicks / total) * 100,
-						v =
-							(percentage < 1
-								? '&lsaquo;1'
-								: Math.round(percentage)) + '%',
+						v = (percentage < 1 ? '&lsaquo;1' : Math.round(percentage)) + '%',
 						badge = $(
 							'<a class="clickbadge ' +
 								(percentage < 40 ? 'clickbadge-outside' : '') +
@@ -1357,12 +1328,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$.delivery
 		.on('change', 'input.userexactdate', function () {
-			$(this)
-				.parent()
-				.parent()
-				.parent()
-				.find('span')
-				.addClass('disabled');
+			$(this).parent().parent().parent().find('span').addClass('disabled');
 			$(this).parent().find('span').removeClass('disabled');
 		})
 		.on('change', '#autoresponder-post_type', function () {
@@ -1380,11 +1346,9 @@ mailster = (function (mailster, $, window, document) {
 					if (response.success) {
 						cats.html(response.data.html);
 						$.fn.select2 &&
-							$('#autoresponder-taxonomies')
-								.find('select')
-								.select2({
-									tags: true,
-								});
+							$('#autoresponder-taxonomies').find('select').select2({
+								tags: true,
+							});
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -1400,9 +1364,7 @@ mailster = (function (mailster, $, window, document) {
 			mailster.$.delivery.find('.tabs').removeClass('tabs');
 			_this.parent().addClass('tabs');
 			$(href).show();
-			$('#mailster_is_autoresponder').val(
-				href == '#autoresponder' ? 1 : ''
-			);
+			$('#mailster_is_autoresponder').val(href == '#autoresponder' ? 1 : '');
 			return false;
 		})
 		.on('click', '.mailster_sendtest', function () {
@@ -1539,19 +1501,11 @@ mailster = (function (mailster, $, window, document) {
 		.on('change', '#time_extra', function () {
 			$('#autoresponderfield-mailster_timebased_advanced').slideToggle();
 		})
-		.on(
-			'click',
-			'.mailster_autoresponder_timebased-end-schedule',
-			function () {
-				$(this).is(':checked')
-					? $(
-							'.mailster_autoresponder_timebased-end-schedule-field'
-					  ).slideDown()
-					: $(
-							'.mailster_autoresponder_timebased-end-schedule-field'
-					  ).slideUp();
-			}
-		)
+		.on('click', '.mailster_autoresponder_timebased-end-schedule', function () {
+			$(this).is(':checked')
+				? $('.mailster_autoresponder_timebased-end-schedule-field').slideDown()
+				: $('.mailster_autoresponder_timebased-end-schedule-field').slideUp();
+		})
 		.on('change', '.mailster-action-hooks', function () {
 			var val = $(this).val();
 			$('.mailster-action-hook').val(val);
@@ -1561,12 +1515,8 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('change', '.mailster-action-hook', function () {
 			var val = $(this).val();
-			if (
-				!$(".mailster-action-hooks option[value='" + val + "']").length
-			) {
-				$('.mailster-action-hooks').append(
-					'<option>' + val + '</option>'
-				);
+			if (!$(".mailster-action-hooks option[value='" + val + "']").length) {
+				$('.mailster-action-hooks').append('<option>' + val + '</option>');
 			}
 			$('.mailster-action-hooks').val(val);
 		})
@@ -1616,9 +1566,7 @@ mailster = (function (mailster, $, window, document) {
 			servertime = parseInt(elements.data('timestamp'), 10) * 1000,
 			seconds = false,
 			offset =
-				servertime -
-				usertime.getTime() +
-				usertime.getTimezoneOffset() * 60000;
+				servertime - usertime.getTime() + usertime.getTimezoneOffset() * 60000;
 
 		var delay = seconds ? 1000 : 20000;
 
@@ -1630,12 +1578,7 @@ mailster = (function (mailster, $, window, document) {
 			h = t.getHours();
 			m = t.getMinutes();
 
-			if (
-				mailster.enabled &&
-				x &&
-				m != x[1] &&
-				!activecheck.is(':checked')
-			) {
+			if (mailster.enabled && x && m != x[1] && !activecheck.is(':checked')) {
 				deliverytime.val(zero(h) + ':' + zero(m));
 			}
 			x = [];
@@ -1717,9 +1660,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.remove-conditions', function () {
 			if (confirm(mailster.l10n.campaigns.remove_conditions)) {
-				$('#receivers-dialog')
-					.find('.mailster-conditions-wrap')
-					.empty();
+				$('#receivers-dialog').find('.mailster-conditions-wrap').empty();
 				mailster.trigger('updateCount');
 			}
 			return false;
@@ -1766,11 +1707,7 @@ mailster = (function (mailster, $, window, document) {
 					function (jqXHR, textStatus, errorThrown) {
 						loader(false);
 						mailster.util.tempMsg(
-							textStatus +
-								' ' +
-								jqXHR.status +
-								': ' +
-								errorThrown,
+							textStatus + ' ' + jqXHR.status + ': ' + errorThrown,
 							'error',
 							$('.create-new-list-wrap')
 						);
@@ -1813,7 +1750,7 @@ mailster = (function (mailster, $, window, document) {
 
 			mailster.util.ajax(
 				'get_totals_list',
-				get_conditions(),
+				mailster.conditions.get(),
 				function (response) {
 					var title = mailster.$.title.val();
 					mailster.trigger('enable');
@@ -1858,7 +1795,7 @@ mailster = (function (mailster, $, window, document) {
 
 			mailster.util.ajax(
 				'get_totals_list_part',
-				get_conditions({
+				mailster.conditions.get({
 					page: page,
 				}),
 				function (response) {
@@ -1873,11 +1810,7 @@ mailster = (function (mailster, $, window, document) {
 	);
 
 	window.tb_remove &&
-		mailster.receivers.$.conditions.on(
-			'click',
-			'.close-conditions',
-			tb_remove
-		);
+		mailster.receivers.$.conditions.on('click', '.close-conditions', tb_remove);
 
 	window.tb_remove &&
 		mailster.receivers.$.receiverslist.on(
@@ -1888,12 +1821,16 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.editable &&
 		mailster.events.push('documentReady', function () {
-			mailster.trigger('updateCount');
+			mailster.conditions.init();
 		});
 
 	mailster.events.push('documentReady', function () {
 		mailster.trigger('enable');
 		get_list_counts();
+	});
+
+	mailster.events.push('updateConditions', function () {
+		mailster.trigger('updateCount');
 	});
 
 	mailster.editable &&
@@ -1905,7 +1842,7 @@ mailster = (function (mailster, $, window, document) {
 
 				mailster.util.ajax(
 					'get_totals',
-					get_conditions(),
+					mailster.conditions.get(),
 					function (response) {
 						mailster.trigger('enable');
 						loader(false, response.data.totalformatted);
@@ -1921,71 +1858,6 @@ mailster = (function (mailster, $, window, document) {
 			}, 10);
 		});
 
-	function get_conditions(args) {
-		var lists = [],
-			conditions = [],
-			inputs = $('#list-checkboxes').find('input, select'),
-			listinputs = $('#list-checkboxes').find('input.list'),
-			extra = $('#list_extra'),
-			data = {},
-			groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
-			i = 0;
-
-		$.each(listinputs, function () {
-			var id = $(this).val();
-			if ($(this).is(':checked')) lists.push(id);
-		});
-
-		data.id = mailster.campaign_id;
-		data.lists = lists;
-		data.ignore_lists = $('#ignore_lists').is(':checked');
-
-		$.each(groups, function () {
-			var c = $(this).find('.mailster-condition');
-			$.each(c, function () {
-				var _this = $(this),
-					value,
-					field = _this.find('.condition-field').val(),
-					operator = _this
-						.find('.mailster-conditions-operator-field.active')
-						.find('.condition-operator')
-						.val();
-
-				if (!operator || !field) return;
-
-				value = _this
-					.find('.mailster-conditions-value-field.active')
-					.find('.condition-value')
-					.map(function () {
-						return $(this).val();
-					})
-					.toArray();
-				if (value.length == 1) {
-					value = value[0];
-				}
-				if (!conditions[i]) {
-					conditions[i] = [];
-				}
-
-				conditions[i].push({
-					field: field,
-					operator: operator,
-					value: value,
-				});
-			});
-			i++;
-		});
-
-		data.operator = $('select.mailster-list-operator').val();
-		data.conditions = conditions;
-
-		if (args) {
-			data = $.extend(args, data);
-		}
-
-		return data;
-	}
-
 	function get_list_counts() {
 		var list = $('#list-checkboxes');
 		mailster.util.ajax(
@@ -1995,7 +1867,8 @@ mailster = (function (mailster, $, window, document) {
 			},
 			function (response) {
 				$.each(response.data.counts, function (id, count) {
-					list.find('li[data-id="' + id + '"]')
+					list
+						.find('li[data-id="' + id + '"]')
 						.find('.count')
 						.html(mailster.util.sprintf('(%s)', count));
 				});
@@ -2207,9 +2080,7 @@ mailster = (function (mailster, $, window, document) {
 							.toJSON(),
 						el = $('.mailster-attachment').eq(0).clone();
 					el.find('img').attr('src', attachment.icon);
-					el.find('.mailster-attachment-label').html(
-						attachment.filename
-					);
+					el.find('.mailster-attachment-label').html(attachment.filename);
 					el.find('input')
 						.attr('name', 'mailster_data[attachments][]')
 						.val(attachment.id);
@@ -2228,15 +2099,13 @@ mailster = (function (mailster, $, window, document) {
 	'use strict';
 
 	mailster.events.push('documentReady', function () {
-		if (typeof wp != 'undefined' && wp.heartbeat)
-			wp.heartbeat.interval('fast');
+		if (typeof wp != 'undefined' && wp.heartbeat) wp.heartbeat.interval('fast');
 	});
 	mailster.$.document
 		.on('heartbeat-send', function (e, data) {
 			if (mailster.editable) {
 				if (data && data['wp_autosave'] && mailster.editor) {
-					data['wp_autosave']['content'] =
-						mailster.editor.getContent();
+					data['wp_autosave']['content'] = mailster.editor.getContent();
 					data['wp_autosave']['excerpt'] = mailster.$.excerpt.val();
 					data['mailsterdata'] = mailster.$.datafields.serialize();
 				}

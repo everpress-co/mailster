@@ -310,8 +310,8 @@ class MailsterManage {
 			$select .= '</optgroup>';
 			if ( ! empty( $custom_fields ) ) {
 				$select .= '<optgroup label="' . esc_html__( 'Custom Fields', 'mailster' ) . '" class="custom-fields-select">';
-				foreach ( $custom_fields as $key => $d ) {
-					$select .= '<option value="' . esc_attr( $key ) . '">' . $d['name'] . '</option>';
+				foreach ( $custom_fields as $custom_field_key => $custom_fields_value ) {
+					$select .= '<option value="' . esc_attr( $custom_field_key ) . '">' . $custom_fields_value['name'] . '</option>';
 				}
 				$select .= '</optgroup>';
 			} else {
@@ -919,11 +919,18 @@ class MailsterManage {
 			wp_send_json_error( $return );
 		}
 
-		parse_str( $_POST['data'], $d );
+		wp_parse_str( $_POST['data'], $post_data );
 
-		$listids    = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
-		$statuses   = isset( $d['status'] ) ? array_filter( $d['status'], 'is_numeric' ) : array();
-		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
+		$listids  = isset( $post_data['lists'] ) ? array_filter( $post_data['lists'], 'is_numeric' ) : array();
+		$statuses = isset( $post_data['status'] ) ? array_filter( $post_data['status'], 'is_numeric' ) : array();
+
+		$conditions = false;
+		if ( isset( $_POST['conditions'] ) ) {
+			wp_parse_str( $_POST['conditions'], $conditions );
+			if ( isset( $conditions['conditions'] ) ) {
+				$conditions = $conditions['conditions'];
+			}
+		}
 
 		$args = array(
 			'lists'      => $listids,
@@ -932,11 +939,11 @@ class MailsterManage {
 			'return_ids' => true,
 		);
 
-		$args = apply_filters( 'mailster_export_args', $args, $d );
+		$args = apply_filters( 'mailster_export_args', $args, $post_data );
 
 		$data = mailster( 'subscribers' )->query( $args );
 
-		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
+		if ( isset( $post_data['nolists'] ) && $post_data['nolists'] ) {
 
 			$args['lists'] = -1;
 			$data2         = mailster( 'subscribers' )->query( $args );
@@ -956,8 +963,8 @@ class MailsterManage {
 			$filename = MAILSTER_UPLOAD_DIR . '/~mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.tmp';
 
 			update_option( 'mailster_export_filename', $filename );
-			unset( $d['_wpnonce'], $d['_wp_http_referer'] );
-			update_user_option( get_current_user_id(), 'mailster_export_settings', $d );
+			unset( $post_data['_wpnonce'], $post_data['_wp_http_referer'] );
+			update_user_option( get_current_user_id(), 'mailster_export_settings', $post_data );
 
 			try {
 
@@ -1008,37 +1015,37 @@ class MailsterManage {
 			wp_send_json( $return );
 		}
 
-		parse_str( $_POST['data'], $d );
+		wp_parse_str( $_POST['data'], $post_data );
 
 		$offset   = (int) $_POST['offset'];
 		$limit    = (int) $_POST['limit'];
 		$raw_data = array();
 
-		$listids  = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
-		$statuses = isset( $d['status'] ) ? array_filter( $d['status'], 'is_numeric' ) : array();
+		$listids  = isset( $post_data['lists'] ) ? array_filter( $post_data['lists'], 'is_numeric' ) : array();
+		$statuses = isset( $post_data['status'] ) ? array_filter( $post_data['status'], 'is_numeric' ) : array();
 
-		$encoding     = $d['encoding'];
-		$outputformat = $d['outputformat'];
-		$separator    = $d['separator'];
+		$encoding     = $post_data['encoding'];
+		$outputformat = $post_data['outputformat'];
+		$separator    = $post_data['separator'];
 		if ( 'tab' == $separator ) {
 			$separator = "\t";
 		}
 
-		$dateformat = $d['dateformat'];
+		$dateformat = $post_data['dateformat'];
 
-		$useheader = $offset === 0 && $d['header'];
+		$useheader = $offset === 0 && $post_data['header'];
 
 		$custom_fields      = mailster()->get_custom_fields();
 		$meta_keys          = mailster( 'subscribers' )->get_meta_keys();
 		$custom_date_fields = mailster()->get_custom_date_fields();
 		$custom_field_names = array_merge( array( 'firstname', 'lastname' ), array_keys( $custom_fields ) );
-		$custom_field_names = array_keys( array_intersect_key( array_flip( $custom_field_names ), array_flip( $d['column'] ) ) );
+		$custom_field_names = array_keys( array_intersect_key( array_flip( $custom_field_names ), array_flip( $post_data['column'] ) ) );
 
 		if ( $useheader ) {
 
 			$row = array();
 
-			foreach ( $d['column'] as $col ) {
+			foreach ( $post_data['column'] as $col ) {
 				switch ( $col ) {
 					case '_number':
 						$val = '#';
@@ -1054,6 +1061,7 @@ class MailsterManage {
 					case '_listnames':
 						$val = esc_html__( 'Lists', 'mailster' );
 						break;
+					case 'tags':
 					case '_tagnames':
 						$val = esc_html__( 'Tags', 'mailster' );
 						break;
@@ -1100,7 +1108,7 @@ class MailsterManage {
 						}
 				}
 
-				$val = apply_filters( 'mailster_export_heading_' . $col, $val, $d );
+				$val = apply_filters( 'mailster_export_heading_' . $col, $val, $post_data );
 
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
@@ -1122,13 +1130,18 @@ class MailsterManage {
 
 		$offset = $offset * $limit;
 
-		$all_fields = isset( $d['column'] ) ? (array) $d['column'] : array();
+		$all_fields = isset( $post_data['column'] ) ? (array) $post_data['column'] : array();
 		$special    = array_values( preg_grep( '/^_/', $all_fields ) );
 		$fields     = preg_grep( '/^(?!_)/', $all_fields );
 		$meta       = array_values( array_intersect( $fields, mailster( 'subscribers' )->get_meta_keys( true ) ) );
 		$fields     = array_values( array_diff( $fields, $meta ) );
-		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
-
+		$conditions = false;
+		if ( isset( $_POST['conditions'] ) ) {
+			wp_parse_str( $_POST['conditions'], $conditions );
+			if ( isset( $conditions['conditions'] ) ) {
+				$conditions = $conditions['conditions'];
+			}
+		}
 		if ( in_array( '_statuscode', $special ) ) {
 			$fields[] = 'status';
 		}
@@ -1143,11 +1156,11 @@ class MailsterManage {
 			'offset'     => $offset,
 		);
 
-		$args = apply_filters( 'mailster_export_args', $args, $d );
+		$args = apply_filters( 'mailster_export_args', $args, $post_data );
 
 		$data = mailster( 'subscribers' )->query( $args );
 
-		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
+		if ( isset( $post_data['nolists'] ) && $post_data['nolists'] ) {
 
 			$args['lists'] = -1;
 			$data2         = mailster( 'subscribers' )->query( $args );
@@ -1179,6 +1192,7 @@ class MailsterManage {
 						$list = mailster( 'subscribers' )->get_lists( $user->ID );
 						$val  = implode( ', ', wp_list_pluck( $list, 'name' ) );
 						break;
+					case 'tags':
 					case '_tagnames':
 						$tag = mailster( 'subscribers' )->get_tags( $user->ID );
 						$val = implode( ', ', wp_list_pluck( $tag, 'name' ) );
@@ -1214,7 +1228,7 @@ class MailsterManage {
 						$val = preg_replace( "/[\n\r]/", ' ', $val );
 				}
 
-				$val = apply_filters( 'mailster_export_field_' . $key, $val, $d );
+				$val = apply_filters( 'mailster_export_field_' . $key, $val, $post_data );
 
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
@@ -1388,16 +1402,24 @@ class MailsterManage {
 			wp_send_json_error( $return );
 		}
 
-		parse_str( $_POST['data'], $args );
+		wp_parse_str( $_POST['data'], $post_data );
 
-		unset( $args['_wpnonce'], $args['_wp_http_referer'] );
+		$conditions = false;
+		if ( isset( $_POST['conditions'] ) ) {
+			wp_parse_str( $_POST['conditions'], $conditions );
+			if ( isset( $conditions['conditions'] ) ) {
+				$conditions = $conditions['conditions'];
+			}
+		}
+		$post_data['conditions'] = $conditions;
+		unset( $post_data['_wpnonce'], $post_data['_wp_http_referer'] );
 
 		$schedule = isset( $_POST['schedule'] );
 
 		if ( $schedule ) {
 			$name = basename( $_POST['name'] );
 			$jobs = get_option( 'mailster_manage_jobs', array() );
-			$key  = md5( serialize( $args ) );
+			$key  = md5( serialize( $post_data ) );
 
 			if ( isset( $jobs[ $key ] ) ) {
 				$return['msg'] = sprintf( esc_html__( 'The same job has been scheduled already (%s).', 'mailster' ), $jobs[ $key ]['name'] );
@@ -1410,7 +1432,7 @@ class MailsterManage {
 					'name'      => $name,
 					'timestamp' => time(),
 				),
-				$args
+				$post_data
 			);
 
 			update_option( 'mailster_manage_jobs', $jobs );
@@ -1420,7 +1442,7 @@ class MailsterManage {
 
 		}
 
-		if ( ! ( $count = $this->delete_contacts( $args ) ) ) {
+		if ( ! ( $count = $this->delete_contacts( $post_data ) ) ) {
 			$return['msg'] = esc_html__( 'No Subscribers removed.', 'mailster' );
 			wp_send_json_error( $return );
 

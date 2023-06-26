@@ -315,8 +315,7 @@ mailster = (function (mailster, $, window, document) {
 		return string.trim();
 	};
 
-	mailster.util.isWebkit =
-		'WebkitAppearance' in document.documentElement.style;
+	mailster.util.isWebkit = 'WebkitAppearance' in document.documentElement.style;
 	mailster.util.isMozilla = /firefox/i.test(navigator.userAgent);
 	mailster.util.isMSIE = /msie|trident/i.test(navigator.userAgent);
 	mailster.util.isTouchDevice = 'ontouchstart' in document.documentElement;
@@ -332,9 +331,7 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	mailster.util.top = function () {
-		return (
-			$('html,body').scrollTop() || document.scrollingElement.scrollTop
-		);
+		return $('html,body').scrollTop() || document.scrollingElement.scrollTop;
 	};
 
 	mailster.util.scroll = function (pos, callback, speed) {
@@ -379,9 +376,14 @@ mailster = (function (mailster, $, window, document) {
 			rect.top + offset >= 0 &&
 			rect.top - offset <=
 				(window.innerHeight ||
-					document.documentElement
-						.clientHeight) /*or $(window).height() */
+					document.documentElement.clientHeight) /*or $(window).height() */
 		);
+	};
+
+	mailster.util.unique = function (array) {
+		return array.filter(function (value, index, self) {
+			return self.indexOf(value) === index;
+		});
 	};
 
 	mailster.util.debounce = function (callback, delay) {

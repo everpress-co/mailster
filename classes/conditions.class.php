@@ -265,6 +265,7 @@ class MailsterConditions {
 	}
 
 	private function get_value_fields( $type ) {
+
 		$fields = array();
 
 		switch ( $type ) {
@@ -987,14 +988,14 @@ class MailsterConditions {
 		$value_arr = array_filter( $value_arr );
 		$value_arr = array_unique( $value_arr );
 		?>
-		s<input type="text" class="regular-text token-helper" data-token="true" value="<?php echo esc_attr( implode( ', ', $value_arr ) ); ?>">
-		<div class="token-helper-fields" data-inputname="<?php echo esc_attr( $inputname ); ?>">
-		<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled value="">
+		<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value skip-value" disabled value="">
+		<input type="text" class="regular-text token-helper" data-token="true" value="<?php echo esc_attr( implode( ', ', $value_arr ) ); ?>">
+		<div class="token-helper-fields">
 		<?php foreach ( $value_arr as $key => $value ) : ?>
 			<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value" disabled value="<?php echo esc_attr( $value ); ?>">
 		<?php endforeach; ?>
 		</div>
-		<div class="description"><?php esc_html_e( 'Separate tags with commas', 'mailster' ); ?></div>
+		<p class="description"><?php esc_html_e( 'Separate tags with commas', 'mailster' ); ?></p>
 		<?php
 	}
 
