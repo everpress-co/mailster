@@ -106,7 +106,7 @@ class MailsterWorkflow {
 		$this->entry = $this->exists();
 
 		if ( ! $this->entry ) {
-			error_log( print_r( 'NOT IN DATABSE!', true ) );
+			$this->log( 'NOT IN DATABSE!' );
 			return false;
 		}
 
@@ -129,7 +129,7 @@ class MailsterWorkflow {
 		$this->is_search = ! is_null( $this->step );
 		if ( ! $this->is_search ) {
 
-			error_log( print_r( 'RUN JOB ' . $this->trigger . ' for ' . $this->subscriber . ' on ' . $this->trigger, true ) );
+			$this->log( 'RUN JOB ' . $this->trigger . ' for ' . $this->subscriber . ' on ' . $this->trigger );
 
 			$enddate = get_post_meta( $this->workflow->ID, 'enddate', true );
 
@@ -137,7 +137,7 @@ class MailsterWorkflow {
 			if ( $enddate && time() > strtotime( $enddate ) ) {
 
 				$this->delete();
-				error_log( print_r( 'END DATE REACHED', true ) );
+				$this->log( 'END DATE REACHED' );
 				return false;
 			}
 		}
@@ -147,7 +147,7 @@ class MailsterWorkflow {
 			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
 				if ( ! mailster( 'subscribers' )->get( $this->subscriber ) ) {
 					$this->delete();
-					error_log( print_r( 'SUBSCRIBER DOES NOT EXIST', true ) );
+					$this->log( 'SUBSCRIBER DOES NOT EXIST' );
 					return false;
 				}
 			}
@@ -335,7 +335,7 @@ class MailsterWorkflow {
 
 			// got it => continue
 			$this->is_search = false;
-			error_log( print_r( 'FOUND  ' . $step['id'] . ' for ' . $this->subscriber, true ) );
+			$this->log( 'FOUND  ' . $step['id'] . ' for ' . $this->subscriber );
 
 		}
 
@@ -430,15 +430,15 @@ class MailsterWorkflow {
 			return new WP_Error( 'info', 'No Action for this step . ', $step );
 		}
 
-		error_log( print_r( 'ACTION ' . $step['attr']['action'] . ' ' . $step['id'] . ' for ' . $this->subscriber, true ) );
+		$this->log( 'ACTION ' . $step['attr']['action'] . ' ' . $step['id'] . ' for ' . $this->subscriber );
 
 		switch ( $action ) {
 			case 'nothing':
-				error_log( print_r( 'nothing', true ) );
+				$this->log( 'nothing' );
 				break;
 
 			case 'update_field':
-				error_log( print_r( 'update_field', true ) );
+				$this->log( 'update_field' );
 				$remove_old = false;
 				$field      = isset( $attr['field'] ) ? $attr['field'] : null;
 				$value      = isset( $attr['value'] ) ? $attr['value'] : '';
@@ -484,7 +484,7 @@ class MailsterWorkflow {
 				break;
 
 			case 'add_list':
-				error_log( print_r( 'add_list', true ) );
+				$this->log( 'add_list' );
 				if ( isset( $attr['lists'] ) ) {
 					$remove_old  = false;
 					$doubleoptin = isset( $attr['doubleoptin'] ) && $attr['doubleoptin'];
@@ -493,16 +493,16 @@ class MailsterWorkflow {
 				break;
 
 			case 'remove_list':
-				error_log( print_r( 'remove_list', true ) );
+				$this->log( 'remove_list' );
 				if ( isset( $attr['lists'] ) ) {
 					mailster( 'lists' )->unassign_subscribers( $attr['lists'], $this->subscriber );
 				}
 				break;
 
 			case 'add_tag':
-				error_log( print_r( 'add_tag', true ) );
-				error_log( print_r( $attr['tags'], true ) );
-				error_log( print_r( $this->subscriber, true ) );
+				$this->log( 'add_tag' );
+				$this->log( $attr['tags'] );
+				$this->log( $this->subscriber );
 				if ( isset( $attr['tags'] ) ) {
 					mailster( 'tags' )->assign_subscribers( $attr['tags'], $this->subscriber );
 				}
@@ -510,14 +510,14 @@ class MailsterWorkflow {
 				break;
 
 			case 'remove_tag':
-				error_log( print_r( 'remove_tag', true ) );
+				$this->log( 'remove_tag' );
 				if ( isset( $attr['tags'] ) ) {
 					mailster( 'tags' )->unassign_subscribers( $attr['tags'], $this->subscriber );
 				}
 				break;
 
 			case 'unsubscribe':
-				error_log( print_r( 'unsubscribe', true ) );
+				$this->log( 'unsubscribe' );
 
 				mailster( 'subscribers' )->unsubscribe( $this->subscriber, $this->workflow->ID, 'UNSUBSCRIBED FROM WORKFLOW' );
 				break;
@@ -603,7 +603,7 @@ class MailsterWorkflow {
 
 			if ( $repeat !== -1 ) {
 				if ( ! $this->check_count( $repeat ) ) {
-					error_log( print_r( 'LIMIT REACHED', true ) );
+					$this->log( 'LIMIT REACHED' );
 					$this->delete();
 					return false;
 
@@ -617,13 +617,13 @@ class MailsterWorkflow {
 				$conditions = $this->sanitize_conditions( $conditions );
 
 				if ( $this->subscriber && ! mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
-					error_log( print_r( 'CONDITION NOT PASSED ! ! ', true ) );
+					$this->log( 'CONDITION NOT PASSED ! ! ' );
 					$this->delete();
 					return false;
 				}
 			}
 
-			error_log( print_r( 'use TRIGGER ' . $this->trigger, true ) );
+			$this->log( 'use TRIGGER ' . $this->trigger );
 
 			switch ( $this->trigger ) {
 				case 'date':
@@ -698,7 +698,7 @@ class MailsterWorkflow {
 					$timestamp = strtotime( date( 'Y-m-d H:i', $timestamp ) );
 
 					if ( time() < $timestamp ) {
-						error_log( print_r( 'TIMESTAMP NOT REACHED', true ) );
+						$this->log( 'TIMESTAMP NOT REACHED' );
 						return false;
 					}
 
@@ -760,7 +760,7 @@ class MailsterWorkflow {
 		// skip that as it's the current step
 		if ( $step['id'] !== $this->args['step'] ) {
 			$this->args['step'] = $step['id'];
-			error_log( print_r( 'EMAIL ' . $step['id'] . ' for ' . $this->subscriber, true ) );
+			$this->log( 'EMAIL ' . $step['id'] . ' for ' . $this->subscriber );
 
 			// use the timestamp from the step for correct queueing
 			$timestamp = $this->entry->timestamp ? $this->entry->timestamp : time();
@@ -806,7 +806,7 @@ class MailsterWorkflow {
 
 	private function stop( $step ) {
 
-		error_log( print_r( 'STOP ' . $step['id'] . ' for ' . $this->subscriber, true ) );
+		$this->log( 'STOP ' . $step['id'] . ' for ' . $this->subscriber );
 		$this->finish();
 
 		// return false to not execute the next step
@@ -847,11 +847,11 @@ class MailsterWorkflow {
 
 			case 'day':
 				if ( $date < time() ) {
-					error_log( print_r( 'WE ARE IN THE FUTURE', true ) );
+					$this->log( 'WE ARE IN THE FUTURE' );
 					$timestamp = strtotime( 'tomorrow ' . date( 'H:i', $date ) );
 
 				} else {
-					error_log( print_r( 'WE ARE IN THE PAST', true ) );
+					$this->log( 'WE ARE IN THE PAST' );
 					$timestamp = strtotime( 'today ' . date( 'H:i', $date ) );
 				}
 				break;
@@ -934,12 +934,12 @@ class MailsterWorkflow {
 
 		// no need to schedule if in the past
 		if ( $timestamp <= time() ) {
-			error_log( print_r( 'SKIP DELAY', true ) );
+			$this->log( 'SKIP DELAY' );
 			return true;
 		}
 		$this->update( array( 'timestamp' => $timestamp ) );
 
-		error_log( print_r( 'SCHEDULE DELAY ' . $step['id'] . ' for ' . human_time_diff( $timestamp ), true ) );
+		$this->log( 'SCHEDULE DELAY ' . $step['id'] . ' for ' . human_time_diff( $timestamp ) );
 
 		// return false to stop the queue from processing
 		return false;
@@ -956,10 +956,10 @@ class MailsterWorkflow {
 
 		if ( mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
 			$use = $step['yes'];
-			error_log( print_r( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber, true ) );
+			$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
 		} else {
 			$use = $step['no'];
-			error_log( print_r( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber, true ) );
+			$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
 		}
 
 		return $this->do_steps( $use );
@@ -987,7 +987,7 @@ class MailsterWorkflow {
 	}
 
 	private function finish( array $args = array() ) {
-		error_log( print_r( 'FINISHED', true ) );
+		$this->log( 'FINISHED' );
 
 		$args = wp_parse_args(
 			$args,
@@ -996,9 +996,16 @@ class MailsterWorkflow {
 				'step'      => null,
 				'timestamp' => null,
 				'error'     => '',
-			),
+			)
 		);
 
 		$this->update( $args );
+	}
+
+
+	private function log( $str ) {
+		if ( WP_DEBUG ) {
+			$this->log( $str );
+		}
 	}
 }

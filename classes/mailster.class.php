@@ -2301,7 +2301,7 @@ class Mailster {
 				`finished` int(11) NOT NULL DEFAULT 0,
 				`try` int(11) NOT NULL DEFAULT 0,
 				`error` varchar(190) NULL DEFAULT '',
-				`context` longtext,
+				`context` longtext NULL DEFAULT '',
 				UNIQUE KEY id (`subscriber_id`,`workflow_id`,`finished`),
 				KEY `subscriber_id` (`subscriber_id`),
 				KEY `workflow_id` (`workflow_id`),
