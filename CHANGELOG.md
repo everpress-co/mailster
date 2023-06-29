@@ -1,3 +1,7 @@
+### Version 3.3.6 (2023-06-29)
+
+- fixed: lists are not confirmed if user choice is enabled.
+
 ### Version 3.3.5 (2023-06-14)
 
 - updated: Freemius SDK to 2.5.9

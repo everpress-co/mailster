@@ -187,6 +187,10 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.6
+
+- fixed: lists are not confirmed if user choice is enabled.
+
 ### 3.3.5
 
 - updated: Freemius SDK to 2.5.9
