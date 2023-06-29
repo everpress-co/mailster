@@ -607,8 +607,8 @@ class MailsterFrontpage {
 				if ( isset( $extra[0] ) ) {
 					$list_ids = $extra;
 				} else {
-					// confirm all lists
-					$list_ids = null;
+					// confirm all assigned lists
+					$list_ids = mailster( 'subscribers' )->get_lists( $subscriber_id, true );
 				}
 
 				$target = ! empty( $form->confirmredirect ) ? $form->confirmredirect : $this->get_link( 'subscribe', $subscriber->hash, true );
