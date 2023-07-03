@@ -93,7 +93,7 @@ class MailsterLicense {
 
 		// add collected actions
 		foreach ( $this->actions as $action ) {
-			call_user_func_array( array( mailster_freemius(), 'add_action' ), $filter );
+			call_user_func_array( array( mailster_freemius(), 'add_action' ), $action );
 		}
 
 		// migrate
