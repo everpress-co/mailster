@@ -5,6 +5,7 @@ const SoundsPlugin = require('sounds-webpack-plugin');
 
 const path = require('path');
 const cp = require('child_process');
+const { sprintf } = require('@wordpress/i18n');
 
 const soundPluginOptions = {
 	sounds: {
@@ -12,57 +13,30 @@ const soundPluginOptions = {
 	},
 	notifications: {
 		done(stats) {
+			let message;
 			if (stats.hasErrors()) {
-				this.play('warning');
-				let message = stats.compilation.errors
-					.join('')
-					.split('\n')
-					.slice(-1)
-					.join('');
-
-				if (message) {
-					message = message.replace(path.resolve(__dirname), '');
-				}
-
-				var ls = cp.spawnSync(
-					'osascript',
-					[
-						'-e',
-						'display notification "' +
-							message +
-							'" with title "Error while building" subtitle "More text"',
-					],
-					{
-						encoding: 'utf8',
-					}
-				);
+				message = stats.compilation.errors;
+			} else if (stats.hasWarnings()) {
+				message = stats.compilation.warnings;
+			} else {
+				return;
 			}
-			if (stats.hasWarnings()) {
-				this.play('warning');
 
-				let message = stats.compilation.warnings
-					.join('')
-					.split('\n')
-					.slice(-1)
-					.join('');
+			this.play('warning');
 
-				if (message) {
-					message = message.replace(path.resolve(__dirname), '');
-				}
+			message = message
+				.join('')
+				.split('\n')
+				.slice(-1)
+				.join('')
+				.replace(path.resolve(__dirname), '');
 
-				var ls = cp.spawnSync(
-					'osascript',
-					[
-						'-e',
-						'display notification "' +
-							message +
-							'" with title "Error while building" subtitle "More text"',
-					],
-					{
-						encoding: 'utf8',
-					}
-				);
-			}
+			message = sprintf(
+				'display notification "%s" with title "Error while building" subtitle "More text"',
+				message
+			);
+
+			cp.spawnSync('osascript', ['-e', message], { encoding: 'utf8' });
 		},
 	},
 };
