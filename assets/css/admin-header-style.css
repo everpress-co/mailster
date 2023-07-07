@@ -109,6 +109,11 @@
 	color: #757575;
 	white-space: nowrap;
 }
+#mailster-admin-toolbar .panel-tabs .panel-tab.trial {
+	font-weight: bold;
+	width: auto;
+	padding: 0 2em;
+}
 .mailster-help {
 	display: inline-block;
 	width: 18px;

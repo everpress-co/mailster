@@ -69,7 +69,19 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 		printf( '<a class="mailster-tab%s" href="%s">%s</a>', $tab['classes'], esc_url( $tab['url'] ), strip_tags( $tab['text'] ) );
 	}
 	?>
+	
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
+		<?php if ( mailster()->is_trial() ) : ?>
+			<?php
+			$license = mailster_freemius()->_get_license();
+			$expires = $license ? strtotime( $license->expiration ) : 0;
+			$offset  = $expires - time();
+			$display = $offset > 86400 ? human_time_diff( $expires ) : date( 'H:i:s', strtotime( 'midnight' ) + $offset - 1 );
+			?>
+			<?php if ( $expires ) : ?>
+				<button type="button" role="tab" aria-controls="activity-panel-help" id="mailster-trial-upgrade" class="panel-tab trial" href="<?php echo mailster_freemius()->get_upgrade_url( 123, true ); ?>" data-offset=<?php echo absint( $offset ); ?> title="<?php esc_attr_e( 'Upgrade now!', 'mailster' ); ?>"><?php printf( esc_html__( 'Your trial expires in %s', 'mailster' ), '<span>' . $display . '</span>' ); ?></button>
+			<?php endif; ?>
+		<?php endif; ?>
 		<button type="button" role="tab" aria-controls="activity-panel-help" id="mailster-admin-help" class="panel-tab" href="<?php echo mailster_freemius()->contact_url(); ?>">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M12 4.75a7.25 7.25 0 100 14.5 7.25 7.25 0 000-14.5zM3.25 12a8.75 8.75 0 1117.5 0 8.75 8.75 0 01-17.5 0zM12 8.75a1.5 1.5 0 01.167 2.99c-.465.052-.917.44-.917 1.01V14h1.5v-.845A3 3 0 109 10.25h1.5a1.5 1.5 0 011.5-1.5zM11.25 15v1.5h1.5V15h-1.5z"fill="#757575"></path></svg>
 			<?php esc_html_e( 'Help', 'mailster' ); ?>

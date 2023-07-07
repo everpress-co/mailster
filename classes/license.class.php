@@ -39,7 +39,7 @@ class MailsterLicense {
 					'is_org_compliant' => false,
 					'trial'            => array(
 						'days'               => 14,
-						'is_require_payment' => true,
+						'is_require_payment' => false,
 					),
 					'menu'             => array(
 						'slug'        => 'edit.php?post_type=newsletter',
@@ -97,7 +97,7 @@ class MailsterLicense {
 
 		// add collected actions
 		foreach ( $this->actions as $action ) {
-			call_user_func_array( array( mailster_freemius(), 'add_action' ), $filter );
+			call_user_func_array( array( mailster_freemius(), 'add_action' ), $action );
 		}
 
 		// migrate
