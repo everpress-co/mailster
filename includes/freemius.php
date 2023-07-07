@@ -154,7 +154,7 @@ function mailster_freemius_checkout_url( $url ) {
 			'checkout'      => 'true',
 			'plan_id'       => 20734,
 			'billing_cycle' => 'annual',
-			'pricing_id'    => 23881,
+			// 'pricing_id'    => 23881,
 			'post_type'     => 'newsletter',
 		),
 		admin_url( 'edit.php' )

@@ -1,3 +1,9 @@
+### Version 3.3.7 (2023-07-07)
+
+- fixed: missing action on migration process
+- improved: handling of trials
+- updated: Freemius SDK to 2.5.10
+
 ### Version 3.3.6 (2023-06-29)
 
 - fixed: lists are not confirmed if user choice is enabled.

@@ -62,7 +62,7 @@ class MailsterUpdate {
 
 	public function ask_for_auto_update() {
 
-		if ( function_exists( 'wp_is_auto_update_enabled_for_type' ) && ! $this->is_auto_update() && mailster()->is_verified() ) {
+		if ( ! $this->is_auto_update() && mailster()->is_verified() ) {
 
 			$link = sprintf( '<a href="%s" class="button button-primary">%s</a>', $this->get_auto_update_url(), esc_html__( 'Enable Auto Updates for Mailster', 'mailster' ) );
 
@@ -85,6 +85,10 @@ class MailsterUpdate {
 	}
 
 	public function is_auto_update() {
+
+		if ( ! function_exists( 'wp_is_auto_update_enabled_for_type' ) ) {
+			return false;
+		}
 
 		$auto_updates = (array) get_site_option( 'auto_update_plugins', array() );
 

@@ -3019,6 +3019,12 @@ class Mailster {
 		return version_compare( $new_version, MAILSTER_VERSION, '>' );
 	}
 
+	public function is_trial() {
+
+		return mailster_freemius()->is_trial();
+
+	}
+
 	public function is_outdated() {
 
 		// make sure Mailster has been updated within a year
