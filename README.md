@@ -187,6 +187,12 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.7
+
+- fixed: missing action on migration process
+- improved: handling of trials
+- updated: Freemius SDK to 2.5.10
+
 ### 3.3.6
 
 - fixed: lists are not confirmed if user choice is enabled.
