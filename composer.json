@@ -1,7 +1,7 @@
 {
 	"require": {
 		"inlinestyle/inlinestyle": "1.*",
-		"freemius/wordpress-sdk": "^2.5.3",
+		"freemius/wordpress-sdk": "^2.5.10",
 		"composer/installers": "^1.12.0",
 		"php": "^7.0 || ^8.0",
 		"dantsu/php-osm-static-api": "^0.4.0"
