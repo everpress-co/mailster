@@ -24,7 +24,8 @@ class MailsterBlockForms {
 
 		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
 
-		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
+		// add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
+		add_action( 'enqueue_block_assets', array( &$this, 'block_script_styles' ), 1 );
 
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 9999, 2 );
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
@@ -466,7 +467,7 @@ class MailsterBlockForms {
 		$args['post_status'] = 'publish';
 
 		if ( ! is_user_logged_in() ) {
-			$args['post_status'] = 'publish';
+			// $args['post_status'] = 'publish';
 		}
 
 		$query = new WP_Query( $args );
