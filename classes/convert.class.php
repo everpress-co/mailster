@@ -102,12 +102,6 @@ class MailsterConvert {
 			return $migrate;
 		}
 
-		if ( $response->data->org_support ) {
-			update_option( 'mailster_support', strtotime( $response->data->org_support ) );
-		} else {
-			update_option( 'mailster_support', -1 );
-		}
-
 		$response->migrate = $migrate;
 
 		return $response;

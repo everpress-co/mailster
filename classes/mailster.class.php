@@ -2914,28 +2914,6 @@ class Mailster {
 				return null;
 			}
 
-			$license = mailster_freemius()->_get_license();
-
-			if ( $license ) {
-				$plan_name = mailster_freemius()->get_plan_name();
-				$support   = get_option( 'mailster_support' );
-				if ( 'legacy' === $plan_name ) {
-					if ( $support == -1 ) {
-						$info->support = false;
-					} elseif ( $support ) {
-						$info->support = $support;
-					}
-				} else {
-					if ( $license->expiration ) {
-						$info->support = max( strtotime( $license->expiration ), $support );
-					} else {
-						$info->support = true;
-					}
-				}
-			} else {
-				$info->support = true;
-			}
-
 			$info->update = false;
 			if ( ! isset( $info->new_version ) ) {
 				$info->new_version = MAILSTER_VERSION;
@@ -2996,48 +2974,6 @@ class Mailster {
 
 	}
 
-	private function get_verfied_object( $force = false ) {
-
-		$old = get_option( '_transient_mailster_verified', array() );
-
-		if ( false === ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
-
-			$license       = $this->license();
-			$license_email = $this->email();
-			$license_user  = $this->username();
-			if ( ! $license || ! $license_email || ! $license_user ) {
-				return false;
-			}
-
-			$verified = null;
-			$recheck  = DAY_IN_SECONDS;
-
-			$result = UpdateCenterPlugin::verify( 'mailster' );
-			if ( ! is_wp_error( $result ) ) {
-				$verified = $result;
-			} else {
-				switch ( $result->get_error_code() ) {
-					case 500: // Internal Server Error
-					case 503: // Service Unavailable
-					case 'http_err':
-						$recheck  = 900;
-						$verified = $old;
-						break;
-					case 681: // no user assigned
-						break;
-				}
-			}
-
-			if ( null !== $verified ) {
-				mailster_remove_notice( 'verify' );
-			}
-
-			set_transient( 'mailster_verified', $verified, $recheck );
-
-		}
-
-		return $verified;
-	}
 
 	public function has_update( $force = false ) {
 
@@ -3082,9 +3018,9 @@ class Mailster {
 
 	public function support( $force = false ) {
 
-		$support = $this->plugin_info( 'support', $force );
+		$plan = mailster_freemius()->get_plan();
 
-		return $support;
+		return ! empty( $plan->support_email );
 
 	}
 
