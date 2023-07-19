@@ -28,6 +28,9 @@
 	background-size: 25px !important;
 	padding-top: 10% !important;
 }
+.block-editor-block-preview__content-iframe .editor-styles-wrapper {
+	padding-top: 0% !important;
+}
 .post-type-mailster-form .edit-post-visual-editor__content-area > div,
 .block-editor-page.post-content-style-boxed .editor-styles-wrapper:before {
 	background: none !important;
@@ -212,4 +215,7 @@
 	.editor-post-title__input {
 	all: unset !important;
 	font-size: 30px !important;
+}
+.mailster-block-forms-post-status-info-select-template button {
+	justify-content: center;
 }
