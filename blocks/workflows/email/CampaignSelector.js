@@ -8,7 +8,13 @@
 
 import { sprintf, __ } from '@wordpress/i18n';
 
-import { Button, PanelRow, SelectControl, Modal } from '@wordpress/components';
+import {
+	Button,
+	PanelRow,
+	SelectControl,
+	Modal,
+	Flex,
+} from '@wordpress/components';
 
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect, select, dispatch } from '@wordpress/data';

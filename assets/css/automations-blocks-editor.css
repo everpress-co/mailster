@@ -34,7 +34,7 @@
 #canvas-toolbar .zoom-level .components-range-control__wrapper {
 	min-width: 100px;
 }
-.edit-post-visual-editor {
+.editor-styles-wrapper {
 	background-color: skyblue;
 	_transition: min-width 0.2s linear;
 	transform-origin: center;
@@ -46,30 +46,30 @@
 .editor-styles-wrapper {
 	padding-bottom: 10em !important;
 }
-.edit-post-visual-editor.dragging {
+.is-root-container.dragging {
 	cursor: grabbing;
 	cursor: -moz-grabbing;
 	cursor: -webkit-grabbing;
 }
-.edit-post-visual-editor.dragging .block-editor-block-contextual-toolbar {
+.is-root-container.dragging .block-editor-block-contextual-toolbar {
 	display: none;
 }
-.edit-post-visual-editor {
+.editor-styles-wrapper {
 	min-width: 1000px;
 }
-.edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions) {
+.editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions) {
 	min-width: 1000px;
 }
-.edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions
+.editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions) {
 	min-width: 1600px;
 }
-.edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions
+.editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions) {
 	min-width: 2800px;
 }
-.edit-post-visual-editor:has(.wp-block-mailster-workflow-conditions
+.editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions) {
@@ -765,6 +765,11 @@
 	min-height: 100vh;
 	min-width: 100vw;
 	margin: 0;
+}
+.mailster-edit-campaign-modal
+	.components-modal__content
+	> div:not(.components-modal__header) {
+	height: 100%;
 }
 .mailster-edit-campaign-modal .components-modal__content {
 	padding: 0;

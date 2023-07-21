@@ -1821,7 +1821,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.editable &&
 		mailster.events.push('documentReady', function () {
-			mailster.conditions.init();
+			mailster.conditions && mailster.conditions.init();
 		});
 
 	mailster.events.push('documentReady', function () {

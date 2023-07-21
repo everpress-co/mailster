@@ -21,7 +21,7 @@ class MailsterAutomations {
 		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'beta_badge' ) );
 
-		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
+		add_action( 'enqueue_block_assets', array( &$this, 'block_script_styles' ), 1 );
 
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), PHP_INT_MAX, 2 );
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
