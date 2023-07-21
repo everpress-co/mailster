@@ -8,11 +8,8 @@
 
 import { __ } from '@wordpress/i18n';
 
-import { Spinner, CheckboxControl, BaseControl } from '@wordpress/components';
-
-import { useSelect, select } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
-import { ButtonGroup, Button, RangeControl } from '@wordpress/components';
+import { select } from '@wordpress/data';
+import { Button, RangeControl } from '@wordpress/components';
 import { plus, reset, home } from '@wordpress/icons';
 import { useEffect, useState } from '@wordpress/element';
 
@@ -37,8 +34,10 @@ export default function CanvasToolbar() {
 		}
 	);
 
+	const [root, setRoot] = useState(null);
+
 	const setZoom = (zoom) => {
-		document.querySelector('.is-root-container').style.scale = `${zoom}%`;
+		if (root) root.style.scale = `${zoom}%`;
 		setZoomVar(zoom);
 	};
 
@@ -53,21 +52,31 @@ export default function CanvasToolbar() {
 	};
 
 	useEffect(() => {
-		var offsetX, offsetY, posX, posY, frame, pane, root;
+		var offsetX, offsetY, posX, posY, frame, canvasRoot;
+
+		const editorCanvas = document.querySelector('iframe[name="editor-canvas"]');
 
 		wp.domReady(() => {
 			frame = document.querySelector('.interface-interface-skeleton__content');
-			pane = document.querySelector('.edit-post-visual-editor');
-			root = document.querySelector('.is-root-container');
-			pane.addEventListener('mousedown', startDrag);
+			const int = setInterval(() => {
+				canvasRoot = editorCanvas
+					? editorCanvas.contentWindow.document.querySelector(
+							'.is-root-container'
+					  )
+					: document.querySelector('.is-root-container');
+				if (canvasRoot) {
+					clearInterval(int);
+					setRoot(canvasRoot);
+
+					canvasRoot.addEventListener('mousedown', startDrag);
+				}
+			}, 10);
 
 			if (position.x) frame.scrollLeft = position.x;
 			if (position.y) frame.scrollTop = position.y;
 		});
 
 		function startDrag(e) {
-			e = e || window.event;
-
 			if (
 				!e.target.classList.contains('is-root-container') &&
 				!e.target.classList.contains('editor-styles-wrapper') &&
@@ -75,17 +84,17 @@ export default function CanvasToolbar() {
 			) {
 				return;
 			}
+
 			// get the mouse cursor position at startup:
 			posX = e.clientX || e.changedTouches[0].clientX;
 			posY = e.clientY || e.changedTouches[0].clientY;
 
-			pane.classList.add('dragging');
-			document.addEventListener('mouseup', stopDrag);
-			document.addEventListener('mousemove', drag);
+			canvasRoot.classList.add('dragging');
+			canvasRoot.addEventListener('mouseup', stopDrag);
+			canvasRoot.addEventListener('mousemove', drag);
 		}
 
 		function drag(e) {
-			e = e || window.event;
 			e.preventDefault();
 			// calculate the new cursor position:
 			offsetX = e.clientX - posX;
@@ -98,12 +107,12 @@ export default function CanvasToolbar() {
 			frame.scrollTop = Math.max(0, frame.scrollTop - offsetY);
 		}
 
-		function stopDrag() {
+		function stopDrag(e) {
 			// stop moving when mouse button is released:
 
-			pane.classList.remove('dragging');
-			document.removeEventListener('mouseup', stopDrag);
-			document.removeEventListener('mousemove', drag);
+			canvasRoot.classList.remove('dragging');
+			canvasRoot.removeEventListener('mouseup', stopDrag);
+			canvasRoot.removeEventListener('mousemove', drag);
 
 			setPosition({
 				x: frame.scrollLeft,
@@ -116,8 +125,8 @@ export default function CanvasToolbar() {
 	const MIN = 20;
 
 	useEffect(() => {
-		document.querySelector('.is-root-container').style.scale = `${zoom}%`;
-	}, [zoom]);
+		if (root) root.style.scale = `${zoom}%`;
+	}, [zoom, root]);
 
 	const resetPane = () => {
 		const triggers = document.querySelector(
@@ -129,6 +138,10 @@ export default function CanvasToolbar() {
 				block: 'center',
 				behavior: 'smooth',
 			});
+		setPosition({
+			x: 0,
+			y: 0,
+		});
 		setZoom(100);
 	};
 
@@ -172,18 +185,5 @@ export default function CanvasToolbar() {
 				label={__('Zoom In', 'mailster')}
 			/>
 		</>
-	);
-
-	return (
-		<ButtonGroup>
-			{zoom}
-			<Button
-				variant="secondary"
-				icon={plus}
-				onClick={zoomIn}
-				shortcut={__('asda', 'asdas')}
-			/>
-			<Button variant="secondary" icon={reset} onClick={zoomOut} />
-		</ButtonGroup>
 	);
 }
