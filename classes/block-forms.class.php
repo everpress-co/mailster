@@ -1558,8 +1558,6 @@ class MailsterBlockForms {
 				$output = do_shortcode( $output );
 			}
 
-			error_log( print_r( 'PROCESSS', true ) );
-
 			// save to cache
 			if ( $use_cache ) {
 				// update_post_meta( $form->ID, $cache_key, $output );
@@ -1617,8 +1615,6 @@ class MailsterBlockForms {
 		if ( preg_match_all( '/<(input|select|textarea)(.*?)name="(.*?)"(.*?)(aria-required="true")(.*?)>/', $form->post_content, $matches, PREG_SET_ORDER, 0 ) ) {
 
 			$fields = array_values( array_unique( wp_list_pluck( $matches, 3 ) ) );
-
-			error_log( print_r( $fields, true ) );
 
 			return $fields;
 
