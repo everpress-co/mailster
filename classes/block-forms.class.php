@@ -45,6 +45,17 @@ class MailsterBlockForms {
 
 		add_shortcode( 'newsletter_block_form', array( &$this, 'shortcode' ) );
 
+		add_filter( 'embed_html', array( &$this, 'embed_html' ), PHP_INT_MAX, 4 );
+
+	}
+
+
+	public function embed_html( $output, $post, $width, $height ) {
+
+		// TODO: check if this works on forms
+		$output = sprintf( '<iframe src="%s" sandbox="allow-scripts allow-forms" width="%d" height="%d"></iframe>', get_permalink( $post ), $width, $height );
+
+		return $output;
 	}
 
 
@@ -536,7 +547,7 @@ class MailsterBlockForms {
 			'rewrite'             => array(
 				'with_front' => false,
 				'feeds'      => false,
-				'slug'       => 'newsletter-form',
+				'slug'       => 'mailster-form',
 			),
 			// 'capabilities'        => $capabilities,
 			'show_in_rest'        => true,
@@ -1410,7 +1421,7 @@ class MailsterBlockForms {
 				if ( $background['fixed'] ) {
 					$custom_styles['::before'][] = 'background-attachment:fixed';
 				}
-				if ( $background['fullscreen'] ) {
+				if ( isset( $background['fullscreen'] ) && $background['fullscreen'] ) {
 					$args['classes'][]           = 'mailster-form-is-fullscreen';
 					$custom_styles['::before'][] = 'position:fixed';
 					$custom_styles['::before'][] = 'background-size:cover';
