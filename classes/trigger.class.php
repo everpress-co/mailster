@@ -114,8 +114,6 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'list_add' );
 
-			error_log( print_r( $options, true ) );
-
 			if ( ! isset( $options['lists'] ) ) {
 				continue;
 			}

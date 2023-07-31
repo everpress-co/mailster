@@ -571,11 +571,6 @@ class MailsterWorkflow {
 			'body'       => json_encode( $data ),
 		);
 
-		error_log( print_r( $data, true ) );
-		error_log( print_r( $this, true ) );
-
-		// return new WP_Error( 'error', 'No Webhook defined', $step );
-
 		$response = wp_remote_request( $url, $args );
 
 		if ( is_wp_error( $response ) ) {
