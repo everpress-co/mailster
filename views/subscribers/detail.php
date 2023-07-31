@@ -239,8 +239,8 @@ if ( $is_new ) {
 
 						case 'textarea':
 							?>
-						<li><?php echo $subscriber->{$field} ? '<p>' . nl2br( strip_tags( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
-						<li><textarea id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]" class="regular-text input"><?php echo esc_textarea( $subscriber->{$field} ); ?></textarea></li>
+						<li><?php echo $subscriber->{$field} ? '<p>' . nl2br( strip_tags( $subscriber->{$field} ) ) . '</p>' : esc_html( $subscriber->{$field} ) . '&nbsp;'; ?></li>
+						<li><textarea id="mailster_data_<?php echo esc_attr( $field ); ?>" name="mailster_data[<?php echo $field; ?>]" class="regular-text input"><?php echo esc_textarea( $subscriber->{$field} ); ?></textarea></li>
 							<?php
 							break;
 

@@ -3,7 +3,8 @@
 class MailsterWorkflow {
 
 
-	private $ID;
+	private $entry;
+	private $is_search;
 	private $workflow;
 	private $trigger;
 	private $subscriber;
@@ -549,10 +550,14 @@ class MailsterWorkflow {
 
 		$data = array(
 			'workflow'   => array(
-				'id'   => $this->workflow->ID,
-				'name' => $this->workflow->post_title,
+				'id'        => $this->workflow->ID,
+				'step'      => $step['attr']['id'],
+				'name'      => $this->workflow->post_title,
+				'trigger'   => $this->entry->trigger,
+				'added'     => $this->entry->added,
+				'timestamp' => $this->entry->timestamp,
+				'try'       => $this->entry->try,
 			),
-			'step'       => $step['attr'],
 			'subscriber' => $subscriber,
 		);
 
@@ -566,9 +571,19 @@ class MailsterWorkflow {
 			'body'       => json_encode( $data ),
 		);
 
+		error_log( print_r( $data, true ) );
+		error_log( print_r( $this, true ) );
+
+		// return new WP_Error( 'error', 'No Webhook defined', $step );
+
 		$response = wp_remote_request( $url, $args );
-		$code     = wp_remote_retrieve_response_code( $response );
-		$body     = wp_remote_retrieve_body( $response );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		// $body     = wp_remote_retrieve_body( $response );
 
 		// if the webhook failed try again after 5 minutes and stop the workflow after 3 tries
 		if ( $code !== 200 ) {
@@ -576,10 +591,6 @@ class MailsterWorkflow {
 			$error = get_status_header_desc( $code );
 			return new WP_Error( 'error', $error, $step );
 
-		}
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
 		}
 
 		return true;
@@ -1005,7 +1016,7 @@ class MailsterWorkflow {
 
 	private function log( $str ) {
 		if ( WP_DEBUG ) {
-			$this->log( $str );
+			error_log( print_r( $str, true ) );
 		}
 	}
 }

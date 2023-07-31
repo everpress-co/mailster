@@ -50,8 +50,13 @@
 
 					<?php foreach ( $groups as $id => $label ) : ?>
 						<?php
+
 						// skip if group is empty
-						$group_fields = $this->{$id};
+						if ( method_exists( $this, 'get_' . $id ) ) {
+							$group_fields = $this->{'get_' . $id}();
+						} else {
+							$group_fields = apply_filters( 'mailster_conditions_type_' . $id, array() );
+						}
 						if ( empty( $group_fields ) ) {
 							continue;
 						}
@@ -70,7 +75,7 @@
 
 			<div class="mailster-conditions-operator-fields">
 
-				<?php foreach ( $this->all_operators as $type => $operators ) : ?>
+				<?php foreach ( $this->get_all_operators() as $type => $operators ) : ?>
 				<div class="mailster-conditions-operator-field mailster-conditions-operator-field-<?php echo esc_attr( $type ); ?>" data-fields=",<?php echo implode( ',', $this->get_operator_fields( $type ) ); ?>,">
 					<select name="<?php echo esc_attr( $inputname ); ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php if ( count( $operators ) == 1 ) : ?>
@@ -106,7 +111,7 @@
 
 			<div class="mailster-conditions-value-fields">
 
-				<?php foreach ( $this->all_value_fields as $value_field ) : ?>
+				<?php foreach ( $this->get_all_value_fields() as $value_field ) : ?>
 					<?php $this->render_value_field( $value_field, $value, $inputname . '[' . $i . '][' . $j . '][value]' ); ?>
 				<?php endforeach ?>
 					

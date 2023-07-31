@@ -533,7 +533,7 @@ class MailsterActions {
 					return $action_counts[ $campaign_id ];
 				}
 
-				return isset( $action_counts[ $campaign_id ][ $action ] ) ? $action_counts[ $campaign_id ][ $action ] : null;
+				return isset( $action_counts[ $campaign_id ][ $action ] ) ? $action_counts[ $campaign_id ][ $action ] : 0;
 			}
 
 			$campaign_ids = array( (int) $campaign_id );
@@ -729,7 +729,7 @@ class MailsterActions {
 					return $action_counts[ $subscriber_id ];
 				}
 
-				return isset( $action_counts[ $subscriber_id ][ $action ] ) ? $action_counts[ $subscriber_id ][ $action ] : null;
+				return isset( $action_counts[ $subscriber_id ][ $action ] ) ? $action_counts[ $subscriber_id ][ $action ] : 0;
 			}
 
 			$subscriber_ids = array( $subscriber_id );
@@ -847,7 +847,7 @@ class MailsterActions {
 					return $action_counts[ $list_id ];
 				}
 
-				return isset( $action_counts[ $list_id ][ $action ] ) ? $action_counts[ $list_id ][ $action ] : null;
+				return isset( $action_counts[ $list_id ][ $action ] ) ? (int) $action_counts[ $list_id ][ $action ] : 0;
 			}
 
 			$list_ids = array( $list_id );
@@ -867,15 +867,15 @@ class MailsterActions {
 
 		$default = $this->get_default_action_counts();
 
-		$sql = "SELECT b.list_id AS ID, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_action_$table AS a";
+		$sql = "SELECT lists_subscriber.list_id AS ID, COUNT(DISTINCT action_table.subscriber_id) AS count, SUM(action_table.count) AS total FROM {$wpdb->prefix}mailster_action_$table AS action_table";
 
-		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS b ON a.subscriber_id = b.subscriber_id WHERE a.campaign_id != 0";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscriber ON action_table.subscriber_id = lists_subscriber.subscriber_id WHERE action_table.campaign_id != 0";
 
-			$sql .= ' AND b.list_id = ' . (int) $list_id;
+		$sql .= ' AND lists_subscriber.list_id = %d';
 
-		$sql .= ' GROUP BY b.list_id, a.campaign_id';
+		$sql .= ' GROUP BY lists_subscriber.list_id, action_table.campaign_id';
 
-		$result = $wpdb->get_results( $sql );
+		$result = $wpdb->get_results( $wpdb->prepare( $sql, $list_id ) );
 
 		foreach ( $list_ids as $id ) {
 			if ( ! isset( $action_counts[ $id ] ) ) {
@@ -920,7 +920,7 @@ class MailsterActions {
 			return isset( $action_counts[ $list_id ] ) ? $action_counts[ $list_id ] : $default;
 		}
 
-		return isset( $action_counts[ $list_id ] ) && isset( $action_counts[ $list_id ][ $action ] ) ? $action_counts[ $list_id ][ $action ] : 0;
+		return isset( $action_counts[ $list_id ] ) && isset( $action_counts[ $list_id ][ $action ] ) ? (int) $action_counts[ $list_id ][ $action ] : 0;
 
 	}
 

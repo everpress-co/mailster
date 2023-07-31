@@ -5,26 +5,28 @@ class MailsterConditions {
 
 	private $workflow_campaigns = array();
 
-	public function __construct( $conditions = array() ) {
+	// used for caching
+	private $_custom_fields;
+	private $_custom_date_fields;
+	private $_fields;
+	private $_time_fields;
+	private $_meta_fields;
+	private $_wp_user_meta;
+	private $_campaign_related;
+	private $_list_related;
+	private $_tag_related;
+	private $_all_operators;
+	private $_all_value_fields;
+	private $_operators;
+	private $_simple_operators;
+	private $_string_operators;
+	private $_bool_operators;
+	private $_date_operators;
+	private $_relative_date_operators;
+	private $_special_campaigns;
+	private $_field_operator;
 
-	}
-
-
-	public function __get( $name ) {
-
-		if ( ! isset( $this->$name ) ) {
-			if ( method_exists( $this, 'get_' . $name ) ) {
-				$this->{$name} = $this->{'get_' . $name}();
-				$this->{$name} = apply_filters( 'mailster_conditions_type_' . $name, $this->{$name} );
-			} else {
-				$this->{$name} = array();
-				$this->{$name} = apply_filters( 'mailster_conditions_type_' . $name, $this->{$name} );
-			}
-		}
-
-		return $this->{$name};
-
-	}
+	public function __construct() {   }
 
 
 	public function check( $conditions, $subscribers ) {
@@ -108,13 +110,13 @@ class MailsterConditions {
 		$query = null;
 		$data  = array();
 
-		if ( isset( $this->fields[ $field ] ) ) {
+		if ( isset( $this->get_fields()[ $field ] ) ) {
 			$query = 'SELECT DISTINCT ' . esc_sql( $field ) . " AS %s FROM {$wpdb->prefix}mailster_subscribers WHERE 1";
 			if ( $search ) {
 				$query .= ' AND ' . esc_sql( $field ) . " LIKE '%%%s%%'";
 			}
 			$data = array();
-		} elseif ( isset( $this->custom_fields[ $field ] ) ) {
+		} elseif ( isset( $this->get_custom_fields()[ $field ] ) ) {
 			$custom_fields = mailster()->get_custom_fields();
 
 			$type = isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ]['type'] : 'text';
@@ -131,17 +133,17 @@ class MailsterConditions {
 					}
 					break;
 			}
-		} elseif ( isset( $this->tag_related[ $field ] ) ) {
+		} elseif ( isset( $this->get_tag_related()[ $field ] ) ) {
 			$query = "SELECT DISTINCT `name` FROM {$wpdb->prefix}mailster_tags WHERE `ID` != %s"; // artifical for prepared statement
 			if ( $search ) {
 				$query .= " AND `name` LIKE '%%%s%%'";
 			}
-		} elseif ( isset( $this->meta_fields[ $field ] ) ) {
+		} elseif ( isset( $this->get_meta_fields()[ $field ] ) ) {
 			$query = "SELECT DISTINCT meta_value FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s";
 			if ( $search ) {
 				$query .= " AND meta_value LIKE '%%%s%%'";
 			}
-		} elseif ( isset( $this->wp_user_meta[ $field ] ) ) {
+		} elseif ( isset( $this->get_wp_user_meta()[ $field ] ) ) {
 			$query = "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s";
 			if ( $search ) {
 				$query .= " AND meta_value LIKE '%%%s%%'";
@@ -173,63 +175,81 @@ class MailsterConditions {
 	}
 
 	private function get_custom_fields() {
-		$custom_fields = mailster()->get_custom_fields();
-		$custom_fields = wp_parse_args(
-			(array) $custom_fields,
-			array(
-				'email'     => array( 'name' => mailster_text( 'email' ) ),
-				'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
-				'lastname'  => array( 'name' => mailster_text( 'lastname' ) ),
-				'rating'    => array( 'name' => esc_html__( 'Rating', 'mailster' ) ),
-			)
-		);
+		if ( ! $this->_custom_fields ) {
+			$this->_custom_fields = mailster()->get_custom_fields();
+			$this->_custom_fields = wp_parse_args(
+				(array) $this->_custom_fields,
+				array(
+					'email'     => array( 'name' => mailster_text( 'email' ) ),
+					'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
+					'lastname'  => array( 'name' => mailster_text( 'lastname' ) ),
+					'rating'    => array( 'name' => esc_html__( 'Rating', 'mailster' ) ),
+				)
+			);
 
-		return wp_list_pluck( $custom_fields, 'name' );
+			$this->_custom_fields = wp_list_pluck( $this->_custom_fields, 'name' );
+			$this->_custom_fields = apply_filters( 'mailster_conditions_type_custom_fields', $this->_custom_fields );
+		}
+
+		return $this->_custom_fields;
 
 	}
 
 	private function get_custom_date_fields() {
-		$custom_date_fields = mailster()->get_custom_date_fields( true );
+		if ( ! $this->_custom_date_fields ) {
+			$this->_custom_date_fields = mailster()->get_custom_date_fields( true );
+			$this->_custom_date_fields = apply_filters( 'mailster_conditions_type_custom_date_fields', $this->_custom_date_fields );
+		}
 
-		return $custom_date_fields;
+		return $this->_custom_date_fields;
 	}
 
 	private function get_fields() {
-		$fields = array(
-			'id'         => esc_html__( 'ID', 'mailster' ),
-			'hash'       => esc_html__( 'Hash', 'mailster' ),
-			'email'      => esc_html__( 'Email', 'mailster' ),
-			'wp_id'      => esc_html__( 'WordPress User ID', 'mailster' ),
-			'added'      => esc_html__( 'Added', 'mailster' ),
-			'updated'    => esc_html__( 'Updated', 'mailster' ),
-			'signup'     => esc_html__( 'Signup', 'mailster' ),
-			'confirm'    => esc_html__( 'Confirm', 'mailster' ),
-			'ip_signup'  => esc_html__( 'IP on Signup', 'mailster' ),
-			'ip_confirm' => esc_html__( 'IP on confirmation', 'mailster' ),
-		);
 
-		return $fields;
+		if ( ! $this->_fields ) {
+			$this->_fields = array(
+				'id'         => esc_html__( 'ID', 'mailster' ),
+				'hash'       => esc_html__( 'Hash', 'mailster' ),
+				'email'      => esc_html__( 'Email', 'mailster' ),
+				'wp_id'      => esc_html__( 'WordPress User ID', 'mailster' ),
+				'added'      => esc_html__( 'Added', 'mailster' ),
+				'updated'    => esc_html__( 'Updated', 'mailster' ),
+				'signup'     => esc_html__( 'Signup', 'mailster' ),
+				'confirm'    => esc_html__( 'Confirm', 'mailster' ),
+				'ip_signup'  => esc_html__( 'IP on Signup', 'mailster' ),
+				'ip_confirm' => esc_html__( 'IP on confirmation', 'mailster' ),
+			);
+			$this->_fields = apply_filters( 'mailster_conditions_type_fields', $this->_fields );
+		}
+
+		return $this->_fields;
 	}
 
 	private function get_time_fields() {
-		$time_fields = array( 'added', 'updated', 'signup', 'confirm', 'gdpr' );
-		$time_fields = array_merge( $time_fields, $this->custom_date_fields );
+		if ( ! $this->_time_fields ) {
+			$this->_time_fields = array( 'added', 'updated', 'signup', 'confirm', 'gdpr' );
+			$this->_time_fields = array_merge( $this->_time_fields, $this->get_custom_date_fields() );
+			$this->_time_fields = apply_filters( 'mailster_conditions_type_time_fields', $this->_time_fields );
+		}
 
-		return $time_fields;
+		return $this->_time_fields;
 	}
 
 	private function get_meta_fields() {
-		$meta_fields = array(
-			'form'       => esc_html__( 'Form', 'mailster' ),
-			'referer'    => esc_html__( 'Referer', 'mailster' ),
-			'client'     => esc_html__( 'Client', 'mailster' ),
-			'clienttype' => esc_html__( 'Clienttype', 'mailster' ),
-			'geo'        => esc_html__( 'Location', 'mailster' ),
-			'lang'       => esc_html__( 'Language', 'mailster' ),
-			'gdpr'       => esc_html__( 'GDPR Consent given', 'mailster' ),
-		);
+		if ( ! $this->_meta_fields ) {
+			$this->_meta_fields = array(
+				'form'       => esc_html__( 'Form', 'mailster' ),
+				'referer'    => esc_html__( 'Referer', 'mailster' ),
+				'client'     => esc_html__( 'Client', 'mailster' ),
+				'clienttype' => esc_html__( 'Clienttype', 'mailster' ),
+				'geo'        => esc_html__( 'Location', 'mailster' ),
+				'lang'       => esc_html__( 'Language', 'mailster' ),
+				'gdpr'       => esc_html__( 'GDPR Consent given', 'mailster' ),
+			);
+			$this->_meta_fields = apply_filters( 'mailster_conditions_type_meta_fields', $this->_meta_fields );
+		}
 
-		return $meta_fields;
+		return $this->_meta_fields;
 	}
 
 	private function get_operator_fields( $type ) {
@@ -249,10 +269,10 @@ class MailsterConditions {
 				$fields = array( 'wp_capabilities', 'status', 'form', 'clienttype', 'geo' );
 				break;
 			case 'date_operators':
-				$fields = $this->time_fields;
+				$fields = $this->get_time_fields();
 				break;
 			case 'relative_date_operators':
-				$fields = $this->time_fields;
+				$fields = $this->get_time_fields();
 				break;
 			case 'hidden':
 				$fields = array( '_sent', '_sent__not_in', '_open', '_open__not_in', '_click', '_click__not_in', '_click_link', '_click_link__not_in', '_lists__not_in', '_lists__in', '_tags__not_in', '_tags__in', '_tagname__not_in', '_tagname__in' );
@@ -273,7 +293,7 @@ class MailsterConditions {
 				$fields = array( 'id', 'wp_id' );
 				break;
 			case 'timestamp':
-				$fields = $this->time_fields;
+				$fields = $this->get_time_fields();
 				break;
 			case 'campaign_related':
 				$fields = array( '_sent', '_sent__not_in', '_open', '_open__not_in', '_click', '_click__not_in' );
@@ -299,158 +319,226 @@ class MailsterConditions {
 	}
 
 	private function get_wp_user_meta() {
-		$wpuser_meta_fields = mailster( 'helper' )->get_wpuser_meta_fields();
-		$wpuser_meta_fields = array_combine( $wpuser_meta_fields, $wpuser_meta_fields );
+		if ( ! $this->_wp_user_meta ) {
+			$wpuser_meta_fields = mailster( 'helper' )->get_wpuser_meta_fields();
+			$wpuser_meta_fields = array_combine( $wpuser_meta_fields, $wpuser_meta_fields );
 
-		$wp_user_meta = wp_parse_args(
-			$wpuser_meta_fields,
-			array(
-				'wp_user_level'   => esc_html__( 'User Level', 'mailster' ),
-				'wp_capabilities' => esc_html__( 'User Role', 'mailster' ),
-			)
-		);
+			$this->_wp_user_meta = wp_parse_args(
+				$wpuser_meta_fields,
+				array(
+					'wp_user_level'   => esc_html__( 'User Level', 'mailster' ),
+					'wp_capabilities' => esc_html__( 'User Role', 'mailster' ),
+				)
+			);
 
-		// removing custom fields from wp user meta to prevent conflicts
-		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), array_keys( $this->custom_fields ) ) );
+			// removing custom fields from wp user meta to prevent conflicts
+			$this->_wp_user_meta = array_diff( $this->_wp_user_meta, array_merge( array( 'email' ), array_keys( $this->get_custom_fields() ) ) );
 
-		return $wp_user_meta;
+			$this->_wp_user_meta = apply_filters( 'mailster_conditions_type_wp_user_meta', $this->_wp_user_meta );
+		}
+
+		return $this->_wp_user_meta;
 	}
 
 
 	private function get_campaign_related() {
-		return array(
-			'_sent'               => esc_html__( 'has received', 'mailster' ),
-			'_sent__not_in'       => esc_html__( 'has not received', 'mailster' ),
-			'_open'               => esc_html__( 'has received and opened', 'mailster' ),
-			'_open__not_in'       => esc_html__( 'has received but not opened', 'mailster' ),
-			'_click'              => esc_html__( 'has received and clicked', 'mailster' ),
-			'_click__not_in'      => esc_html__( 'has received and not clicked', 'mailster' ),
-			'_click_link'         => esc_html__( 'clicked link', 'mailster' ),
-			'_click_link__not_in' => esc_html__( 'didn\'t clicked link', 'mailster' ),
-		);
+		if ( ! $this->_campaign_related ) {
+			$this->_campaign_related = array(
+				'_sent'               => esc_html__( 'has received', 'mailster' ),
+				'_sent__not_in'       => esc_html__( 'has not received', 'mailster' ),
+				'_open'               => esc_html__( 'has received and opened', 'mailster' ),
+				'_open__not_in'       => esc_html__( 'has received but not opened', 'mailster' ),
+				'_click'              => esc_html__( 'has received and clicked', 'mailster' ),
+				'_click__not_in'      => esc_html__( 'has received and not clicked', 'mailster' ),
+				'_click_link'         => esc_html__( 'clicked link', 'mailster' ),
+				'_click_link__not_in' => esc_html__( 'didn\'t clicked link', 'mailster' ),
+			);
+			$this->_campaign_related = apply_filters( 'mailster_conditions_type_campaign_related', $this->_campaign_related );
+		}
+
+		return $this->_campaign_related;
 
 	}
 	private function get_list_related() {
-		return array(
-			'_lists__in'     => esc_html__( 'is in List', 'mailster' ),
-			'_lists__not_in' => esc_html__( 'is not in List', 'mailster' ),
-		);
+		if ( ! $this->_list_related ) {
+			$this->_list_related = array(
+				'_lists__in'     => esc_html__( 'is in List', 'mailster' ),
+				'_lists__not_in' => esc_html__( 'is not in List', 'mailster' ),
+			);
+			$this->_list_related = apply_filters( 'mailster_conditions_type_list_related', $this->_list_related );
+		}
+
+		return $this->_list_related;
 
 	}
 	private function get_tag_related() {
-		return array(
-			'_tagname__in'     => esc_html__( 'has Tag', 'mailster' ),
-			'_tagname__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
-			'_tags__in'        => esc_html__( 'has Tag (deprecated)', 'mailster' ),
-			'_tags__not_in'    => esc_html__( 'doesn\'t have Tag  (deprecated)', 'mailster' ),
-		);
+		if ( ! $this->_tag_related ) {
+			$this->_tag_related = array(
+				'_tagname__in'     => esc_html__( 'has Tag', 'mailster' ),
+				'_tagname__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
+				'_tags__in'        => esc_html__( 'has Tag (deprecated)', 'mailster' ),
+				'_tags__not_in'    => esc_html__( 'doesn\'t have Tag  (deprecated)', 'mailster' ),
+			);
+			$this->_tag_related = apply_filters( 'mailster_conditions_type_tag_related', $this->_tag_related );
+		}
+
+		return $this->_tag_related;
 
 	}
 	private function get_all_operators() {
-		return array(
-			'operators'        => array( $this->operators ),
-			'simple_operators' => array( $this->simple_operators ),
-			'string_operators' => array( $this->string_operators ),
-			'bool_operators'   => array( $this->bool_operators ),
-			'date_operators'   => array(
-				esc_html__( 'absolute', 'mailster' ) => $this->date_operators,
-				esc_html__( 'relative', 'mailster' ) => $this->relative_date_operators,
-			),
-		);
+		if ( ! $this->_all_operators ) {
+			$this->_all_operators = array(
+				'operators'        => array( $this->get_operators() ),
+				'simple_operators' => array( $this->get_simple_operators() ),
+				'string_operators' => array( $this->get_string_operators() ),
+				'bool_operators'   => array( $this->get_bool_operators() ),
+				'date_operators'   => array(
+					esc_html__( 'absolute', 'mailster' ) => $this->get_date_operators(),
+					esc_html__( 'relative', 'mailster' ) => $this->get_relative_date_operators(),
+				),
+			);
+
+			$this->_all_operators = apply_filters( 'mailster_conditions_type_all_operators', $this->_all_operators );
+		}
+
+		return $this->_all_operators;
+
 	}
 	private function get_all_value_fields() {
-		return array(
-			'text',
-			'integer',
-			'rating',
-			'timestamp',
-			'wp_capabilities',
-			'status',
-			'form',
-			'clienttype',
-			'campaign_related',
-			'list_related',
-			'tag_related',
-			'tagname_related',
-			'click_related',
-			'geo',
-		);
+		if ( ! $this->_all_value_fields ) {
+			$this->_all_value_fields = array(
+				'text',
+				'integer',
+				'rating',
+				'timestamp',
+				'wp_capabilities',
+				'status',
+				'form',
+				'clienttype',
+				'campaign_related',
+				'list_related',
+				'tag_related',
+				'tagname_related',
+				'click_related',
+				'geo',
+			);
+			$this->_all_value_fields = apply_filters( 'mailster_conditions_type_all_value_fields', $this->_all_value_fields );
+		}
+
+		return $this->_all_value_fields;
+
 	}
 	private function get_operators() {
-		return array(
-			'is'               => esc_html__( 'is', 'mailster' ),
-			'is_not'           => esc_html__( 'is not', 'mailster' ),
-			'contains'         => esc_html__( 'contains', 'mailster' ),
-			'contains_not'     => esc_html__( 'doesn\'t contain', 'mailster' ),
-			'begin_with'       => esc_html__( 'begins with', 'mailster' ),
-			'end_with'         => esc_html__( 'ends with', 'mailster' ),
-			'is_greater'       => esc_html__( 'is greater', 'mailster' ),
-			'is_smaller'       => esc_html__( 'is smaller', 'mailster' ),
-			'is_greater_equal' => esc_html__( 'is greater or equal', 'mailster' ),
-			'is_smaller_equal' => esc_html__( 'is smaller or equal', 'mailster' ),
-			'pattern'          => esc_html__( 'match regex pattern', 'mailster' ),
-			'not_pattern'      => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
-		);
+		if ( ! $this->_operators ) {
+			$this->_operators = array(
+				'is'               => esc_html__( 'is', 'mailster' ),
+				'is_not'           => esc_html__( 'is not', 'mailster' ),
+				'contains'         => esc_html__( 'contains', 'mailster' ),
+				'contains_not'     => esc_html__( 'doesn\'t contain', 'mailster' ),
+				'begin_with'       => esc_html__( 'begins with', 'mailster' ),
+				'end_with'         => esc_html__( 'ends with', 'mailster' ),
+				'is_greater'       => esc_html__( 'is greater', 'mailster' ),
+				'is_smaller'       => esc_html__( 'is smaller', 'mailster' ),
+				'is_greater_equal' => esc_html__( 'is greater or equal', 'mailster' ),
+				'is_smaller_equal' => esc_html__( 'is smaller or equal', 'mailster' ),
+				'pattern'          => esc_html__( 'match regex pattern', 'mailster' ),
+				'not_pattern'      => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
+			);
+			$this->_operators = apply_filters( 'mailster_conditions_type_operators', $this->_operators );
+		}
+
+		return $this->_operators;
 
 	}
 	private function get_simple_operators() {
-		return array(
-			'is'               => esc_html__( 'is', 'mailster' ),
-			'is_not'           => esc_html__( 'is not', 'mailster' ),
-			'is_greater'       => esc_html__( 'is greater', 'mailster' ),
-			'is_smaller'       => esc_html__( 'is smaller', 'mailster' ),
-			'is_greater_equal' => esc_html__( 'is greater or equal', 'mailster' ),
-			'is_smaller_equal' => esc_html__( 'is smaller or equal', 'mailster' ),
-		);
+		if ( ! $this->_simple_operators ) {
+			$this->_simple_operators = array(
+				'is'               => esc_html__( 'is', 'mailster' ),
+				'is_not'           => esc_html__( 'is not', 'mailster' ),
+				'is_greater'       => esc_html__( 'is greater', 'mailster' ),
+				'is_smaller'       => esc_html__( 'is smaller', 'mailster' ),
+				'is_greater_equal' => esc_html__( 'is greater or equal', 'mailster' ),
+				'is_smaller_equal' => esc_html__( 'is smaller or equal', 'mailster' ),
+			);
+			$this->_simple_operators = apply_filters( 'mailster_conditions_type_simple_operators', $this->_simple_operators );
+		}
+
+		return $this->_simple_operators;
 
 	}
 	private function get_string_operators() {
-		return array(
-			'is'           => esc_html__( 'is', 'mailster' ),
-			'is_not'       => esc_html__( 'is not', 'mailster' ),
-			'contains'     => esc_html__( 'contains', 'mailster' ),
-			'contains_not' => esc_html__( 'doesn\'t contain', 'mailster' ),
-			'begin_with'   => esc_html__( 'begins with', 'mailster' ),
-			'end_with'     => esc_html__( 'ends with', 'mailster' ),
-			'pattern'      => esc_html__( 'match regex pattern', 'mailster' ),
-			'not_pattern'  => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
-		);
+		if ( ! $this->_string_operators ) {
+			$this->_string_operators = array(
+				'is'           => esc_html__( 'is', 'mailster' ),
+				'is_not'       => esc_html__( 'is not', 'mailster' ),
+				'contains'     => esc_html__( 'contains', 'mailster' ),
+				'contains_not' => esc_html__( 'doesn\'t contain', 'mailster' ),
+				'begin_with'   => esc_html__( 'begins with', 'mailster' ),
+				'end_with'     => esc_html__( 'ends with', 'mailster' ),
+				'pattern'      => esc_html__( 'match regex pattern', 'mailster' ),
+				'not_pattern'  => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
+			);
+			$this->_string_operators = apply_filters( 'mailster_conditions_type_string_operators', $this->_string_operators );
+		}
+
+		return $this->_string_operators;
 
 	}
 	private function get_bool_operators() {
-		return array(
-			'is'     => esc_html__( 'is', 'mailster' ),
-			'is_not' => esc_html__( 'is not', 'mailster' ),
-		);
+		if ( ! $this->_bool_operators ) {
+			$this->_bool_operators = array(
+				'is'     => esc_html__( 'is', 'mailster' ),
+				'is_not' => esc_html__( 'is not', 'mailster' ),
+			);
+			$this->_bool_operators = apply_filters( 'mailster_conditions_type_bool_operators', $this->_bool_operators );
+		}
+
+		return $this->_bool_operators;
 
 	}
 	private function get_date_operators() {
-		return array(
-			'is'               => esc_html__( 'is on the', 'mailster' ),
-			'is_not'           => esc_html__( 'is not on the', 'mailster' ),
-			'is_greater'       => esc_html__( 'is after', 'mailster' ),
-			'is_smaller'       => esc_html__( 'is before', 'mailster' ),
-			'is_greater_equal' => esc_html__( 'is after or on the', 'mailster' ),
-			'is_smaller_equal' => esc_html__( 'is before or on the', 'mailster' ),
-		);
+		if ( ! $this->_date_operators ) {
+			$this->_date_operators = array(
+				'is'               => esc_html__( 'is on the', 'mailster' ),
+				'is_not'           => esc_html__( 'is not on the', 'mailster' ),
+				'is_greater'       => esc_html__( 'is after', 'mailster' ),
+				'is_smaller'       => esc_html__( 'is before', 'mailster' ),
+				'is_greater_equal' => esc_html__( 'is after or on the', 'mailster' ),
+				'is_smaller_equal' => esc_html__( 'is before or on the', 'mailster' ),
+			);
+			$this->_date_operators = apply_filters( 'mailster_conditions_type_date_operators', $this->_date_operators );
+		}
+
+		return $this->_date_operators;
 
 	}
 	private function get_relative_date_operators() {
-		return array(
-			'is_older'   => esc_html__( 'is older than', 'mailster' ),
-			'is_younger' => esc_html__( 'is younger than', 'mailster' ),
-		);
+		if ( ! $this->_relative_date_operators ) {
+			$this->_relative_date_operators = array(
+				'is_older'   => esc_html__( 'is older than', 'mailster' ),
+				'is_younger' => esc_html__( 'is younger than', 'mailster' ),
+			);
+			$this->_relative_date_operators = apply_filters( 'mailster_conditions_type_relative_date_operators', $this->_relative_date_operators );
+		}
+
+		return $this->_relative_date_operators;
 
 	}
+
 	private function get_special_campaigns() {
-		return array(
-			'_last_5'       => esc_html__( 'Any of the Last 5 Campaigns', 'mailster' ),
-			'_last_7day'    => esc_html__( 'Any Campaigns within the last 7 days', 'mailster' ),
-			'_last_1month'  => esc_html__( 'Any Campaigns within the last 1 month', 'mailster' ),
-			'_last_3month'  => esc_html__( 'Any Campaigns within the last 3 months', 'mailster' ),
-			'_last_6month'  => esc_html__( 'Any Campaigns within the last 6 months', 'mailster' ),
-			'_last_12month' => esc_html__( 'Any Campaigns within the last 12 months', 'mailster' ),
-		);
+		if ( ! $this->_special_campaigns ) {
+			$this->_special_campaigns = array(
+				'_last_5'       => esc_html__( 'Any of the Last 5 Campaigns', 'mailster' ),
+				'_last_7day'    => esc_html__( 'Any Campaigns within the last 7 days', 'mailster' ),
+				'_last_1month'  => esc_html__( 'Any Campaigns within the last 1 month', 'mailster' ),
+				'_last_3month'  => esc_html__( 'Any Campaigns within the last 3 months', 'mailster' ),
+				'_last_6month'  => esc_html__( 'Any Campaigns within the last 6 months', 'mailster' ),
+				'_last_12month' => esc_html__( 'Any Campaigns within the last 12 months', 'mailster' ),
+			);
+			$this->_special_campaigns = apply_filters( 'mailster_conditions_type_special_campaigns', $this->_special_campaigns );
+		}
+
+		return $this->_special_campaigns;
 
 	}
 	private function get_field_operator( $operator ) {
@@ -502,9 +590,9 @@ class MailsterConditions {
 		$opening_quote = esc_html_x( '&#8220;', 'opening curly double quote', 'mailster' );
 		$closing_quote = esc_html_x( '&#8221;', 'closing curly double quote', 'mailster' );
 
-		if ( isset( $this->campaign_related[ $field ] ) ) {
+		if ( isset( $this->get_campaign_related()[ $field ] ) ) {
 
-			$special_campaign_keys = array_keys( $this->special_campaigns );
+			$special_campaign_keys = array_keys( $this->get_special_campaigns() );
 
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
@@ -528,12 +616,12 @@ class MailsterConditions {
 
 				$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $value ) ) . $closing_quote;
 			}
-		} elseif ( isset( $this->list_related[ $field ] ) ) {
+		} elseif ( isset( $this->get_list_related()[ $field ] ) ) {
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
 			}
 			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_list_title' ), $value ) ) . $closing_quote;
-		} elseif ( isset( $this->tag_related[ $field ] ) ) {
+		} elseif ( isset( $this->get_tag_related()[ $field ] ) ) {
 			if ( ! is_array( $value ) ) {
 				$value = array_map( 'trim', explode( ',', $value ) );
 			}
@@ -596,8 +684,8 @@ class MailsterConditions {
 			return esc_html__( 'Any Campaign', 'mailster' );
 		}
 
-		if ( isset( $this->special_campaigns[ $post ] ) ) {
-			return $this->special_campaigns[ $post ];
+		if ( isset( $this->get_special_campaigns()[ $post ] ) ) {
+			return $this->get_special_campaigns()[ $post ];
 		}
 
 		$title = get_the_title( $post );
@@ -633,37 +721,37 @@ class MailsterConditions {
 
 		switch ( $type ) {
 			case 'field':
-				if ( isset( $this->fields[ $string ] ) ) {
-					return $this->fields[ $string ];
+				if ( isset( $this->get_fields()[ $string ] ) ) {
+					return $this->get_fields()[ $string ];
 				}
-				if ( isset( $this->custom_fields[ $string ] ) ) {
-					return $this->custom_fields[ $string ];
+				if ( isset( $this->get_custom_fields()[ $string ] ) ) {
+					return $this->get_custom_fields()[ $string ];
 				}
-				if ( isset( $this->campaign_related[ $string ] ) ) {
-					return $this->campaign_related[ $string ];
+				if ( isset( $this->get_campaign_related()[ $string ] ) ) {
+					return $this->get_campaign_related()[ $string ];
 				}
-				if ( isset( $this->list_related[ $string ] ) ) {
-					return $this->list_related[ $string ];
+				if ( isset( $this->get_list_related()[ $string ] ) ) {
+					return $this->get_list_related()[ $string ];
 				}
-				if ( isset( $this->tag_related[ $string ] ) ) {
-					return $this->tag_related[ $string ];
+				if ( isset( $this->get_tag_related()[ $string ] ) ) {
+					return $this->get_tag_related()[ $string ];
 				}
-				if ( isset( $this->meta_fields[ $string ] ) ) {
-					return $this->meta_fields[ $string ];
+				if ( isset( $this->get_meta_fields()[ $string ] ) ) {
+					return $this->get_meta_fields()[ $string ];
 				}
-				if ( isset( $this->wp_user_meta[ $string ] ) ) {
-					return $this->wp_user_meta[ $string ];
+				if ( isset( $this->get_wp_user_meta()[ $string ] ) ) {
+					return $this->get_wp_user_meta()[ $string ];
 				}
 				break;
 			case 'operator':
-				if ( in_array( $field, $this->time_fields ) && isset( $this->date_operators[ $string ] ) ) {
-					return $this->date_operators[ $string ];
+				if ( in_array( $field, $this->get_time_fields() ) && isset( $this->get_date_operators()[ $string ] ) ) {
+					return $this->get_date_operators()[ $string ];
 				}
-				if ( in_array( $field, $this->time_fields ) && isset( $this->relative_date_operators[ $string ] ) ) {
-					return $this->relative_date_operators[ $string ];
+				if ( in_array( $field, $this->get_time_fields() ) && isset( $this->get_relative_date_operators()[ $string ] ) ) {
+					return $this->get_relative_date_operators()[ $string ];
 				}
-				if ( isset( $this->operators[ $string ] ) ) {
-					return $this->operators[ $string ];
+				if ( isset( $this->get_operators()[ $string ] ) ) {
+					return $this->get_operators()[ $string ];
 				}
 				if ( 'AND' == $string ) {
 					return esc_html__( 'and', 'mailster' );
@@ -673,7 +761,7 @@ class MailsterConditions {
 				}
 				break;
 			case 'value':
-				if ( in_array( $field, $this->time_fields ) ) {
+				if ( in_array( $field, $this->get_time_fields() ) ) {
 					if ( preg_match( '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $string ) ) {
 						return date_i18n( mailster( 'helper' )->dateformat(), strtotime( $string ) );
 					} elseif ( $string ) {
@@ -839,7 +927,7 @@ class MailsterConditions {
 		<div>
 			<?php foreach ( $value_arr as $k => $v ) : ?>
 				<?php
-				if ( is_numeric( $v ) || in_array( $v, array_keys( $this->special_campaigns ) ) ) {
+				if ( is_numeric( $v ) || in_array( $v, array_keys( $this->get_special_campaigns() ) ) ) {
 					continue;
 				}
 				?>
@@ -892,7 +980,7 @@ class MailsterConditions {
 					<?php endif; ?>
 					<optgroup label="<?php esc_attr_e( 'Aggregate Campaigns', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->special_campaigns as $key => $name ) :
+					foreach ( $this->get_special_campaigns() as $key => $name ) :
 						echo '<option value="' . esc_attr( $key ) . '"' . selected( $v, $key, false ) . '>' . esc_attr( $name ) . '</option>';
 					endforeach;
 					?>

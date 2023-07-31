@@ -4,7 +4,6 @@
  * Replace them with your own styles or remove the file completely.
  */
 :root {
-	--mailster-bg-color: red;
 	--mailster-bg-color: #fdfdfd;
 	--mailster-line-color: #585858;
 	--mailster-bg-transparent-color: rgba(255, 255, 255, 0.95);
@@ -15,9 +14,6 @@
 	z-index: 50;
 	left: 160px;
 	right: 0px;
-}
-.wp-block {
-	_padding: 2px;
 }
 .is-sidebar-opened .components-notice-list {
 	right: 280px;
@@ -75,6 +71,7 @@
 		.wp-block-mailster-workflow-conditions) {
 	min-width: 5200px;
 }
+
 .is-root-container {
 	_transition: scale 0.1s linear;
 	transform-origin: center center;
@@ -462,7 +459,6 @@
 }
 .wp-block-mailster-workflow-trigger .mailster-step {
 	display: block;
-	_padding: 0.5em 1em;
 	min-height: 120px;
 	display: flex;
 	align-items: center;
@@ -488,9 +484,7 @@
 	display: none;
 }
 .mailster-step .mailster-step-label {
-	_justify-content: center;
 	font-weight: bold;
-	_line-height: 1.3em;
 	text-align: left;
 	padding-bottom: 0.6em;
 	white-space: nowrap;
@@ -577,10 +571,6 @@
 	overflow: hidden;
 	height: 40px;
 	padding: 0;
-	_position: absolute;
-	_bottom: 0;
-	_left: 0;
-	-right: 0;
 }
 .mailster-step-conditions .mailster-step-condition > .line::after,
 .mailster-step-conditions .mailster-step-condition > .line::before {
@@ -595,37 +585,27 @@
 .mailster-step-conditions .no > .line-out::after {
 	border-bottom-right-radius: 8px;
 	border-width: 0 4px 4px 0;
-	_margin-top: 0px;
-	_border-color: red;
 }
 .mailster-step-conditions .yes > .line-out::after,
 .mailster-step-conditions .no > .line-in::after {
 	border-top-right-radius: 8px;
 	border-width: 4px 4px 0 0;
 	align-self: flex-end;
-	_margin-top: 20px;
-	_border-color: green;
 }
 .mailster-step-conditions .yes > .line-out::before,
 .mailster-step-conditions .no > .line-in::before {
 	border-bottom-left-radius: 8px;
 	border-width: 0 0 4px 4px;
-	_margin-top: 0px;
-	_border-color: blue;
 }
 .mailster-step-conditions .yes > .line-in::before,
 .mailster-step-conditions .no > .line-out::before {
 	border-top-left-radius: 8px;
 	border-width: 4px 0 0 4px;
 	align-self: flex-end;
-	_margin-top: 20px;
-	_border-color: tomato;
 }
 .mailster-step-conditions .yes > .line-out::after,
 .mailster-step-conditions .no > .line-out::before {
 	min-height: 20px;
-	_height: 40px;
-	align-self: flex-end;
 }
 .mailster-step-conditions .yes > .line {
 	margin: 0 -2px 0 auto;
@@ -633,14 +613,9 @@
 .mailster-step-conditions .no > .line {
 	margin: 0 auto 0 -2px;
 }
-.mailster-step-conditions .mailster-step-condition .line.line-out {
-	_height: 100%;
-	_display: none;
-}
 .mailster-step-conditions .mailster-step-condition {
 	background-color: var(--mailster-bg-color);
 	min-width: 50%;
-	_min-width: 340px;
 }
 .mailster-step-conditions
 	.mailster-step-condition
@@ -846,6 +821,9 @@
 	padding: 1em 0;
 	flex-wrap: wrap;
 	min-height: 100%;
+}
+.block-editor-block-preview__content-iframe .editor-styles-wrapper {
+	min-width: auto !important;
 }
 .mailster-patterns-explorer .mailster-pattern {
 	width: 50%;

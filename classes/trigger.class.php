@@ -13,7 +13,7 @@ class MailsterTrigger {
 		add_action( 'mailster_tag_added', array( &$this, 'tag_added' ), 10, 3 );
 
 		// Visited a page
-		add_action( 'template_redirect', array( &$this, 'front_page_hooks' ) );
+		add_action( 'shutdown', array( &$this, 'front_page_hooks' ) );
 
 		// campaign is opened
 		add_action( 'mailster_open', array( &$this, 'open' ), 10, 3 );
@@ -309,8 +309,14 @@ class MailsterTrigger {
 	// this runs running on every pageload so make it as fast as possible
 	public function front_page_hooks() {
 
-		$triggers = get_option( 'mailster_trigger' );
+		global $wp;
 
+		// not on backend
+		if ( is_admin() ) {
+			return;
+		}
+
+		$triggers = get_option( 'mailster_trigger' );
 		// nothing to do
 		if ( empty( $triggers ) ) {
 			return;
@@ -318,7 +324,7 @@ class MailsterTrigger {
 
 		$links = array_keys( $triggers );
 
-		$matching_links = preg_grep( '|^' . preg_quote( rtrim( $_SERVER['REQUEST_URI'], '/' ) ) . '$|', $links );
+		$matching_links = preg_grep( '|^' . preg_quote( $wp->request ) . '$|', $links );
 
 		// no matching links
 		if ( empty( $matching_links ) ) {
@@ -332,16 +338,13 @@ class MailsterTrigger {
 			return;
 		}
 
-		$links = array_values( $matching_links );
+		// get the workflow ids
+		$workflow_ids = $triggers[ $matching_links[0] ];
 
-		$workflows = $this->get_workflows_by_trigger( 'page_visit' );
+		foreach ( $workflow_ids as $workflow_id ) {
+			// $options = mailster( 'automations' )->get_trigger_option( $workflow, 'page_visit' );
 
-		foreach ( $workflows as $workflow ) {
-			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'page_visit' );
-
-			// if ( in_array( $list_id, $options['lists'] ) ) {
-			$this->add_job( $workflow, 'page_visit', $subscriber_id );
-			// }
+			$this->add_job( $workflow_id, 'page_visit', $subscriber_id );
 		}
 
 	}

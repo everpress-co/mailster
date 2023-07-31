@@ -330,10 +330,12 @@ class MailsterAutomations {
 
 			if ( isset( $options['pages'] ) ) {
 				foreach ( $options['pages'] as $page ) {
+					$page = trim( $page, '/' );
 					if ( ! isset( $store[ $page ] ) ) {
 						$store[ $page ] = array();
 					}
 					$store[ $page ][] = $workflow_id;
+					$store[ $page ]   = array_values( array_unique( $store[ $page ] ) );
 				}
 			}
 		}
@@ -1155,7 +1157,7 @@ class MailsterAutomations {
 
 		$query = wp_parse_url( wp_get_referer(), PHP_URL_QUERY );
 
-		if ( false === strpos( $query, 'post_type=mailster-workflow' ) ) {
+		if ( ! $query || false === strpos( $query, 'post_type=mailster-workflow' ) ) {
 			return;
 		}
 
