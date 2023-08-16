@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "mailster/form-wrapper",
-	"version": "0.2.0",
 	"title": "Mailster Form",
 	"icon": "email",
 	"category": "widgets",

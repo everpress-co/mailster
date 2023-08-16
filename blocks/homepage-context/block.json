@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "mailster/homepage-context",
-	"version": "0.2.0",
 	"title": "Mailster Homepage Section",
 	"description": "Use this block to add content to certain sections only.",
 	"category": "widgets",

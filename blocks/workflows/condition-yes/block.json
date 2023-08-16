@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "mailster-workflow/condition-yes",
-	"version": "0.1.0",
 	"title": "Condition fulfilled",
 	"category": "mailster-automation-fields",
 	"parent": ["mailster-workflow/condition-yes"],

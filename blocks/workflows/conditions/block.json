@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "mailster-workflow/conditions",
-	"version": "0.1.0",
 	"title": "Condition",
 	"category": "mailster-automation-fields",
 	"keywords": ["container", "wrapper", "row", "section"],

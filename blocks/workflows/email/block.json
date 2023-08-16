@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "mailster-workflow/email",
-	"version": "0.1.0",
 	"title": "Email",
 	"category": "mailster-automation-fields",
 	"description": "Send out an campaign or email.",

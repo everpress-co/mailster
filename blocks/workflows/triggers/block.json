@@ -2,7 +2,6 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "mailster-workflow/triggers",
-	"version": "0.1.0",
 	"title": "Triggers",
 	"category": "mailster-automation-fields",
 	"description": "Define how this workflow gets triggered.",
