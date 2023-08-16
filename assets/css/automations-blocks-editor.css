@@ -509,6 +509,10 @@
 	vertical-align: middle;
 	margin-right: 0.4em;
 }
+.mailster-step .mailster-campaign-id {
+	opacity: 0.5;
+}
+
 .mailster-step .mailster-step-info,
 .mailster-step .mailster-step-meta {
 	text-align: left;

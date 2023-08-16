@@ -133,7 +133,10 @@ export default function Edit(props) {
 					<QueueBadge {...props} />
 					<CardBody>
 						<div className="mailster-step-info">
-							{__('Send Email', 'mailster')} {campaign}
+							{__('Send Email', 'mailster')}
+							{campaign && (
+								<span className="mailster-campaign-id"> #{campaign}</span>
+							)}
 						</div>
 						<div className="mailster-step-label">{name}</div>
 					</CardBody>

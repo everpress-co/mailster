@@ -190,4 +190,3 @@ function mailster_register_elementor_widget( $widgets_manager ) {
 }
 add_action( 'elementor/widgets/register', 'mailster_register_elementor_widget' );
 
-

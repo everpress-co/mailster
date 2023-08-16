@@ -176,14 +176,6 @@ class MailsterAutomations {
 				'disabled' => true,
 				'reason'   => esc_html__( 'Comming soon!', 'mailster' ),
 			),
-			array(
-				'id'       => 'published_post',
-				'icon'     => 'megaphone',
-				'label'    => esc_html__( 'Something published', 'mailster' ),
-				'info'     => esc_html__( 'When something is published', 'mailster' ),
-				'disabled' => true,
-				'reason'   => esc_html__( 'Comming soon!', 'mailster' ),
-			),
 		);
 
 		return apply_filters( 'mailster_workflow_triggers', $triggers );
@@ -193,7 +185,6 @@ class MailsterAutomations {
 	public function get_limit() {
 
 		$limit = 3;
-
 		if ( mailster_freemius()->is_plan( 'plus', true ) ) {
 			$limit = 10;
 		} elseif ( mailster_freemius()->is_plan( 'pro', true ) ) {
@@ -1054,7 +1045,7 @@ class MailsterAutomations {
 		$editor_settings['styles']              = array();
 
 		// disable code editor
-		// $editor_settings['codeEditingEnabled'] = false;
+		$editor_settings['codeEditingEnabled'] = defined( 'WP_DEBUG' ) && WP_DEBUG;
 
 		return $editor_settings;
 

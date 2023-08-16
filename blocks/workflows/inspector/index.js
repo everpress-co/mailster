@@ -156,8 +156,6 @@ function SettingsPanelPlugin() {
 			);
 
 		const check = () => {
-			console.warn('CHECK');
-
 			if (iframed.contentWindow.document.readyState == 'complete') {
 				if (searchBlock('mailster-workflow/conditions')) {
 					const root =
@@ -178,8 +176,6 @@ function SettingsPanelPlugin() {
 		iframed && iframed.addEventListener('load', check);
 
 		check();
-
-		console.warn('Asdasd', iframed.contentWindow.document.readyState);
 	}, [conditionsDepth, iframed, blocks]);
 
 	return (
@@ -207,9 +203,7 @@ function SettingsPanelPlugin() {
 			>
 				PluginPostPublishPanel
 			</PluginPostPublishPanel>
-			<PluginSidebarMoreMenuItem target="sidebar-name">
-				PluginSidebarMoreMenuItem
-			</PluginSidebarMoreMenuItem>
+
 			<PublishInfo meta={meta} setMeta={setMeta} />
 			<PluginPostStatusInfo className="status-numbers">
 				<Flex align="center" justify="space-between">

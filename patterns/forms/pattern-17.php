@@ -1,22 +1,18 @@
 <!-- wp:mailster/form-wrapper {"css":{"general":".mailster-wrapper{\n    margin-bottom:1em;\n}\n.mailster-form-ebook{\n\tflex-wrap: nowrap;\n\tgap:0 !important;\n}\n.mailster-form-ebook figure{\n\tbox-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;\n\tborder:1px solid #ccc;\n\tmax-width:33% !important;\n\t\n}\n.mailster-form-ebook figure:nth-child(1){\n\ttranslate: 40%;\n\tscale: 0.75;\n}\n.mailster-form-ebook figure:nth-child(2){\n\tz-index:2\n}\n.mailster-form-ebook figure:nth-child(3){\n\ttranslate: -40%;\n\tscale: 0.75;\n\t\n}"}} -->
 <form method="post" novalidate class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner">
 
-<!-- wp:gallery {"columns":3,"imageCrop":false,"className":"mailster-form-ebook"} -->
-<figure class="wp-block-gallery has-nested-images columns-3 mailster-form-ebook">
-
-<!-- wp:image {"aspectRatio":"2/3","scale":"cover"} -->
-<figure class="wp-block-image"><img src="https://static.mailster.co/forms/ebook-02.jpg" alt="Ebook page" style="aspect-ratio:2/3;object-fit:cover"/></figure>
+<!-- wp:gallery {"columns":3,"imageCrop":false,"linkTo":"none","className":"mailster-form-ebook"} -->
+<figure class="wp-block-gallery has-nested-images columns-3 mailster-form-ebook"><!-- wp:image -->
+<figure class="wp-block-image"><img src="https://static.mailster.co/forms/ebook-02.jpg" alt="Ebook page"/></figure>
 <!-- /wp:image -->
 
-<!-- wp:image {"aspectRatio":"2/3","scale":"cover"} -->
-<figure class="wp-block-image"><img src="https://static.mailster.co/forms/ebook-01.jpg" alt="Ebook cover" style="aspect-ratio:2/3;object-fit:cover"/></figure>
+<!-- wp:image -->
+<figure class="wp-block-image"><img src="https://static.mailster.co/forms/ebook-01.jpg" alt="Ebook cover"/></figure>
 <!-- /wp:image -->
 
-<!-- wp:image {"aspectRatio":"2/3","scale":"cover"} -->
-<figure class="wp-block-image"><img src="https://static.mailster.co/forms/ebook-03.jpg" alt="Ebook page" style="aspect-ratio:2/3;object-fit:cover"/></figure>
-<!-- /wp:image -->
-
-</figure>
+<!-- wp:image -->
+<figure class="wp-block-image"><img src="https://static.mailster.co/forms/ebook-03.jpg" alt="Ebook page"/></figure>
+<!-- /wp:image --></figure>
 <!-- /wp:gallery -->
 
 <!-- wp:spacer {"height":"30px"} -->
