@@ -527,3 +527,40 @@ export function searchBlocks(blockName, clientId = null, deep = true) {
 
 	return matchingBlocks;
 }
+
+function el(block) {
+	console.warn(
+		document
+			.querySelector('iframe[name="editor-canvas"]')
+			.contentWindow.document.querySelector('#block-' + block.clientId)
+	);
+}
+
+export function searchBlocksNew(blockName, clientId = null, deep = true) {
+	const blocks = select('core/block-editor').getBlocks(clientId);
+
+	console.warn(
+		'SEARCH for ' + blockName + ' in ' + clientId + ' of total ' + blocks.length
+	);
+
+	let matchingBlocks = blocks.filter((block) => block.name === blockName);
+
+	for (const block of blocks) {
+		if (deep && block.innerBlocks.length > 0) {
+			for (const innerblock of block.innerBlocks) {
+				if (innerblock.name === blockName) matchingBlocks.push(innerblock);
+				//if (innerblock.innerBlocks.length > 0) {
+				matchingBlocks.push(
+					...searchBlocks(blockName, innerblock.clientId, deep)
+				);
+				//}
+			}
+		}
+	}
+
+	console.warn('FOUND ' + matchingBlocks.length);
+
+	//if (blockName == 'mailster-workflow/conditions') console.warn(matchingBlocks);
+
+	return matchingBlocks;
+}

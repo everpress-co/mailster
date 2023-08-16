@@ -82,10 +82,7 @@ export const MONTH_OPTIONS = {
 	'-1': sprintf(__('%s day of the month', 'mailster'), 'Last'),
 };
 
-export const WEEK_OPTIONS = [
-	...settings.l10n.weekdays.slice(settings.l10n.startOfWeek),
-	...settings.l10n.weekdays.slice(0, settings.l10n.startOfWeek),
-];
+export const WEEK_OPTIONS = settings.l10n.weekdays;
 
 export const START_OF_WEEK = settings.l10n.startOfWeek;
 

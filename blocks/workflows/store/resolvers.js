@@ -63,16 +63,16 @@ export function* getCampaignStats(campaign) {
 		campaign
 	);
 
-	const post_status = select('core/editor').getCurrentPost().status;
+	//const post_status = select('core/editor').getCurrentPost().status;
 
-	const interval =
-		post_status == 'publish' &&
-		setInterval(() => {
-			if (document.hasFocus()) {
-				clearData('getCampaignStats');
-				clearInterval(interval);
-			}
-		}, 15000);
+	// const interval =
+	// 	post_status == 'publish' &&
+	// 	setInterval(() => {
+	// 		if (document.hasFocus()) {
+	// 			//clearData('getCampaignStats');
+	// 			clearInterval(interval);
+	// 		}
+	// 	}, 15000);
 	return actions.setCampaignStats(data, campaign);
 }
 export function* getForms() {

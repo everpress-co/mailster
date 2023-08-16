@@ -12,6 +12,7 @@ import { select } from '@wordpress/data';
 import { Button, RangeControl } from '@wordpress/components';
 import { plus, reset, home } from '@wordpress/icons';
 import { useEffect, useState } from '@wordpress/element';
+import { useDebounce } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -19,62 +20,60 @@ import { useEffect, useState } from '@wordpress/element';
 
 import { useSessionStorage } from '../../util';
 
+const MAX_ZOOM = 100;
+const MIN_ZOOM = 40;
+
 export default function CanvasToolbar() {
 	const post_id = select('core/editor').getCurrentPostId();
 
-	const [zoom, setZoomVar] = useSessionStorage(
-		'workflow-' + post_id + '-zoom',
-		100
-	);
-	const [position, setPositionVar] = useSessionStorage(
-		'workflow-' + post_id + '-position',
-		{
-			x: 0,
-			y: 0,
-		}
-	);
+	const [position, setPositionVar] = useSessionStorage('workflow-' + post_id);
 
-	const [root, setRoot] = useState(null);
+	//check if editor is in iframe (Since WP 6.3)
+	const iframed = document.querySelector('iframe[name="editor-canvas"]');
+	const [loaded, isLoaded] = useState();
+	const [frame, setFrame] = useState();
+	const [pane, setPane] = useState();
 
-	const setZoom = (zoom) => {
-		if (root) root.style.scale = `${zoom}%`;
-		setZoomVar(zoom);
-	};
-
-	const setPosition = (position) => {
-		const frame = document.querySelector(
-			'.interface-interface-skeleton__content'
-		);
-		if (position.x) frame.scrollLeft = position.x;
-		if (position.y) frame.scrollTop = position.y;
-
-		setPositionVar(position);
-	};
+	const onScroll = useDebounce(() => {
+		let pos = getPanePosition();
+		setOrigin(pos.x, pos.y);
+		setPositionVar(pos);
+	}, 400);
 
 	useEffect(() => {
-		var offsetX, offsetY, posX, posY, frame, canvasRoot;
+		if (iframed) {
+			iframed.addEventListener('load', () => {
+				setFrame(iframed.contentWindow);
+				setPane(
+					iframed.contentWindow.document.querySelector('.is-root-container')
+				);
+				isLoaded(true);
+			});
+		} else {
+			wp.domReady(() => {
+				setFrame(
+					document.querySelector('.interface-interface-skeleton__content')
+				);
+				setPane(document.querySelector('.is-root-container'));
+				isLoaded(true);
+			});
+		}
+	}, []);
 
-		const editorCanvas = document.querySelector('iframe[name="editor-canvas"]');
+	useEffect(() => {
+		if (!pane) return;
 
-		wp.domReady(() => {
-			frame = document.querySelector('.interface-interface-skeleton__content');
-			const int = setInterval(() => {
-				canvasRoot = editorCanvas
-					? editorCanvas.contentWindow.document.querySelector(
-							'.is-root-container'
-					  )
-					: document.querySelector('.is-root-container');
-				if (canvasRoot) {
-					clearInterval(int);
-					setRoot(canvasRoot);
+		var offsetX, offsetY, posX, posY;
 
-					canvasRoot.addEventListener('mousedown', startDrag);
-				}
-			}, 10);
+		pane.addEventListener('mousedown', startDrag);
+		frame.addEventListener('scroll', onScroll);
 
-			if (position.x) frame.scrollLeft = position.x;
-			if (position.y) frame.scrollTop = position.y;
-		});
+		if (!position) {
+			resetPane(true);
+		} else {
+			setPanePosition(position.x, position.y, position.z);
+		}
+		pane.classList.add('loaded');
 
 		function startDrag(e) {
 			if (
@@ -89,69 +88,132 @@ export default function CanvasToolbar() {
 			posX = e.clientX || e.changedTouches[0].clientX;
 			posY = e.clientY || e.changedTouches[0].clientY;
 
-			canvasRoot.classList.add('dragging');
-			canvasRoot.addEventListener('mouseup', stopDrag);
-			canvasRoot.addEventListener('mousemove', drag);
+			pane.classList.add('dragging');
+			pane.addEventListener('mouseup', stopDrag);
+			pane.addEventListener('mouseleave', stopDrag);
+			pane.addEventListener('mousemove', drag);
+			frame.removeEventListener('scroll', onScroll);
 		}
 
 		function drag(e) {
 			e.preventDefault();
+
+			let pos = getPanePosition();
+			let f = (100 - pos.z) * Math.exp(-4) + 1;
+			f = 1;
+
 			// calculate the new cursor position:
 			offsetX = e.clientX - posX;
 			offsetY = e.clientY - posY;
 			posX = e.clientX;
 			posY = e.clientY;
 
+			let x = Math.max(0, pos.x - offsetX);
+			let y = Math.max(0, pos.y - offsetY);
+
 			// set the element's new position:
-			frame.scrollLeft = Math.max(0, frame.scrollLeft - offsetX);
-			frame.scrollTop = Math.max(0, frame.scrollTop - offsetY);
+			setPanePosition(x, y);
 		}
 
 		function stopDrag(e) {
 			// stop moving when mouse button is released:
+			pane.classList.remove('dragging');
+			pane.removeEventListener('mouseup', stopDrag);
+			pane.removeEventListener('mouseleave', stopDrag);
+			pane.removeEventListener('mousemove', drag);
+			frame.addEventListener('scroll', onScroll);
 
-			canvasRoot.classList.remove('dragging');
-			canvasRoot.removeEventListener('mouseup', stopDrag);
-			canvasRoot.removeEventListener('mousemove', drag);
-
-			setPosition({
-				x: frame.scrollLeft,
-				y: frame.scrollTop,
-			});
+			setPosition(getPanePosition());
 		}
-	}, []);
+	}, [pane]);
 
-	const MAX = 100;
-	const MIN = 20;
-
-	useEffect(() => {
-		if (root) root.style.scale = `${zoom}%`;
-	}, [zoom, root]);
-
-	const resetPane = () => {
-		const triggers = document.querySelector(
-			'.wp-block-mailster-workflow-triggers'
-		);
-		triggers &&
-			triggers.scrollIntoView({
-				inline: 'center',
-				block: 'center',
-				behavior: 'smooth',
-			});
-		setPosition({
-			x: 0,
-			y: 0,
-		});
-		setZoom(100);
+	const setZoom = (zoom) => {
+		setPanePosition(position?.x, position?.y, zoom);
+		setPosition({ z: zoom });
 	};
 
+	const setPosition = (newPos) => {
+		setPositionVar({
+			...position,
+			...newPos,
+		});
+	};
+
+	const setPanePosition = (x, y, z) => {
+		if (!pane) return;
+		frame.scrollTo(x, y);
+		if (z) pane.style.scale = `${z}%`;
+		setOrigin(x, y);
+	};
+
+	const getPanePosition = () => {
+		return {
+			x: iframed ? frame.scrollX : frame.scrollLeft,
+			y: iframed ? frame.scrollY : frame.scrollTop,
+			z: (pane.style.scale || 1) * 100,
+		};
+	};
+
+	const setOrigin = (x, y) => {
+		// TODO make this work
+		return;
+		if (!pane) return;
+		let i = iframed.getBoundingClientRect();
+		let body = iframed.contentWindow.document.body;
+		let w = body.offsetWidth - i.width;
+		let h = body.offsetHeight - i.height;
+
+		x = w ? x / w : 0.5;
+		y = h ? y / h : 0.5;
+
+		pane.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+	};
+
+	useEffect(() => {
+		if (!pane) return;
+
+		position && setZoom(position.z);
+	}, [pane]);
+
+	useEffect(() => {
+		const onResize = () => {
+			console.warn('RESIZE');
+		};
+		onResize();
+		window.addEventListener('resize', onResize);
+		return () => {
+			window.removeEventListener('resize', onResize);
+		};
+	}, []);
+
+	const resetPane = () => {
+		const triggers = pane.querySelector('.wp-block-mailster-workflow-triggers');
+
+		if (triggers) {
+			setTimeout(() => {
+				triggers.scrollIntoView({
+					inline: 'center',
+					block: 'center',
+					behavior: 'smooth',
+				});
+			}, 100);
+			setZoom(100);
+		} else {
+			setPanePosition(0, 0, 100);
+		}
+	};
+
+	const zoom = position ? position.z : 100;
+
 	const zoomIn = () => {
-		setZoom(Math.min(zoom + 10, MAX));
+		setZoom(Math.min(zoom + 10, MAX_ZOOM));
 	};
 
 	const zoomOut = () => {
-		setZoom(Math.max(zoom - 10, MIN));
+		setZoom(Math.max(zoom - 10, MIN_ZOOM));
 	};
+
+	if (!loaded) return null;
 
 	return (
 		<>
@@ -164,7 +226,7 @@ export default function CanvasToolbar() {
 			<Button
 				variant="link"
 				icon={reset}
-				disabled={zoom === MIN}
+				disabled={zoom === MIN_ZOOM}
 				onClick={zoomOut}
 				label={__('Zoom Out', 'mailster')}
 			/>
@@ -173,14 +235,14 @@ export default function CanvasToolbar() {
 				withInputField={false}
 				value={zoom}
 				onChange={(value) => setZoom(value)}
-				min={MIN}
-				max={MAX}
+				min={MIN_ZOOM}
+				max={MAX_ZOOM}
 				showTooltip={false}
 			/>
 			<Button
 				variant="link"
 				icon={plus}
-				disabled={zoom === MAX}
+				disabled={zoom === MAX_ZOOM}
 				onClick={zoomIn}
 				label={__('Zoom In', 'mailster')}
 			/>

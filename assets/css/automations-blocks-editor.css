@@ -42,6 +42,13 @@
 .editor-styles-wrapper {
 	padding-bottom: 10em !important;
 }
+.is-root-container {
+	__visibility: hidden;
+}
+.is-root-container.loaded {
+	visibility: visible;
+	_transition: scale 0.1s linear;
+}
 .is-root-container.dragging {
 	cursor: grabbing;
 	cursor: -moz-grabbing;
@@ -51,30 +58,30 @@
 	display: none;
 }
 .editor-styles-wrapper {
-	min-width: 1000px;
+	_min-width: 1000px;
 }
 .editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions) {
-	min-width: 1000px;
+	_min-width: 1000px;
 }
 .editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions) {
-	min-width: 1600px;
+	_min-width: 1600px;
 }
 .editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions) {
-	min-width: 2800px;
+	_min-width: 2800px;
 }
 .editor-styles-wrapper:has(.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions
 		.wp-block-mailster-workflow-conditions) {
-	min-width: 5200px;
+	_min-width: 5200px;
 }
 
 .is-root-container {
 	_transition: scale 0.1s linear;
-	transform-origin: center center;
+	transform-origin: 50% 50%;
 }
 .interface-navigable-region {
 	_background-color: var(--mailster-bg-color) !important;

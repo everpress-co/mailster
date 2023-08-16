@@ -802,12 +802,14 @@ class MailsterWorkflow {
 			return false;
 		}
 
-			// TODO check when step is inclomplete and the campaigns hasn't been sent already
+		return true;
 
-			// only continue with the next step if campaign has been sent
-			$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber, 'sent', $campaign->ID );
+		// TODO check when step is inclomplete and the campaigns hasn't been sent already
 
-			return (bool) $has_been_sent;
+		// only continue with the next step if campaign has been sent
+		$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber, 'sent', $campaign->ID );
+
+		return (bool) $has_been_sent;
 	}
 
 	private function stop( $step ) {
@@ -868,7 +870,7 @@ class MailsterWorkflow {
 				}
 
 				$weekdays = $step['attr']['weekdays'];
-				// get a fictional date with the same day
+				// get a fictional date with the same day (respecting timezone)
 				$date = strtotime( date( 'Y-m-d ' . date( 'H:i', $date ) ) );
 
 				if ( $date < time() ) {
@@ -886,6 +888,8 @@ class MailsterWorkflow {
 				break;
 
 			case 'month':
+				error_log( print_r( $step, true ) );
+
 				if ( ! isset( $step['attr']['month'] ) ) {
 					return new WP_Error( 'error', 'No month defined!', $step );
 				}

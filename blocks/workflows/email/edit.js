@@ -14,7 +14,7 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
 
 import { useEffect, useMemo, useState, useRef } from '@wordpress/element';
 import { useEntityProp } from '@wordpress/core-data';
-import { dispatch, useSelect } from '@wordpress/data';
+import { dispatch, useSelect, useDispatch } from '@wordpress/data';
 import { Card, CardBody, CardFooter, CardMedia } from '@wordpress/components';
 import { addQueryArgs } from '@wordpress/url';
 import * as Icons from '@wordpress/icons';
@@ -53,9 +53,11 @@ export default function Edit(props) {
 
 	const [preview_url, setPreviewUrl] = useState(false);
 
-	const { getCampaignStats, getCampaigns, hasFinishedResolution } = useSelect(
+	const { invalidateResolutionForStore } = useSelect('mailster/automation');
+	const { invalidateResolutionForStoreSelector } = useDispatch(
 		'mailster/automation'
 	);
+
 	const allCampaigns = useSelect((select) =>
 		select('mailster/automation').getCampaigns()
 	);
@@ -131,7 +133,7 @@ export default function Edit(props) {
 					<QueueBadge {...props} />
 					<CardBody>
 						<div className="mailster-step-info">
-							{__('Send Email', 'mailster')}
+							{__('Send Email', 'mailster')} {campaign}
 						</div>
 						<div className="mailster-step-label">{name}</div>
 					</CardBody>

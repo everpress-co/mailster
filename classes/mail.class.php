@@ -6,6 +6,7 @@ class MailsterMail {
 	public $headers      = array();
 	public $content      = '';
 	public $plaintext    = '';
+	public $preheader    = '';
 	public $subject      = '';
 	public $from;
 	public $from_name;
@@ -48,6 +49,10 @@ class MailsterMail {
 	private $hostname = '';
 
 	private $last_mail_duration;
+
+	private $subscriber_errors = array();
+	private $server_errors     = array();
+	private $system_errors     = array();
 
 	private static $_instance = null;
 
@@ -799,14 +804,13 @@ class MailsterMail {
 
 			}
 
-			$this->messageID         = uniqid();
-			$this->mailer->messageID = sprintf(
+			$this->messageID = sprintf(
 				'<%s@%s>',
-				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '|' . $this->index . '-' . mailster_option( 'ID' ),
+				uniqid() . '-' . $this->hash . '-' . $this->campaignID . '|' . $this->index . '-' . mailster_option( 'ID' ),
 				$this->hostname
 			);
 
-			$this->add_header( 'X-Message-ID', $this->mailer->messageID );
+			$this->add_header( 'X-Message-ID', $this->messageID );
 
 			$this->set_headers();
 

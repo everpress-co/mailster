@@ -79,7 +79,7 @@ class MailsterTrigger {
 
 	}
 
-	public function open( $subscriber_id, $campaign_id, $campaign_index ) {
+	public function open( $subscriber_id, $campaign_id, $campaign_index = null ) {
 
 		$workflows = $this->get_workflows_by_trigger( 'opened_campaign' );
 		foreach ( $workflows as $workflow ) {
@@ -88,7 +88,7 @@ class MailsterTrigger {
 		}
 	}
 
-	public function click( $subscriber_id, $campaign_id, $target, $index, $campaign_index ) {
+	public function click( $subscriber_id, $campaign_id, $target, $index, $campaign_index = null ) {
 
 		$workflows = $this->get_workflows_by_trigger( 'link_click' );
 		foreach ( $workflows as $workflow ) {
@@ -295,7 +295,7 @@ class MailsterTrigger {
 		}
 
 		// if date is within one hour
-		if ( $date && time() < $date && time() + HOUR_IN_SECONDS > $date ) {
+		if ( $date && time() < $date && time() + HOUR_IN_SECONDS >= $date ) {
 			return $this->add_job( $workflow, 'anniversary', null );
 		}
 

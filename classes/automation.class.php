@@ -130,7 +130,7 @@ class MailsterAutomations {
 				'id'    => 'updated_field',
 				'icon'  => 'update',
 				'label' => esc_html__( 'Field updated', 'mailster' ),
-				'info'  => esc_html__( 'When a Field is added or updated from a subscriber', 'mailster' ),
+				'info'  => esc_html__( 'When a Field is added or updated by a subscriber', 'mailster' ),
 			),
 			array(
 				'id'    => 'form_conversion',
@@ -160,7 +160,7 @@ class MailsterAutomations {
 				'id'    => 'page_visit',
 				'icon'  => 'page',
 				'label' => esc_html__( 'Visits a page', 'mailster' ),
-				'info'  => esc_html__( 'When a user visits a given page.', 'mailster' ),
+				'info'  => esc_html__( 'When a user visits a given page', 'mailster' ),
 			),
 			array(
 				'id'    => 'hook',
@@ -519,10 +519,14 @@ class MailsterAutomations {
 			$workflow_campaigns = $this->get_workflow_campaigns( $workflow );
 
 			foreach ( $workflow_campaigns as $workflow_campaign ) {
-				$actions             = mailster( 'actions' )->get_by_campaign( $workflow_campaign );
+				$actions = mailster( 'actions' )->get_by_campaign( $workflow_campaign );
+				// TODO check if use total or single
 				$numbers['sent']    += $actions['sent_total'];
 				$numbers['opens']   += $actions['opens_total'];
 				$numbers['clicks']  += $actions['clicks_total'];
+				$numbers['sent']    += $actions['sent'];
+				$numbers['opens']   += $actions['opens'];
+				$numbers['clicks']  += $actions['clicks'];
 				$numbers['unsubs']  += $actions['unsubs'];
 				$numbers['bounces'] += $actions['bounces'];
 			}

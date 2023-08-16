@@ -116,7 +116,7 @@ export default function Selector(props) {
 										'mailster'
 								  )
 								: __(
-										'This workfow gets triggered for all subscribers on the defined date. Narrow down your selection with condtions below. If you only send a single email in this workflow consider using a regular campaign instead.',
+										'This workfow gets triggered for all subscribers on the defined date. Narrow down your selection with conditions below. If you only send a single email in this workflow consider using a regular campaign instead.',
 										'mailster'
 								  )
 						}
@@ -185,7 +185,7 @@ export default function Selector(props) {
 										'mailster'
 								  )
 								: __(
-										'This workfow gets triggered for all subscribers on the defined date. Narrow down your selection with condtions below. If you only send a single email in this workflow consider using a regular campaign instead.',
+										'This workfow gets triggered for all subscribers on the defined date. Narrow down your selection with conditions below. If you only send a single email in this workflow consider using a regular campaign instead.',
 										'mailster'
 								  )
 						}

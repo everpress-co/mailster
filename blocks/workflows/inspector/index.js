@@ -31,7 +31,12 @@ import Options from './Options';
 import PatternModal from './PatternModal';
 import PublishInfo from './PublishInfo';
 import CanvasToolbar from './CanvasToolbar';
-import { whenEditorIsReady, searchBlocks, useLocalStorage } from '../../util';
+import {
+	whenEditorIsReady,
+	searchBlocks,
+	searchBlock,
+	useLocalStorage,
+} from '../../util';
 import { ButtonGroup } from '@wordpress/components';
 import { Button } from '@wordpress/components';
 
@@ -136,6 +141,46 @@ function SettingsPanelPlugin() {
 			});
 		}
 	}, [blocks]);
+
+	const iframed = document.querySelector('iframe[name="editor-canvas"]');
+	const [conditionsDepth, setConditionsDepth] = useState();
+
+	useEffect(() => {
+		if (!iframed) return;
+
+		const findMaxDepth = (root, selector, depth = 0) =>
+			[...root.querySelectorAll(selector)].reduce(
+				(maxDepth, children) =>
+					Math.max(maxDepth, findMaxDepth(children, selector, depth + 1)),
+				depth
+			);
+
+		const check = () => {
+			console.warn('CHECK');
+
+			if (iframed.contentWindow.document.readyState == 'complete') {
+				if (searchBlock('mailster-workflow/conditions')) {
+					const root =
+						iframed.contentWindow.document.querySelector('.is-root-container');
+					if (root) {
+						setConditionsDepth(findMaxDepth(root, '.mailster-step-conditions'));
+					}
+				} else {
+					setConditionsDepth(0);
+				}
+				const wrap = iframed.contentWindow.document.querySelector(
+					'.editor-styles-wrapper'
+				);
+				if (wrap) wrap.style.minWidth = conditionsDepth * 800 + 'px';
+			}
+		};
+
+		iframed && iframed.addEventListener('load', check);
+
+		check();
+
+		console.warn('Asdasd', iframed.contentWindow.document.readyState);
+	}, [conditionsDepth, iframed, blocks]);
 
 	return (
 		<>

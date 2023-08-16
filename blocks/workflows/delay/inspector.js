@@ -38,10 +38,16 @@ import {
 	DELAY_OPTIONS,
 	MONTH_OPTIONS,
 	WEEK_OPTIONS,
+	START_OF_WEEK,
 	IS_12_HOUR,
 } from './constants';
 
 import { HelpBeacon } from '../../util';
+
+const ORDERERD_WEEK_OPTIONS = [
+	...WEEK_OPTIONS.slice(START_OF_WEEK),
+	...WEEK_OPTIONS.slice(0, START_OF_WEEK),
+];
 
 export default function DelayInspectorControls({
 	attributes,
@@ -53,11 +59,13 @@ export default function DelayInspectorControls({
 		date,
 		unit,
 		timezone,
-		month = 1,
+		month,
 		weekdays = [0, 1, 2, 3, 4, 5, 6],
 	} = attributes;
 
 	const [popover, setPopover] = useState(false);
+
+	const isInPast = +new Date() - +new Date(date) > 0;
 
 	const setDate = (newDate) => {
 		// store in UTC
@@ -75,7 +83,20 @@ export default function DelayInspectorControls({
 		}
 		setAttributes({ weekdays: newWeek.length ? newWeek.sort() : undefined });
 	}
-	const isInPast = +new Date() - +new Date(date) > 0;
+
+	function setUnit(val) {
+		switch (val) {
+			case 'month':
+				if (!month) setAttributes({ month: 1 });
+				break;
+			case 'year':
+				// set date in the future (+ 1 day)
+				if (isInPast) setDate(+new Date() + 60000 * 60 * 24);
+				break;
+		}
+		setAttributes({ unit: val });
+	}
+
 	return (
 		<InspectorControls>
 			<Panel>
@@ -110,7 +131,7 @@ export default function DelayInspectorControls({
 												value: DELAY_OPTIONS[key].value,
 											};
 										})}
-										onChange={(val) => setAttributes({ unit: val })}
+										onChange={(val) => setUnit(val)}
 									/>
 								</FlexItem>
 							</Flex>
@@ -187,15 +208,18 @@ export default function DelayInspectorControls({
 										'mailster'
 									)}
 								>
-									{WEEK_OPTIONS.map((key, index) => {
+									{ORDERERD_WEEK_OPTIONS.map((key, index) => {
+										const i = WEEK_OPTIONS.indexOf(
+											ORDERERD_WEEK_OPTIONS[index]
+										);
 										return (
 											<CheckboxControl
 												className="inspector-checkbox"
-												key={index}
-												label={WEEK_OPTIONS[index]}
-												checked={!weekdays || weekdays.includes(index)}
+												key={i}
+												label={ORDERERD_WEEK_OPTIONS[index]}
+												checked={!weekdays || weekdays.includes(i)}
 												onChange={(val) => {
-													setWeek(index, val);
+													setWeek(i, val);
 												}}
 												__nextHasNoMarginBottom
 											/>

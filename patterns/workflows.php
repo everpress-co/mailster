@@ -112,7 +112,7 @@ register_block_pattern(
 	'mailster-workflow/win-back-subscribers',
 	array(
 		'title'         => __( 'Win back inactive subscribers', 'mailster' ),
-		'article'       => 'https://asdasd.com',
+		// 'article'       => 'https://example.com',
 		'description'   => __( 'Re-engage subscribers who have shown a lack of engagement and remove inactive ones. You can initiate a campaign and update a custom field if they interact, or transfer them to the unsubscribed folder if they do not. This approach effectively purges your list, ensuring that your most active subscribers remain, leading to improved email deliverability.', 'mailster' ),
 		'viewportWidth' => 600,
 		'postTypes'     => array( 'mailster-workflow' ),

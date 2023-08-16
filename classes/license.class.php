@@ -104,7 +104,7 @@ class MailsterLicense {
 		try {
 			$migrate = mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
 		} catch ( Throwable $e ) {
-			 return new WP_Error( 'freemius_error', $e->getMessage() );
+			return new WP_Error( 'freemius_error', $e->getMessage() );
 		}
 
 		if ( isset( $migrate['error'] ) && $migrate['error'] ) {

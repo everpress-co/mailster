@@ -65,6 +65,7 @@ const reducer = (state = DEFAULT_STATE, action) => {
 				...state,
 			};
 			obj['stats'][action.campaign] = action.stats;
+
 			return obj;
 
 		case 'SET_FORMS':
