@@ -1141,14 +1141,14 @@ class MailsterSubscribers {
 				mailster_cache_delete( 'subscriber_meta_' . $subscriber_id . '0' );
 			}
 
-			if ( isset( $meta['ip'] ) && $meta['ip'] && 'unknown' !== ( $geo = mailster_ip2City( $meta['ip'] ) ) ) {
+			if ( isset( $meta['ip'] ) && $meta['ip'] && 'unknown' !== ( $geo = mailster_get_geo( $meta['ip'] ) ) ) {
 
-				$meta['geo'] = $geo->country_code . '|' . $geo->city;
-				if ( $geo->city ) {
-					$meta['coords']     = (float) $geo->latitude . ',' . (float) $geo->longitude;
-					$meta['timeoffset'] = (int) $geo->timeoffset;
-				}
+				$meta['geo']        = $geo->country->isoCode . '|' . $geo->city->name;
+				$meta['coords']     = (float) $geo->location->latitude . ',' . (float) $geo->location->longitude;
+				$meta['timeoffset'] = (int) mailster( 'helper' )->get_timezone_offset_by_string( $geo->location->timeZone );
+
 			}
+
 			if ( isset( $meta['form'] ) ) {
 				$form = mailster( 'forms' )->get( $meta['form'], false );
 				// if form exists and is not a user choice and has lists

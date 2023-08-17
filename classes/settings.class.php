@@ -811,7 +811,7 @@ class MailsterSettings {
 						if ( $value != $old ) {
 							mailster( 'geo' )->update();
 							if ( $options['track_location_update'] ) {
-								mailster( 'geo' )->set_cron( 'daily' );
+								mailster( 'geo' )->set_cron( 'weekly' );
 							}
 						}
 					} else {
@@ -826,7 +826,7 @@ class MailsterSettings {
 						mailster( 'geo' )->clear_cron();
 
 						if ( $value ) {
-							mailster( 'geo' )->set_cron( 'daily' );
+							mailster( 'geo' )->set_cron( 'weekly' );
 						} else {
 							mailster( 'geo' )->set_cron();
 

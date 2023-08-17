@@ -1941,8 +1941,10 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		if ( ! mailster( 'geo' )->update( true ) ) {
-			$return['msg'] = esc_html__( 'Couldn\'t load Location Database', 'mailster' );
+		$result = mailster( 'geo' )->update( true );
+
+		if ( is_wp_error( $result ) ) {
+			$return['msg'] = sprintf( '%s<br><strong>%s</strong>', esc_html__( 'Couldn\'t load Location Database', 'mailster' ), $result->get_error_message() );
 			wp_send_json_error( $return );
 		}
 

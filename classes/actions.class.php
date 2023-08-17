@@ -234,13 +234,12 @@ class MailsterActions {
 
 		$user_meta = wp_parse_args( $user_meta, array( 'ip' => mailster_get_ip() ) );
 
-		if ( $geo_tracking && 'unknown' !== ( $geo = mailster_ip2City() ) ) {
+		if ( $geo_tracking && 'unknown' !== ( $geo = mailster_get_geo() ) ) {
 
-			$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
-			if ( $geo->city ) {
-				$user_meta['coords']     = (float) $geo->latitude . ',' . (float) $geo->longitude;
-				$user_meta['timeoffset'] = (int) $geo->timeoffset;
-			}
+			$user_meta['geo']        = $geo->country->isoCode . '|' . $geo->city->name;
+			$user_meta['coords']     = (float) $geo->location->latitude . ',' . (float) $geo->location->longitude;
+			$user_meta['timeoffset'] = (int) mailster( 'helper' )->get_timezone_offset_by_string( $geo->location->timeZone );
+
 		}
 
 		mailster( 'subscribers' )->update_meta( $args['subscriber_id'], $args['campaign_id'], $user_meta );
