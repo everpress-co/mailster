@@ -154,7 +154,7 @@ function mailster_freemius_checkout_url( $url ) {
 			'checkout'      => 'true',
 			'plan_id'       => 20734,
 			'billing_cycle' => 'annual',
-			'pricing_id'    => 23881,
+			// 'pricing_id'    => 23881,
 			'post_type'     => 'newsletter',
 		),
 		admin_url( 'edit.php' )
@@ -162,3 +162,13 @@ function mailster_freemius_checkout_url( $url ) {
 
 }
 
+mailster_freemius()->add_action( 'after_license_change', 'mailster_freemius_after_license_change_handler', 10, 2 );
+function mailster_freemius_after_license_change_handler( $plan_change_desc, FS_Plugin_Plan $plan ) {
+
+	if ( 'changed' !== $plan_change_desc ) {
+		return;
+	}
+
+	return;
+
+}

@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.2  
-Stable tag: 3.3.4
+Stable tag: 3.3.8  
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -186,6 +186,21 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 3.3.7
+
+- fixed: missing action on migration process
+- improved: handling of trials
+- updated: Freemius SDK to 2.5.10
+
+### 3.3.6
+
+- fixed: lists are not confirmed if user choice is enabled.
+
+### 3.3.5
+
+- updated: Freemius SDK to 2.5.9
+- fixed: small CSS issues on RTL
 
 ### 3.3.4
 

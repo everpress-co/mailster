@@ -1934,7 +1934,7 @@ class Mailster {
 				break;
 
 			case 681: // Download canceled
-				$error_msg = $short ? esc_html__( 'Download canceled', 'mailster' ) : esc_html__( 'Download canceled. Please upgrade your license to get automatic updates.', 'mailster' ) . '<br/><a href="' . mailster_url( 'https://kb.mailster.co/no-longer-able-to-access-your-download-heres-what-to-do/' ) . '" target="_blank">' . esc_html__( 'Learn more', 'mailster' ) . '</a>';
+				$error_msg = $short ? esc_html__( 'Download not possible.', 'mailster' ) : '<p>' . esc_html__( 'Download not possible. Please convert your license to get updates.', 'mailster' ) . '</p><p><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_convert' ) . '" target="_top" class="button button-primary">' . esc_html__( 'Convert License now', 'mailster' ) . '</a> <a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" target="_blank">' . esc_html__( 'Learn more', 'mailster' ) . '</a></p>';
 				break;
 
 			case 500: // Internal Server Error
@@ -2887,28 +2887,6 @@ class Mailster {
 				return null;
 			}
 
-			$license = mailster_freemius()->_get_license();
-
-			if ( $license ) {
-				$plan_name = mailster_freemius()->get_plan_name();
-				$support   = get_option( 'mailster_support' );
-				if ( 'legacy' === $plan_name ) {
-					if ( $support == -1 ) {
-						$info->support = false;
-					} elseif ( $support ) {
-						$info->support = $support;
-					}
-				} else {
-					if ( $license->expiration ) {
-						$info->support = max( strtotime( $license->expiration ), $support );
-					} else {
-						$info->support = true;
-					}
-				}
-			} else {
-				$info->support = true;
-			}
-
 			$info->update = false;
 			if ( ! isset( $info->new_version ) ) {
 				$info->new_version = MAILSTER_VERSION;
@@ -2969,54 +2947,18 @@ class Mailster {
 
 	}
 
-	private function get_verfied_object( $force = false ) {
-
-		$old = get_option( '_transient_mailster_verified', array() );
-
-		if ( false === ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
-
-			$license       = $this->license();
-			$license_email = $this->email();
-			$license_user  = $this->username();
-			if ( ! $license || ! $license_email || ! $license_user ) {
-				return false;
-			}
-
-			$verified = null;
-			$recheck  = DAY_IN_SECONDS;
-
-			$result = UpdateCenterPlugin::verify( 'mailster' );
-			if ( ! is_wp_error( $result ) ) {
-				$verified = $result;
-			} else {
-				switch ( $result->get_error_code() ) {
-					case 500: // Internal Server Error
-					case 503: // Service Unavailable
-					case 'http_err':
-						$recheck  = 900;
-						$verified = $old;
-						break;
-					case 681: // no user assigned
-						break;
-				}
-			}
-
-			if ( null !== $verified ) {
-				mailster_remove_notice( 'verify' );
-			}
-
-			set_transient( 'mailster_verified', $verified, $recheck );
-
-		}
-
-		return $verified;
-	}
 
 	public function has_update( $force = false ) {
 
 		$new_version = $this->plugin_info( 'new_version', $force );
 
 		return version_compare( $new_version, MAILSTER_VERSION, '>' );
+	}
+
+	public function is_trial() {
+
+		return mailster_freemius()->is_trial();
+
 	}
 
 	public function is_outdated() {
@@ -3049,9 +2991,9 @@ class Mailster {
 
 	public function support( $force = false ) {
 
-		$support = $this->plugin_info( 'support', $force );
+		$plan = mailster_freemius()->get_plan();
 
-		return $support;
+		return ! empty( $plan->support_email );
 
 	}
 

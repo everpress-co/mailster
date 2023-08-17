@@ -1,3 +1,18 @@
+### Version 3.3.7 (2023-07-07)
+
+- fixed: missing action on migration process
+- improved: handling of trials
+- updated: Freemius SDK to 2.5.10
+
+### Version 3.3.6 (2023-06-29)
+
+- fixed: lists are not confirmed if user choice is enabled.
+
+### Version 3.3.5 (2023-06-14)
+
+- updated: Freemius SDK to 2.5.9
+- fixed: small CSS issues on RTL
+
 ### Version 3.3.4 (2023-06-01)
 
 - fixed: MySQL error on Autoresponder which uses "has received but not opened" or "has received and not clicked" condition.

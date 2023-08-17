@@ -39,7 +39,7 @@ if ( mailster()->is_verified() ) {
 <dl class="mailster-icon mailster-update update-not-available">
 	<dt><?php printf( esc_html__( 'Installed Version %s', 'mailster' ), MAILSTER_VERSION ); ?></dt>
 	<dd><?php esc_html_e( 'You have the latest version', 'mailster' ); ?></dd>
-	<?php if ( function_exists( 'wp_is_auto_update_enabled_for_type' ) && ! mailster( 'update' )->is_auto_update() ) : ?>
+	<?php if ( ! mailster( 'update' )->is_auto_update() ) : ?>
 	<dd><a href="<?php echo mailster( 'update' )->get_auto_update_url(); ?>" class="enable-auto-update"><?php esc_html_e( 'Enable Auto Update', 'mailster' ); ?></a></dd>
 	<?php endif; ?>
 	<!-- <dd><span class="lighter"><a href="" class="check-for-update"><?php esc_html_e( 'Check for Updates', 'mailster' ); ?></a></span>
@@ -60,24 +60,12 @@ if ( mailster()->is_verified() ) {
 <?php endif; ?>
 <dl class="mailster-icon mailster-support">
 	<dt><?php esc_html_e( 'Support', 'mailster' ); ?></dt>
-		<?php if ( mailster()->lifetime_support() ) : ?>
-		<?php elseif ( mailster()->has_support() ) : ?>
-		<dd><span class="lighter"><?php printf( esc_html__( 'Your support expires on %s.', 'mailster' ), '<span class="">' . esc_html( date( $dateformat, mailster()->support() ) ) . '</span>' ); ?></span></dd>
-		<?php elseif ( ! mailster()->support() ) : ?>
-		<dd><strong><?php esc_html_e( 'Your license doesn\'t come with support', 'mailster' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a> <?php echo mailster()->beacon( '64074c66512c5e08fd71ac91' ); ?></dd>
-		<?php elseif ( mailster()->support() ) : ?>
-		<dd><strong><?php printf( esc_html__( 'Your support expired %s ago!', 'mailster' ), '<span class="mailster-username">' . esc_html( human_time_diff( mailster()->support() ) ) . '</span>' ); ?></strong> &ndash; <a href="<?php echo mailster_freemius()->checkout_url(); ?>"><?php esc_html_e( 'Upgrade License', 'mailster' ); ?></a><?php echo mailster()->beacon( '64074c66512c5e08fd71ac91' ); ?></dd>
-		<?php endif; ?>
-	<?php if ( mailster()->has_support() ) : ?>
 	<dd>
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
-		<?php if ( mailster()->has_support() || ! mailster()->support() ) : ?>
 		<a href="<?php echo mailster_freemius()->contact_url(); ?>" class="mailster-support"><?php esc_html_e( 'Get Help', 'mailster' ); ?></a> |
-	<?php endif; ?>
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>
-	<?php endif; ?>
 </dl>
 <?php if ( current_user_can( 'install_languages' ) && $set = mailster( 'translations' )->get_translation_set() ) : ?>
 <dl class="mailster-icon mailster-translate">
