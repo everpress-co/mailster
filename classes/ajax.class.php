@@ -2808,7 +2808,7 @@ class MailsterAjax {
 					$homepage->post_title   = $data['post_title'];
 					$homepage->post_content = $data['post_content'];
 					if ( isset( $data['post_name'] ) ) {
-						$homepage->post_name = $data['post_name'];
+						$homepage->post_name = sanitize_title( $data['post_name'] );
 					}
 
 					// create new one
@@ -2816,6 +2816,7 @@ class MailsterAjax {
 					include MAILSTER_DIR . 'includes/static.php';
 					$homepage                = wp_parse_args( $homepage, $mailster_homepage );
 					$homepage['post_status'] = 'publish';
+					$homepage['post_name']   = sanitize_title( $data['post_name'] );
 					$id                      = wp_insert_post( $homepage );
 					if ( $id && ! is_wp_error( $id ) ) {
 						mailster_remove_notice( 'no_homepage' );
