@@ -193,6 +193,7 @@ class MailsterTranslations {
 				$object['set']                = $translation_set;
 			}
 
+			// do this to make translation popup
 			if ( $translation_set && $lastmodified - $filemtime > 0 ) {
 				$object['data'] = array(
 					'type'       => 'plugin',

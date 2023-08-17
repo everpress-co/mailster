@@ -321,10 +321,12 @@ class Mailster {
 
 		global $mailster_notices;
 
-		$mailster_notices = get_option( 'mailster_notices' );
-		if ( ! $mailster_notices ) {
+		$count = get_option( 'mailster_notices_count' );
+		if ( ! $count ) {
 			return $classes;
 		}
+
+		$mailster_notices = get_option( 'mailster_notices' );
 
 		$screens              = wp_list_pluck( $mailster_notices, 'screen' );
 		$displayed_everywhere = array_filter( $screens, 'is_null' );
@@ -341,7 +343,11 @@ class Mailster {
 
 		global $mailster_notices;
 
-		update_option( 'mailster_notices', empty( $mailster_notices ) ? null : (array) $mailster_notices );
+		$notices = empty( $mailster_notices ) ? null : (array) $mailster_notices;
+		$count   = ! empty( $notices ) ? count( $notices ) : 0;
+
+		update_option( 'mailster_notices', $notices );
+		update_option( 'mailster_notices_count', $count );
 
 	}
 
@@ -349,6 +355,12 @@ class Mailster {
 	public function admin_notices() {
 
 		global $mailster_notices;
+
+		// count is faster as it's autoload 'yes'
+		$count = get_option( 'mailster_notices_count' );
+		if ( ! $count ) {
+			return;
+		}
 
 		$mailster_notices = get_option( 'mailster_notices' );
 		if ( ! $mailster_notices ) {
@@ -1578,10 +1590,12 @@ class Mailster {
 		mailster( 'helper' )->mkdir();
 		if ( $new ) {
 			update_option( 'mailster', time() );
-			update_option( 'mailster_updated', 0 );
+			update_option( 'mailster_updated', '', false );
 			update_option( 'mailster_hooks', '' );
-			update_option( 'mailster_version_first', MAILSTER_VERSION );
+			update_option( 'mailster_version_first', MAILSTER_VERSION, false );
 			update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+			update_option( 'mailster_notices', '', false );
+			update_option( 'mailster_notices_count', 0 );
 		}
 
 	}

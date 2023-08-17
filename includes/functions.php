@@ -966,9 +966,10 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'screen' => $args['screen'],
 	);
 
-	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
-
 	update_option( 'mailster_notices', $mailster_notices );
+	update_option( 'mailster_notices_count', count( $mailster_notices ) );
+
+	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
 
 	return $args['key'];
 
@@ -992,10 +993,12 @@ function mailster_remove_notice( $key ) {
 
 		unset( $mailster_notices[ $key ] );
 
+		update_option( 'mailster_notices', $mailster_notices );
+		update_option( 'mailster_notices_count', count( $mailster_notices ) );
+
 		do_action( 'mailster_remove_notice', $key );
 		do_action( 'mailster_remove_notice_' . $key );
 
-		return update_option( 'mailster_notices', $mailster_notices );
 	}
 
 	return true;

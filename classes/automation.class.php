@@ -1179,6 +1179,14 @@ class MailsterAutomations {
 		return $success;
 	}
 
+	public function on_install( $new ) {
+
+		if ( $new ) {
+			update_option( 'mailster_trigger', '' );
+		}
+
+	}
+
 	public function block_forms_shortcode( $atts, $content ) {
 
 		return $this->render_form_with_options( $atts['id'], array(), false );

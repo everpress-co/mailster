@@ -657,6 +657,10 @@ if ( $old_version ) {
 
 
 		default:
+			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_colors', 'mailster_texts', 'mailster_notices', 'mailster_updated')" );
+			update_option( 'mailster_notices_count', 0 );
+
+
 			mailster( 'convert' )->notice();
 
 			// reset translations

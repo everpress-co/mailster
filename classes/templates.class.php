@@ -1031,6 +1031,9 @@ class MailsterTemplates {
 	public function on_install( $new ) {
 
 		if ( $new ) {
+			update_option( 'mailster_templates_updates', '0' );
+			update_option( 'mailster_colors', '', false );
+
 			try {
 				$this->copy_template();
 			} catch ( Exception $e ) {

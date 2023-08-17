@@ -459,6 +459,7 @@ class MailsterSettings {
 	public function on_activate( $new ) {
 
 		if ( $new ) {
+			update_option( 'mailster_texts', '', false );
 			$this->define_settings();
 			$this->define_texts();
 			mailster_update_option( 'got_url_rewrite', mailster( 'helper' )->got_url_rewrite() );
