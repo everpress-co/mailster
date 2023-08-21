@@ -613,9 +613,6 @@ class MailsterActions {
 					$action_counts[ $parent_ids[ $row->ID ] ]['sent_total']   += (int) $row->total;
 					$action_counts[ $parent_ids[ $row->ID ] ]['sent_deleted'] += ( (int) $row->count - (int) $row->count_cleard );
 				}
-				$action_counts[ $row->ID ]['sent']       = (int) rand( 0, 1000 );
-				$action_counts[ $row->ID ]['sent_total'] = (int) rand( 0, 1000 );
-
 			} // opens
 			elseif ( 'opens' == $mod_action ) {
 				$action_counts[ $row->ID ]['opens']         = (int) $row->count;

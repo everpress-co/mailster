@@ -25,10 +25,10 @@ define( 'MAILSTER_SLUG', basename( MAILSTER_DIR ) . '/' . basename( __FILE__ ) )
 $upload_folder = wp_upload_dir();
 
 if ( ! defined( 'MAILSTER_UPLOAD_DIR' ) ) {
-	define( 'MAILSTER_UPLOAD_DIR', trailingslashit( $upload_folder['basedir'] ) . 'mailster' );
+	define( 'MAILSTER_UPLOAD_DIR', $upload_folder['basedir'] . '/mailster' );
 }
 if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
-	define( 'MAILSTER_UPLOAD_URI', trailingslashit( $upload_folder['baseurl'] ) . 'mailster' );
+	define( 'MAILSTER_UPLOAD_URI', $upload_folder['baseurl'] . '/mailster' );
 }
 
 require_once MAILSTER_DIR . 'vendor/autoload.php';
