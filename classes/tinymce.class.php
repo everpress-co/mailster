@@ -4,19 +4,8 @@ class MailsterTinymce {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
+		add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
 	}
-
-
-	public function init() {
-
-		if ( is_admin() ) {
-			add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
-		}
-
-	}
-
 
 	/**
 	 *

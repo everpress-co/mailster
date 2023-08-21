@@ -4,16 +4,16 @@ class MailsterConvert {
 
 	public function __construct() {
 
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 100 );
 		add_action( 'wp_version_check', array( &$this, 'notice' ) );
 
 	}
 
 	public function admin_menu() {
-
-		if ( get_option( 'mailster_freemius' ) ) {
-			return;
-		}
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert License', 'mailster' ), esc_html__( 'Convert License', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
@@ -36,10 +36,6 @@ class MailsterConvert {
 	}
 
 	public function notice() {
-
-		if ( get_option( 'mailster_freemius' ) ) {
-			return;
-		}
 
 		$msg  = '<h2>' . esc_html__( '[Action Required] We need to transfer your Mailster license!', 'mailster' ) . '</h2>';
 		$msg .= '<p>' . esc_html__( 'Hey there! Just wanted to give you a heads up that we\'re changing our license provider.', 'mailster' ) . '</p>';

@@ -58,7 +58,8 @@
 		<p class="description"><?php esc_html_e( 'Mailster can display custom tags from subscribers on the web version of your campaigns. They will only get displayed if they click a link in the newsletter.', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top" class="settings-row settings-row-gdpr-compliance-forms" hidden>
+	<?php if ( mailster_option( 'legacy_forms' ) ) : ?>
+	<tr valign="top" class="settings-row settings-row-gdpr-compliance-forms">
 		<th scope="row"><?php esc_html_e( 'GDPR Compliance Forms', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[gdpr_forms]" value=""><input type="checkbox" name="mailster_options[gdpr_forms]" value="1" <?php checked( mailster_option( 'gdpr_forms' ) ); ?>> <?php esc_html_e( 'Add a checkbox on your forms for user consent.', 'mailster' ); ?></label>
 		<p class="description"><?php esc_html_e( 'Users must check this checkbox to submit the form.', 'mailster' ); ?></p>
@@ -73,6 +74,7 @@
 		</p>
 		</td>
 	</tr>
+	<?php endif; ?>
 	<tr valign="top" class="settings-row settings-row-maxmind-copy">
 		<th scope="row"></th>
 		<td><p class="description">* This product includes GeoLite data created by MaxMind, available from <a href="https://www.maxmind.com" class="external">maxmind.com</a></p>

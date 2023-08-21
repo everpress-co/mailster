@@ -42,9 +42,9 @@ class MailsterAutomations {
 		add_action( 'publish_mailster-workflow', array( &$this, 'limit_posts' ), 10, 3 );
 
 		add_action( 'classic_editor_plugin_settings', array( &$this, 'enable_on_classic_editor' ) );
+		add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
 		add_shortcode( 'newsletter_block_form', array( &$this, 'block_forms_shortcode' ) );
-		add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 	}
 
 

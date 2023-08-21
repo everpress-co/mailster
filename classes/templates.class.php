@@ -48,17 +48,10 @@ class MailsterTemplates {
 		$this->path = MAILSTER_UPLOAD_DIR . '/templates';
 		$this->url  = MAILSTER_UPLOAD_URI . '/templates';
 
-		add_action( 'init', array( &$this, 'init' ) );
-		add_action( 'mailster_get_screenshots', array( &$this, 'get_screenshots' ), 10, 3 );
-
-	}
-
-
-	public function init() {
-
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 50 );
 		add_action( 'mailster_copy_template', array( &$this, 'copy_template' ) );
 		add_action( 'wp_version_check', array( &$this, 'check_for_updates' ) );
+		add_action( 'mailster_get_screenshots', array( &$this, 'get_screenshots' ), 10, 3 );
 
 	}
 

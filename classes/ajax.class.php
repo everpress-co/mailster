@@ -110,19 +110,9 @@ class MailsterAjax {
 
 	public function __construct() {
 
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			add_action( 'plugins_loaded', array( &$this, 'init' ) );
+		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+			return;
 		}
-
-	}
-
-
-	public function add_ajax_nonce() {
-		wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false );
-	}
-
-
-	public function init() {
 
 		foreach ( $this->methods as $method => $cap ) {
 
@@ -137,6 +127,10 @@ class MailsterAjax {
 
 		}
 
+	}
+
+	public function add_ajax_nonce() {
+		wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false );
 	}
 
 

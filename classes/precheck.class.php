@@ -2,14 +2,7 @@
 
 class MailsterPrecheck {
 
-	public function __construct() {
-
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-	}
-
-
-	public function init() {}
-
+	public function __construct() { }
 
 	/**
 	 *

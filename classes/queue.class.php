@@ -6,13 +6,6 @@ class MailsterQueue {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
-	}
-
-
-	public function init() {
-
 		add_action( 'mailster_cron', array( &$this, 'update_status' ), 10 );
 		add_action( 'mailster_cron', array( &$this, 'update' ), 20 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ), 50 );

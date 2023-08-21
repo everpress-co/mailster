@@ -4,13 +4,6 @@ class MailsterLists {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
-	}
-
-
-	public function init() {
-
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 30 );
 
 	}

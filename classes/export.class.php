@@ -5,12 +5,6 @@ class MailsterExport {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
-	}
-
-	public function init() {
-
 		add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
 		add_action( 'wp_import_insert_post', array( &$this, 'convert_old_campaign_ids' ), 10, 4 );
 		add_action( 'export_wp', array( &$this, 'set_temporary_export_meta' ) );

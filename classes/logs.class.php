@@ -10,12 +10,9 @@ class MailsterLogs {
 	 */
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
-	}
-
-
-	public function init() {
+		if ( ! mailster_option( 'logging' ) ) {
+			return;
+		}
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 55 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ), 100 );
@@ -25,10 +22,6 @@ class MailsterLogs {
 
 
 	public function admin_menu() {
-
-		if ( ! mailster_option( 'logging' ) ) {
-			return;
-		}
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Logs', 'mailster' ), esc_html__( 'Logs', 'mailster' ), 'mailster_view_logs', 'mailster_logs', array( &$this, 'view_logs' ) );
 

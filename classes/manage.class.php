@@ -7,6 +7,7 @@ class MailsterManage {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
+
 		add_action( 'wp_ajax_mailster_import_handler', array( &$this, 'import_handler' ) );
 		add_action( 'wp_ajax_mailster_get_import_data', array( &$this, 'ajax_get_import_data' ) );
 		add_action( 'wp_ajax_mailster_do_import', array( &$this, 'ajax_do_import' ) );

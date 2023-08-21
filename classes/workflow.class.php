@@ -2,7 +2,6 @@
 
 class MailsterWorkflow {
 
-
 	private $entry;
 	private $is_search;
 	private $workflow;

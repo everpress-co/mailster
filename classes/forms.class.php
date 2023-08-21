@@ -6,13 +6,6 @@ class MailsterForms {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
-	}
-
-
-	public function init() {
-
 		// don't use anymore
 		if ( ! mailster_option( 'legacy_forms' ) ) {
 			return;

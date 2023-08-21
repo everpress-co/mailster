@@ -4,13 +4,6 @@ class MailsterSubscribers {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
-	}
-
-
-	public function init() {
-
 		add_action( 'mailster_cron', array( &$this, 'maybe_update_rating' ), 99 );
 		add_action( 'mailster_cron_worker', array( &$this, 'send_confirmations' ), 99 );
 		add_action( 'mailster_cron_worker', array( &$this, 'maybe_update_rating' ), 99 );
@@ -38,15 +31,9 @@ class MailsterSubscribers {
 
 		add_action( 'mailster_update_rating', array( &$this, 'update_rating' ) );
 
-		if ( is_admin() ) {
-
-			add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
-			add_action( 'show_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
-			add_action( 'edit_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
-
-		} else {
-
-		}
+		add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
+		add_action( 'show_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
+		add_action( 'edit_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
 
 	}
 

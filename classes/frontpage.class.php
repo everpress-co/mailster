@@ -4,7 +4,7 @@ class MailsterFrontpage {
 
 	public function __construct() {
 
-		add_action( 'init', array( &$this, 'init' ) );
+		add_filter( 'the_content', array( &$this, 'shortcode_empty_paragraph_fix' ) );
 
 		add_action( 'query_vars', array( &$this, 'set_query_vars' ) );
 		add_action( 'template_redirect', array( &$this, 'template_redirect' ), 1 );
@@ -32,19 +32,6 @@ class MailsterFrontpage {
 		add_shortcode( 'newsletter_button', array( &$this, 'newsletter_button' ) );
 
 	}
-
-
-	public function init() {
-
-		add_filter( 'the_content', array( &$this, 'shortcode_empty_paragraph_fix' ) );
-
-		if ( mailster_option( '_flush_rewrite_rules' ) ) {
-			flush_rewrite_rules( true );
-			mailster_update_option( '_flush_rewrite_rules', false );
-		}
-
-	}
-
 
 	/**
 	 *

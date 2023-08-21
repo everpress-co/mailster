@@ -26,7 +26,7 @@ class MailsterConditions {
 	private $_special_campaigns;
 	private $_field_operator;
 
-	public function __construct() {   }
+	public function __construct() {}
 
 
 	public function check( $conditions, $subscribers ) {

@@ -12,25 +12,9 @@ class MailsterCampaigns {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
+		add_action( 'plugins_loaded', array( &$this, 'hooks' ) );
 		add_action( 'init', array( &$this, 'register_post_type' ) );
 		add_action( 'init', array( &$this, 'register_post_status' ) );
-
-		$mailster_hooks = get_option( 'mailster_hooks', false );
-		if ( ! empty( $mailster_hooks ) ) {
-			foreach ( $mailster_hooks as $campaign_id => $hooks ) {
-				foreach ( (array) $hooks as $hook ) {
-					if ( $hook ) {
-						add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
-					}
-				}
-			}
-		}
-
-	}
-
-
-	public function init() {
 
 		add_action( 'transition_post_status', array( &$this, 'maybe_queue_post_changed' ), 10, 3 );
 
@@ -67,6 +51,24 @@ class MailsterCampaigns {
 
 	}
 
+
+	public function hooks() {
+
+		$mailster_hooks = get_option( 'mailster_hooks', false );
+
+		if ( empty( $mailster_hooks ) ) {
+			return;
+		}
+
+		foreach ( $mailster_hooks as $campaign_id => $hooks ) {
+			foreach ( (array) $hooks as $hook ) {
+				if ( $hook ) {
+					add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
+				}
+			}
+		}
+
+	}
 
 	public function redirect_for_iframe_editing( $location, $post_id ) {
 

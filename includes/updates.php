@@ -13,8 +13,10 @@ $mailster_texts   = mailster_texts();
 
 $new_version = MAILSTER_VERSION;
 
-$texts              = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
-$show_update_notice = false;
+$texts               = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
+$show_update_notice  = false;
+$flush_rewrite_rules = false;
+
 
 $default_options = mailster( 'settings' )->get_defaults();
 $default_texts   = mailster( 'settings' )->get_default_texts();
@@ -315,11 +317,11 @@ if ( $old_version ) {
 				'profile'     => 'profile',
 			);
 
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$flush_rewrite_rules = true;
 		case '2.0.10':
 		case '2.0.11':
 		case '2.0.12':
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$flush_rewrite_rules = true;
 		case '2.0.13':
 			$forms = $mailster_options['forms'];
 			$optin = isset( $forms[0] ) && isset( $forms[0]['double_opt_in'] );
@@ -362,10 +364,10 @@ if ( $old_version ) {
 			if ( $mailster_options['php_mailer'] ) {
 				$mailster_options['php_mailer'] = '5.2.14';
 			}
-			$mailster_options['archive_slug']         = $mailster_options['slug'];
-			$mailster_options['archive_types']        = array( 'finished', 'active' );
-			$mailster_options['module_thumbnails']    = true;
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$mailster_options['archive_slug']      = $mailster_options['slug'];
+			$mailster_options['archive_types']     = array( 'finished', 'active' );
+			$mailster_options['module_thumbnails'] = true;
+			$flush_rewrite_rules                   = true;
 
 		case '2.1.2':
 		case '2.1.3':
@@ -376,7 +378,7 @@ if ( $old_version ) {
 
 		case '2.1.7':
 		case '2.1.8':
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$flush_rewrite_rules = true;
 
 		case '2.1.9':
 			$texts = wp_parse_args( $texts, $default_texts );
@@ -440,14 +442,14 @@ if ( $old_version ) {
 			update_option( 'mailster_templates', '' );
 			update_option( 'mailster_cron_lasthit', '' );
 			delete_option( 'mailster_purchasecode_disabled' );
-			$mailster_options['legacy_hooks']         = true;
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$mailster_options['legacy_hooks'] = true;
+			$flush_rewrite_rules              = true;
 			update_option( 'mailster_license', $mailster_options['purchasecode'] );
 
 		case '2.2':
 		case '2.2.1':
 		case '2.2.2':
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$flush_rewrite_rules = true;
 
 		case '2.2.3':
 		case '2.2.4':
@@ -482,8 +484,8 @@ if ( $old_version ) {
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 
-			$mailster_options['_flush_rewrite_rules'] = true;
-			$show_update_notice                       = true;
+			$flush_rewrite_rules = true;
+			$show_update_notice  = true;
 
 		case '2.3':
 		case '2.3.1':
@@ -512,7 +514,7 @@ if ( $old_version ) {
 		case '2.3.13':
 			// allow NULL values on one column
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_subscriber_meta CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$flush_rewrite_rules = true;
 		case '2.3.14':
 			// remove entries caused by wrong tracking
 			$wpdb->query( "DELETE FROM {$wpdb->prefix}mailster_actions WHERE subscriber_id = 0" );
@@ -538,7 +540,7 @@ if ( $old_version ) {
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s) WHERE post_type = 'newsletter'", '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/' ) );
 
 		case '2.4.2':
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$flush_rewrite_rules = true;
 
 		case '2.4.3':
 			if ( get_option( 'mailster' ) && get_option( 'mailster' ) < strtotime( '2018-01-01 00:00' ) ) {
@@ -605,8 +607,8 @@ if ( $old_version ) {
 			$mailster_options['auto_send_at_once'] = false;
 			$mailster_options['antiflood']         = 10;
 
-			$mailster_options['db_update_required']   = true;
-			$mailster_options['_flush_rewrite_rules'] = true;
+			$mailster_options['db_update_required'] = true;
+			$flush_rewrite_rules                    = true;
 
 		case '3.0':
 			// beta users do not need to run the update process again
@@ -699,7 +701,10 @@ mailster_clear_cache();
 // delete plugin hash
 delete_transient( 'mailster_hash' );
 
-// add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );
+// maybe flush rewrite rules
+if ( $flush_rewrite_rules ) {
+	add_action( 'shutdown', 'flush_rewrite_rules' );
+}
 
 if ( $old_version && $show_update_notice ) {
 	mailster_notice(

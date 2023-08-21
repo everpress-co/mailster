@@ -4,8 +4,8 @@ class MailsterSettings {
 
 	public function __construct() {
 
-		add_action( 'admin_init', array( &$this, 'admin_init' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 70 );
+		add_action( 'admin_init', array( &$this, 'admin_init' ) );
 		add_action( 'admin_init', array( &$this, 'register_settings' ) );
 		add_action( 'admin_init', array( &$this, 'actions' ) );
 		add_action( 'admin_init', array( &$this, 'maybe_create_homepage' ) );
@@ -27,26 +27,30 @@ class MailsterSettings {
 	 */
 	public function maybe_create_homepage() {
 
-		if ( isset( $_GET['mailster_create_homepage'] ) && wp_verify_nonce( $_GET['mailster_create_homepage'], 'mailster_create_homepage' ) ) {
+		if ( ! isset( $_GET['mailster_create_homepage'] ) ) {
+			return;
+		}
+		if ( ! wp_verify_nonce( $_GET['mailster_create_homepage'], 'mailster_create_homepage' ) ) {
+			return;
+		}
 
-			if ( $homepage = mailster_option( 'homepage' ) ) {
+		if ( $homepage = mailster_option( 'homepage' ) ) {
 
-				mailster_notice( esc_html__( 'Homepage already created!', 'mailster' ), '', true );
-				mailster_redirect( 'post.php?post=' . $homepage . '&action=edit' );
+			mailster_notice( esc_html__( 'Homepage already created!', 'mailster' ), '', true );
+			mailster_redirect( 'post.php?post=' . absint( $homepage ) . '&action=edit' );
+			exit;
+
+		} else {
+
+			include MAILSTER_DIR . 'includes/static.php';
+
+			if ( $id = wp_insert_post( $mailster_homepage ) ) {
+				mailster_notice( esc_html__( 'Homepage created!', 'mailster' ), 'info', true );
+				mailster_update_option( 'homepage', $id );
+				mailster_remove_notice( 'no_homepage' );
+				mailster_remove_notice( 'wrong_homepage_status' );
+				mailster_redirect( 'post.php?post=' . absint( $id ) . '&action=edit&message=10' );
 				exit;
-
-			} else {
-
-				include MAILSTER_DIR . 'includes/static.php';
-
-				if ( $id = wp_insert_post( $mailster_homepage ) ) {
-					mailster_notice( esc_html__( 'Homepage created!', 'mailster' ), 'info', true );
-					mailster_update_option( 'homepage', $id );
-					mailster_remove_notice( 'no_homepage' );
-					mailster_remove_notice( 'wrong_homepage_status' );
-					mailster_redirect( 'post.php?post=' . $id . '&action=edit&message=10' );
-					exit;
-				}
 			}
 		}
 	}
@@ -829,7 +833,6 @@ class MailsterSettings {
 							mailster( 'geo' )->set_cron( 'weekly' );
 						} else {
 							mailster( 'geo' )->set_cron();
-
 						}
 					}
 
@@ -838,7 +841,7 @@ class MailsterSettings {
 				case 'homepage':
 					if ( $old != $value ) {
 						mailster_remove_notice( 'no_homepage' );
-						$options['_flush_rewrite_rules'] = true;
+						add_action( 'shutdown', 'flush_rewrite_rules' );
 					}
 					if ( $wp_rewrite && ! get_permalink( $value ) ) {
 						$this->add_settings_error( sprintf( esc_html__( 'Please define a homepage for the newsletter on the %s tab!', 'mailster' ), '<a href="#frontend">' . esc_html__( 'Front End', 'mailster' ) . '</a>' ), 'no_homepage' );
@@ -852,8 +855,8 @@ class MailsterSettings {
 					}
 
 					if ( $old != $value ) {
-						$value                           = sanitize_title( $value );
-						$options['_flush_rewrite_rules'] = true;
+						$value = sanitize_title( $value );
+						add_action( 'shutdown', 'flush_rewrite_rules' );
 					}
 					break;
 
@@ -867,7 +870,7 @@ class MailsterSettings {
 							$value[ $key ] = $v;
 						}
 
-						$options['_flush_rewrite_rules'] = true;
+						add_action( 'shutdown', 'flush_rewrite_rules' );
 					}
 					break;
 
@@ -877,7 +880,7 @@ class MailsterSettings {
 						$this->add_settings_error( sprintf( esc_html__( 'Please change the slug or permalink of %s since it\'s used by the archive page', 'mailster' ), '<a href="post.php?post=' . $page->ID . '&action=edit">' . $page->post_title . '</a>' ), 'hasarchive' );
 					}
 					if ( $old != $value ) {
-						$options['_flush_rewrite_rules'] = true;
+						add_action( 'shutdown', 'flush_rewrite_rules' );
 					}
 					break;
 
@@ -897,7 +900,7 @@ class MailsterSettings {
 							$this->add_settings_error( sprintf( esc_html__( 'Your newsletter archive page is: %s', 'mailster' ), '<a href="' . home_url( $value ) . '" class="external">' . home_url( $value ) . '</a>' ), 'archive_slug', 'updated' );
 						}
 
-						$options['_flush_rewrite_rules'] = true;
+						add_action( 'shutdown', 'flush_rewrite_rules' );
 					}
 					break;
 
@@ -943,7 +946,7 @@ class MailsterSettings {
 						$value = md5( uniqid() );
 					}
 					if ( $old != $value ) {
-						$options['_flush_rewrite_rules'] = true;
+						add_action( 'shutdown', 'flush_rewrite_rules' );
 					}
 
 					break;
@@ -1485,7 +1488,7 @@ class MailsterSettings {
 		$options['homepage']        = $old_options['homepage'];
 		$options['got_url_rewrite'] = mailster( 'helper' )->got_url_rewrite();
 
-		$options['_flush_rewrite_rules'] = true;
+		add_action( 'shutdown', 'flush_rewrite_rules' );
 
 		return array(
 			'options' => $options,
