@@ -18,7 +18,7 @@ import { useDebounce } from '@wordpress/compose';
  * Internal dependencies
  */
 
-import { useSessionStorage } from '../../util';
+import { useSessionStorage, whenEditorIsReady } from '../../util';
 
 const MAX_ZOOM = 100;
 const MIN_ZOOM = 40;
@@ -41,6 +41,19 @@ export default function CanvasToolbar() {
 	}, 400);
 
 	useEffect(() => {
+		whenEditorIsReady().then((w) => {
+			const sel = w.document.querySelector;
+			setFrame(
+				w.document.querySelector('.interface-interface-skeleton__content') || w
+			);
+			setPane(w.document.querySelector('.is-root-container'));
+			setPane(w.document.querySelector('.editor-styles-wrapper'));
+			isLoaded(true);
+		});
+	}, []);
+
+	useEffect(() => {
+		return;
 		if (iframed) {
 			iframed.addEventListener('load', () => {
 				setFrame(iframed.contentWindow);
@@ -83,6 +96,7 @@ export default function CanvasToolbar() {
 			) {
 				return;
 			}
+			//console.warn('START DRAG');
 
 			// get the mouse cursor position at startup:
 			posX = e.clientX || e.changedTouches[0].clientX;
@@ -99,8 +113,8 @@ export default function CanvasToolbar() {
 			e.preventDefault();
 
 			let pos = getPanePosition();
-			let f = (100 - pos.z) * Math.exp(-4) + 1;
-			f = 1;
+
+			//let f = (100 - pos.z) * Math.exp(-4) + 1;
 
 			// calculate the new cursor position:
 			offsetX = e.clientX - posX;
@@ -116,6 +130,8 @@ export default function CanvasToolbar() {
 		}
 
 		function stopDrag(e) {
+			//console.warn('STOP DRAG');
+
 			// stop moving when mouse button is released:
 			pane.classList.remove('dragging');
 			pane.removeEventListener('mouseup', stopDrag);

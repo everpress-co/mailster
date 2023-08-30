@@ -12,19 +12,23 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { Panel, PanelRow, PanelBody } from '@wordpress/components';
 
 import { useEffect } from '@wordpress/element';
+import { useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import { whenEditorIsReady } from '../../util';
 
 export default function StepId(props) {
 	const { attributes, setAttributes, clientId, isSelected } = props;
 	const { id } = attributes;
 
 	useEffect(() => {
-		if (!id || document.querySelectorAll('.mailster-step-' + id).length > 1)
-			setAttributes({ id: clientId.substring(30) });
-	});
+		whenEditorIsReady().then((w) => {
+			if (!id || w.document.querySelectorAll('.mailster-step-' + id).length > 1)
+				setAttributes({ id: clientId.substring(30) });
+		});
+	}, []);
 
 	useEffect(() => {
 		if (!isSelected || !id) return;

@@ -35,7 +35,7 @@ import WelcomeGuide from './WelcomeGuide';
 import Placement from './Placement';
 import PublishChecks from './PublishChecks';
 import '../store';
-import { searchBlock, whenEditorIsReady } from '../../util';
+import { searchBlock } from '../../util';
 
 function SettingsPanelPlugin() {
 	const [meta, setMeta] = useEntityProp('postType', 'mailster-form', 'meta');

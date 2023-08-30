@@ -35,10 +35,8 @@ import {
 	whenEditorIsReady,
 	searchBlocks,
 	searchBlock,
-	useLocalStorage,
+	useBlockChange,
 } from '../../util';
-import { ButtonGroup } from '@wordpress/components';
-import { Button } from '@wordpress/components';
 
 whenEditorIsReady().then(() => {
 	window.addEventListener('popstate', (event) => {
@@ -47,23 +45,7 @@ whenEditorIsReady().then(() => {
 	selectBlockFromHash();
 });
 
-whenEditorIsReady().then(() => {
-	const editorToolbar = document.querySelector('.edit-post-header__toolbar');
-
-	// If toolbar doesn't exist, we can't continue
-	if (!editorToolbar) {
-		return;
-	}
-
-	const wrap = document.createElement('div');
-	wrap.id = 'canvas-toolbar';
-	wrap.style.cssText = 'display:flex;';
-
-	editorToolbar.appendChild(wrap);
-
-	const root = createRoot(wrap);
-	root.render(<CanvasToolbar />);
-});
+whenEditorIsReady().then(() => {});
 
 const selectBlockFromHash = () => {
 	const step = location.hash.match(/#step-([a-z0-9]+)/);
@@ -90,11 +72,12 @@ function SettingsPanelPlugin() {
 		removeBlock,
 	} = useDispatch('core/block-editor');
 	const { getBlockRootClientId, getBlockIndex, getBlocks } =
-		useSelect('core/block-editor');
+		select('core/block-editor');
 	const { isAutosavingPost, isSavingPost, isCleanNewPost } =
-		useSelect('core/editor');
+		select('core/editor');
 
-	const blocks = getBlocks();
+	// TODO check if cblock count change on removing blocks
+	const blocks = select('core/block-editor').getBlocks();
 	const [invalidBlocks, setinvalidBlocks] = useState([]);
 
 	const invalidSteps = invalidBlocks.length;
@@ -109,7 +92,6 @@ function SettingsPanelPlugin() {
 
 	// TODO Make this better
 	useEffect(() => {
-		//console.log('BLOCK ADDED');
 		return;
 		const count = [
 			...document.querySelectorAll('.mailster-step-incomplete'),
@@ -124,10 +106,26 @@ function SettingsPanelPlugin() {
 	}, [blocks]);
 
 	// TODO Make this better
-	useEffect(() => {}, []);
-
 	useEffect(() => {
-		if (isCleanNewPost()) return;
+		const editorToolbar = document.querySelector('.edit-post-header__toolbar');
+
+		// If toolbar doesn't exist, we can't continue
+		if (!editorToolbar) {
+			return;
+		}
+
+		const wrap = document.createElement('div');
+		wrap.id = 'canvas-toolbar';
+		wrap.style.cssText = 'display:flex;';
+
+		editorToolbar.appendChild(wrap);
+
+		const root = createRoot(wrap);
+		root.render(<CanvasToolbar />);
+	}, []);
+
+	useBlockChange(() => {
+		//if (isCleanNewPost()) return;
 		const triggerBlocks = searchBlocks('mailster-workflow/triggers');
 		if (!triggerBlocks.length) {
 			const block = createBlock('mailster-workflow/triggers');
@@ -140,43 +138,52 @@ function SettingsPanelPlugin() {
 				dispatch('core/block-editor').removeBlock(block.clientId);
 			});
 		}
-	}, [blocks]);
+	});
 
-	const iframed = document.querySelector('iframe[name="editor-canvas"]');
 	const [conditionsDepth, setConditionsDepth] = useState();
 
-	useEffect(() => {
-		if (!iframed) return;
+	useBlockChange(() => {
+		whenEditorIsReady().then((w) => {
+			const findMaxDepth = (root, selector, depth = 0) =>
+				[...root.querySelectorAll(selector)].reduce(
+					(maxDepth, children) =>
+						Math.max(maxDepth, findMaxDepth(children, selector, depth + 1)),
+					depth
+				);
 
-		const findMaxDepth = (root, selector, depth = 0) =>
-			[...root.querySelectorAll(selector)].reduce(
-				(maxDepth, children) =>
-					Math.max(maxDepth, findMaxDepth(children, selector, depth + 1)),
-				depth
-			);
-
-		const check = () => {
-			if (iframed.contentWindow.document.readyState == 'complete') {
+			const check = () => {
 				if (searchBlock('mailster-workflow/conditions')) {
-					const root =
-						iframed.contentWindow.document.querySelector('.is-root-container');
-					if (root) {
-						setConditionsDepth(findMaxDepth(root, '.mailster-step-conditions'));
-					}
+					setConditionsDepth(
+						findMaxDepth(
+							w.document.querySelector('.is-root-container'),
+							'.mailster-step-conditions'
+						)
+					);
 				} else {
 					setConditionsDepth(0);
 				}
-				const wrap = iframed.contentWindow.document.querySelector(
-					'.editor-styles-wrapper'
-				);
-				if (wrap) wrap.style.minWidth = conditionsDepth * 800 + 'px';
-			}
-		};
+			};
 
-		iframed && iframed.addEventListener('load', check);
+			check();
+		});
+	});
 
-		check();
-	}, [conditionsDepth, iframed, blocks]);
+	/*
+
+	1 800
+	2 1600
+	3 2800
+	4 5300
+
+
+	*/
+
+	useEffect(() => {
+		whenEditorIsReady().then((w) => {
+			const wrap = w.document.querySelector('.editor-styles-wrapper');
+			if (wrap) wrap.style.minWidth = conditionsDepth * 800 + 'px';
+		});
+	}, [conditionsDepth]);
 
 	return (
 		<>

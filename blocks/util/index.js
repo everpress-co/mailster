@@ -279,11 +279,48 @@ export function whenEditorIsReady() {
 				select('core/editor').isCleanNewPost() ||
 				select('core/block-editor').getBlockCount() > 0
 			) {
-				unsubscribe();
-				resolve();
+				// check if we have an iframe (6.3+) and store the window object
+				const iframe = document.querySelector('iframe[name="editor-canvas"]');
+				const winObj = iframe ? iframe.contentWindow : window;
+
+				const resolver = () => {
+					winObj.removeEventListener('load', resolver);
+					unsubscribe();
+					resolve(winObj);
+				};
+				// search for the root container which indicates the content is loaded
+				if (winObj.document.querySelector('.is-root-container')) {
+					resolver();
+				} else {
+					// document is not ready yet, so add an event listener
+					winObj.addEventListener('load', resolver);
+				}
 			}
 		});
 	});
+}
+
+export function useBlockChange(callback) {
+	let useBlockChangeBlockCount = null;
+	whenEditorIsReady().then((w) => {
+		subscribe(() => {
+			const blocks = w.document.querySelectorAll('.wp-block');
+
+			// Get new blocks client ids
+			const newBlockList = blocks.length;
+
+			if (newBlockList === useBlockChangeBlockCount) {
+				return;
+			}
+
+			// Update current block list with the new blocks for further comparison
+			useBlockChangeBlockCount = newBlockList;
+
+			callback(useBlockChangeBlockCount);
+		});
+	});
+
+	useUpdateEffectCustom(() => {}, [useBlockChangeBlockCount]);
 }
 
 export function useLocalStorage(key, initialValue) {
@@ -528,20 +565,8 @@ export function searchBlocks(blockName, clientId = null, deep = true) {
 	return matchingBlocks;
 }
 
-function el(block) {
-	console.warn(
-		document
-			.querySelector('iframe[name="editor-canvas"]')
-			.contentWindow.document.querySelector('#block-' + block.clientId)
-	);
-}
-
 export function searchBlocksNew(blockName, clientId = null, deep = true) {
 	const blocks = select('core/block-editor').getBlocks(clientId);
-
-	console.warn(
-		'SEARCH for ' + blockName + ' in ' + clientId + ' of total ' + blocks.length
-	);
 
 	let matchingBlocks = blocks.filter((block) => block.name === blockName);
 
@@ -557,10 +582,6 @@ export function searchBlocksNew(blockName, clientId = null, deep = true) {
 			}
 		}
 	}
-
-	console.warn('FOUND ' + matchingBlocks.length);
-
-	//if (blockName == 'mailster-workflow/conditions') console.warn(matchingBlocks);
 
 	return matchingBlocks;
 }

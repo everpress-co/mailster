@@ -29,7 +29,6 @@ import { useEntityProp } from '@wordpress/core-data';
 
 import './editor.scss';
 
-import { searchBlock, whenEditorIsReady } from '../../util';
 import BlockRecovery from './BlockRecovery';
 import InlineStyles from '../../util/InlineStyles';
 
