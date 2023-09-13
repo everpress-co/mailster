@@ -15,7 +15,7 @@
 		"mockery/mockery": "1.2",
 		"brain/monkey": "2.*",
 		"pronamic/wp-documentor": "^1.2",
-		"wp-coding-standards/wpcs": "^2.3",
+		"wp-coding-standards/wpcs": "^3.0",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"php-parallel-lint/php-parallel-lint": "^1.0"
