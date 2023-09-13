@@ -510,14 +510,8 @@ class MailsterTests {
 
 			$geo = mailster( 'geo' );
 
-			$warnings = array();
-
 			if ( ! file_exists( $path = $geo->get_file_path() ) ) {
-				$warnings[] = sprintf( 'The Geo Database was not found in %s', dirname( $path ) );
-			}
-
-			if ( ! empty( $warnings ) ) {
-				$this->warning( implode( '<br>', $warnings ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#privacy' ) );
+				$this->warning( sprintf( 'The Geo Database was not found in %s', '<strong>' . dirname( $path ) . '</strong>' ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#privacy' ) );
 			}
 		}
 	}
