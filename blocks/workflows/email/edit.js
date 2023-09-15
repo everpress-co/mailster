@@ -156,25 +156,19 @@ export default function Edit(props) {
 								<div className="email-stats-label">
 									{__('Sent', 'mailster')}
 								</div>
-								<div className="email-stats-value">
-									{stats?.sent_total || '-'}
-								</div>
+								<div className="email-stats-value">{stats?.sent || '-'}</div>
 							</div>
 							<div className="email-stats-opens">
 								<div className="email-stats-label">
 									{__('Opened', 'mailster')}
 								</div>
-								<div className="email-stats-value">
-									{stats?.opens_total || '-'}
-								</div>
+								<div className="email-stats-value">{stats?.opens || '-'}</div>
 							</div>
 							<div className="email-stats-clicks">
 								<div className="email-stats-label">
 									{__('Clicked', 'mailster')}
 								</div>
-								<div className="email-stats-value">
-									{stats?.clicks_total || '-'}
-								</div>
+								<div className="email-stats-value">{stats?.clicks || '-'}</div>
 							</div>
 							<div className="email-stats-unsubs">
 								<div className="email-stats-label">

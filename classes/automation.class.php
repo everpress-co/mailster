@@ -511,10 +511,7 @@ class MailsterAutomations {
 
 			foreach ( $workflow_campaigns as $workflow_campaign ) {
 				$actions = mailster( 'actions' )->get_by_campaign( $workflow_campaign );
-				// TODO check if use total or single
-				$numbers['sent']    += $actions['sent_total'];
-				$numbers['opens']   += $actions['opens_total'];
-				$numbers['clicks']  += $actions['clicks_total'];
+
 				$numbers['sent']    += $actions['sent'];
 				$numbers['opens']   += $actions['opens'];
 				$numbers['clicks']  += $actions['clicks'];

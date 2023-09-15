@@ -127,19 +127,17 @@ class MailsterCampaigns {
 		$placeholder->excerpt_filters( false );
 		$placeholder->set_campaign( $post->ID );
 
-		if ( $tags && $subscriber = mailster( 'subscribers' )->get_current_user() ) {
-			$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
+		if ( $tags ) {
 
-			$placeholder->set_subscriber( $subscriber->ID );
-			$placeholder->add( $userdata );
+			$subscriber = mailster( 'subscribers' )->get_current_user();
 
-			$placeholder->add(
-				array(
-					'firstname' => $subscriber->firstname,
-					'lastname'  => $subscriber->lastname,
-					'fullname'  => $subscriber->fullname,
-				)
-			);
+			if ( $subscriber ) {
+				$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
+
+				$placeholder->set_subscriber( $subscriber->ID );
+				$placeholder->add( $userdata );
+
+			}
 		}
 
 		$placeholder->add_defaults( $post->ID );

@@ -133,9 +133,6 @@
 						<h4><?php esc_html_e( 'Share the link', 'mailster' ); ?></h4>
 						<div>
 							<input type="text" value="<?php echo esc_attr( $permalink ); ?>" onclick="this.select()">
-							<?php if ( ! apply_filters( 'mailster_hide_poweredby', false ) ) : ?>
-							<div class="powered-by">powered by <a href="<?php echo mailster_url( 'https://mailster.co' ); ?>">Mailster Newsletter Plugin</a></div>
-							<?php endif; ?>
 						</div>
 					</li>
 				</ul>

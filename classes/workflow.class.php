@@ -887,8 +887,6 @@ class MailsterWorkflow {
 				break;
 
 			case 'month':
-				error_log( print_r( $step, true ) );
-
 				if ( ! isset( $step['attr']['month'] ) ) {
 					return new WP_Error( 'error', 'No month defined!', $step );
 				}
@@ -940,6 +938,9 @@ class MailsterWorkflow {
 				return new WP_Error( 'error', 'No matching delay option found.', $step );
 			break;
 		}
+
+		// TODO: maybe set timestamp to now if we're in a "Testing mode"
+		// $timestamp = time();
 
 		// no need to schedule if in the past
 		if ( $timestamp <= time() ) {
