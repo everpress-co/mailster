@@ -101,6 +101,7 @@ export default function DelayInspectorControls({
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
+					<HelpBeacon id="64623a1035c39a6db5f441e4" align="right" />
 					<PanelRow>
 						<BaseControl label="Delay Workflow">
 							<Flex gap={4} align="center" justify="space-between">

@@ -102,9 +102,9 @@ export default function ActionInspectorControls(props) {
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
+					<HelpBeacon id="646237eb17da4d6b8d6ef0b7" align="right" />
 					<PanelRow>
 						<ItemGroup>
-							<HelpBeacon id="646237eb17da4d6b8d6ef0b7" align="right" />
 							{!allActions && <Spinner />}
 							{action && (
 								<BaseControl help={info}>

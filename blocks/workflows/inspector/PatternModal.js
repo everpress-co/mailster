@@ -119,7 +119,7 @@ export default function PatternModal(props) {
 			shouldCloseOnEsc={false}
 			className="mailster-patterns-modal"
 		>
-			<HelpBeacon id="63fb5f4e0b394c459d8a5c1e" align="right" />
+			<HelpBeacon id="6460f6909a2fac195e609002" align="right" />
 			<div className="mailster-patterns-explorer">
 				{patterns.length == 0 && (
 					<Flex className="mailster-patterns-loader" justify="center">

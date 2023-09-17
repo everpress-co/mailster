@@ -9,27 +9,12 @@
 import { __ } from '@wordpress/i18n';
 
 import { InspectorControls } from '@wordpress/block-editor';
-import ServerSideRender from '@wordpress/server-side-render';
 import {
 	Panel,
 	PanelRow,
 	PanelBody,
-	CheckboxControl,
 	TextControl,
-	RangeControl,
-	SelectControl,
-	__experimentalNumberControl as NumberControl,
-	FlexItem,
-	Flex,
-	Spinner,
-	__experimentalItemGroup as ItemGroup,
-	DropdownMenu,
-	MenuGroup,
-	MenuItem,
-	Button,
-	Modal,
 	Tip,
-	ExternalLink,
 } from '@wordpress/components';
 
 import { useEffect, useState } from '@wordpress/element';
@@ -41,7 +26,7 @@ import * as Icons from '@wordpress/icons';
  */
 
 import CampaignSelector from './CampaignSelector';
-import { lowerFirst } from 'lodash';
+import { HelpBeacon } from '../../util';
 
 export default function EmailInspectorControls(props) {
 	const { attributes, setAttributes, campaignObj } = props;
@@ -58,6 +43,7 @@ export default function EmailInspectorControls(props) {
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
+					<HelpBeacon id="64623ab58783627a4ed4c5ec" align="right" />
 					<CampaignSelector {...props} />
 				</PanelBody>
 			</Panel>
