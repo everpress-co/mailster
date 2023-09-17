@@ -26,6 +26,7 @@ class MailsterAutomations {
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), PHP_INT_MAX, 2 );
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
+		add_filter( 'use_block_editor_for_post_type', array( &$this, 'force_block_editor' ), PHP_INT_MAX, 2 );
 		// add_action( 'register_block_type_args', array( &$this, 'register_variations' ), 10, 2 );
 		// add_action( 'register_block_type_args', array( &$this, 'register_conditions_variations' ), 10, 2 );
 
@@ -1045,6 +1046,18 @@ class MailsterAutomations {
 		$editor_settings['codeEditingEnabled'] = defined( 'WP_DEBUG' ) && WP_DEBUG;
 
 		return $editor_settings;
+
+	}
+
+
+	public function force_block_editor( $bool, $post_type ) {
+
+		// just pass through
+		if ( $post_type !== 'mailster-workflow' ) {
+			return $bool;
+		}
+
+		return true;
 
 	}
 
