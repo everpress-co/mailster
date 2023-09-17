@@ -76,6 +76,7 @@ import apiFetch from '@wordpress/api-fetch';
 			const isSubmission = form.type == 'submission';
 			let delayTimeout = null;
 			let inactiveTimeout = null;
+			let isBusy = false;
 			const triggerMethods = {
 				delay: () => {
 					delayTimeout = setTimeout(() => {
@@ -131,10 +132,12 @@ import apiFetch from '@wordpress/api-fetch';
 			function formSubmit(event) {
 				event.preventDefault();
 
+				if (isBusy) return;
+				isBusy = true;
+
 				let formData = new FormData(formEl),
 					data = {},
 					message = [],
-					submit = querySelector(formEl, '.submit-button'),
 					infoSuccess = querySelector(
 						info,
 						'.mailster-block-form-info-success'
@@ -151,7 +154,7 @@ import apiFetch from '@wordpress/api-fetch';
 				});
 
 				formEl.classList.add('loading');
-				formEl.setAttribute('disabled', true);
+				formEl.setAttribute('aria-disabled', true);
 
 				if (
 					document.referrer &&
@@ -260,9 +263,9 @@ import apiFetch from '@wordpress/api-fetch';
 					.finally(() => {
 						set('show');
 						formEl.classList.remove('loading');
-						formEl.removeAttribute('disabled');
-						submit.removeAttribute('disabled');
+						formEl.removeAttribute('aria-disabled');
 						info.setAttribute('aria-hidden', 'false');
+						isBusy = false;
 					});
 			}
 
@@ -471,7 +474,8 @@ import apiFetch from '@wordpress/api-fetch';
 
 				if (!isSubmission) {
 					formEl.classList.add('loading', 'silent');
-					formEl.setAttribute('disabled', true);
+					formEl.setAttribute('aria-disabled', true);
+					isBusy = true;
 
 					apiFetch({
 						path: 'mailster/v1/forms/' + form.id + '/data',
@@ -513,8 +517,9 @@ import apiFetch from '@wordpress/api-fetch';
 						.catch((error) => {})
 						.finally(() => {
 							formEl.classList.remove('loading', 'silent');
-							formEl.removeAttribute('disabled');
+							formEl.removeAttribute('aria-disabled');
 							info.setAttribute('aria-hidden', 'false');
+							isBusy = false;
 						});
 				}
 			}
