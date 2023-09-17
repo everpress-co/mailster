@@ -37,6 +37,10 @@ class MailsterConvert {
 
 	public function notice() {
 
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+
 		$msg  = '<h2>' . esc_html__( '[Action Required] We need to transfer your Mailster license!', 'mailster' ) . '</h2>';
 		$msg .= '<p>' . esc_html__( 'Hey there! Just wanted to give you a heads up that we\'re changing our license provider.', 'mailster' ) . '</p>';
 		$msg .= '<p>' . esc_html__( 'As part of the process, we\'ll need your consent for a quick manual step. Thanks for your help in advance!', 'mailster' ) . '</p>';

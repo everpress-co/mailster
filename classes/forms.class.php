@@ -565,7 +565,7 @@ class MailsterForms {
 
 			$msg  = '<h2>' . esc_html__( 'Block Forms are here!', 'mailster' ) . '</h2>';
 			$msg .= '<p>' . esc_html__( 'Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.', 'mailster' ) . '</p>';
-			$msg .= '<p><a href="' . admin_url( 'edit.php?post_type=mailster-form' ) . '" class="button button-primary">' . esc_html__( 'Create a block Form', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595' ) . '" class="button button-link" data-article="63fc875152af714471a17595">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
+			$msg .= '<p><a href="' . admin_url( 'edit.php?post_type=mailster-form' ) . '" class="button button-primary">' . esc_html__( 'Create a block form', 'mailster' ) . '</a> <a href="' . mailster_url( 'https://kb.mailster.co/650444f6790a583e6b3b3434' ) . '" class="button button-secondary" data-article="650444f6790a583e6b3b3434">' . esc_html__( 'Convert your old forms', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595' ) . '" class="button button-link" data-article="63fc875152af714471a17595">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
 
 			mailster_notice( $msg, 'info', $once, 'mailster_block_form_notice', true, $page );
 
