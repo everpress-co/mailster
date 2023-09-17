@@ -30,6 +30,7 @@ class MailsterBlockForms {
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 9999, 2 );
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
+		add_filter( 'use_block_editor_for_post_type', array( &$this, 'force_block_editor' ), PHP_INT_MAX, 2 );
 
 		add_filter( 'manage_mailster-form_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_mailster-form_posts_custom_column', array( &$this, 'custom_column' ), 10, 2 );
@@ -43,7 +44,8 @@ class MailsterBlockForms {
 
 		add_filter( 'block_editor_settings_all', array( &$this, 'disable_block_unlocks' ), 10, 2 );
 
-		add_shortcode( 'newsletter_block_form', array( &$this, 'shortcode' ) );
+		add_shortcode( 'mailster_form', array( &$this, 'shortcode' ) );
+		add_shortcode( 'newsletter_block_form', array( &$this, 'deprecated_shortcode' ) );
 
 		add_filter( 'embed_html', array( &$this, 'embed_html' ), PHP_INT_MAX, 4 );
 
@@ -345,15 +347,19 @@ class MailsterBlockForms {
 
 	}
 
+	public function deprecated_shortcode( $atts, $content ) {
 
+		_deprecated_function( 'Shortcode \'[newsletter_block_form]\'', '4.0', '[mailster_form]' );
+
+		return $this->shortcode( $atts, $content );
+
+	}
 
 	public function shortcode( $atts, $content ) {
 
 		return $this->render_form( $atts['id'], array(), false );
 
 	}
-
-
 
 	public function render_form_in_content( $content ) {
 
@@ -364,8 +370,6 @@ class MailsterBlockForms {
 		$form_html = $this->render_form( get_the_ID(), $options, false );
 		return $this->kses( $form_html );
 	}
-
-
 
 	public function maybe_add_form_to_content( $content ) {
 
@@ -1039,6 +1043,17 @@ class MailsterBlockForms {
 		// $editor_settings['codeEditingEnabled'] = false;
 
 		return $editor_settings;
+
+	}
+
+	public function force_block_editor( $bool, $post_type ) {
+
+		// just pass through
+		if ( $post_type !== 'mailster-form' ) {
+			return $bool;
+		}
+
+		return true;
 
 	}
 
