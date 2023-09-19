@@ -234,13 +234,8 @@ class MailsterMail {
 
 		if ( $this->mailer && 'smtp' == $this->mailer->Mailer ) {
 
-			if ( version_compare( $this->mailer->Version, '5.2.7' ) <= 0 ) {
-				$this->mailer->Debugoutput = 'error_log';
-			} else {
-				$this->mailer->Debugoutput = is_null( $output ) ? array( &$this, 'debugger' ) : $output;
-			}
-
-			$this->mailer->SMTPDebug = $level; // 0 = off, 1 = commands, 2 = commands and data
+			$this->mailer->Debugoutput = is_null( $output ) ? array( &$this, 'debugger' ) : $output;
+			$this->mailer->SMTPDebug   = $level; // 0 = off, 1 = commands, 2 = commands and data
 		}
 	}
 

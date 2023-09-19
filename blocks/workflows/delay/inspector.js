@@ -335,9 +335,9 @@ export default function DelayInspectorControls({
 					<PanelBody>
 						<PanelRow>
 							<FlexItem>
-								<HelpBeacon id="63fb5f4e0b394c459d8a5c1e" align="right" />
+								<HelpBeacon id="63fb2e7c52af714471a1738a" align="right" />
 								<ToggleControl
-									onChange={(val) => setAttributes({ timezone: !timezone })}
+									onChange={() => setAttributes({ timezone: !timezone })}
 									checked={timezone}
 									label={__('Timezone based sending', 'mailster')}
 									help={__(

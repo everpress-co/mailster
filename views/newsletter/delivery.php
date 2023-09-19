@@ -314,7 +314,7 @@ $sent = $this->get_sent( $post->ID );
 		</div>
 
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_post_published<?php echo isset( $autoresponderdata['time_conditions'] ) ? ' autoresponderfield-mailster_autoresponder_timebased' : ''; ?>">
-			<p class="descrtiption">
+			<p class="description">
 				<?php
 				$post_type = ( 'mailster_autoresponder_timebased' == $autoresponderdata['action'] )
 					? $autoresponderdata['time_post_type']

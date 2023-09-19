@@ -1004,7 +1004,7 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $entry
 	 * @param unknown $overwrite               (optional)
-	 * @param unknown $merge              (optional)
+	 * @param unknown $merge                   (optional)
 	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
