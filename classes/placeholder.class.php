@@ -1091,11 +1091,12 @@ class MailsterPlaceholder {
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
 
-					if ( $replace && '{preheader}' == $search ) {
+					if ( $replace && '{preheader}' === $search ) {
 
 						/**
 						 * Adds invisible characters after the preheader text also known as "preview text hack"
 						 * Read more here: https://www.litmus.com/blog?p=4367
+						 * Updated in Sept. 2023 to use the new invisible characters
 						 *
 						 * defaults:
 						 * `true`
@@ -1105,10 +1106,10 @@ class MailsterPlaceholder {
 						$preview_text_fix = apply_filters( 'mailster_preview_text_fix', true );
 
 						if ( $preview_text_fix ) {
-							$preview_text_count = 300 - strlen( $replace );
+							$preview_text_count = 200 - strlen( $replace );
 							// PHP throws an error if $count = 0, preventing the campaign from being sent. This check patch this.
 							if ( $preview_text_count > 0 ) {
-								$replace .= str_repeat( ' &#847;', $preview_text_count );
+								$replace .= str_repeat( ' &#847; &zwnj; &nbsp; &#8199; &shy;', $preview_text_count );
 							}
 						}
 					}
