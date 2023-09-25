@@ -167,14 +167,16 @@ class MailsterTinymce {
 	 */
 	public function translations( $settings ) {
 
-		$forms = mailster( 'forms' )->get_list();
+		$forms = ( mailster_option( 'legacy_forms' ) ) ? mailster( 'forms' )->get_list() : array();
+
+		$block_forms = mailster( 'block-forms' )->get_list();
 
 		echo '<script type="text/javascript">';
 		echo 'mailster_mce_button = ' . json_encode(
 			array(
-				'l10n'    => array(
-					'title'    => 'Mailster',
-					'homepage' => array(
+				'l10n'        => array(
+					'title'        => 'Mailster',
+					'homepage'     => array(
 						'menulabel'    => esc_html__( 'Newsletter Homepage', 'mailster' ),
 						'title'        => esc_html__( 'Insert Newsletter Homepage Shortcodes', 'mailster' ),
 						'prelabel'     => esc_html__( 'Text', 'mailster' ),
@@ -184,7 +186,7 @@ class MailsterTinymce {
 						'unsublabel'   => esc_html__( 'Unsubscribe Text', 'mailster' ),
 						'unsub'        => esc_html__( 'Do you really want to unsubscribe?', 'mailster' ),
 					),
-					'button'   => array(
+					'button'       => array(
 						'menulabel'  => esc_html__( 'Subscriber Button', 'mailster' ),
 						'title'      => esc_html__( 'Insert Subscriber Button Shortcode', 'mailster' ),
 						'labellabel' => esc_html__( 'Label', 'mailster' ),
@@ -193,11 +195,13 @@ class MailsterTinymce {
 						'countabove' => esc_html__( 'Count above Button', 'mailster' ),
 						'design'     => esc_html__( 'Design', 'mailster' ),
 					),
-					'form'     => esc_html__( 'Form', 'mailster' ),
-					'forms'    => esc_html__( 'Forms', 'mailster' ),
+					'form'         => esc_html__( 'Form', 'mailster' ),
+					'forms'        => esc_html__( 'Forms', 'mailster' ),
+					'legacy_forms' => esc_html__( 'Legacy Forms', 'mailster' ),
 				),
-				'forms'   => $forms,
-				'designs' => array(
+				'forms'       => $forms,
+				'block_forms' => $block_forms,
+				'designs'     => array(
 					'default' => 'Default',
 					'twitter' => 'Twitter',
 					'wp'      => 'WordPress',

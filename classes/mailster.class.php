@@ -1921,6 +1921,9 @@ class Mailster {
 
 		switch ( $code ) {
 
+			case 401:
+					$error_msg = esc_html__( 'Your license is not valid for this item.', 'mailster' );
+				break;
 			case 403:
 				if ( ! mailster_freemius()->has_active_valid_license() ) {
 					$error_msg = esc_html__( 'You need a valid license to get an update.', 'mailster' ) . ' <a href="' . mailster_freemius()->checkout_url() . '">' . esc_html__( 'Renew license now', 'mailster' ) . '</a>';

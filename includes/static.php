@@ -1,22 +1,27 @@
 <?php
 
 
-if ( function_exists( 'has_blocks' ) ) {
 
-	$forms = wp_get_recent_posts(
-		array(
-			'post_type'   => 'mailster-form',
-			'numberposts' => - 1,
-			'post_status' => 'any',
-		)
-	);
+$forms = wp_get_recent_posts(
+	array(
+		'post_type'   => 'mailster-form',
+		'numberposts' => - 1,
+		'post_status' => 'any',
+	)
+);
 
-	$str = '';
+if ( $forms ) {
+	$form_id = $forms[0]['ID'];
+} else {
+	$form_id = 0;
+}
 
-	if ( $forms ) {
-		$form_id = $forms[0]['ID'];
-		$str     = sprintf( '{"submission":%d,"profile":%d,"unsubscribe":%d} ', $form_id, $form_id, $form_id );
-	}
+// check if we use the block editor on a "page"
+$block_editor = apply_filters( 'use_block_editor_for_post_type', function_exists( 'has_blocks' ), 'page' );
+
+if ( $block_editor ) {
+
+	$str = sprintf( '{"submission":%d,"profile":%d,"unsubscribe":%d} ', $form_id, $form_id, $form_id );
 
 	$content = '<!-- wp:mailster/homepage ' . $str . '-->
 	<!-- wp:mailster/homepage-context {"type":"submission"} -->
@@ -52,7 +57,7 @@ if ( function_exists( 'has_blocks' ) ) {
 
 } else {
 
-	$content = '[newsletter_signup]' . esc_html__( 'Signup for the newsletter', 'mailster' ) . '[newsletter_signup_form id=1][/newsletter_signup][newsletter_confirm]' . esc_html__( 'Thanks for your interest!', 'mailster' ) . '[/newsletter_confirm][newsletter_unsubscribe]' . esc_html__( 'Do you really want to unsubscribe?', 'mailster' ) . '[/newsletter_unsubscribe]';
+	$content = '[newsletter_signup]' . esc_html__( 'Signup for the newsletter', 'mailster' ) . sprintf( '[mailster_form id=%d]', $form_id ) . '[/newsletter_signup][newsletter_confirm]' . esc_html__( 'Thanks for your interest!', 'mailster' ) . '[/newsletter_confirm][newsletter_unsubscribe]' . esc_html__( 'Do you really want to unsubscribe?', 'mailster' ) . '[/newsletter_unsubscribe]';
 
 }
 

@@ -46,6 +46,7 @@ import HomepageInspectorControls from '../homepage/inspector';
 import { searchBlock, searchBlocks } from '../util';
 import { TABS } from '../homepage/constants';
 import InlineStyles from '../util/InlineStyles';
+import { create } from 'lodash';
 
 function MailsterFormSelector(props) {
 	const { attributes, setAttributes, isSelected, selectForm, formId } = props;
@@ -202,6 +203,10 @@ export default function Edit(props) {
 		);
 	};
 
+	const createNewForm = () => {
+		window.open('post-new.php?post_type=mailster-form', 'new_form');
+	};
+
 	const currentTab = TABS.find((tab) => tab.id === contextType);
 
 	const getPlaceholderLabel = () => {
@@ -276,8 +281,7 @@ export default function Edit(props) {
 							<Button
 								variant="secondary"
 								icon={plus}
-								href={'post-new.php?post_type=mailster-form'}
-								target={'edit_form_new'}
+								onClick={createNewForm}
 								text={__('Create new form', 'mailster')}
 							/>
 							<Button

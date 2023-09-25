@@ -845,6 +845,20 @@ class MailsterBlockForms {
 
 	}
 
+	public function get_list() {
+
+		$forms = $this->get_all();
+
+		$list = array();
+
+		foreach ( $forms as $key => $value ) {
+			$list[ $value->ID ] = $value->post_title;
+		}
+
+		return $list;
+
+	}
+
 
 
 	public function block_init() {

@@ -95,7 +95,9 @@ class MailsterForm {
 
 		}
 
-		$this->ajax( $this->form->ajax );
+		if ( $this->form ) {
+			$this->ajax( $this->form->ajax );
+		}
 		return $this;
 	}
 

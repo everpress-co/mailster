@@ -13,7 +13,7 @@ if ( ! $item['is_supported'] && ! $item['installed'] ) {
 if ( $item['update_available'] ) {
 	$classes[] = 'update-available';
 }
-if ( $item['envato_item_id'] ) {
+if ( $item['envato_item_id'] && ! $item['is_premium'] ) {
 	$classes[] = 'envato-item';
 }
 ?>

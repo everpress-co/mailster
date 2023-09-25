@@ -1091,9 +1091,15 @@ class MailsterTemplates {
 				$result['items'] = $templates;
 			}
 
-			$args = array(
+			$headers = array(
+				'hash'               => sha1( mailster_option( 'ID' ) ),
+				'x-mailster-version' => MAILSTER_VERSION,
+				'x-mailster-site'    => get_bloginfo( 'url' ),
+				'x-mailster-license' => mailster()->get_license(),
+			);
+			$args    = array(
 				'timeout' => 5,
-				'headers' => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
+				'headers' => $headers,
 			);
 
 			$url = add_query_arg( $query_args, $this->endpoint );
@@ -1110,9 +1116,13 @@ class MailsterTemplates {
 
 				$response_result = json_decode( $response_body, true );
 
-				$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );
-				$result['total'] = max( count( $result['items'] ), $response_result['total'] );
-
+				if ( json_last_error() === JSON_ERROR_NONE ) {
+					$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );
+					$result['total'] = max( count( $result['items'] ), $response_result['total'] );
+				} else {
+					$result['items'] = array();
+					$result['total'] = 0;
+				}
 			}
 
 			$result = $this->prepare_results( $result );

@@ -1867,7 +1867,9 @@ class MailsterAjax {
 		if ( is_wp_error( $result ) ) {
 			switch ( $result->get_error_code() ) {
 				case 'http_404':
-					$return['msg'] = mailster()->get_update_error( 678, true );
+					$err_data = $result->get_error_data();
+
+					$return['msg'] = mailster()->get_update_error( $err_data['code'], true );
 					break;
 				default:
 					$return['msg'] = sprintf( esc_html__( 'There was an error loading the template: %s', 'mailster' ), $result->get_error_message() );
@@ -2480,8 +2482,12 @@ class MailsterAjax {
 		$result = mailster( 'templates' )->query( $query );
 
 		if ( ! is_wp_error( $result ) ) {
-			$return['total']     = $result['total'];
-			$return['html']      = mailster( 'templates' )->result_to_html( $result );
+			$return['total'] = $result['total'];
+
+			$return['html'] = mailster( 'templates' )->result_to_html( $result );
+			if ( $query['browse'] == 'premium' ) {
+				$return['html'] .= '<div id="templates-premium-only" class="notice inline"><h2>These template are not support with your current plan!</h2><p>Please upgrade your plan to unlock these templates.</p></div>';
+			}
 			$return['templates'] = $result['items'];
 			$return['error']     = $result['error'];
 			wp_send_json_error( $return );

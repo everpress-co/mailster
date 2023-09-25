@@ -965,6 +965,7 @@ class MailsterSubscribers {
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_fields AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
+		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_workflows AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_lists_subscribers AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 
 	}
@@ -1797,8 +1798,8 @@ class MailsterSubscribers {
 
 		}
 
-		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue
-		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
+		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue, workflows
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,workflows,' . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_workflows AS mailster_workflows ON ( subscribers.ID = mailster_workflows.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
 
 		if ( $success = ( false !== $wpdb->query( $sql ) ) ) {
 			if ( $wpdb->last_error ) {
@@ -1812,12 +1813,14 @@ class MailsterSubscribers {
 				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_clicks AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_unsubs AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_bounces AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_workflows AS workflows SET subscriber_id = NULL WHERE workflows.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 			} else {
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_sent AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_opens AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_clicks AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "DELETE workflows FROM {$wpdb->prefix}mailster_workflows AS workflows WHERE workflows.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 			}
 			// anonymize subscriber_meta data
 			if ( ! $remove_meta ) {
