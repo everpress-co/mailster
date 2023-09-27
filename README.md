@@ -3,7 +3,7 @@
 Contributors: everpress  
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
-Tested up to: 6.2  
+Tested up to: 6.3  
 Stable tag: 4.0.0  
 License: GPLv2 or later  
 Requires PHP: 7.2.5
@@ -186,6 +186,24 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 4.0.0 (Beta)
+
+- new: Block Forms: Create forms and popups with the built in editor
+- new: Autoamtions: Bring automations to the next stage with customer journeys
+- improved: Standardized rending of campaigns.
+- update: geo API to use preferred single mmdb file instead of multiple data files
+- improved: Using a native date picker instead of jQuery UI elements
+- improved: Preparation for custom conditions
+- improved: Tags in conditions are now text fields and not dropdowns to make them more flexible.
+- improved: native support forms for Elementor
+- improved: Performance improvements on querying action data from campaigns
+- improved: Performance improvements on data in the wp_options table
+- improved: rendered of admin screens
+- Fully tested for PHP 8.1 (partially tested with PHP 8.2)
+- improved: Autocompletion on conditions
+- deprecated: legacy forms
+- The Newsletter Homepage is now based on blocks and block forms
 
 ### 3.3.7
 
