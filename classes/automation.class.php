@@ -186,9 +186,9 @@ class MailsterAutomations {
 	public function get_limit() {
 
 		$limit = 3;
-		if ( mailster_freemius()->is_plan( 'plus', true ) ) {
+		if ( mailster_freemius()->is_plan( 'professional', true ) ) {
 			$limit = 10;
-		} elseif ( mailster_freemius()->is_plan( 'pro', true ) ) {
+		} elseif ( mailster_freemius()->is_plan( 'agency', true ) ) {
 			$limit = false;
 		}
 

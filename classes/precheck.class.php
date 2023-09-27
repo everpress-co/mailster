@@ -234,7 +234,7 @@ class MailsterPrecheck {
 			return new WP_Error( 503, esc_html__( 'Please verify your Mailster license on the Dashboard!', 'mailster' ) );
 		}
 
-		$url  = 'https://api.precheck.email/v3';
+		$url  = 'https://api.precheck.email/v2';
 		$url .= '/' . $id;
 		if ( $endpoint ) {
 			$url .= '/' . $endpoint;
