@@ -1,3 +1,21 @@
+### Version 4.0.0 Beta 1 (2023-09-27)
+
+- new: Block Forms: Create forms and popups with the built in editor
+- new: Autoamtions: Bring automations to the next stage with customer journeys
+- improved: Standardized rending of campaigns.
+- update: geo API to use preferred single mmdb file instead of multiple data files
+- improved: Using a native date picker instead of jQuery UI elements
+- improved: Preparation for custom conditions
+- improved: Tags in conditions are now text fields and not dropdowns to make them more flexible.
+- improved: native support forms for Elementor
+- improved: Performance improvements on querying action data from campaigns
+- improved: Performance improvements on data in the wp_options table
+- improved: rendered of admin screens
+- Fully tested for PHP 8.1 (partially tested with PHP 8.2)
+- improved: Autocompletion on conditions
+- deprecated: legacy forms
+- The Newsletter Homepage is now based on blocks and block forms
+
 ### Version 3.3.7 (2023-07-07)
 
 - fixed: missing action on migration process
