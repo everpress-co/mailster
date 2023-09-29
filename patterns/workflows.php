@@ -43,8 +43,7 @@ register_block_pattern(
 		'title'         => __( 'Enhanced Welcome Email Series', 'mailster' ),
 		'postTypes'     => array( 'mailster-workflow' ),
 		'description'   => __(
-			'Employ various channels such as sign up forms or landing pages to activate the identical workflow for your new subscribers. All new subscribers will be sent the 
-		same welcome campaign. Additionally, you can modify a custom field for the engaged subscribers and shift the unresponsive ones to a designated group for future targeting.',
+			'Employ various channels such as sign up forms or landing pages to activate the identical workflow for your new subscribers. All new subscribers will be sent the same welcome campaign. Additionally, you can modify a custom field for the engaged subscribers and shift the unresponsive ones to a designated group for future targeting.',
 			'mailster'
 		),
 		'viewportWidth' => 600,

@@ -111,7 +111,7 @@ export default function PatternModal(props) {
 
 	return (
 		<Modal
-			title={__('Choose a Workflows', 'mailster')}
+			title={__('Choose a Workflow', 'mailster')}
 			onRequestClose={onModalClose}
 			isFullScreen
 			isDismissible={true}
