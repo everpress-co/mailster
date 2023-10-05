@@ -211,6 +211,12 @@ Get professional development help from our expert support partner _Codeable_ for
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
 
+### 3.3.8
+
+- improved: honeypot mechanism to prevent false positives on heavy cached sites.
+- improved: wording on support
+- updated: Freemius SDK to 2.5.12
+
 ### 3.3.7
 
 - fixed: missing action on migration process

@@ -98,7 +98,10 @@ class MailsterForm {
 		if ( $this->form ) {
 			$this->ajax( $this->form->ajax );
 		}
+
+		// return the form object
 		return $this;
+
 	}
 
 

@@ -649,11 +649,14 @@ if ( $old_version ) {
 			// rename custom settings
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_value` = replace(meta_value, %s, %s) WHERE meta_key = 'wp_user-settings'", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
 
+		case '3.3.0':
+		case '3.3.1':
+		case '3.3.2':
 		case '3.3.3':
 		case '3.3.4':
 		case '3.3.5':
 		case '3.3.6':
-		case '3.3.7':
+		case '3.3.8':
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
@@ -670,6 +673,7 @@ if ( $old_version ) {
 
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_colors', 'mailster_texts', 'mailster_notices', 'mailster_updated')" );
 			update_option( 'mailster_notices_count', 0 );
+
 
 
 			mailster( 'convert' )->notice();
