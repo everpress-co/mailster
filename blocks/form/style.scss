@@ -734,6 +734,11 @@ body.single-mailster-form {
 .mailster-block-form.has-errors .mailster-block-form-inner .is-error {
 	animation: mailster-shake 0.3s 1 linear;
 }
+@media (prefers-reduced-motion) {
+	.mailster-block-form.has-errors .mailster-block-form-inner .is-error {
+		animation: none;
+	}
+}
 
 .mailster-block-form.has-success .mailster-block-form-inner {
 	.mailster-block-form-info {
@@ -819,6 +824,11 @@ body.single-mailster-form {
 .wp-block-mailster-form-outside-wrapper.has-animation.animation-wobble
 	.mailster-block-form {
 	animation: mailster-wobble 0.8s 1 ease-in-out;
+}
+@media (prefers-reduced-motion) {
+	.wp-block-mailster-form-outside-wrapper.has-animation .mailster-block-form {
+		animation: none !important;
+	}
 }
 
 @keyframes mailster-info {

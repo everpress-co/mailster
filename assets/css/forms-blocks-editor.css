@@ -219,3 +219,11 @@
 .mailster-block-forms-post-status-info-select-template button {
 	justify-content: center;
 }
+.prefers-reduced-motion {
+	display: none;
+}
+@media (prefers-reduced-motion) {
+	.prefers-reduced-motion {
+		display: block;
+	}
+}

@@ -548,7 +548,7 @@ class MailsterForm {
 			// place honeypot after email field
 			$position = array_search( 'email', array_keys( $fields ) ) + 1;
 			$fields   = array_slice( $fields, 0, $position, true ) +
-				array( '_honeypot' => '<div style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="_n_hp_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></div>' ) +
+				array( '_honeypot' => '<div style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="_n_hp_mail" type="email" tabindex="-1" autocomplete="noton" autofill="off"></div>' ) +
 				array_slice( $fields, $position, null, true );
 		}
 
@@ -877,7 +877,7 @@ class MailsterForm {
 		};
 
 		if ( ! is_admin() && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ) ) ) {
-			$honeypot = isset( $_BASE['_n_hp_email'] ) ? $_BASE['_n_hp_email'] : null;
+			$honeypot = isset( $_BASE['_n_hp_mail'] ) ? $_BASE['_n_hp_mail'] : null;
 
 			if ( ! empty( $honeypot ) ) {
 				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
@@ -973,7 +973,7 @@ class MailsterForm {
 		}
 
 		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) && empty( $this->object['errors'] ) ) {
-			$honeypot = isset( $_BASE['_n_hp_email'] ) ? $_BASE['_n_hp_email'] : null;
+			$honeypot = isset( $_BASE['_n_hp_mail'] ) ? $_BASE['_n_hp_mail'] : null;
 
 			if ( ! empty( $honeypot ) ) {
 				$this->object['errors']['_honeypot'] = esc_html__( 'Please leave the honeypot field empty.', 'mailster' );

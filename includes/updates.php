@@ -650,14 +650,21 @@ if ( $old_version ) {
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_value` = replace(meta_value, %s, %s) WHERE meta_key = 'wp_user-settings'", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
 
 		case '3.3.3':
+		case '3.3.4':
+		case '3.3.5':
+		case '3.3.6':
+		case '3.3.7':
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
 			// enable legacy forms (disabled by default)
-			$mailster_options['legacy_forms'] = true;
 
 
 		default:
+			if ( mailster( 'forms' )->get_all() ) {
+				$mailster_options['legacy_forms'] = true;
+			}
+
 			mailster( 'geo' )->clear_cron();
 			mailster( 'geo' )->set_cron( 'single' );
 
