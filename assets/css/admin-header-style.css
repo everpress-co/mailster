@@ -111,8 +111,13 @@
 }
 #mailster-admin-toolbar .panel-tabs .panel-tab.trial {
 	font-weight: bold;
+	line-height: 1.5em;
 	width: auto;
 	padding: 0 2em;
+}
+#mailster-admin-toolbar .panel-tabs .panel-tab.trial.expired {
+	color: #fff;
+	background-color: #e74c3c;
 }
 .mailster-help {
 	display: inline-block;

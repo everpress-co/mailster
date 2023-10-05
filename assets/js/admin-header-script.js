@@ -196,7 +196,7 @@ mailster = (function (mailster, $, window, document) {
 
 		var offset = btn.data('offset');
 
-		if (offset > 86400) return;
+		if (!offset || offset > 86400) return;
 
 		var b = btn.find('span')[0],
 			e = new Date().getTime(),
