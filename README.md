@@ -187,6 +187,12 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.0 (Beta 2)
+
+- improved: honeypot mechnanism to prevent false positives
+- improved: animations on forms are nwo reduced if clientens used "prefer-reduced-motion"
+- fixed: legacy forms menu entry is hidden by default
+
 ### 4.0.0 (Beta)
 
 - new: Block Forms: Create forms and popups with the built in editor

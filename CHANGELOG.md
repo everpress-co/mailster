@@ -1,3 +1,9 @@
+### Version 4.0.0 Beta 2 (2023-10-05)
+
+- improved: honeypot mechnanism to prevent false positives
+- improved: animations on forms are nwo reduced if clientens used "prefer-reduced-motion"
+- fixed: legacy forms menu entry is hidden by default
+
 ### Version 4.0.0 Beta 1 (2023-09-27)
 
 - new: Block Forms: Create forms and popups with the built in editor
