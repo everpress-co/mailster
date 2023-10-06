@@ -878,8 +878,7 @@ class MailsterBlockForms {
 		if ( 'post-new.php' === $pagenow ) {
 			if ( isset( $_REQUEST['post_type'] ) && post_type_exists( $_REQUEST['post_type'] ) ) {
 				$typenow = sanitize_key( $_REQUEST['post_type'] );
-			};
-
+			}
 		} elseif ( 'post.php' === $pagenow ) {
 			if ( isset( $_GET['post'] ) && isset( $_POST['post_ID'] ) && (int) $_GET['post'] !== (int) $_POST['post_ID'] ) {
 				// Do nothing
@@ -893,6 +892,9 @@ class MailsterBlockForms {
 					$typenow = $post->post_type;
 				}
 			}
+			// in the site editor just bail out
+		} elseif ( 'site-editor.php' === $pagenow ) {
+			return;
 		}
 
 		// homepage only on pages
@@ -900,6 +902,7 @@ class MailsterBlockForms {
 			// TODO check if unregistered above
 			unregister_block_type( 'mailster/homepage' );
 			unregister_block_type( 'mailster/homepage-context' );
+
 		} else {
 			$homepage = (int) mailster_option( 'homepage' );
 			if ( $homepage && $post_id !== $homepage ) {
