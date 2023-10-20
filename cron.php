@@ -57,7 +57,16 @@ if ( $request_url && ! headers_sent() ) {
 nocache_headers();
 
 $text_direction = function_exists( 'is_rtl' ) && is_rtl() ? 'rtl' : 'ltr';
-$simple_output  = false;
+$user_agent     = isset( $_SERVER['HTTP_USER_AGENT'] ) ? wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) : '';
+
+/**
+ * Filter the output of the cron page.
+ *
+ * @since 4.0.0
+ *
+ * @param bool $simple_output Whether to output a simple string or the full HTML.
+ */
+$simple_output = apply_filters( 'mailster_cron_simple_output', (bool) preg_match( '/curl|wget/i', $user_agent ) || isset( $_GET['simple'] ) );
 
 if ( $simple_output ) {
 	ob_start();
@@ -177,6 +186,6 @@ if ( $simple_output ) :
 	$output = ob_get_contents();
 	ob_end_clean();
 	$output = preg_replace( '#<a[^>]*?>.*?</a>#si', '', $output );
-	$output = mailster( 'helper' )->plain_text( $output );
-	echo $output;
+	$output = mailster( 'helper' )->plain_text( $output ) . "\n";
+	echo esc_html( $output );
 endif;
