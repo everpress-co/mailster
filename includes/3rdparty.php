@@ -172,15 +172,7 @@ function mailster_add_acf_tags( $tags ) {
 	return $tags;
 }
 
-/**
- * Register Form Widget.
- *
- * Include widget file and register widget class.
- *
- * @since 1.0.0
- * @param \Elementor\Widgets_Manager $widgets_manager Elementor widgets manager.
- * @return void
- */
+
 function mailster_register_elementor_widget( $widgets_manager ) {
 
 	require_once MAILSTER_DIR . 'classes/elementor.class.php';
@@ -189,4 +181,14 @@ function mailster_register_elementor_widget( $widgets_manager ) {
 
 }
 add_action( 'elementor/widgets/register', 'mailster_register_elementor_widget' );
+
+
+function mailster_register_divi_widget() {
+
+	require_once MAILSTER_DIR . 'classes/divi.class.php';
+
+	new ET_Builder_Module_Mailster_Block_Form();
+
+}
+add_action( 'et_builder_ready', 'mailster_register_divi_widget' );
 

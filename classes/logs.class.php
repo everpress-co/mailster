@@ -162,26 +162,6 @@ class MailsterLogs {
 
 	}
 
-	public function cleanup() {
-
-		if ( ! mailster_option( 'logging' ) ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$max_entries = mailster_option( 'logging_max' );
-		$max_days    = mailster_option( 'logging_days' );
-
-		if ( $max_entries ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE ID NOT IN ( SELECT ID FROM ( SELECT ID FROM {$wpdb->prefix}mailster_logs ORDER BY ID DESC LIMIT %d  ) x ) ", $max_entries ) );
-		}
-		if ( $max_days ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE timestamp < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL %d DAY ) ) ", $max_days ) );
-		}
-
-	}
-
 	public function get( $id ) {
 
 		global $wpdb;
@@ -207,6 +187,36 @@ class MailsterLogs {
 		$html = str_replace( '<a ', '<a target="mailster_preview" ', $html );
 
 		return sprintf( '<iframe class="html-preview" src="data:text/html;base64,%s" scrolling="auto" frameborder="0"></iframe>', base64_encode( $html ) );
+
+	}
+
+	public function cleanup() {
+
+		if ( ! mailster_option( 'logging' ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$max_entries = mailster_option( 'logging_max' );
+		$max_days    = mailster_option( 'logging_days' );
+		$count       = 0;
+
+		if ( $max_entries ) {
+			// quickyl count the entries
+			$count = max( $count, $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs" ) );
+			// bail out if we are below the limit
+			if ( ! $count ) {
+				return;
+			}
+		}
+		if ( $max_days ) {
+			// quickyl count the entries
+			$count = max( $count, $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs WHERE timestamp < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL $max_days DAY ) )" ) );
+		}
+		if ( $count ) {
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs ORDER BY ID DESC LIMIT %d ", $count ) );
+		}
 
 	}
 

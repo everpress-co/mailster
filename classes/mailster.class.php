@@ -2878,32 +2878,6 @@ class Mailster {
 
 	}
 
-	public function deactivation_dialog( $hook ) {
-
-		$plugin_file = MAILSTER_SLUG;
-
-		mailster( 'helper' )->dialog(
-			'deactivation',
-			array(
-				'id'      => 'deactivation-dialog',
-				'buttons' => array(
-					array(
-						'label'   => esc_html__( 'Skip & Deactivate', 'mailster' ),
-						'href'    => wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=all&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ),
-						'classes' => '',
-					),
-					array(
-						'label'   => esc_html__( 'Submit & Deactivate', 'mailster' ),
-						'classes' => 'deactivate button button-primary right',
-					),
-					array(
-						'label'   => esc_html__( 'Cancel', 'mailster' ),
-						'classes' => 'cancel button right',
-					),
-				),
-			)
-		);
-	}
 
 	/**
 	 *
