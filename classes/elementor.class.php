@@ -8,7 +8,7 @@ use Elementor\Repeater;
 class Elementor_Mailster_Form extends Widget_Base {
 
 	public function get_name() {
-		return 'mailster-block-form';
+		return 'et-mailster-block-form';
 	}
 
 	public function get_title() {
