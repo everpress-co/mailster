@@ -1597,6 +1597,7 @@ class Mailster {
 			update_option( 'mailster_notices', '', false );
 			update_option( 'mailster_notices_count', 0 );
 		}
+		flush_rewrite_rules();
 
 	}
 
