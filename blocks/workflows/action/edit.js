@@ -8,12 +8,10 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 
-import { sprintf, __, _n } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { useBlockProps } from '@wordpress/block-editor';
 
-import { useEffect } from '@wordpress/element';
-import { useEntityProp } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { Card, CardBody, Icon } from '@wordpress/components';
 import * as Icons from '@wordpress/icons';
@@ -36,7 +34,7 @@ export default function Edit(props) {
 	const allActions = useSelect((select) =>
 		select('mailster/automation').getActions()
 	);
-	className.push('mailster-step-' + id);
+	id && className.push('mailster-step-' + id);
 	!action && className.push('mailster-step-incomplete');
 
 	const blockProps = useBlockProps({

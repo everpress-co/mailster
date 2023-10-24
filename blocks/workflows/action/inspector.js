@@ -13,24 +13,15 @@ import {
 	Panel,
 	PanelRow,
 	PanelBody,
-	CheckboxControl,
-	TextControl,
-	RangeControl,
-	SelectControl,
-	__experimentalNumberControl as NumberControl,
-	FlexItem,
-	Flex,
 	Spinner,
 	__experimentalItemGroup as ItemGroup,
 	DropdownMenu,
 	MenuGroup,
 	MenuItem,
-	FlexBlock,
 	ToggleControl,
 	BaseControl,
 } from '@wordpress/components';
 
-import { useEffect, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import * as Icons from '@wordpress/icons';
 

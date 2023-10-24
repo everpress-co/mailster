@@ -12,25 +12,13 @@ import ServerSideRender from '@wordpress/server-side-render';
 import {
 	Button,
 	PanelRow,
-	DropdownMenu,
-	TextControl,
-	MenuGroup,
-	MenuItem,
 	Spinner,
-	PanelBody,
-	__experimentalItemGroup as ItemGroup,
 	Modal,
 	BaseControl,
 } from '@wordpress/components';
 
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
-
-import { useEntityProp } from '@wordpress/core-data';
-import * as Icons from '@wordpress/icons';
-import { AsyncModeProvider } from '@wordpress/data';
-import { store as blockEditorStore } from '@wordpress/block-editor';
-import { searchBlocks } from '../../util';
 
 /**
  * Internal dependencies

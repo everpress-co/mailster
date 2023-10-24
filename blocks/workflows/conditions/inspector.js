@@ -9,31 +9,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { InspectorControls } from '@wordpress/block-editor';
-import ServerSideRender from '@wordpress/server-side-render';
-import {
-	Panel,
-	PanelRow,
-	PanelBody,
-	CheckboxControl,
-	TextControl,
-	RangeControl,
-	SelectControl,
-	__experimentalNumberControl as NumberControl,
-	FlexItem,
-	Flex,
-	Spinner,
-	__experimentalItemGroup as ItemGroup,
-	DropdownMenu,
-	MenuGroup,
-	MenuItem,
-	Button,
-	Modal,
-	Tip,
-} from '@wordpress/components';
-
-import { useEffect, useState } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
+import { Panel, PanelBody, RangeControl } from '@wordpress/components';
 
 /**
  * Internal dependencies

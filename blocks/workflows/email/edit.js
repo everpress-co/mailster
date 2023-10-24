@@ -98,6 +98,8 @@ export default function Edit(props) {
 
 	!campaign && !isExample && className.push('mailster-step-incomplete');
 
+	id && className.push('mailster-step-' + id);
+
 	const blockProps = useBlockProps({
 		className: classnames({}, className),
 	});

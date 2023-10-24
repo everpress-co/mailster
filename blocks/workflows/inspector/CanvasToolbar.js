@@ -28,7 +28,7 @@ export default function CanvasToolbar() {
 
 	const [position, setPositionVar] = useSessionStorage('workflow-' + post_id);
 
-	//check if editor is in iframe (Since WP 6.3)
+	// check if editor is in iframe (Since WP 6.3)
 	const iframed = document.querySelector('iframe[name="editor-canvas"]');
 	const [loaded, isLoaded] = useState();
 	const [frame, setFrame] = useState();
@@ -50,27 +50,6 @@ export default function CanvasToolbar() {
 			setPane(w.document.querySelector('.editor-styles-wrapper'));
 			isLoaded(true);
 		});
-	}, []);
-
-	useEffect(() => {
-		return;
-		if (iframed) {
-			iframed.addEventListener('load', () => {
-				setFrame(iframed.contentWindow);
-				setPane(
-					iframed.contentWindow.document.querySelector('.is-root-container')
-				);
-				isLoaded(true);
-			});
-		} else {
-			wp.domReady(() => {
-				setFrame(
-					document.querySelector('.interface-interface-skeleton__content')
-				);
-				setPane(document.querySelector('.is-root-container'));
-				isLoaded(true);
-			});
-		}
 	}, []);
 
 	useEffect(() => {
@@ -96,8 +75,6 @@ export default function CanvasToolbar() {
 			) {
 				return;
 			}
-			//console.warn('START DRAG');
-
 			// get the mouse cursor position at startup:
 			posX = e.clientX || e.changedTouches[0].clientX;
 			posY = e.clientY || e.changedTouches[0].clientY;

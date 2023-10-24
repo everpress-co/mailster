@@ -963,7 +963,8 @@ class MailsterManage {
 
 			$filename = MAILSTER_UPLOAD_DIR . '/~mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.tmp';
 
-			update_option( 'mailster_export_filename', $filename );
+			update_option( 'mailster_export_filename', basename( $filename ) );
+
 			unset( $post_data['_wpnonce'], $post_data['_wp_http_referer'] );
 			update_user_option( get_current_user_id(), 'mailster_export_settings', $post_data );
 
@@ -1008,7 +1009,7 @@ class MailsterManage {
 			wp_send_json_error( $return );
 		}
 
-		$filename = get_option( 'mailster_export_filename' );
+		$filename = MAILSTER_UPLOAD_DIR . '/' . get_option( 'mailster_export_filename' );
 
 		if ( ! file_exists( $filename ) || ! wp_is_writable( $filename ) ) {
 			$return['msg'] = esc_html__( 'Not able to write export file', 'mailster' );
@@ -1310,7 +1311,7 @@ class MailsterManage {
 				if ( file_exists( $filename ) ) {
 					copy( $filename, $finalname );
 					$file_size = filesize( $filename );
-					update_option( 'mailster_export_filename', $finalname );
+					update_option( 'mailster_export_filename', basename( $finalname ) );
 					unlink( $filename );
 				}
 				$return['filename'] = admin_url( 'admin-ajax.php?action=mailster_download_export_file&file=' . basename( $finalname ) . '&format=' . $outputformat . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) );

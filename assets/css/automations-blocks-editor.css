@@ -4,9 +4,17 @@
  * Replace them with your own styles or remove the file completely.
  */
 :root {
-	--mailster-bg-color: #fdfdfd;
+	--mailster-bg-color: #ffffff;
 	--mailster-line-color: #585858;
 	--mailster-bg-transparent-color: rgba(255, 255, 255, 0.95);
+}
+.edit-post-header__toolbar
+	> div:not(.edit-post-header-toolbar):not(.edit-post-header__center):not(.edit-post-header-toolbar-extra),
+.edit-post-header__settings .interface-pinned-items > button:not(:first-child) {
+	display: none !important;
+}
+.edit-post-header-toolbar-extra {
+	display: flex;
 }
 .components-notice-list {
 	position: fixed;
@@ -22,12 +30,16 @@
 	top: 61px;
 	left: 0px;
 }
-#canvas-toolbar {
-}
-#canvas-toolbar .zoom-level {
+
+.edit-post-header-toolbar-extra .zoom-level {
 	transform: translateY(4px);
 }
-#canvas-toolbar .zoom-level .components-range-control__wrapper {
+.edit-post-header-toolbar-extra button:last-child {
+	margin-right: 9px;
+	margin-left: 9px;
+	margin-top: 1px;
+}
+.edit-post-header-toolbar-extra .zoom-level .components-range-control__wrapper {
 	min-width: 100px;
 }
 .editor-styles-wrapper {

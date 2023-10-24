@@ -8,16 +8,7 @@
 
 import { __ } from '@wordpress/i18n';
 
-import {
-	Spinner,
-	CheckboxControl,
-	BaseControl,
-	TextControl,
-} from '@wordpress/components';
-
-import { useSelect } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
-import * as Icons from '@wordpress/icons';
+import { BaseControl, TextControl } from '@wordpress/components';
 
 /**
  * Internal dependencies

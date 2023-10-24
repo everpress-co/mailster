@@ -8,34 +8,11 @@
 
 import { __, _n, sprintf } from '@wordpress/i18n';
 
-import {
-	Button,
-	PanelRow,
-	DropdownMenu,
-	TextControl,
-	MenuGroup,
-	MenuItem,
-	Spinner,
-	PanelBody,
-	__experimentalItemGroup as ItemGroup,
-	__experimentalTreeGrid as TreeGrid,
-	__experimentalTreeGridRow as TreeGridRow,
-	__experimentalTreeGridCell as TreeGridCell,
-	Panel,
-	Animate,
-} from '@wordpress/components';
+import { PanelRow, PanelBody, Panel } from '@wordpress/components';
 
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect } from '@wordpress/data';
-import { useEffect, useMemo } from '@wordpress/element';
 
-import { useEntityProp } from '@wordpress/core-data';
-import * as Icons from '@wordpress/icons';
-import { AsyncModeProvider } from '@wordpress/data';
-import {
-	InspectorControls,
-	store as blockEditorStore,
-} from '@wordpress/block-editor';
+import { InspectorControls } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies

@@ -10,13 +10,7 @@ import classnames from 'classnames';
 
 import { __ } from '@wordpress/i18n';
 
-import {
-	InnerBlocks,
-	useBlockProps,
-	useInnerBlocksProps,
-} from '@wordpress/block-editor';
-import { useEffect, useRef, useState } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
+import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies

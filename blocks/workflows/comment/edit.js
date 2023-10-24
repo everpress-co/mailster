@@ -11,7 +11,6 @@ import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
 
 import { RichText, useBlockProps } from '@wordpress/block-editor';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies

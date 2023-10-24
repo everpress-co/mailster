@@ -48,16 +48,11 @@ export default function Edit(props) {
 	const className = [];
 
 	useEffect(() => {
-		if (!id || document.querySelectorAll('.mailster-step-' + id).length > 1)
-			setAttributes({ id: clientId.substring(30) });
-	});
-
-	useEffect(() => {
 		!amount && setAttributes({ amount: 1 });
 		!unit && setAttributes({ unit: 'hours' });
 	});
 
-	className.push('mailster-step-' + id);
+	id && className.push('mailster-step-' + id);
 
 	const isRelative = ['minutes', 'hours', 'days', 'weeks', 'months'].includes(
 		unit

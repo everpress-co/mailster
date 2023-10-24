@@ -13,13 +13,8 @@ import {
 	Panel,
 	PanelRow,
 	PanelBody,
-	__experimentalItemGroup as ItemGroup,
 	TextareaControl,
 } from '@wordpress/components';
-
-import { useEffect, useState } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
 
 /**
  * Internal dependencies

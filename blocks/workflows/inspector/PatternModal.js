@@ -28,8 +28,7 @@ import { BlockPreview } from '@wordpress/block-editor';
  * Internal dependencies
  */
 
-import { HelpBeacon, searchBlock } from '../../util';
-import { FlexBlock } from '@wordpress/components';
+import { HelpBeacon } from '../../util';
 import { ExternalLink } from '@wordpress/components';
 
 export default function PatternModal(props) {

@@ -31,6 +31,7 @@ import Options from './Options';
 import PatternModal from './PatternModal';
 import PublishInfo from './PublishInfo';
 import CanvasToolbar from './CanvasToolbar';
+import ActiveStatus from './ActiveStatus';
 import {
 	whenEditorIsReady,
 	searchBlocks,
@@ -114,14 +115,18 @@ function SettingsPanelPlugin() {
 			return;
 		}
 
-		const wrap = document.createElement('div');
-		wrap.id = 'canvas-toolbar';
-		wrap.style.cssText = 'display:flex;';
+		const canvasWrap = document.createElement('div');
+		canvasWrap.className = 'edit-post-header-toolbar-extra';
+		//canvasWrap.style.cssText = 'display:flex;';
+		editorToolbar.appendChild(canvasWrap);
 
-		editorToolbar.appendChild(wrap);
-
-		const root = createRoot(wrap);
-		root.render(<CanvasToolbar />);
+		const canvas = createRoot(canvasWrap);
+		canvas.render(
+			<>
+				<CanvasToolbar />
+				<ActiveStatus />
+			</>
+		);
 	}, []);
 
 	useBlockChange(() => {

@@ -10,11 +10,7 @@ import { __ } from '@wordpress/i18n';
 
 import { Spinner, FormTokenField } from '@wordpress/components';
 
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
-import * as Icons from '@wordpress/icons';
-
 /**
  * Internal dependencies
  */

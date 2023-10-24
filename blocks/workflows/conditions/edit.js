@@ -10,14 +10,9 @@ import classnames from 'classnames';
 
 import { __ } from '@wordpress/i18n';
 
-import {
-	InnerBlocks,
-	useBlockProps,
-	useInnerBlocksProps,
-} from '@wordpress/block-editor';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
-import { Card, CardBody, CardHeader, Spinner } from '@wordpress/components';
+import { Card, CardBody, Spinner } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -26,8 +21,7 @@ import ConditionInspectorControls from './inspector.js';
 import QueueBadge from '../inspector/QueueBadge';
 import Comment from '../inspector/Comment';
 import StepId from '../inspector/StepId';
-import { searchBlocks, useUpdateEffect } from '../../util';
-import { useSelect, select } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 
 const BLOCK_TEMPLATE = [
 	['mailster-workflow/condition-yes'],
@@ -39,7 +33,7 @@ export default function Edit(props) {
 	const { id, comment, conditions, weight } = attributes;
 	const className = ['mailster-step-conditions', 'canvas-handle'];
 
-	className.push('mailster-step-' + id);
+	id && className.push('mailster-step-' + id);
 	!conditions && className.push('mailster-step-incomplete');
 
 	const allEmails = useSelect((select) =>

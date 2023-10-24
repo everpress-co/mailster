@@ -16,13 +16,9 @@ import {
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect } from '@wordpress/data';
 import { date } from '@wordpress/date';
-import { useEntityProp } from '@wordpress/core-data';
-import * as Icons from '@wordpress/icons';
-import { useEffect, useState } from '@wordpress/element';
-import { ButtonGroup } from '@wordpress/components';
+import { useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 import { PanelRow } from '@wordpress/components';
 

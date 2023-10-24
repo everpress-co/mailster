@@ -34,7 +34,7 @@ export default function Edit(props) {
 			setAttributes({ id: clientId.substring(30) });
 	});
 
-	className.push('mailster-step-' + id);
+	id && className.push('mailster-step-' + id);
 
 	const blockProps = useBlockProps({
 		className: classnames({}, className),

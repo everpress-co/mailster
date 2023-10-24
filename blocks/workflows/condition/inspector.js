@@ -11,10 +11,6 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { Panel, PanelRow, PanelBody } from '@wordpress/components';
 
-import { useEffect, useState } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
-
 /**
  * Internal dependencies
  */
