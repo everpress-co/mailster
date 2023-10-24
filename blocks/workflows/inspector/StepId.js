@@ -11,8 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { Panel, PanelRow, PanelBody } from '@wordpress/components';
 
-import { useEffect } from '@wordpress/element';
-import { useRef } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -23,12 +22,13 @@ export default function StepId(props) {
 	const { attributes, setAttributes, clientId, isSelected } = props;
 	const { id } = attributes;
 
+	// TODO run this code only once and not on every render
 	useEffect(() => {
 		whenEditorIsReady().then((w) => {
 			if (!id || w.document.querySelectorAll('.mailster-step-' + id).length > 1)
 				setAttributes({ id: clientId.substring(30) });
 		});
-	}, []);
+	});
 
 	useEffect(() => {
 		if (!isSelected || !id) return;
