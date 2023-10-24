@@ -357,7 +357,8 @@ class MailsterBlockForms {
 
 	public function shortcode( $atts, $content ) {
 
-		return $this->render_form( $atts['id'], array(), false );
+		$form_html = $this->render_form( $atts['id'], array(), false );
+		return $this->kses( $form_html );
 
 	}
 
