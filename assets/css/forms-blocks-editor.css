@@ -44,6 +44,8 @@
 	.edit-post-visual-editor__content-area
 	.editor-styles-wrapper {
 	background-color: transparent;
+	margin: 0;
+	max-width: 100%;
 }
 .post-type-mailster-form
 	.edit-post-visual-editor__content-area
