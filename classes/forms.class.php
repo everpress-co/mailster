@@ -800,11 +800,8 @@ class MailsterForms {
 		if ( $form = $this->get( $id ) ) {
 
 			$userschoice = $form->userschoice;
-			$asterisk    = $form->asterisk;
-			$gdpr        = $form->gdpr;
-			$required    = $form->required;
+			$gdpr        = mailster_option( 'gdpr_forms' );
 			$lists       = $form->lists;
-			$tags        = $form->tags;
 			$submit      = $form->submit;
 
 			$stylesheet = str_replace( '.mailster-form.mailster-form-' . $form->ID, '', $form->stylesheet );
@@ -853,13 +850,7 @@ class MailsterForms {
 
 			}
 
-			if ( $gdpr ) {
-
-				$post_content .= '<!-- wp:mailster/gdpr --><div class="wp-block-mailster-gdpr mailster-wrapper"><div class="mailster-group mailster-group-checkbox"><input type="checkbox" name="_gdpr" value="1"/><label class="mailster-label">' . esc_html__( 'I agree to the privacy policy and terms.', 'mailster' ) . '</label></div></div><!-- /wp:mailster/gdpr -->' . "\n\n";
-
-			}
-
-			$post_content .= '<!-- wp:mailster/field-submit --><div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr( $submit ) . '" class="wp-block-button__link submit-button"/></div><!-- /wp:mailster/field-submit -->' . "\n\n";
+				$post_content .= '<!-- wp:mailster/field-submit --><div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr( $submit ) . '" class="wp-block-button__link submit-button"/></div><!-- /wp:mailster/field-submit -->' . "\n\n";
 
 			$post_content .= '</div></form><!-- /wp:mailster/form-wrapper -->';
 
@@ -873,7 +864,7 @@ class MailsterForms {
 			);
 
 			update_post_meta( $post_id, 'doubleoptin', ! ! $form->doubleoptin );
-			update_post_meta( $post_id, 'gdpr', ! ! $form->gdpr );
+			update_post_meta( $post_id, 'gdpr', $gdpr );
 			update_post_meta( $post_id, 'userschoice', ! ! $form->userschoice );
 			update_post_meta( $post_id, 'redirect', $form->redirect );
 			update_post_meta( $post_id, 'confirmredirect', $form->confirmredirect );
