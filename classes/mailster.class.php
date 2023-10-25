@@ -741,21 +741,20 @@ class Mailster {
 	}
 
 
-
-	 /**
-	  * Replace all links in the content with the mailster links
-	  *
-	  * @param string $content
-	  * @param string $hash
-	  * @param string $campaign_id
-	  * @param int    $index
-	  * @return string
-	  */
+	/**
+	 *
+	 *
+	 * @param unknown $content     (optional)
+	 * @param unknown $hash        (optional)
+	 * @param unknown $campaign_id (optional)
+	 * @param unknown $index       (optional)
+	 * @return unknown
+	 */
 	public function replace_links( $content = '', $hash = '', $campaign_id = '', $index = 0 ) {
 
 		// get all links from the basecontent
-		preg_match_all( '#<a (.*?)href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
-		$links = $links[3];
+		preg_match_all( '# href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
+		$links = $links[2];
 
 		if ( empty( $links ) ) {
 			return $content;
@@ -1076,8 +1075,6 @@ class Mailster {
 			return '';
 		}
 
-		$org_content = $content;
-
 		if ( function_exists( 'mb_convert_encoding' ) ) {
 			$encoding = mb_detect_encoding( $content, 'auto' );
 			if ( $encoding != 'UTF-8' ) {
@@ -1189,7 +1186,7 @@ class Mailster {
 		}
 		$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
 
-		return apply_filters( 'mailster_sanitize_content', $content, $org_content );
+		return apply_filters( 'mailster_sanitize_content', $content );
 	}
 
 
