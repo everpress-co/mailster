@@ -1,3 +1,20 @@
+### Version 4.0.0 Beta 3 (2023-10-25)
+
+- breaking change: changed slug of Elementor module from 'mailster-block-form' to 'et-mailster-block-form' to prevent conflicts
+- native support for DIVI
+- CSS improvements on the form editor
+- Don't display dynamic forms if post status != publish
+- Flush rewrite rules after installation
+- Move action button to top toolbar
+- fixed: align property hasn't been stored if forms are used out of context
+- fixed: prevent step ID be same if multiple blocks are duplicated
+- improved log cleanup algo
+- improved: honeypot mechanism to prevent false positives on heavy cached sites
+- new filter 'mailster_cron_simple_output' to change the output of the cron page
+- run KSES filter on form output via shortcode
+- smaller fixes and improvements, cleanup
+- support block form preview in the site editor
+
 ### Version 4.0.0 Beta 2 (2023-10-05)
 
 - improved: honeypot mechnanism to prevent false positives
@@ -1560,7 +1577,7 @@
 
 ### Version 2.0.9 (2014-10-07)
 
-- fixed: problem with updating on multisite. If you can’t update from version <= 2.0.8 update via FTP and a copy from CodeCanyon (http://codecanyon.net/downloads)
+- fixed: problem with updating on multisite. If you can’t update from version <= 2.0.8 update via FTP and a copy from CodeCanyon (<http://codecanyon.net/downloads>)
 - update: improved update progress
 
 ### Version 2.0.8 (2014-10-06)
