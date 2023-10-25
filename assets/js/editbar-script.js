@@ -49,7 +49,8 @@ mailster = (function (mailster, $, window, document) {
 		imagesearch = $('#image-search'),
 		imagesearchtype = $('[name="image-search-type"]');
 
-	bar.on('keyup change', 'input.live', change)
+	bar
+		.on('keyup change', 'input.live', change)
 		.on('keyup change', '#mailster-editor', change)
 		.on('click', '.replace-image', replaceImage)
 		.on('change', '.highdpi', toggleHighDPI)
@@ -141,8 +142,7 @@ mailster = (function (mailster, $, window, document) {
 					currentimage = {
 						width: current.width || img.width,
 						height: Math.round(
-							(current.width || img.width) /
-								(img.width / img.height)
+							(current.width || img.width) / (img.width / img.height)
 						),
 						asp: img.width / img.height,
 					};
@@ -199,38 +199,26 @@ mailster = (function (mailster, $, window, document) {
 				if (response.success) {
 					cats.html(response.data.html);
 					if (currenttag && currenttag.terms) {
-						var taxonomies = cats.find(
-							'.dynamic_embed_options_taxonomy_wrap'
-						);
+						var taxonomies = cats.find('.dynamic_embed_options_taxonomy_wrap');
 						$.each(currenttag.terms, function (i, term) {
 							if (!term) return;
 							var term_ids = term.split(',');
 							$.each(term_ids, function (j, id) {
-								var select = taxonomies
-										.eq(i)
-										.find('select')
-										.eq(j),
+								var select = taxonomies.eq(i).find('select').eq(j),
 									last;
 								if (!select.length) {
-									last = taxonomies
-										.eq(i)
-										.find('select')
-										.last();
+									last = taxonomies.eq(i).find('select').last();
 									select = last.clone();
 									select.insertAfter(last);
 									$(
-										'<span> ' +
-											mailster.l10n.campaigns.or +
-											' </span>'
+										'<span> ' + mailster.l10n.campaigns.or + ' </span>'
 									).insertBefore(select);
 								}
 								select.val(id);
 							});
 						});
 						$.fn.select2 &&
-							$('#dynamic_embed_options_cats')
-								.find('select')
-								.select2();
+							$('#dynamic_embed_options_cats').find('select').select2();
 					}
 				}
 				checkForPosts();
@@ -313,8 +301,7 @@ mailster = (function (mailster, $, window, document) {
 			w = current.element.width(),
 			h = Math.round(w / 1.6),
 			img = $('<img>', {
-				src:
-					'https://dummy.mailster.co/' + w * f + 'x' + h * f + '.jpg',
+				src: 'https://dummy.mailster.co/' + w * f + 'x' + h * f + '.jpg',
 				alt: current.content,
 				label: current.content,
 				width: w,
@@ -324,10 +311,12 @@ mailster = (function (mailster, $, window, document) {
 			});
 
 		img[0].onload = function () {
-			img.attr({
-				width: w,
-				height: h,
-			}).removeAttr('style');
+			img
+				.attr({
+					width: w,
+					height: h,
+				})
+				.removeAttr('style');
 			close();
 		};
 		if (current.element.parent().is('a')) current.element.unwrap();
@@ -363,11 +352,7 @@ mailster = (function (mailster, $, window, document) {
 					values = [];
 				$.each(selects, function () {
 					var val = parseInt($(this).val(), 10);
-					if (
-						val != -1 &&
-						$.inArray(val, values) == -1 &&
-						!isNaN(val)
-					)
+					if (val != -1 && $.inArray(val, values) == -1 && !isNaN(val))
 						values.push(val);
 				});
 				values = values.join(',');
@@ -389,12 +374,8 @@ mailster = (function (mailster, $, window, document) {
 				return;
 			}
 
-			$('#dynamic_embed_options')
-				.find('h4.current-match')
-				.html('&hellip;');
-			$('#dynamic_embed_options')
-				.find('div.current-tag')
-				.html('&hellip;');
+			$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
+			$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
 
 			if ('rss' == post_type && !rss_url) {
 				loader(false);
@@ -572,8 +553,7 @@ mailster = (function (mailster, $, window, document) {
 							imagepreview.attr('src', response.data.image.url);
 
 							response.data.image.width =
-								(response.data.image.width ||
-									currentimage.width) / f;
+								(response.data.image.width || currentimage.width) / f;
 							response.data.image.height =
 								response.data.image.width / currentimage.asp;
 							response.data.image.asp = currentimage.asp;
@@ -582,42 +562,30 @@ mailster = (function (mailster, $, window, document) {
 							currentimage.name = imagealt.val();
 
 							if (is_img) {
-								current.element.one(
-									'load error',
-									function (event) {
-										if ('error' == event.type) {
-											alert(
-												mailster.util.sprintf(
-													mailster.l10n.campaigns
-														.invalid_image,
-													response.data.image.url
-												)
-											);
-										}
-										current.element.removeClass(
-											'mailster-loading'
+								current.element.one('load error', function (event) {
+									if ('error' == event.type) {
+										alert(
+											mailster.util.sprintf(
+												mailster.l10n.campaigns.invalid_image,
+												response.data.image.url
+											)
 										);
-										mailster.trigger('save');
 									}
-								);
+									current.element.removeClass('mailster-loading');
+									mailster.trigger('save');
+								});
 
 								current.element.attr({
 									alt: currentimage.name,
 								});
 								if (!current.is_percentage) {
-									current.element.attr(
-										'width',
-										Math.round(imagewidth.val())
-									);
+									current.element.attr('width', Math.round(imagewidth.val()));
 								}
 								if (
 									current.element.attr('height') &&
 									current.element.attr('height') != 'auto'
 								) {
-									current.element.attr(
-										'height',
-										Math.round(imageheight.val())
-									);
+									current.element.attr('height', Math.round(imageheight.val()));
 								}
 								if (c) {
 									current.element
@@ -643,10 +611,7 @@ mailster = (function (mailster, $, window, document) {
 									if (is_root) {
 										if (
 											(is_root = html.match(
-												new RegExp(
-													'<v:background(.*)</v:background>',
-													's'
-												)
+												new RegExp('<v:background(.*)</v:background>', 's')
 											))
 										) {
 											current.element.html(
@@ -670,9 +635,7 @@ mailster = (function (mailster, $, window, document) {
 											)
 										);
 										//remove id to re trigger tinymce
-										current.element
-											.find('single, multi')
-											.removeAttr('id');
+										current.element.find('single, multi').removeAttr('id');
 									}
 								}
 							}
@@ -705,8 +668,7 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		} else if (current.type == 'btn') {
 			var link = buttonlink.val();
-			if (!link && !confirm(mailster.l10n.campaigns.remove_btn))
-				return false;
+			if (!link && !confirm(mailster.l10n.campaigns.remove_btn)) return false;
 
 			var btnsrc = base.find('a.active').find('img').attr('src');
 			if (typeof btnsrc == 'undefined') {
@@ -724,9 +686,7 @@ mailster = (function (mailster, $, window, document) {
 					if (!current.element.find('img').length) {
 						var wrap = current.element.closest('.textbutton');
 						var element = $(
-							'<a href="" editable label="' +
-								current.name +
-								'"><img></a>'
+							'<a href="" editable label="' + current.name + '"><img></a>'
 						);
 						wrap.length
 							? wrap.replaceWith(element)
@@ -735,18 +695,12 @@ mailster = (function (mailster, $, window, document) {
 					}
 					current.element.find('img').attr({
 						src: btnsrc,
-						width: Math.round(
-							(img.width || current.element.width()) / f
-						),
-						height: Math.round(
-							(img.height || current.element.height()) / f
-						),
+						width: Math.round((img.width || current.element.width()) / f),
+						height: Math.round((img.height || current.element.height()) / f),
 						alt: buttonalt.val(),
 					});
 
-					link
-						? current.element.attr('href', link)
-						: current.element.remove();
+					link ? current.element.attr('href', link) : current.element.remove();
 					close();
 				};
 				img.src = btnsrc;
@@ -808,9 +762,7 @@ mailster = (function (mailster, $, window, document) {
 					.data('tag', currenttext.tag);
 
 				if ('rss' == post_type) {
-					current.element
-						.attr('data-rss', rss_url)
-						.data('rss', rss_url);
+					current.element.attr('data-rss', rss_url).data('rss', rss_url);
 				}
 			} else {
 				contenttype = $('.embed_options_content:checked').val();
@@ -822,12 +774,11 @@ mailster = (function (mailster, $, window, document) {
 					current.elements.single.each(function (i, e) {
 						var _this = $(this),
 							expected = _this.attr('expect') || 'title',
-							content = currenttext[expected]
-								? currenttext[expected]
-								: '';
+							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if (content && !_this.is('[ignore]'))
-							_this.html(content);
+						if ($.isArray(content)) content = content[i];
+
+						if (content && !_this.is('[ignore]')) _this.html(content);
 					});
 				}
 
@@ -835,12 +786,11 @@ mailster = (function (mailster, $, window, document) {
 					current.elements.multi.each(function (i, e) {
 						var _this = $(this),
 							expected = _this.attr('expect') || contenttype,
-							content = currenttext[expected]
-								? currenttext[expected]
-								: '';
+							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if (content && !_this.is('[ignore]'))
-							_this.html(content);
+						if ($.isArray(content)) content = content[i];
+
+						if (content && !_this.is('[ignore]')) _this.html(content);
 					});
 				}
 
@@ -848,28 +798,21 @@ mailster = (function (mailster, $, window, document) {
 					current.elements.buttons.each(function (i, e) {
 						var _this = $(this),
 							expected = _this.attr('expect') || 'link',
-							content = currenttext[expected]
-								? currenttext[expected]
-								: '';
+							content = currenttext[expected] ? currenttext[expected] : '';
 
 						if (_this.is('[ignore]')) return;
 
 						if (content) _this.attr('href', content);
-						if (currenttext['button'])
-							_this.html(currenttext['button']);
+						if (currenttext['button']) _this.html(currenttext['button']);
 					});
 				} else {
 					if (
 						current.elements.buttons.parent().length &&
 						current.elements.buttons.parent()[0].nodeName == 'TD'
 					) {
-						current.elements.buttons
-							.closest('.textbutton')
-							.remove();
+						current.elements.buttons.closest('.textbutton').remove();
 					} else if (current.elements.buttons.length) {
-						if (
-							current.elements.buttons.last().find('img').length
-						) {
+						if (current.elements.buttons.last().find('img').length) {
 							current.elements.buttons.remove();
 						}
 					}
@@ -902,43 +845,23 @@ mailster = (function (mailster, $, window, document) {
 													.attr('data-original', true)
 													.data('original', true);
 											}
-											if (
-												'img' ==
-												_this
-													.prop('tagName')
-													.toLowerCase()
-											) {
+											if ('img' == _this.prop('tagName').toLowerCase()) {
 												_this
 													.attr({
-														'data-id':
-															currenttext.image
-																.id,
-														src: response.data.image
-															.url,
-														width: Math.round(
-															response.data.image
-																.width / f
-														),
-														alt:
-															currenttext.alt ||
-															currenttext.title,
+														'data-id': currenttext.image.id,
+														src: response.data.image.url,
+														width: Math.round(response.data.image.width / f),
+														alt: currenttext.alt || currenttext.title,
 													})
-													.data(
-														'id',
-														currenttext.image.id
-													);
+													.data('id', currenttext.image.id);
 
 												if (
 													_this.attr('height') &&
-													_this.attr('height') !=
-														'auto'
+													_this.attr('height') != 'auto'
 												) {
 													_this.attr(
 														'height',
-														Math.round(
-															response.data.image
-																.height / f
-														)
+														Math.round(response.data.image.height / f)
 													);
 												}
 
@@ -947,28 +870,16 @@ mailster = (function (mailster, $, window, document) {
 												}
 
 												if (currenttext.link) {
-													_this.wrap(
-														'<a href="' +
-															currenttext.link +
-															'">'
-													);
+													_this.wrap('<a href="' + currenttext.link + '">');
 												}
 											} else {
-												var orgurl =
-													_this.attr('background');
+												var orgurl = _this.attr('background');
 												_this
 													.attr({
-														'data-id':
-															currenttext.image
-																.id,
-														background:
-															response.data.image
-																.url,
+														'data-id': currenttext.image.id,
+														background: response.data.image.url,
 													})
-													.data(
-														'id',
-														currenttext.image.id
-													);
+													.data('id', currenttext.image.id);
 
 												current.element.html(
 													mailster.util.replace(
@@ -979,9 +890,7 @@ mailster = (function (mailster, $, window, document) {
 												);
 
 												//remove id to re trigger tinymce
-												current.element
-													.find('single, multi')
-													.removeAttr('id');
+												current.element.find('single, multi').removeAttr('id');
 												mailster.trigger('save');
 												mailster.trigger('refresh');
 											}
@@ -1013,52 +922,35 @@ mailster = (function (mailster, $, window, document) {
 											org
 										),
 										width: width,
-										alt:
-											currenttext.alt ||
-											currenttext.title,
+										alt: currenttext.alt || currenttext.title,
 									})
 									.removeData('id');
 								if (_this.attr('height')) {
-									_this.attr(
-										'height',
-										height || Math.round(width / 1.6)
-									);
+									_this.attr('height', height || Math.round(width / 1.6));
 								}
 							} else {
 								var orgurl = _this.attr('background');
 								_this
 									.removeAttr('data-id')
 									.attr({
-										background: dynamicImage(
-											currenttext.image,
-											width
-										),
+										background: dynamicImage(currenttext.image, width),
 									})
 									.removeData('id');
 								current.element.html(
 									mailster.util.replace(
 										current.element.html(),
 										orgurl,
-										dynamicImage(
-											currenttext.image,
-											width,
-											height,
-											crop,
-											org
-										)
+										dynamicImage(currenttext.image, width, height, crop, org)
 									)
 								);
 								//remove id to re trigger tinymce
-								current.element
-									.find('single, multi')
-									.removeAttr('id');
+								current.element.find('single, multi').removeAttr('id');
 							}
 						}
 					});
 				}
 
-				position =
-					position + 1 >= current.areas.length ? 0 : position + 1;
+				position = position + 1 >= current.areas.length ? 0 : position + 1;
 
 				current.element.data('position', position);
 
@@ -1196,8 +1088,7 @@ mailster = (function (mailster, $, window, document) {
 
 				current.width = imagepreview.width();
 				current.height = imagepreview.height();
-				current.asp =
-					_this.data('asp') || current.width / current.height;
+				current.asp = _this.data('asp') || current.width / current.height;
 
 				currentimage.asp = current.asp;
 				loader(false);
@@ -1217,8 +1108,7 @@ mailster = (function (mailster, $, window, document) {
 				Math.round(
 					0.5 *
 						(current.height -
-							current.width *
-								(imageheight.val() / imagewidth.val()))
+							current.width * (imageheight.val() / imagewidth.val()))
 				) || 0,
 			f = parseInt(factor.val(), 10);
 
@@ -1265,12 +1155,14 @@ mailster = (function (mailster, $, window, document) {
 					_this.addClass('selected');
 					if (response.success) {
 						currenttext = response.data.pattern;
-						base.find('.editbarinfo').html(
-							mailster.l10n.campaigns.curr_selected +
-								': <span>' +
-								currenttext.title +
-								'</span>'
-						);
+						base
+							.find('.editbarinfo')
+							.html(
+								mailster.l10n.campaigns.curr_selected +
+									': <span>' +
+									currenttext.title +
+									'</span>'
+							);
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -1395,9 +1287,9 @@ mailster = (function (mailster, $, window, document) {
 					if (button.length) {
 						bar.find('ul.buttons').hide();
 						var b = button.parent().parent().parent();
-						bar.find(
-							'a[href="#' + b.attr('id').substr(4) + '"]'
-						).trigger('click');
+						bar
+							.find('a[href="#' + b.attr('id').substr(4) + '"]')
+							.trigger('click');
 					} else {
 						$.each(bar.find('.button-nav'), function () {
 							$(this).find('.nav-tab').eq(0).trigger('click');
@@ -1406,19 +1298,14 @@ mailster = (function (mailster, $, window, document) {
 				}
 
 				buttonlabel.val(el.find('img').attr('alt'));
-				mailster.util.getRealDimensions(
-					el.find('img'),
-					function (w, h, f) {
-						var h = f >= 1.5;
-						factor.val(f);
-						highdpi.prop('checked', h);
-						h
-							? bar.addClass('high-dpi')
-							: bar.removeClass('high-dpi');
+				mailster.util.getRealDimensions(el.find('img'), function (w, h, f) {
+					var h = f >= 1.5;
+					factor.val(f);
+					highdpi.prop('checked', h);
+					h ? bar.addClass('high-dpi') : bar.removeClass('high-dpi');
 
-						fac = f;
-					}
-				);
+					fac = f;
+				});
 			} else {
 				$('#button-type-bar').find('a').eq(0).trigger('click');
 				buttonlabel.val(mailster.util.trim(el.text())).focus().select();
@@ -1433,9 +1320,7 @@ mailster = (function (mailster, $, window, document) {
 			searchstring = mailster.util.trim(postsearch.val());
 
 			if (currenttag) {
-				var parts = currenttag
-						.substr(1, currenttag.length - 2)
-						.split(':'),
+				var parts = currenttag.substr(1, currenttag.length - 2).split(':'),
 					extra = parts[1].split(';'),
 					relative = extra.shift(),
 					terms = extra.length ? extra : null;
@@ -1490,8 +1375,7 @@ mailster = (function (mailster, $, window, document) {
 
 				bar.find('div.' + type).show();
 
-				if (module.data('rss'))
-					$('#dynamic_rss_url').val(module.data('rss'));
+				if (module.data('rss')) $('#dynamic_rss_url').val(module.data('rss'));
 
 				//center the bar
 				var baroffset =
@@ -1510,15 +1394,9 @@ mailster = (function (mailster, $, window, document) {
 					if (conditions) {
 						$.each(conditions, function (i, condition) {
 							var _b = base.find('.conditinal-area').eq(i);
-							_b.find('select.condition-fields').val(
-								condition.field
-							);
-							_b.find('select.condition-operators').val(
-								condition.operator
-							);
-							_b.find('input.condition-value').val(
-								condition.value
-							);
+							_b.find('select.condition-fields').val(condition.field);
+							_b.find('select.condition-operators').val(condition.operator);
+							_b.find('input.condition-value').val(condition.value);
 							_b.find('input.input').val(condition.html);
 						});
 					} else {
@@ -1557,11 +1435,7 @@ mailster = (function (mailster, $, window, document) {
 
 					if (el.parent().is('a')) {
 						imagelink.val(
-							el
-								.parent()
-								.attr('href')
-								.replace('%7B', '{')
-								.replace('%7D', '}')
+							el.parent().attr('href').replace('%7B', '{').replace('%7D', '}')
 						);
 					} else {
 						imagelink.val('');
@@ -1590,10 +1464,7 @@ mailster = (function (mailster, $, window, document) {
 					buttonalt.val(el.find('img').attr('alt'));
 					if (el.attr('href'))
 						buttonlink.val(
-							el
-								.attr('href')
-								.replace('%7B', '{')
-								.replace('%7D', '}')
+							el.attr('href').replace('%7B', '{').replace('%7D', '}')
 						);
 
 					assetstype = 'link';
@@ -1602,10 +1473,7 @@ mailster = (function (mailster, $, window, document) {
 
 					$.each(base.find('.buttons img'), function () {
 						var _this = $(this);
-						_this.css(
-							'background-color',
-							el.css('background-color')
-						);
+						_this.css('background-color', el.css('background-color'));
 						_this.attr('src') == btnsrc
 							? _this.parent().addClass('active')
 							: _this.parent().removeClass('active');
@@ -1625,9 +1493,7 @@ mailster = (function (mailster, $, window, document) {
 						buttons: current.areas.eq(position).find('a[editable]'),
 						images: current.areas
 							.eq(position)
-							.find(
-								'img[editable], td[background], th[background]'
-							),
+							.find('img[editable], td[background], th[background]'),
 						expects: current.areas
 							.eq(position)
 							.find('[expect]')
@@ -1638,7 +1504,8 @@ mailster = (function (mailster, $, window, document) {
 					};
 
 					if (current.areas.length > 1) {
-						bar.find('.editbarposition')
+						bar
+							.find('.editbarposition')
 							.html(
 								mailster.util.sprintf(
 									mailster.l10n.campaigns.for_area,
@@ -1670,16 +1537,9 @@ mailster = (function (mailster, $, window, document) {
 					} else if (type == 'multi') {
 						$('#mailster-editor').val(content);
 
-						if (
-							mailster.util.isTinyMCE &&
-							tinymce.get('mailster-editor')
-						) {
+						if (mailster.util.isTinyMCE && tinymce.get('mailster-editor')) {
 							tinymce.get('mailster-editor').setContent(content);
-							tinymce.execCommand(
-								'mceFocus',
-								false,
-								'mailster-editor'
-							);
+							tinymce.execCommand('mceFocus', false, 'mailster-editor');
 						}
 					} else if (type == 'codeview') {
 						if (wp.codeEditor) {
@@ -1704,9 +1564,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function loadPosts(event, callback) {
-		var posttypes = $('#post_type_select')
-				.find('input:checked')
-				.serialize(),
+		var posttypes = $('#post_type_select').find('input:checked').serialize(),
 			data = {
 				type: assetstype,
 				posttypes: posttypes,
@@ -1746,9 +1604,7 @@ mailster = (function (mailster, $, window, document) {
 
 		loader();
 
-		var posttypes = $('#post_type_select')
-			.find('input:checked')
-			.serialize();
+		var posttypes = $('#post_type_select').find('input:checked').serialize();
 
 		mailster.util.ajax(
 			'get_post_list',
@@ -1788,9 +1644,7 @@ mailster = (function (mailster, $, window, document) {
 	function searchPost() {
 		var $this = $(this),
 			temp = mailster.util.trim(
-				'attachment' == assetstype
-					? imagesearch.val()
-					: postsearch.val()
+				'attachment' == assetstype ? imagesearch.val() : postsearch.val()
 			);
 		if (!$this.is(':checked') && searchstring == temp) {
 			return false;

@@ -13,7 +13,7 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '3.3.8' );
+define( 'MAILSTER_VERSION', '3.3.9' );
 define( 'MAILSTER_BUILT', 0000000000 );
 define( 'MAILSTER_ENVATO', false );
 define( 'MAILSTER_DBVERSION', 20220727 );
