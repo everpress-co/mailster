@@ -127,50 +127,51 @@ class MailsterBlockForms {
 	public function maybe_preview() {
 
 		// enter preview mode
-		if ( isset( $_GET['mailster-block-preview'] ) ) {
-
-			$data = json_decode( stripcslashes( $_GET['mailster-block-preview'] ), true );
-
-			// sanitize
-			$data = $this->sanitize( $data );
-
-			// stop if an error occurred
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				return;
-			}
-
-			if ( ! is_array( $data ) ) {
-				return;
-			}
-
-			if ( ! isset( $data['p'] ) && 'other' != $data['type'] ) {
-				$data['p'] = $this->get_preview_page( $data );
-				// check if user can actually edit this form
-				$redirect = add_query_arg(
-					array(
-						'mailster-block-preview' => rawurlencode( json_encode( $data ) ),
-						'p'                      => $data['p'],
-					),
-					home_url()
-				);
-
-				wp_redirect( $redirect );
-				exit;
-			}
-
-			if ( ! current_user_can( 'edit_post', $data['p'] ) ) {
-				return;
-			}
-
-			// handle logged in status
-			if ( ! $data['user'] ) {
-				wp_set_current_user( 0 );
-				add_filter( 'determine_current_user', '__return_false', PHP_INT_MAX );
-			}
-
-			$this->preview_data = $data;
-
+		if ( ! isset( $_GET['mailster-block-preview'] ) ) {
+			return;
 		}
+
+		$data = json_decode( stripcslashes( $_GET['mailster-block-preview'] ), true );
+
+		// stop if an error occurred
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return;
+		}
+
+		// sanitize
+		$data = $this->sanitize( $data );
+
+		if ( ! is_array( $data ) ) {
+			return;
+		}
+
+		if ( ! isset( $data['p'] ) && 'other' != $data['type'] ) {
+			$data['p'] = $this->get_preview_page( $data );
+			// check if user can actually edit this form
+			$redirect = add_query_arg(
+				array(
+					'mailster-block-preview' => rawurlencode( json_encode( $data ) ),
+					'p'                      => $data['p'],
+				),
+				home_url()
+			);
+
+			wp_redirect( $redirect );
+			exit;
+		}
+
+		if ( ! current_user_can( 'edit_post', $data['p'] ) ) {
+			return;
+		}
+
+		// handle logged in status
+		if ( ! $data['user'] ) {
+			wp_set_current_user( 0 );
+			add_filter( 'determine_current_user', '__return_false', PHP_INT_MAX );
+		}
+
+		$this->preview_data = $data;
+
 	}
 
 
@@ -288,7 +289,15 @@ class MailsterBlockForms {
 			wp_enqueue_style( 'mailster-form-block-preview', MAILSTER_URI . 'assets/css/form-block-preview' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		} elseif ( get_post_type() == 'mailster-form' ) {
-			add_filter( 'the_content', array( &$this, 'render_form_in_content' ) );
+			if ( ! is_post_publicly_viewable() ) {
+				global $wp_query;
+				$wp_query->set_404();
+				status_header( 404 );
+				nocache_headers();
+
+			} else {
+				add_filter( 'the_content', array( &$this, 'render_form_in_content' ) );
+			}
 		} elseif ( $forms = $this->query_forms() ) {
 			$this->forms = $forms;
 		}
@@ -375,6 +384,10 @@ class MailsterBlockForms {
 	public function maybe_add_form_to_content( $content ) {
 
 		if ( ! is_singular() ) {
+			return $content;
+		}
+
+		if ( ! is_post_publicly_viewable() ) {
 			return $content;
 		}
 
@@ -629,7 +642,7 @@ class MailsterBlockForms {
 				'type'         => 'boolean',
 				'show_in_rest' => true,
 				'single'       => true,
-				'default'      => false,
+				'default'      => true,
 
 			)
 		);
@@ -1152,6 +1165,8 @@ class MailsterBlockForms {
 			$html = render_block( $block[0] );
 
 		}
+
+		return '';
 
 		return $html;
 
