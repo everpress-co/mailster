@@ -2,8 +2,6 @@
  * External dependencies
  */
 
-import classnames from 'classnames';
-
 /**
  * WordPress dependencies
  */
@@ -26,13 +24,8 @@ import {
 	email,
 	Button,
 	SelectControl,
-	PanelRow,
-	TextControl,
-	FlexItem,
-	FlexBlock,
 } from '@wordpress/components';
-import { useSelect, select, dispatch } from '@wordpress/data';
-import { useDebounce } from '@wordpress/compose';
+import { useSelect, dispatch } from '@wordpress/data';
 
 import { useState, useEffect, useRef } from '@wordpress/element';
 import { edit, plus, update } from '@wordpress/icons';
@@ -43,22 +36,24 @@ import { edit, plus, update } from '@wordpress/icons';
 
 import './editor.scss';
 import HomepageInspectorControls from '../homepage/inspector';
-import { searchBlock, searchBlocks } from '../util';
+import { searchBlock } from '../util';
 import { TABS } from '../homepage/constants';
 import InlineStyles from '../util/InlineStyles';
-import { create } from 'lodash';
 
 function MailsterFormSelector(props) {
 	const { attributes, setAttributes, isSelected, selectForm, formId } = props;
 
+	const query = { status: 'publish,future,draft,pending,private' };
+
 	const forms = useSelect((select) => {
-		return select('core').getEntityRecords('postType', 'mailster-form');
+		return select('core').getEntityRecords('postType', 'mailster-form', query);
 	});
 
 	const isLoading = useSelect((select) => {
 		return select('core/data').isResolving('core', 'getEntityRecords', [
 			'postType',
 			'mailster-form',
+			query,
 		]);
 	});
 
@@ -79,33 +74,47 @@ function MailsterFormSelector(props) {
 			</p>
 		);
 	}
+	const editForm = () => {
+		window.open(
+			'post.php?post=' + formId + '&action=edit',
+			'edit_form_' + formId
+		);
+	};
 
 	return (
 		forms && (
-			<SelectControl
-				value={formId}
-				onChange={(val) => selectForm(parseInt(val, 10))}
-			>
-				<option value="">{__('Choose an existing form', 'mailster')}</option>
-				{forms.map((form) => (
-					<option key={form.id} value={form.id}>
-						{form.title.rendered}
-					</option>
-				))}
-			</SelectControl>
+			<>
+				<SelectControl
+					value={formId}
+					onChange={(val) => selectForm(parseInt(val, 10))}
+				>
+					<option value="">{__('Choose an existing form', 'mailster')}</option>
+					{forms.map((form) => (
+						<option key={form.id} value={form.id}>
+							{sprintf('#%d - %s', form.id, form.title.rendered)}
+						</option>
+					))}
+				</SelectControl>
+				<Button
+					variant="secondary"
+					icon={edit}
+					onClick={editForm}
+					text={__('Edit form', 'mailster')}
+				/>
+			</>
 		)
 	);
 }
 
 export default function Edit(props) {
 	const { attributes, isSelected, setAttributes, context, clientId } = props;
-	const { id = false } = attributes;
+	const { id = false, align } = attributes;
 
 	const [contextType, setContextType] = useState(
 		context['mailster-homepage-context/type']
 	);
 
-	const contextAlign = context['mailster-homepage-context/align'];
+	const contextAlign = context['mailster-homepage-context/align'] || align;
 	const contextId = context['mailster-homepage-context/' + contextType];
 	const formId = contextId || id;
 
