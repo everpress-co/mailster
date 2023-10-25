@@ -649,8 +649,26 @@ if ( $old_version ) {
 			// rename custom settings
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_value` = replace(meta_value, %s, %s) WHERE meta_key = 'wp_user-settings'", 'mailster_helpscout=true', 'mailster_beacon=true' ) );
 
+		case '3.3.0':
+		case '3.3.1':
+		case '3.3.2':
+		case '3.3.3':
+		case '3.3.4':
+		case '3.3.5':
+		case '3.3.6':
+		case '3.3.7':
+			// do nothing
+
 
 		default:
+			if ( get_option( 'mailster_freemius' ) ) {
+				$msg  = '<h2>' . esc_html__( 'Mailster 4.0 beta is now available!', 'mailster' ) . '</h2>';
+				$msg .= '<p>' . esc_html__( 'We\'re existed to announce the next major version of Mailster.', 'mailster' ) . '</p>';
+				$msg .= '<p><a href="' . mailster_url( 'https://mailster.co/blog/mailster-4-0/', array( 'utm_term' => 'beta notice' ) ) . '" class="button button-primary external">' . esc_html__( 'Read the officeal announcement', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) . '" class="button button-link">' . esc_html__( 'Join the Beta program', 'mailster' ) . '</a></p>';
+
+				mailster_notice( $msg, 'info', DAY_IN_SECONDS, 'mailster_beta_notice', true );
+			}
+
 			mailster( 'convert' )->notice();
 
 			// reset translations
