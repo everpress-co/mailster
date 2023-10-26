@@ -1166,8 +1166,6 @@ class MailsterBlockForms {
 
 		}
 
-		return '';
-
 		return $html;
 
 	}

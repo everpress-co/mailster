@@ -17,6 +17,9 @@ import { useEntityProp } from '@wordpress/core-data';
  * Internal dependencies
  */
 
+//for testing
+const HIDDEN = true;
+
 const SAMPLEFORM = (
 	<form className="mailster-block-form">
 		<label className="mailster-label">This is my Label</label>
@@ -166,9 +169,24 @@ export default function InlineStyles() {
 			}, 1);
 	};
 
-	if (!render) {
+	if (!render && HIDDEN) {
 		return null;
 	}
+
+	const style = HIDDEN
+		? {
+				pointerEvents: 'none',
+				width: screen.width,
+				zIndex: -1,
+				position: 'absolute',
+				visibility: 'hidden',
+		  }
+		: {
+				width: screen.width,
+				height: 400,
+				position: 'absolute',
+		  };
+
 	return (
 		<div
 			className="mailster-editor-inlinestyles"
@@ -178,13 +196,7 @@ export default function InlineStyles() {
 			<iframe
 				ref={ref}
 				src={link}
-				style={{
-					pointerEvents: 'none',
-					width: screen.width,
-					zIndex: -1,
-					position: 'absolute',
-					visibility: 'hidden',
-				}}
+				style={style}
 				onLoad={updateStyles}
 				loading="eager"
 			></iframe>
