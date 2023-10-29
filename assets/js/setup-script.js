@@ -84,14 +84,15 @@ mailster = (function (mailster, $, window, document) {
 				.find('input')
 				.focus()
 				.select();
+		})
+		.on('click', '.mailster-homepage-preview-small', function () {
+			var _this = $(this).find('iframe');
+			var main = $('.mailster-homepage-preview').eq(0).find('iframe');
+			var url = _this.attr('src');
+			var mainurl = main.attr('src');
+			_this.attr('src', mainurl);
+			main.attr('src', url);
 		});
-
-	mailster.$.document.on('verified.mailster', function () {
-		$('.validation-next-step').removeClass('disabled');
-		$('.validation-skip-step').addClass('disabled');
-	});
-
-	check_language();
 
 	var deliverynav = $('#deliverynav'),
 		deliverytabs = $('.deliverytab');
@@ -141,18 +142,6 @@ mailster = (function (mailster, $, window, document) {
 	mailster.events.push('documentReady', function () {
 		mailster.$.window.trigger('hashchange');
 	});
-
-	function check_language() {
-		status.html(mailster.l10n.setup.check_language);
-		spinner.css('visibility', 'visible');
-
-		mailster.util.ajax('check_language', function (response) {
-			spinner.css('visibility', 'hidden');
-			status.html(response.data.html);
-			if (response.success) {
-			}
-		});
-	}
 
 	function step(id) {
 		var step = $('#step_' + id);

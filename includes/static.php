@@ -63,7 +63,7 @@ if ( $block_editor ) {
 
 $mailster_homepage = array(
 	'post_title'   => esc_html__( 'Newsletter', 'mailster' ),
-	'post_status'  => 'publish',
+	'post_status'  => 'draft',
 	'post_type'    => 'page',
 	'post_name'    => esc_html_x( 'newsletter-signup', 'Newsletter Homepage page slug', 'mailster' ),
 	'post_content' => $content,

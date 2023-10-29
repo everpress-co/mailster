@@ -2809,6 +2809,7 @@ class MailsterAjax {
 				if ( $homepage = get_post( mailster_option( 'homepage' ) ) ) {
 					$homepage->post_title   = $data['post_title'];
 					$homepage->post_content = $data['post_content'];
+					$homepage->post_status  = 'publish';
 					if ( isset( $data['post_name'] ) ) {
 						$homepage->post_name = sanitize_title( $data['post_name'] );
 					}

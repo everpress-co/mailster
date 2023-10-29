@@ -42,17 +42,30 @@ class MailsterSettings {
 
 		} else {
 
-			include MAILSTER_DIR . 'includes/static.php';
-
-			if ( $id = wp_insert_post( $mailster_homepage ) ) {
+			if ( $id = $this->create_homepage() ) {
 				mailster_notice( esc_html__( 'Homepage created!', 'mailster' ), 'info', true );
-				mailster_update_option( 'homepage', $id );
-				mailster_remove_notice( 'no_homepage' );
-				mailster_remove_notice( 'wrong_homepage_status' );
 				mailster_redirect( 'post.php?post=' . absint( $id ) . '&action=edit&message=10' );
 				exit;
 			}
 		}
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function create_homepage() {
+		include MAILSTER_DIR . 'includes/static.php';
+
+		$id = wp_insert_post( $mailster_homepage );
+
+		mailster_update_option( 'homepage', $id );
+		mailster_remove_notice( 'no_homepage' );
+		mailster_remove_notice( 'wrong_homepage_status' );
+
+		return $id;
 	}
 
 
@@ -474,6 +487,7 @@ class MailsterSettings {
 		}
 
 	}
+
 
 
 	/**
