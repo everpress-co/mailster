@@ -2900,9 +2900,10 @@ class MailsterAjax {
 		$return = array(
 			'name'     => $name,
 			'email'    => $email,
+			'version'  => MAILSTER_VERSION,
 			'avatar'   => get_avatar_url( $user->ID ),
 			'id'       => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
-			'messages' => get_option( 'mailster_beacon_message' ),
+			'messages' => mailster_get_beacon_message(),
 		);
 
 		wp_send_json_success( $return );

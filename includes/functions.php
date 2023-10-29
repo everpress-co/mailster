@@ -970,7 +970,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		$args['key'] = uniqid();
 	}
 
-	if ( is_numeric( $args['once'] ) && $args['once'] < 1500000000 ) {
+	if ( is_numeric( $args['once'] ) && $args['once'] < 1600000000 ) {
 		$args['once'] = time() + $args['once'];
 	}
 
@@ -1031,19 +1031,118 @@ function mailster_remove_notice( $key ) {
 
 }
 
+/**
+ * get all notices
+ *
+ * @param mixed $id
+ * @param mixed $expire
+ * @return void
+ */
+function mailster_beacon_message( $id, $expire = null ) {
 
-function mailster_beacon_message( $id, $screen = null, $args = array() ) {
-	$mailster_beacon_message = get_option( 'mailster_beacon_message' );
-	if ( ! is_array( $mailster_beacon_message ) ) {
-		$mailster_beacon_message = array();
+	// check if we have a relative timestamp and make it absolute
+	if ( $expire && $expire < 1600000000 ) {
+		$expire = time() + $expire;
 	}
 
-	$mailster_beacon_message[ $id ] = array(
-		'screen' => $screen,
-		'args'   => wp_parse_args( $args ),
-	);
+	if ( $expire ) {
+		$option_name = '_mailster_beacon_messages_expire';
+	} else {
+		$option_name = '_mailster_beacon_messages';
+	}
 
-	update_option( 'mailster_beacon_message', $mailster_beacon_message, false );
+	$beacon_messages = get_transient( $option_name );
+	if ( ! $beacon_messages ) {
+		$beacon_messages = array();
+	}
+	$beacon_messages[ $id ] = $expire ? $expire : true;
+
+	$expires = 0;
+	if ( $expire ) {
+		// expire with the long latest message
+		$expires = array_values( $beacon_messages );
+		$expires = max( $expires ) - time();
+	}
+
+	set_transient( $option_name, $beacon_messages, $expires );
+
+};
+
+/**
+ * get all beacon messages
+ *
+ * @return array
+ */
+function mailster_get_beacon_message() {
+
+	// get expired messages
+	$expire_beacon_messages = get_transient( '_mailster_beacon_messages_expire' );
+	if ( ! $expire_beacon_messages ) {
+		$expire_beacon_messages = array();
+	}
+	foreach ( $expire_beacon_messages as $id => $expire ) {
+		if ( $expire < time() ) {
+			unset( $expire_beacon_messages[ $id ] );
+		}
+	}
+
+	$beacon_messages = get_transient( '_mailster_beacon_messages' );
+	if ( ! $beacon_messages ) {
+		$beacon_messages = array();
+	}
+
+	$messages = array_merge( array_keys( $expire_beacon_messages ), array_keys( $beacon_messages ) );
+
+	if ( empty( $messages ) ) {
+		return false;
+	}
+
+	return $messages;
+
+};
+
+/**
+ * delete a beacon message
+ *
+ * @param mixed $id
+ * @return bool
+ */
+function mailster_delete_beacon_message( $id = null ) {
+
+	if ( is_null( $id ) ) {
+		delete_transient( '_mailster_beacon_messages_expire' );
+		delete_transient( '_mailster_beacon_messages' );
+		return true;
+	}
+
+	$expire_beacon_messages = get_transient( '_mailster_beacon_messages_expire' );
+	if ( ! $expire_beacon_messages ) {
+		$expire_beacon_messages = array();
+	}
+	if ( isset( $expire_beacon_messages[ $id ] ) ) {
+		unset( $expire_beacon_messages[ $id ] );
+		if ( empty( $expire_beacon_messages ) ) {
+			delete_transient( '_mailster_beacon_messages_expire' );
+		} else {
+			set_transient( '_mailster_beacon_messages_expire', $expire_beacon_messages, get_option( '_transient_timeout__mailster_beacon_messages_expire', 1 ) );
+		}
+		return true;
+	}
+	$beacon_messages = get_transient( '_mailster_beacon_messages' );
+	if ( ! $beacon_messages ) {
+		$beacon_messages = array();
+	}
+	if ( isset( $beacon_messages[ $id ] ) ) {
+		unset( $beacon_messages[ $id ] );
+		if ( empty( $beacon_messages ) ) {
+			delete_transient( '_mailster_beacon_messages' );
+		} else {
+			set_transient( '_mailster_beacon_messages', $beacon_messages );
+		}
+		return true;
+	}
+
+	return false;
 
 };
 

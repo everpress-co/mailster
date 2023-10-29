@@ -14,10 +14,7 @@ import {
 	useCallback,
 } from '@wordpress/element';
 import { select, subscribe, useSelect, useDispatch } from '@wordpress/data';
-import apiFetch from '@wordpress/api-fetch';
 import { escape } from 'lodash';
-import { dateI18n } from '@wordpress/date';
-import { useBlockEditContext } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies

@@ -21,7 +21,11 @@ $flush_rewrite_rules = false;
 $default_options = mailster( 'settings' )->get_defaults();
 $default_texts   = mailster( 'settings' )->get_default_texts();
 
+
 if ( $old_version ) {
+
+	// always delete the beacon messages
+	mailster_delete_beacon_message();
 
 	// remove any branch version from the string.
 	$old_version_sanitized = preg_replace( '#^([^a-z]+)(\.|-)([a-z_]+)(.*?)$#i', '$1', $old_version );
@@ -656,6 +660,7 @@ if ( $old_version ) {
 		case '3.3.4':
 		case '3.3.5':
 		case '3.3.6':
+		case '3.3.7':
 		case '3.3.8':
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
@@ -674,8 +679,6 @@ if ( $old_version ) {
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_colors', 'mailster_texts', 'mailster_notices', 'mailster_updated')" );
 			update_option( 'mailster_notices_count', 0 );
 
-
-
 			mailster( 'convert' )->notice();
 
 			// reset translations
@@ -687,7 +690,13 @@ if ( $old_version ) {
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
+			// Beta Feedback
+			mailster_beacon_message( '8f069091-c508-47e7-b199-3454492b860c', MONTH_IN_SECONDS );
 
+			// NPS if setup is older than 3 month
+			if ( get_option( 'mailster_setup' ) < strtotime( '-3 month' ) ) {
+				mailster_beacon_message( 'edadbb75-de13-4213-8688-5630482a5537', MONTH_IN_SECONDS * 3 );
+			}
 	}
 
 	update_option( 'mailster_version_old', $old_version );
