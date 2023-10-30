@@ -41,30 +41,37 @@ class MailsterFrontpage {
 	 */
 	public function rewrite_rules( $wp_rules ) {
 
-		$slugs = implode( '|', (array) mailster_option( 'slugs', array( 'confirm', 'subscribe', 'unsubscribe', 'profile' ) ) );
+		$slugs = mailster_option( 'slugs' );
 
 		$rules = array();
 
-		if ( $homepage = mailster_option( 'homepage' ) ) {
+		// subscribe for leagcy forms
+		$rules['^(index\.php/)?(mailster)/(subscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+
+		if ( $slugs && $homepage = mailster_option( 'homepage' ) ) {
 
 			$pagename = get_page_uri( $homepage );
 
-			$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+			foreach ( (array) $slugs as $page => $slug ) {
+				$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slug . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=' . $page . '&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-			$rules['^(index\.php/)?(mailster)/(subscribe)/?$']                                     = 'index.php?_mailster=$matches[3]';
-			$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+				$rules[ '(index\.php/)?(mailster)/(' . $slug . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=' . $page . '&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-			if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
-				$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+				// special case if newsletter homepage is the frontpage
+				if ( get_option( 'page_on_front' ) === $homepage && get_option( 'show_on_front' ) === 'page' ) {
+					$rules[ '^(' . $slug . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=' . $page . '&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+				}
 			}
 		}
 
 		$rules['^(index\.php/)?(mailster)/([0-9-]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
 
+		// cron endpoint
 		if ( $secret = mailster_option( 'cron_secret' ) ) {
 			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?([0-9a-z]+)?/?$' ] = 'index.php?_mailster_cron=$matches[2]&_mailster_extra=$matches[3]';
 		}
 
+		// legacy forms
 		$rules['^(index\.php/)?mailster/form$'] = 'index.php?_mailster_form=1';
 
 		/**
@@ -243,10 +250,10 @@ class MailsterFrontpage {
 			}
 		}
 
-		// convert custom slugs
-		if ( get_query_var( '_mailster_page' ) && mailster( 'helper' )->using_permalinks() ) {
-			set_query_var( '_mailster_page', $this->get_page_by_slug( get_query_var( '_mailster_page' ) ) );
-		}
+		// convert custom slugs (no longer needed since 4.0.0)
+		// if ( get_query_var( '_mailster_page' ) && mailster( 'helper' )->using_permalinks() ) {
+			// set_query_var( '_mailster_page', $this->get_page_by_slug( get_query_var( '_mailster_page' ) ) );
+		// }
 
 		if ( get_query_var( '_mailster' ) ) {
 			if ( in_array( get_query_var( '_mailster' ), array( 'subscribe', '___update', '___unsubscribe' ) ) ) {

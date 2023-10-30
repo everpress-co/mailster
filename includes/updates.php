@@ -697,6 +697,9 @@ if ( $old_version ) {
 			if ( get_option( 'mailster_setup' ) < strtotime( '-3 month' ) ) {
 				mailster_beacon_message( 'edadbb75-de13-4213-8688-5630482a5537', MONTH_IN_SECONDS * 3 );
 			}
+
+
+			$flush_rewrite_rules = true;
 	}
 
 	update_option( 'mailster_version_old', $old_version );
