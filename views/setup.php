@@ -87,11 +87,6 @@ $beacons = array(
 		</div>
 	<?php endforeach; ?>
 	
-		<div class="mailster-setup-step" id="step_finish">
-
-			<?php require MAILSTER_DIR . 'views/setup/finish.php'; ?>	
-
-		</div>
 
 	</div>
 	

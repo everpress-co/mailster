@@ -128,6 +128,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function initBeacon() {
 		beacon = function (method, options, data) {
+			data = data || {};
 			switch (method) {
 				case 'init':
 					Beacon('reset');
@@ -149,10 +150,11 @@ mailster = (function (mailster, $, window, document) {
 						},
 					});
 					return Beacon('init', beacondata.id);
-					break;
 				case 'suggest':
 					return Beacon('suggest', options, data);
-					break;
+				case 'show-message':
+					data.force = true;
+					return Beacon('show-message', options, data);
 				default:
 					return Beacon(method, options, data);
 			}
@@ -181,8 +183,6 @@ mailster = (function (mailster, $, window, document) {
 				beacon('show-message', beacondata.messages[i]);
 			}
 		}
-
-		mailster.beacon = beacon;
 
 		loaded = true;
 		helpbtn.removeClass('is-loading');
@@ -236,6 +236,10 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	trial();
+
+	mailster.beacon = beacon;
+	mailster.requireConsent = requireConsent;
+	mailster.loadBeaconData = loadBeaconData;
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);

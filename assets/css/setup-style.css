@@ -77,9 +77,9 @@
 	overflow: hidden;
 	zoom: 1;
 	clear: both;
-	max-width: 900px;
+	max-width: 1050px;
 	width: 70vw;
-	min-width: 500px;
+	min-width: 900px;
 	position: relative;
 	margin: 30px auto;
 }
@@ -90,7 +90,7 @@
 #mailster-setup .mailster-setup-step {
 	position: absolute;
 	inset: 0;
-	visibility: hidden;
+	display: none;
 	align-items: center;
 	justify-content: center;
 }
@@ -101,7 +101,7 @@
 }
 #mailster-setup .mailster-setup-step.active,
 #mailster-setup .mailster-setup-step:first-child {
-	visibility: visible;
+	display: block;
 	position: relative;
 	margin-top: 20px;
 }
@@ -141,8 +141,7 @@
 #mailster-setup .button.next-step:active {
 	vertical-align: inherit;
 }
-#homepage_title,
-#purchasecode {
+#homepage_title {
 	padding: 3px 8px;
 	font-size: 1.7em;
 	line-height: 100%;

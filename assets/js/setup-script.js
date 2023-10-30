@@ -117,9 +117,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$.window.on('hashchange', function () {
 		var id = location.hash.substr(1) || 'start',
-			current = $('.mailster-setup-steps-nav').find("a[href='#" + id + "']"),
-			next,
-			prev;
+			current = $('.mailster-setup-steps-nav').find("a[href='#" + id + "']");
 
 		if (current.length) {
 			step(id);
@@ -130,7 +128,7 @@ mailster = (function (mailster, $, window, document) {
 				tinymce.activeEditor.theme.resizeTo('100%', 200);
 		}
 
-		if ('finish' == id) {
+		if ('finish' === id) {
 			mailster.util.ajax('wizard_save', {
 				id: id,
 				data: null,
