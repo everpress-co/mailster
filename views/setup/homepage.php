@@ -23,18 +23,16 @@ $homepage = get_post( $homepage_id );
 	<?php $url = trailingslashit( get_bloginfo( 'url' ) ); ?>
 	<label><?php echo esc_html_x( 'Location', 'the URL not the place', 'mailster' ); ?>:</label>
 	<span>
-		<a href="<?php echo $url . sanitize_title( $homepage->post_name ); ?>" class="external"><?php echo esc_url( $url ); ?><strong><?php echo sanitize_title( $homepage->post_name ); ?></strong>/</a>
+		<a href="<?php echo get_permalink( $homepage ); ?>" class="external"><?php echo esc_url( $url ); ?><strong><?php echo sanitize_title( $homepage->post_name ); ?></strong>/</a>
 		<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ); ?></a>
 	</span>
 	<span class="edit-slug-area">
-	<?php echo $url; ?><input type="text" name="post_name" value="<?php echo sanitize_title( $homepage->post_name ); ?>" class="regular-text">/
+	<?php echo esc_url( $url ); ?><input type="text" name="post_name" value="<?php echo sanitize_title( $homepage->post_name ); ?>" class="regular-text">
 	</span>
 
 <?php endif; ?>
 
 </p>
-
-<textarea name="post_content" class="regular-text" rows="10" hidden><?php echo esc_textarea( $homepage->post_content ); ?></textarea>
 
 <?php
 $slugs = mailster_option(
@@ -138,6 +136,7 @@ $url = add_query_arg(
 	</div>
 
 	</div>
+	<p><?php esc_html_e( 'You can update the form, content and texts later.', 'mailster' ); ?></p>
 
 	</form>
 </div>

@@ -48,12 +48,11 @@
 }
 #mailster-setup .mailster-setup-steps-nav {
 	list-style: none;
-	margin: 0;
 	margin-top: 30px;
-	position: absolute;
-	top: 0;
-	margin: 0 auto;
+	margin: 1em auto;
 	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 #mailster-setup .mailster-setup-steps-nav li a {
 	border: 2px solid #ccc;
@@ -70,11 +69,7 @@
 #mailster-setup .mailster-setup-steps-nav li a:focus {
 	box-shadow: none;
 }
-#mailster-setup {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
+
 #mailster-setup .mailster-setup-steps {
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.13);
 	border-radius: 5px;
@@ -83,17 +78,37 @@
 	zoom: 1;
 	clear: both;
 	max-width: 900px;
-	margin-top: 30px;
 	width: 70vw;
+	min-width: 500px;
+	position: relative;
+	margin: 30px auto;
 }
 #mailster-setup .mailster-setup-steps p {
 	max-width: 680px;
 }
+
 #mailster-setup .mailster-setup-step {
-	display: none;
+	position: absolute;
+	inset: 0;
+	visibility: hidden;
+	align-items: center;
+	justify-content: center;
 }
+#mailster-setup .mailster-setup-step .mailster-setup-step-body {
+	opacity: 0;
+	translate: 10px;
+	_transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+#mailster-setup .mailster-setup-step.active,
 #mailster-setup .mailster-setup-step:first-child {
-	display: block;
+	visibility: visible;
+	position: relative;
+	margin-top: 20px;
+}
+#mailster-setup .mailster-setup-step.active .mailster-setup-step-body,
+#mailster-setup .mailster-setup-step:first-child .mailster-setup-step-body {
+	opacity: 1;
+	translate: 0%;
 }
 #mailster-setup .mailster-setup-steps .spinner {
 	float: left;

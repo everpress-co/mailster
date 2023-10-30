@@ -17,7 +17,6 @@ mailster = (function (mailster, $, window, document) {
 
 	currentID = currentStep.attr('id').replace(/^step_/, '');
 
-	steps.hide();
 	step(currentID);
 
 	$('form.mailster-setup-step-form').on('submit', function () {
@@ -147,9 +146,9 @@ mailster = (function (mailster, $, window, document) {
 		var step = $('#step_' + id);
 
 		if (step.length) {
-			currentStep.hide();
+			currentStep.removeClass('active');
 			currentStep = step;
-			currentStep.show();
+			currentStep.addClass('active');
 			currentID = id;
 		}
 	}

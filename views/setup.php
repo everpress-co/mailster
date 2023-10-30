@@ -32,15 +32,17 @@ $beacons = array(
 );
 
 ?>
+
+
+	<input style="display:none"><input type="password" style="display:none">
+
+	<div class="mailster-setup-steps">
+
 	<ol class="mailster-setup-steps-nav">
 		<?php foreach ( $sections as $id => $name ) : ?>
 		<li title="<?php echo esc_attr( $name ); ?>"><a href="#<?php echo esc_attr( $id ); ?>"></a></li>
 		<?php endforeach; ?>
 	</ol>
-
-	<input style="display:none"><input type="password" style="display:none">
-
-	<div class="mailster-setup-steps">
 
 	<div class="mailster-setup-step" id="step_start">
 

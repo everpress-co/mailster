@@ -2807,12 +2807,12 @@ class MailsterAjax {
 			case 'homepage':
 				// homepage exists => update
 				if ( $homepage = get_post( mailster_option( 'homepage' ) ) ) {
-					$homepage->post_title   = $data['post_title'];
-					$homepage->post_content = $data['post_content'];
-					$homepage->post_status  = 'publish';
+					$homepage->post_title  = $data['post_title'];
+					$homepage->post_status = 'publish';
 					if ( isset( $data['post_name'] ) ) {
 						$homepage->post_name = sanitize_title( $data['post_name'] );
 					}
+					$id = wp_insert_post( $homepage );
 
 					// create new one
 				} else {
@@ -2821,11 +2821,14 @@ class MailsterAjax {
 					$homepage['post_status'] = 'publish';
 					$homepage['post_name']   = sanitize_title( $data['post_name'] );
 					$id                      = wp_insert_post( $homepage );
-					if ( $id && ! is_wp_error( $id ) ) {
-						mailster_remove_notice( 'no_homepage' );
-						mailster_remove_notice( 'wrong_homepage_status' );
-						mailster_update_option( 'homepage', $id );
-					}
+
+				}
+
+				if ( $id && ! is_wp_error( $id ) ) {
+					mailster_remove_notice( 'no_homepage' );
+					mailster_remove_notice( 'wrong_homepage_status' );
+					mailster_update_option( 'homepage', $id );
+					flush_rewrite_rules();
 				}
 
 				break;
@@ -2835,7 +2838,6 @@ class MailsterAjax {
 				mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
 				update_option( 'mailster_setup', time() );
 				// check for updates
-				flush_rewrite_rules();
 				break;
 			case 'delivery':
 			default:
