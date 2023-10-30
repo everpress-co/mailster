@@ -109,12 +109,11 @@ $url = add_query_arg(
 ?>
 
 <div class="mailster-homepage-previews">
-
-
+			
 	<div class="mailster-homepage-preview" data-type="submission">
 		<div class="mailster-homepage-preview-browser" >
 			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 3661.5 80" style="enable-background:new 0 0 3661.5 80" xml:space="preserve"><path style="fill:#fff" d="M0 0h3661.5v80H0z"/><circle class="st1" fill="#58595b" cx="40.1" cy="40" r="9.1"/><circle class="st1" fill="#58595b" cx="68.5" cy="40" r="9.1"/><circle class="st1" fill="#58595b" cx="96.9" cy="40" r="9.1"/><path class="st1" fill="#58595b" d="M3587.2 27h23.6c1.2 0 2.2 1 2.2 2.2v1.9c0 1.2-1 2.2-2.2 2.2h-23.6c-1.2 0-2.2-1-2.2-2.2v-1.9c0-1.2 1-2.2 2.2-2.2zM3587.2 37.8h23.6c1.2 0 2.2 1 2.2 2.2v2c0 1.2-1 2.2-2.2 2.2h-23.6c-1.2 0-2.2-1-2.2-2.2v-1.9c0-1.3 1-2.3 2.2-2.3zM3587.2 48.6h23.6c1.2 0 2.2 1 2.2 2.2v1.9c0 1.2-1 2.2-2.2 2.2h-23.6c-1.2 0-2.2-1-2.2-2.2v-1.9c0-1.2 1-2.2 2.2-2.2z"/></svg>
-			<iframe src="<?php echo esc_url( $url ); ?>" width="100%" height="1500" frameborder="0"></iframe>
+			<iframe src="<?php echo esc_url( $url ); ?>" width="100%" height="1500" frameborder="0" sandbox></iframe>
 		</div>
 	</div>
 
@@ -123,11 +122,10 @@ $url = add_query_arg(
 	<?php foreach ( array( 'unsubscribe', 'profile', 'subscribe' ) as $type ) : ?>
 
 		<?php $url = add_query_arg( array( '_mailster_page' => $type ), $url ); ?>
-
 		<div class="mailster-homepage-preview mailster-homepage-preview-small" data-type="<?php echo esc_attr( $type ); ?>">
 			<div class="mailster-homepage-preview-browser" >
 				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 3661.5 80" style="enable-background:new 0 0 3661.5 80" xml:space="preserve"><path style="fill:#fff" d="M0 0h3661.5v80H0z"/><circle class="st1" fill="#58595b" cx="40.1" cy="40" r="9.1"/><circle class="st1" fill="#58595b" cx="68.5" cy="40" r="9.1"/><circle class="st1" fill="#58595b" cx="96.9" cy="40" r="9.1"/><path class="st1" fill="#58595b" d="M3587.2 27h23.6c1.2 0 2.2 1 2.2 2.2v1.9c0 1.2-1 2.2-2.2 2.2h-23.6c-1.2 0-2.2-1-2.2-2.2v-1.9c0-1.2 1-2.2 2.2-2.2zM3587.2 37.8h23.6c1.2 0 2.2 1 2.2 2.2v2c0 1.2-1 2.2-2.2 2.2h-23.6c-1.2 0-2.2-1-2.2-2.2v-1.9c0-1.3 1-2.3 2.2-2.3zM3587.2 48.6h23.6c1.2 0 2.2 1 2.2 2.2v1.9c0 1.2-1 2.2-2.2 2.2h-23.6c-1.2 0-2.2-1-2.2-2.2v-1.9c0-1.2 1-2.2 2.2-2.2z"/></svg>
-				<iframe src="<?php echo esc_url( $url ); ?>" width="100%" height="1500" frameborder="0"></iframe>
+				<iframe src="<?php echo esc_url( $url ); ?>" width="100%" height="1500" frameborder="0" sandbox ></iframe>
 			</div>
 		</div>
 	
