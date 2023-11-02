@@ -134,7 +134,7 @@ class MailsterTemplate {
 	/**
 	 *
 	 *
-	 * @param unknown $slug (optional)
+	 * @param unknown $html
 	 * @return unknown
 	 */
 	public function load_template( $slug = '' ) {
@@ -157,19 +157,39 @@ class MailsterTemplate {
 			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}
 
-		$doc                  = new DOMDocument();
-		$doc->validateOnParse = true;
-		$doc->formatOutput    = true;
-
 		if ( file_exists( $file ) ) {
-			$raw = file_get_contents( $file );
-			$raw = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
+			$raw           = file_get_contents( $file );
+			$raw           = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
+			$template_data = $this->get_template_data( $file );
+			if ( $template_data && $template_data['name'] ) {
+				$this->data = $template_data;
+			}
 		} else {
 			$raw = '{headline}<br>{content}';
 		}
 
+			$this->slug   = $slug;
+			$this->exists = file_exists( $file );
+
+			return $this->load_template_html( $raw );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $html (optional)
+	 * @return unknown
+	 */
+	public function load_template_html( $html ) {
+
+		$doc                  = new DOMDocument();
+		$doc->validateOnParse = true;
+		$doc->formatOutput    = true;
+
 		$i_error = libxml_use_internal_errors( true );
-		$doc->loadHTML( $raw );
+		$doc->loadHTML( $html );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -324,21 +344,16 @@ class MailsterTemplate {
 			}
 		}
 
-		$template_data = $this->get_template_data( $file );
-		if ( $template_data && $template_data['name'] ) {
-			$this->data = $template_data;
-		}
-
-		$raw = $doc->saveHTML();
-		if ( preg_match( '#<!--(.*?)-->#s', $raw, $match ) ) {
+		$html = $doc->saveHTML();
+		if ( preg_match( '#<!--(.*?)-->#s', $html, $match ) ) {
 			$header = $match[0];
-			$raw    = $header . "\n" . str_replace( $header, '', $raw );
+			$html   = $header . "\n" . str_replace( $header, '', $html );
 		}
 
-		$this->slug   = $slug;
-		$this->doc    = $doc;
-		$this->raw    = $raw;
-		$this->exists = file_exists( $file );
+		$this->doc = $doc;
+		$this->raw = $html;
+
+		return $html;
 
 	}
 

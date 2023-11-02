@@ -17,7 +17,7 @@ $sections     = array(
 	'basics'     => __( 'Basics Information', 'mailster' ),
 	'basics2'    => __( 'Basics2', 'mailster' ),
 	'homepage'   => __( 'Newsletter Homepage', 'mailster' ),
-	'templates'  => __( 'Templates', 'mailster' ),
+	'templates'  => __( 'How should your campaings look like?', 'mailster' ),
 	'delivery'   => __( 'Delivery', 'mailster' ),
 	'privacy'    => __( 'Privacy', 'mailster' ),
 	'extensions' => __( 'Extensions', 'mailster' ),
@@ -36,15 +36,15 @@ $beacons = array(
 
 	<input style="display:none"><input type="password" style="display:none">
 
-	<div class="mailster-setup-steps">
-
 	<ol class="mailster-setup-steps-nav">
 		<?php foreach ( $sections as $id => $name ) : ?>
 		<li title="<?php echo esc_attr( $name ); ?>"><a href="#<?php echo esc_attr( $id ); ?>"></a></li>
 		<?php endforeach; ?>
 	</ol>
 
-	<div class="mailster-setup-step" id="step_start">
+	<div class="mailster-setup-steps">
+
+	<div class="mailster-setup-step active" id="step_start">
 
 		<?php require MAILSTER_DIR . 'views/setup/start.php'; ?>	
 

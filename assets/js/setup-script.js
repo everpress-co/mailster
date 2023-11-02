@@ -128,11 +128,18 @@ mailster = (function (mailster, $, window, document) {
 				tinymce.activeEditor.theme.resizeTo('100%', 200);
 		}
 
-		if ('finish' === id) {
-			mailster.util.ajax('wizard_save', {
-				id: id,
-				data: null,
-			});
+		switch (id) {
+			case 'start':
+				break;
+			case 'templates':
+				query_templates();
+				break;
+			case 'finish':
+				mailster.util.ajax('wizard_save', {
+					id: id,
+					data: null,
+				});
+				break;
 		}
 	});
 
@@ -149,6 +156,33 @@ mailster = (function (mailster, $, window, document) {
 			currentStep.addClass('active');
 			currentID = id;
 		}
+	}
+
+	var busy = false;
+	function query_templates(cb) {
+		busy = true;
+
+		mailster.util.ajax(
+			'query_templates',
+			{
+				search: null,
+				type: null,
+				browse: 'samples',
+				page: 1,
+			},
+			function (response) {
+				console.log(response);
+
+				busy = false;
+
+				if (response.success) {
+					$('.templates').html(response.data.html);
+				}
+
+				cb && cb();
+			},
+			function (jqXHR, textStatus, errorThrown) {}
+		);
 	}
 
 	function quickInstall(id, slug, action, context, cb) {

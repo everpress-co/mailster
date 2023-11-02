@@ -1174,7 +1174,7 @@ class MailsterTemplates {
 		return $result;
 	}
 
-	public function result_to_html( $result ) {
+	public function result_to_html( $result, $browse = null ) {
 
 		if ( empty( $result ) || empty( $result['items'] ) ) {
 			return '';
@@ -1183,7 +1183,11 @@ class MailsterTemplates {
 		ob_start();
 
 		foreach ( $result['items'] as $slug => $item ) {
-			include MAILSTER_DIR . 'views/templates/template.php';
+			if ( $browse === 'samples' ) {
+				include MAILSTER_DIR . 'views/templates/sample.php';
+			} else {
+				include MAILSTER_DIR . 'views/templates/template.php';
+			}
 		}
 
 		$html = ob_get_contents();

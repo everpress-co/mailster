@@ -51,10 +51,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.update', function (event) {
 			event.preventDefault();
 			$(this).addClass('updating-message');
-			updateTemplateFromUrl(
-				this.href,
-				$(this).closest('.theme').data('slug')
-			);
+			updateTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
 		})
 		.on('click', '.download', function (event) {
 			event.preventDefault();
@@ -71,13 +68,9 @@ mailster = (function (mailster, $, window, document) {
 
 			var dimensions = $(this).data(),
 				dualScreenLeft =
-					window.screenLeft != undefined
-						? window.screenLeft
-						: screen.left,
+					window.screenLeft != undefined ? window.screenLeft : screen.left,
 				dualScreenTop =
-					window.screenTop != undefined
-						? window.screenTop
-						: screen.top,
+					window.screenTop != undefined ? window.screenTop : screen.top,
 				width = mailster.$.window.width(),
 				height = mailster.$.window.height(),
 				left,
@@ -85,13 +78,11 @@ mailster = (function (mailster, $, window, document) {
 				newWindow;
 
 			if (/%/.test(dimensions.width)) {
-				dimensions.width =
-					width * (parseInt(dimensions.width, 10) / 100);
+				dimensions.width = width * (parseInt(dimensions.width, 10) / 100);
 			}
 
 			if (/%/.test(dimensions.height)) {
-				dimensions.height =
-					height * (parseInt(dimensions.height, 10) / 100);
+				dimensions.height = height * (parseInt(dimensions.height, 10) / 100);
 			}
 
 			left = width / 2 - dimensions.width / 2 + dualScreenLeft;
@@ -196,10 +187,7 @@ mailster = (function (mailster, $, window, document) {
 						.attr('src', data.image_full)
 						.attr(
 							'srcset',
-							data.image_full +
-								' 1x, ' +
-								data.image_fullx2 +
-								' 2x'
+							data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x'
 						);
 				}
 				if (data.update_available) overlay.addClass('has-update');
@@ -230,14 +218,10 @@ mailster = (function (mailster, $, window, document) {
 				nextTemplate = currentTemplate.next();
 				prevbtn
 					.prop('disabled', !prevTemplate.length)
-					[!prevTemplate.length ? 'addClass' : 'removeClass'](
-						'disabled'
-					);
+					[!prevTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				nextbtn
 					.prop('disabled', !nextTemplate.length)
-					[!nextTemplate.length ? 'addClass' : 'removeClass'](
-						'disabled'
-					);
+					[!nextTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				overlay.show();
 				setQueryStringParameter('template', data.slug);
 			},
@@ -307,9 +291,7 @@ mailster = (function (mailster, $, window, document) {
 								setFilter('installed', function () {
 									$('[data-slug="' + data.slug + '"]')
 										.find('.notice-success')
-										.html(
-											'<p>' + response.data.msg + '</p>'
-										);
+										.html('<p>' + response.data.msg + '</p>');
 								});
 								template.find('.notice-error').empty();
 							} else {
@@ -394,9 +376,7 @@ mailster = (function (mailster, $, window, document) {
 							.find('.theme-screenshots iframe')
 							.attr(
 								'src',
-								overlay
-									.find('.theme-screenshots iframe')
-									.attr('src')
+								overlay.find('.theme-screenshots iframe').attr('src')
 							);
 					},
 					function (jqXHR, textStatus, errorThrown) {}
@@ -428,11 +408,9 @@ mailster = (function (mailster, $, window, document) {
 					window.open(this.href);
 					return false;
 				});
-				overlay
-					.find('.theme-screenshots iframe')
-					.on('load', function () {
-						overlay.removeClass('loading');
-					});
+				overlay.find('.theme-screenshots iframe').on('load', function () {
+					overlay.removeClass('loading');
+				});
 				overlay.find('.theme-screenshots img').on('load', function () {
 					$(this).show();
 				});
@@ -592,9 +570,7 @@ mailster = (function (mailster, $, window, document) {
 						.find('.notice-warning')
 						.removeClass('updating-message notice-warning')
 						.addClass('notice-success')
-						.html(
-							'<p>' + mailster.l10n.templates.downloaded + '</p>'
-						);
+						.html('<p>' + mailster.l10n.templates.downloaded + '</p>');
 					template.find('.notice-error').empty();
 				} else {
 					template
@@ -644,9 +620,7 @@ mailster = (function (mailster, $, window, document) {
 						.find('.update-plugins');
 					if (updatebadge) {
 						if (updatebadge.text() > 1) {
-							updatebadge
-								.find('.update-count')
-								.text(updatebadge.text() - 1);
+							updatebadge.find('.update-count').text(updatebadge.text() - 1);
 						} else {
 							updatebadge.remove();
 						}
@@ -797,12 +771,9 @@ mailster = (function (mailster, $, window, document) {
 						// dragenter doesn't fire right :(
 						uploaddiv.addClass('drag-over');
 					})
-					.bind(
-						'dragleave.wp-uploader, drop.wp-uploader',
-						function () {
-							uploaddiv.removeClass('drag-over');
-						}
-					);
+					.bind('dragleave.wp-uploader, drop.wp-uploader', function () {
+						uploaddiv.removeClass('drag-over');
+					});
 			} else {
 				uploaddiv.removeClass('drag-drop');
 				$('#drag-drop-area').unbind('.wp-uploader');
