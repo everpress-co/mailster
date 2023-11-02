@@ -1184,6 +1184,7 @@ class MailsterTemplates {
 
 		foreach ( $result['items'] as $slug => $item ) {
 			if ( $browse === 'samples' ) {
+				add_filter( 'mailster_excerpt_length', array( $this, 'excerpt_length_for_sample' ), 999 );
 				include MAILSTER_DIR . 'views/templates/sample.php';
 			} else {
 				include MAILSTER_DIR . 'views/templates/template.php';
@@ -1197,6 +1198,11 @@ class MailsterTemplates {
 		return $html;
 
 	}
+
+	public function excerpt_length_for_sample() {
+		return 20;
+	}
+
 
 	public function get_template_data( $file ) {
 

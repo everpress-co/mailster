@@ -17,9 +17,10 @@ if ( $item['envato_item_id'] && ! $item['is_premium'] ) {
 	$classes[] = 'envato-item';
 }
 
-if ( $slug !== 'bakery' && $slug !== 'mailster' ) {
-	 // return;
+if ( $slug !== 'mailster' ) {
+	  // return;
 }
+
 
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>">

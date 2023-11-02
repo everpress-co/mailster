@@ -14,9 +14,6 @@
 	display: block;
 }
 #mailster-setup {
-	position: relative;
-	margin: 25px 40px 0 20px;
-	max-width: 1900px;
 	font-size: 15px;
 }
 #mailster-setup p {
@@ -48,10 +45,13 @@
 }
 #mailster-setup .mailster-setup-steps-nav {
 	list-style: none;
-	margin: 0.1em auto;
+	margin: 2em auto 1em;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+#mailster-setup .mailster-setup-steps-nav li {
+	margin: 0;
 }
 #mailster-setup .mailster-setup-steps-nav li a {
 	border: 1px solid #c3c4c4;
@@ -78,7 +78,7 @@
 	width: 70vw;
 	min-width: 900px;
 	position: relative;
-	margin: 30px auto;
+	margin: 10px auto;
 	border: 1px solid #c3c4c4;
 	border-radius: 5px;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
