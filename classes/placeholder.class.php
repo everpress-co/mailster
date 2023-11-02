@@ -769,12 +769,13 @@ class MailsterPlaceholder {
 				$querystring = wp_parse_url( $imagestring, PHP_URL_QUERY );
 				$post_stuff  = str_replace( '&amp;', '&', $hits[5][ $i ] );
 				$is_img_tag  = 'img' == $tag;
+				$cache_key   = md5( $search );
 
-				parse_str( $querystring, $query );
+				wp_parse_str( $querystring, $query );
 
 				if ( isset( $query['tag'] ) ) {
 
-					$replace_to = mailster_cache_get( 'mailster_' . $querystring );
+					$replace_to = mailster_cache_get( $cache_key );
 
 					if ( false === $replace_to ) {
 
@@ -887,11 +888,11 @@ class MailsterPlaceholder {
 									$post_stuff = preg_replace( '# height="(\d+)"#i', $height ? ' height="' . $height . '"' : '', $post_stuff );
 									$pre_stuff  = preg_replace( '# height="(\d+)"#i', $height ? ' height="' . $height . '"' : '', $pre_stuff );
 
-									$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" ' . $post_stuff . '>';
+									$replace_to = '<img' . $pre_stuff . 'src="' . $img['url'] . '" ' . $post_stuff . '>';
 								} else {
 									$pre_stuff  = str_replace( $imagestring, $img['url'], $pre_stuff );
 									$post_stuff = str_replace( $imagestring, $img['url'], $post_stuff );
-									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
+									$replace_to = '<' . $tag . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
 								}
 							} else {
 
@@ -900,12 +901,9 @@ class MailsterPlaceholder {
 								} else {
 									$pre_stuff  = str_replace( $imagestring, '', $pre_stuff );
 									$post_stuff = str_replace( $imagestring, '', $post_stuff );
-									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="" ' . $post_stuff . '>';
+									$replace_to = '<' . $tag . $pre_stuff . 'background="" ' . $post_stuff . '>';
 								}
 							}
-
-							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
-
 						} else {
 							// not if no ID is provided (custom dynamic post types)
 							if ( ! $post->ID ) {
@@ -915,6 +913,17 @@ class MailsterPlaceholder {
 								$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
 							}
 						}
+
+						// cache it for faster processing
+						mailster_cache_set( $cache_key, $replace_to );
+					}
+
+					if ( $attribute === 'background' ) {
+						error_log( print_r( $tag, true ) );
+						error_log( print_r( $is_img_tag, true ) );
+						error_log( print_r( $search, true ) );
+						error_log( print_r( $post_stuff, true ) );
+						error_log( print_r( $replace_to, true ) );
 					}
 
 					if ( false !== $replace_to ) {

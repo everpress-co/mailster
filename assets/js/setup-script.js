@@ -6,13 +6,15 @@ mailster = (function (mailster, $, window, document) {
 		currentID,
 		status = $('.status'),
 		spinner = $('.spinner'),
+		startStep = $('#step_start'),
 		hash = location.hash.substring(1),
 		tinymce = window.tinymce || false;
 
 	if (hash && $('#step_' + hash).length) {
+		startStep.hide();
 		currentStep = $('#step_' + hash);
 	} else {
-		currentStep = steps.eq(0);
+		currentStep = startStep;
 	}
 
 	currentID = currentStep.attr('id').replace(/^step_/, '');

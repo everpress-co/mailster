@@ -2482,8 +2482,8 @@ class MailsterAjax {
 		$result = mailster( 'templates' )->query( $query );
 
 		if ( ! is_wp_error( $result ) ) {
-			$return['total'] = $result['total'];
 
+			$return['total']     = $result['total'];
 			$return['html']      = mailster( 'templates' )->result_to_html( $result, $query['browse'] );
 			$return['templates'] = $result['items'];
 			$return['error']     = $result['error'];

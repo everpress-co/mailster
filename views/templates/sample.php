@@ -17,6 +17,10 @@ if ( $item['envato_item_id'] && ! $item['is_premium'] ) {
 	$classes[] = 'envato-item';
 }
 
+if ( $slug !== 'bakery' && $slug !== 'mailster' ) {
+	 // return;
+}
+
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>">
 	<span class="spinner"></span>
@@ -24,19 +28,21 @@ if ( $item['envato_item_id'] && ! $item['is_premium'] ) {
 	<?php
 
 	$html    = base64_decode( $item['sample'] );
-	$t       = mailster( 'template' );
-	$content = $t->load_template_html( $html );
+	$content = mailster( 'template' )->load_template_html( $html );
 
 	$content = mailster()->sanitize_content( $content );
 
 	$placeholder = mailster( 'placeholder', $content );
-	$placeholder->excerpt_filters( false );
+	// $placeholder->excerpt_filters( false );
 
 	$content = $placeholder->get_content();
 	$content = mailster( 'helper' )->strip_structure_html( $content );
 
 	$content = mailster( 'helper' )->add_mailster_styles( $content );
 	$content = mailster( 'helper' )->handle_shortcodes( $content );
+
+	// $content = $html;
+
 
 	?>
 
