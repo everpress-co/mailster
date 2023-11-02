@@ -746,7 +746,7 @@ class MailsterPlaceholder {
 	private function replace_images( $relative_to_absolute = false ) {
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<(img|td|th|v:fill)([^>]*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<(img|td|th|v:fill)([^>]*)(src|background)="([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
@@ -756,12 +756,18 @@ class MailsterPlaceholder {
 				if ( $i && false === strrpos( $this->content, $search ) ) {
 					continue;
 				}
+
+				$imagestring = str_replace( '&amp;', '&', $hits[4][ $i ] );
+				// not a placeholder image
+				if ( strpos( $imagestring, 'action=mailster_image_placeholder' ) === false ) {
+					continue;
+				}
+
 				$tag         = $hits[1][ $i ];
-				$pre_stuff   = $hits[2][ $i ];
+				$pre_stuff   = str_replace( '&amp;', '&', $hits[2][ $i ] );
 				$attribute   = $hits[3][ $i ];
-				$imagestring = $hits[4][ $i ];
-				$querystring = str_replace( '&amp;', '&', $hits[5][ $i ] );
-				$post_stuff  = $hits[6][ $i ];
+				$querystring = wp_parse_url( $imagestring, PHP_URL_QUERY );
+				$post_stuff  = str_replace( '&amp;', '&', $hits[5][ $i ] );
 				$is_img_tag  = 'img' == $tag;
 
 				parse_str( $querystring, $query );
