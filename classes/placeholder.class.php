@@ -766,7 +766,6 @@ class MailsterPlaceholder {
 				$tag         = $hits[1][ $i ];
 				$pre_stuff   = str_replace( '&amp;', '&', $hits[2][ $i ] );
 				$attribute   = $hits[3][ $i ];
-				$imagestring = str_replace( '&amp;', '&', $hits[4][ $i ] );
 				$querystring = wp_parse_url( $imagestring, PHP_URL_QUERY );
 				$post_stuff  = str_replace( '&amp;', '&', $hits[5][ $i ] );
 				$is_img_tag  = 'img' == $tag;
