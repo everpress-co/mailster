@@ -918,14 +918,6 @@ class MailsterPlaceholder {
 						mailster_cache_set( $cache_key, $replace_to );
 					}
 
-					if ( $attribute === 'background' ) {
-						error_log( print_r( $tag, true ) );
-						error_log( print_r( $is_img_tag, true ) );
-						error_log( print_r( $search, true ) );
-						error_log( print_r( $post_stuff, true ) );
-						error_log( print_r( $replace_to, true ) );
-					}
-
 					if ( false !== $replace_to ) {
 						$replace_to = apply_filters( 'mailster_replace_image', $replace_to, $search, $this->campaignID, $this->subscriberID );
 						if ( is_wp_error( $replace_to ) ) {
