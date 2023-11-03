@@ -8,10 +8,11 @@ mailster = (function (mailster, $, window, document) {
 		spinner = $('.spinner'),
 		startStep = $('#step_start'),
 		hash = location.hash.substring(1),
-		tinymce = window.tinymce || false;
+		tinymce = window.tinymce || false,
+		templatesLoaded = false;
 
 	if (hash && $('#step_' + hash).length) {
-		startStep.hide();
+		startStep.removeClass('active');
 		currentStep = $('#step_' + hash);
 	} else {
 		currentStep = startStep;
@@ -61,6 +62,9 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.quick-install', function () {
 			var _this = $(this);
+			if (_this.hasClass('loading')) return false;
+			_this.addClass('loading');
+			_this.prop('disabled', true);
 
 			quickInstall(
 				_this.data('method'),
@@ -68,9 +72,23 @@ mailster = (function (mailster, $, window, document) {
 				'install',
 				null,
 				function () {
+					$('section.current').removeClass('current');
+					_this.closest('section').addClass('current');
 					status.html('');
 					spinner.css('visibility', 'hidden');
-					deliverynav.find('a.nav-tab-active').trigger('click');
+					$('#deliverymethod').val(_this.data('method'));
+					$('#step_delivery')
+						.find('.next-step')
+						.html(
+							sprintf(
+								mailster.l10n.setup.use_deliverymethod,
+								_this.data('name')
+							)
+						);
+					_this.removeClass('loading');
+					$('#step_delivery').find('.quick-install').removeClass('disabled');
+					_this.addClass('disabled');
+					//_this.prop('disabled', false);
 				}
 			);
 		})
@@ -95,28 +113,6 @@ mailster = (function (mailster, $, window, document) {
 			main.attr('src', url);
 		});
 
-	var deliverynav = $('#deliverynav'),
-		deliverytabs = $('.deliverytab');
-
-	deliverynav.on('click', 'a.nav-tab', function () {
-		deliverynav.find('a').removeClass('nav-tab-active');
-		deliverytabs.hide();
-		var hash = $(this).addClass('nav-tab-active').attr('href').substr(1);
-		$('#deliverymethod').val(hash);
-		$('#deliverytab-' + hash).show();
-
-		if ($('#deliverytab-' + hash).find('.quick-install').length) {
-			$('.delivery-next-step')
-				.addClass('disabled')
-				.html(sprintf(mailster.l10n.setup.enable_first, $(this).html()));
-		} else {
-			$('.delivery-next-step')
-				.removeClass('disabled')
-				.html(sprintf(mailster.l10n.setup.use_deliverymethod, $(this).html()));
-		}
-		return false;
-	});
-
 	mailster.$.window.on('hashchange', function () {
 		var id = location.hash.substr(1) || 'start',
 			current = $('.mailster-setup-steps-nav').find("a[href='#" + id + "']");
@@ -134,7 +130,10 @@ mailster = (function (mailster, $, window, document) {
 			case 'start':
 				break;
 			case 'templates':
-				query_templates();
+				if (!templatesLoaded) {
+					query_templates();
+					templatesLoaded = true;
+				}
 				break;
 			case 'finish':
 				mailster.util.ajax('wizard_save', {
@@ -157,6 +156,12 @@ mailster = (function (mailster, $, window, document) {
 			currentStep = step;
 			currentStep.addClass('active');
 			currentID = id;
+			//smoothly scroll to title
+			window.scrollTo({
+				top: 0,
+				left: 0,
+				behavior: 'smooth',
+			});
 		}
 	}
 
@@ -173,10 +178,7 @@ mailster = (function (mailster, $, window, document) {
 				page: 1,
 			},
 			function (response) {
-				console.log(response);
-
 				busy = false;
-
 				if (response.success) {
 					$('.templates').html(response.data.html);
 				}
@@ -210,7 +212,7 @@ mailster = (function (mailster, $, window, document) {
 							cb
 						);
 					} else if (response.data.content) {
-						el.html(response.data.content);
+						el.hide().html(response.data.content).fadeIn();
 						cb && cb(response);
 					}
 				} else {

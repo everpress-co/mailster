@@ -17,10 +17,10 @@ $sections     = array(
 	'basics'     => __( 'Basics Information', 'mailster' ),
 	'basics2'    => __( 'Basics2', 'mailster' ),
 	'homepage'   => __( 'Newsletter Homepage', 'mailster' ),
-	'templates'  => __( 'How should your campaings look like?', 'mailster' ),
-	'delivery'   => __( 'Delivery', 'mailster' ),
+	'templates'  => __( 'What should your campaigns look like?', 'mailster' ),
+	'delivery'   => __( 'How would you prefer your emails to be delivered?', 'mailster' ),
 	'privacy'    => __( 'Privacy', 'mailster' ),
-	'extensions' => __( 'Extensions', 'mailster' ),
+	'extensions' => sprintf( __( 'Recommendations for %s', 'mailster' ), wp_parse_url( home_url(), PHP_URL_HOST ) ),
 	'community'  => __( 'Join the Community', 'mailster' ),
 	'finish'     => __( 'Great, you\'re done!', 'mailster' ),
 );

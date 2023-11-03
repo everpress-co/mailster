@@ -24,7 +24,6 @@ if ( $slug !== 'mailster' ) {
 
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>">
-	<span class="spinner"></span>
 
 	<?php
 
