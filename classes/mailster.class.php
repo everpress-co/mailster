@@ -1954,8 +1954,8 @@ class Mailster {
 	public function get_tables( $fullnames = false ) {
 
 		global $wpdb;
-
-		$tables = array( 'subscribers', 'subscriber_fields', 'subscriber_meta', 'queue', 'action_sent', 'action_opens', 'action_clicks', 'action_unsubs', 'action_bounces', 'action_errors', 'links', 'lists', 'lists_subscribers', 'tags', 'tags_subscribers', 'forms', 'form_fields', 'forms_lists', 'forms_tags' );
+		// get tables from table structure
+		$tables = preg_replace( '/CREATE\s+TABLE\s+(`?)(' . $wpdb->prefix . ')mailster_([\w_]+)(`?)(.*)/s', '$3', $this->get_table_structure() );
 
 		sort( $tables );
 
