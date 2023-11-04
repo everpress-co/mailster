@@ -3804,6 +3804,10 @@ class MailsterSubscribers {
 	 */
 	public function get_gravatar_uri( $email, $size = 120 ) {
 
+		if ( ! $email ) {
+			$email = '';
+		}
+
 		$email = strtolower( trim( $email ) );
 		$hash  = md5( $email );
 		// create a number from 01 to 09 based on the email address

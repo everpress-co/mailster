@@ -1247,8 +1247,8 @@ class MailsterAjax {
 			$font      = MAILSTER_DIR . 'assets/font/Jost-Regular.ttf';
 			$bbox      = imagettfbbox( $font_size, 0, $font, $text );
 
-			$center_x = $width / 2 - ( abs( $bbox[4] - $bbox[6] ) / 2 );
-			$center_y = $height / 2 + ( abs( $bbox[3] - $bbox[5] ) / 3 );
+			$center_x = absint( $width / 2 - ( abs( $bbox[4] - $bbox[6] ) / 2 ) );
+			$center_y = absint( $height / 2 + ( abs( $bbox[3] - $bbox[5] ) / 3 ) );
 
 			imagettftext( $im, $font_size, 0, $center_x, $center_y, $font_color, $font, $text );
 
