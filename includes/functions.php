@@ -17,7 +17,6 @@ function mailster( $subclass = null ) {
 	}
 
 	return call_user_func_array( array( $mailster, $subclass ), $args );
-
 }
 
 
@@ -37,7 +36,6 @@ function mailster_option( $option, $fallback = null ) {
 	$value = apply_filters( 'mailster_option_' . $option, $value, $fallback );
 
 	return $value;
-
 }
 
 /**
@@ -51,7 +49,6 @@ function mailster_force_option( $option, $fallback = null ) {
 
 	wp_cache_delete( 'alloptions', 'options' );
 	return mailster_option( $option, $fallback );
-
 }
 
 
@@ -206,7 +203,7 @@ function mailster_update_option( $option, $value = null, $temp = false ) {
 
 		add_filter(
 			'pre_option_mailster_options',
-			function() use ( $temp_options ) {
+			function () use ( $temp_options ) {
 				return $temp_options;
 			}
 		);
@@ -242,7 +239,6 @@ function mailster_force_update_option( $option, $value = null, $temp = false ) {
 function mailster_get_current_user( $custom_fields = true ) {
 
 	return mailster( 'subscribers' )->get_current_user( $custom_fields );
-
 }
 
 
@@ -254,7 +250,6 @@ function mailster_get_current_user( $custom_fields = true ) {
 function mailster_get_current_user_id() {
 
 	return mailster( 'subscribers' )->get_current_user_id();
-
 }
 /**
  *
@@ -270,7 +265,7 @@ function mailster_localize_script( $hook, $strings = array() ) {
 
 	add_filter(
 		'mailster_localize_script',
-		function( $array ) use ( $hook, $strings ) {
+		function ( $array ) use ( $hook, $strings ) {
 			if ( isset( $array[ $hook ] ) ) {
 				$array[ $hook ] += $strings;
 			} else {
@@ -279,7 +274,6 @@ function mailster_localize_script( $hook, $strings = array() ) {
 			return $array;
 		}
 	);
-
 }
 
 
@@ -307,7 +301,7 @@ function mailster_register_dynamic_post_type( $post_type, $args = array(), $call
 	// add additional post type
 	add_filter(
 		'mailster_dynamic_post_types',
-		function( $post_types, $output ) use ( $post_type, $args ) {
+		function ( $post_types, $output ) use ( $post_type, $args ) {
 
 			if ( 'names' == $output ) {
 				$post_types[ $post_type ] = $post_type;
@@ -316,7 +310,6 @@ function mailster_register_dynamic_post_type( $post_type, $args = array(), $call
 			}
 
 			return $post_types;
-
 		},
 		10,
 		2
@@ -325,7 +318,7 @@ function mailster_register_dynamic_post_type( $post_type, $args = array(), $call
 	// filter in placeholder
 	add_filter(
 		'mailster_get_last_post_' . $post_type,
-		function( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) use ( $callback ) {
+		function ( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) use ( $callback ) {
 
 			if ( is_callable( $callback ) ) {
 				$random = false;
@@ -340,7 +333,6 @@ function mailster_register_dynamic_post_type( $post_type, $args = array(), $call
 			}
 
 			return $return;
-
 		},
 		(int) $priority,
 		6
@@ -524,7 +516,6 @@ function mailster_list_newsletter( $args = '' ) {
 	} else {
 		return $output;
 	}
-
 }
 
 
@@ -583,7 +574,6 @@ function mailster_ip2City( $ip = '', $get = null ) {
 	$code = $geo->get_city_by_ip( $ip, $get );
 
 	return ( $code ) ? $code : 'unknown';
-
 }
 
 
@@ -641,7 +631,6 @@ function mailster_is_local( $ip = null ) {
 	}
 
 	return ! filter_var( mailster_get_ip(), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
-
 }
 
 
@@ -662,7 +651,6 @@ function mailster_validate_ip( $ip = null ) {
 	}
 
 	return filter_var( $ip, FILTER_VALIDATE_IP );
-
 }
 
 
@@ -675,7 +663,6 @@ function mailster_validate_ip( $ip = null ) {
 function mailster_get_lang( $fallback = false ) {
 
 	return isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? strtolower( substr( trim( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ), 0, 2 ) ) : $fallback;
-
 }
 
 
@@ -697,7 +684,6 @@ function mailster_get_user_client( $string = null ) {
 	$agent  = new MailsterUserAgent( $string );
 	$client = $agent->get();
 	return $client;
-
 }
 
 /**
@@ -719,7 +705,6 @@ function mailster_get_user_setting( $key, $default = null ) {
 	}
 
 	return $raw;
-
 }
 
 /**
@@ -739,7 +724,6 @@ function mailster_set_user_setting( $key, $value ) {
 	}
 
 	return set_user_setting( $key, $value );
-
 }
 
 
@@ -782,16 +766,13 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 	foreach ( $lists as $list ) {
 		if ( is_numeric( $list ) ) {
 			$new_lists[] = (int) $list;
-		} else {
-			if ( $list_id = mailster( 'lists' )->get_by_name( $list, 'ID' ) ) {
+		} elseif ( $list_id = mailster( 'lists' )->get_by_name( $list, 'ID' ) ) {
 				$new_lists[] = $list_id;
-			}
 		}
 	}
 	mailster( 'subscribers' )->assign_lists( $subscriber_id, $new_lists, $mergelists, $added );
 
 	return true;
-
 }
 
 
@@ -819,7 +800,6 @@ function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $status = nu
 	}
 
 	return false;
-
 }
 
 
@@ -878,7 +858,6 @@ function mailster_clear_cache( $part = '', $deprecated = false ) {
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_mailster_" . esc_sql( $part ) . "%'" );
 
 	return true;
-
 }
 
 
@@ -964,7 +943,6 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 	update_option( 'mailster_notices', $mailster_notices );
 
 	return $args['key'];
-
 }
 
 
@@ -992,7 +970,6 @@ function mailster_remove_notice( $key ) {
 	}
 
 	return true;
-
 }
 
 
@@ -1008,8 +985,7 @@ function mailster_beacon_message( $id, $screen = null, $args = array() ) {
 	);
 
 	update_option( 'mailster_beacon_message', $mailster_beacon_message, false );
-
-};
+}
 
 /**
  *
@@ -1051,7 +1027,6 @@ function mailster_is_email( $email ) {
 	}
 
 	return true;
-
 }
 
 
@@ -1083,7 +1058,6 @@ function mailster_url( $url, $args = array() ) {
 	$url = add_query_arg( $args, $url );
 
 	return esc_url_raw( $url );
-
 }
 
 /**
@@ -1102,7 +1076,6 @@ function mailster_links_add_args( $content, $args = array() ) {
 	}
 
 	return $content;
-
 }
 
 /**
@@ -1165,11 +1138,9 @@ function mailster_add_tag( $tag, $callback ) {
 		if ( ! method_exists( $callback[0], $callback[1] ) ) {
 			return false;
 		}
-	} else {
+	} elseif ( ! function_exists( $callback ) ) {
 
-		if ( ! function_exists( $callback ) ) {
 			return false;
-		}
 	}
 
 	global $mailster_tags;
@@ -1181,7 +1152,6 @@ function mailster_add_tag( $tag, $callback ) {
 	$mailster_tags[ $tag ] = $callback;
 
 	return true;
-
 }
 
 
@@ -1211,7 +1181,6 @@ function mailster_remove_tag( $tag ) {
 	}
 
 	return true;
-
 }
 
 
@@ -1261,13 +1230,11 @@ function mailster_add_embeded_style( $callback ) {
 	$args = func_get_args();
 	$args = array_slice( $args, 1 );
 	return mailster( 'helper' )->add_style( $callback, $args, true );
-
 }
 
 function mailster_add_embedded_style( $callback ) {
 
 	return mailster_add_embeded_style( $callback );
-
 }
 
 /**
@@ -1300,7 +1267,6 @@ function mailster_update_notice( $text ) {
 	wp_enqueue_script( 'thickbox' );
 
 	return sprintf( esc_html__( 'Mailster has been updated to %s.', 'mailster' ), '<strong>' . MAILSTER_VERSION . '</strong>' ) . ' <a class="thickbox" href="' . network_admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=mailster&amp;section=changelog&amp;TB_iframe=true&amp;width=772&amp;height=745' ) . '">' . esc_html__( 'Changelog', 'mailster' ) . '</a>';
-
 }
 
 
@@ -1315,7 +1281,6 @@ function mailster_update_notice( $text ) {
 function mailster_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
 
 	return wp_redirect( $location, $status, $x_redirect_by );
-
 }
 
 
@@ -1330,7 +1295,6 @@ function mailster_redirect( $location, $status = 302, $x_redirect_by = 'Mailster
 function mailster_safe_redirect( $location, $status = 302, $x_redirect_by = 'Mailster' ) {
 
 	return wp_safe_redirect( $location, $status, $x_redirect_by );
-
 }
 
 
@@ -1351,7 +1315,6 @@ function is_mailster_newsletter_homepage( $post_id = null ) {
 	}
 
 	return apply_filters( 'is_mailster_newsletter_homepage', $post_id == mailster_option( 'homepage' ), $the_post );
-
 }
 
 
@@ -1381,7 +1344,7 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	// force direct method
 	add_filter(
 		'filesystem_method',
-		function() {
+		function () {
 			return 'direct';
 		}
 	);
@@ -1424,7 +1387,6 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	}
 
 	return $wp_filesystem;
-
 }
 
 if ( ! function_exists( 'get_user_locale' ) ) :
@@ -1492,7 +1454,6 @@ if ( ! function_exists( 'http_negotiate_language' ) ) :
 		}
 
 		return $bestlang;
-
 	}
 
 

@@ -29,7 +29,6 @@ class MailsterImportWordPress extends MailsterImport {
 		);
 
 		return $result['data'];
-
 	}
 
 	public function get_import_data() {
@@ -85,7 +84,6 @@ class MailsterImportWordPress extends MailsterImport {
 				'existing' => 'merge',
 			),
 		);
-
 	}
 
 
@@ -143,7 +141,7 @@ class MailsterImportWordPress extends MailsterImport {
 		foreach ( $user_ids as $i => $user_id ) {
 			$user = get_user_by( 'ID', $user_id );
 			if ( ! $user ) {
-				$total--;
+				--$total;
 				continue;
 			}
 			if ( $i >= $args['limit'] ) {
@@ -185,5 +183,4 @@ class MailsterImportWordPress extends MailsterImport {
 
 		return $insert;
 	}
-
 }

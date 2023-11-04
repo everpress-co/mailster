@@ -5,7 +5,6 @@ class MailsterTinymce {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
 	}
 
 
@@ -14,7 +13,6 @@ class MailsterTinymce {
 		if ( is_admin() ) {
 			add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
 		}
-
 	}
 
 
@@ -49,7 +47,6 @@ class MailsterTinymce {
 		}
 
 		return $plugin_array;
-
 	}
 
 
@@ -120,7 +117,7 @@ class MailsterTinymce {
 				'tags' => $this->transform_array( $custom ),
 			);
 
-		};
+		}
 
 		if ( $permanent = mailster_option( 'tags' ) ) {
 			$tags['permanent'] = array(
@@ -128,7 +125,7 @@ class MailsterTinymce {
 				'tags' => $this->transform_array( $permanent ),
 			);
 
-		};
+		}
 
 		$tags['date'] = array(
 			'name' => esc_html__( 'Date', 'mailster' ),
@@ -166,7 +163,6 @@ class MailsterTinymce {
 			)
 		);
 		echo '</script>';
-
 	}
 
 
@@ -218,7 +214,6 @@ class MailsterTinymce {
 			)
 		);
 		echo '</script>';
-
 	}
 
 
@@ -237,8 +232,5 @@ class MailsterTinymce {
 		}
 
 		return $return;
-
 	}
-
-
 }

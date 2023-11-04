@@ -6,7 +6,6 @@ class MailsterGeo {
 
 		add_action( 'mailster_location_update', array( &$this, 'maybe_update' ) );
 		add_action( 'mailster_cron', array( &$this, 'maybe_set_cron' ) );
-
 	}
 
 
@@ -36,7 +35,6 @@ class MailsterGeo {
 		} else {
 			$this->clear_cron();
 		}
-
 	}
 
 
@@ -121,7 +119,6 @@ class MailsterGeo {
 		$success = $success && $Ip2City->update( $force );
 
 		return $success;
-
 	}
 
 
@@ -139,7 +136,6 @@ class MailsterGeo {
 		}
 		$i = $this->Ip2Country();
 		return $i->country( $code );
-
 	}
 
 
@@ -174,7 +170,6 @@ class MailsterGeo {
 		} catch ( Exception $e ) {
 			return 'unknown';
 		}
-
 	}
 
 
@@ -202,7 +197,6 @@ class MailsterGeo {
 		}
 
 		return $sorted;
-
 	}
 
 
@@ -227,7 +221,6 @@ class MailsterGeo {
 		} else {
 			return 0;
 		}
-
 	}
 
 
@@ -255,7 +248,6 @@ class MailsterGeo {
 		asort( $continents );
 
 		return $continents;
-
 	}
 
 
@@ -285,7 +277,6 @@ class MailsterGeo {
 		}
 
 		return array();
-
 	}
 
 
@@ -2532,6 +2523,4 @@ class MailsterGeo {
 		}
 		return $timezone;
 	}
-
-
 }

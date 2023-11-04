@@ -10,7 +10,6 @@ class Sendria {
 	private function __construct( $host, $port ) {
 
 		$this->endpoint = trailingslashit( 'http://' . $host . ':' . $port );
-
 	}
 
 	public static function getInstance( $host = 'localhost', $port = '1080' ) {
@@ -28,7 +27,6 @@ class Sendria {
 		}
 
 		return $messages[ $page ];
-
 	}
 	public function get_by_subject( $subject ) {
 
@@ -47,11 +45,10 @@ class Sendria {
 					break;
 				}
 			}
-			$page++;
+			++$page;
 		}
 
 		return $found;
-
 	}
 
 
@@ -82,7 +79,5 @@ class Sendria {
 		}
 
 		return $decoded;
-
 	}
-
 }

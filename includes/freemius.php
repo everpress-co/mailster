@@ -96,7 +96,6 @@ function mailster_add_link_for_envato() {
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co/where-is-my-purchasecode/' ); ?>" target="_blank"><?php esc_html_e( "Can't find your license key?", 'mailster' ); ?></a>
 	</div>
 	<?php
-
 }
 
 
@@ -159,7 +158,6 @@ function mailster_freemius_checkout_url( $url ) {
 		),
 		admin_url( 'edit.php' )
 	);
-
 }
 
 mailster_freemius()->add_action( 'after_license_change', 'mailster_freemius_after_license_change_handler', 10, 2 );
@@ -170,5 +168,4 @@ function mailster_freemius_after_license_change_handler( $plan_change_desc, FS_P
 	}
 
 	return;
-
 }

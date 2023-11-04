@@ -19,7 +19,6 @@ class MailsterStatistics {
 			'labels'   => $this->get_labels( $rawdata ),
 			'datasets' => $this->get_datasets( $rawdata ),
 		);
-
 	}
 
 
@@ -51,11 +50,10 @@ class MailsterStatistics {
 			}
 			$prev        = $count;
 			$dates[ $i ] = $str;
-			$i++;
+			++$i;
 		}
 
 		return $dates;
-
 	}
 
 
@@ -78,7 +76,6 @@ class MailsterStatistics {
 				'pointHoverBackgroundColor' => 'rgba(43,179,231,1)',
 			),
 		);
-
 	}
 
 
@@ -118,7 +115,6 @@ class MailsterStatistics {
 		}
 
 		return $dates;
-
 	}
 
 
@@ -164,5 +160,4 @@ class MailsterStatistics {
 
 		return ! ( $value % 1 ) ? $value : '';
 	}
-
 }

@@ -50,7 +50,6 @@ class MailsterTemplates {
 
 		add_action( 'init', array( &$this, 'init' ) );
 		add_action( 'mailster_get_screenshots', array( &$this, 'get_screenshots' ), 10, 3 );
-
 	}
 
 
@@ -59,7 +58,6 @@ class MailsterTemplates {
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 50 );
 		add_action( 'mailster_copy_template', array( &$this, 'copy_template' ) );
 		add_action( 'wp_version_check', array( &$this, 'check_for_updates' ) );
-
 	}
 
 
@@ -73,7 +71,6 @@ class MailsterTemplates {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Templates', 'mailster' ), esc_html__( 'Templates', 'mailster' ) . $updates, 'mailster_manage_templates', 'mailster_templates', array( &$this, 'templates' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
-
 	}
 
 
@@ -128,7 +125,6 @@ class MailsterTemplates {
 		}
 
 		return false;
-
 	}
 
 
@@ -152,7 +148,7 @@ class MailsterTemplates {
 
 		if ( ! is_null( $file ) ) {
 			$location .= '/' . $file;
-		};
+		}
 
 		$wp_filesystem = mailster_require_filesystem();
 
@@ -226,10 +222,8 @@ class MailsterTemplates {
 
 					if ( $renamefolder == $folder ) {
 						$moved = true;
-					} else {
-						if ( ! ( $moved = $wp_filesystem->move( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder, true ) ) ) {
+					} elseif ( ! ( $moved = $wp_filesystem->move( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder, true ) ) ) {
 							$moved = rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
-						}
 					}
 
 					if ( $moved ) {
@@ -375,7 +369,6 @@ class MailsterTemplates {
 		}
 
 		return new WP_Error( 'file_error', esc_html__( 'There was a problem progressing the file', 'mailster' ) );
-
 	}
 
 
@@ -389,7 +382,6 @@ class MailsterTemplates {
 
 		$this->copy_template();
 		$this->process_colors( $slug );
-
 	}
 
 
@@ -436,7 +428,6 @@ class MailsterTemplates {
 				}
 			}
 		}
-
 	}
 
 
@@ -448,7 +439,6 @@ class MailsterTemplates {
 		}
 
 		include MAILSTER_DIR . 'views/templates.php';
-
 	}
 
 	public function install_templates() {
@@ -459,7 +449,6 @@ class MailsterTemplates {
 		}
 
 		include MAILSTER_DIR . 'views/templates-install.php';
-
 	}
 
 
@@ -473,7 +462,6 @@ class MailsterTemplates {
 		if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $nonce ) ) {
 			die( $return );
 		}
-
 	}
 
 
@@ -485,7 +473,6 @@ class MailsterTemplates {
 			echo json_encode( $return );
 			exit;
 		}
-
 	}
 
 
@@ -515,7 +502,6 @@ class MailsterTemplates {
 		}
 
 		return $available_templates;
-
 	}
 
 	/**
@@ -572,7 +558,6 @@ class MailsterTemplates {
 		}
 
 		return $templates;
-
 	}
 
 
@@ -592,7 +577,6 @@ class MailsterTemplates {
 		}
 
 		return $files;
-
 	}
 
 
@@ -647,7 +631,6 @@ class MailsterTemplates {
 		}
 
 		return $group_list;
-
 	}
 
 
@@ -667,7 +650,6 @@ class MailsterTemplates {
 		}
 
 		return ! is_null( $slug ) ? ( isset( $versions[ $slug ] ) ? $versions[ $slug ] : null ) : $versions;
-
 	}
 
 
@@ -694,7 +676,6 @@ class MailsterTemplates {
 			$updates = array_sum( wp_list_pluck( $result['items'], 'update_available' ) );
 			update_option( 'mailster_templates_updates', $updates );
 		}
-
 	}
 
 	/**
@@ -746,7 +727,6 @@ class MailsterTemplates {
 				'update_note'          => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 			)
 		);
-
 	}
 
 
@@ -804,7 +784,6 @@ class MailsterTemplates {
 
 		mailster_redirect( $redirect );
 		exit;
-
 	}
 
 	/**
@@ -830,7 +809,6 @@ class MailsterTemplates {
 		$wp_filesystem = mailster_require_filesystem();
 
 		return $wp_filesystem && $wp_filesystem->delete( $folder, true );
-
 	}
 
 
@@ -927,7 +905,7 @@ class MailsterTemplates {
 				$this->schedule_screenshot( $slug, $file, 10, $async );
 				return;
 
-			};
+			}
 
 			$response_headers = wp_remote_retrieve_headers( $response );
 			$response_code    = wp_remote_retrieve_response_code( $response );
@@ -989,7 +967,7 @@ class MailsterTemplates {
 						copy( $tempfile, $screenshot_modules_folder . $i . '.jpg' );
 					}
 
-					$processed++;
+					++$processed;
 
 					if ( $processed >= 30 ) {
 						$this->schedule_screenshot( $slug, $file, 1 );
@@ -998,7 +976,6 @@ class MailsterTemplates {
 				}
 			}
 		}
-
 	}
 
 
@@ -1019,7 +996,6 @@ class MailsterTemplates {
 		if ( ! wp_next_scheduled( 'mailster_get_screenshots', array( $slug, $file, $async ) ) ) {
 			wp_schedule_single_event( time() + $delay, 'mailster_get_screenshots', array( $slug, $file, $async ) );
 		}
-
 	}
 
 
@@ -1039,7 +1015,6 @@ class MailsterTemplates {
 				}
 			}
 		}
-
 	}
 
 
@@ -1049,7 +1024,6 @@ class MailsterTemplates {
 			copy_dir( MAILSTER_DIR . 'templates', $path );
 			$this->process_colors();
 		}
-
 	}
 
 
@@ -1142,7 +1116,6 @@ class MailsterTemplates {
 		}
 
 		return $result;
-
 	}
 
 	public function prepare_results( $result ) {
@@ -1185,7 +1158,6 @@ class MailsterTemplates {
 		ob_end_clean();
 
 		return $html;
-
 	}
 
 	public function get_template_data( $file ) {
@@ -1267,7 +1239,6 @@ class MailsterTemplates {
 
 		mailster_cache_set( $cache_key, $template_data );
 		return $template_data;
-
 	}
 
 
@@ -1386,8 +1357,5 @@ class MailsterTemplates {
 		<span class="big-file-warning"><?php esc_html_e( 'Your browser has some limitations uploading large files with the multi-file uploader. Please use the browser uploader for files over 100MB.', 'mailster' ); ?></span>
 			<?php
 		}
-
 	}
-
-
 }

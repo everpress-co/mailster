@@ -6,7 +6,6 @@ class MailsterExport {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
 	}
 
 	public function init() {
@@ -15,7 +14,6 @@ class MailsterExport {
 		add_action( 'wp_import_insert_post', array( &$this, 'convert_old_campaign_ids' ), 10, 4 );
 		add_action( 'export_wp', array( &$this, 'set_temporary_export_meta' ) );
 		add_filter( 'wxr_export_skip_postmeta', array( &$this, 'add_mailster_data_to_export' ), 10, 3 );
-
 	}
 
 	/**
@@ -52,7 +50,6 @@ class MailsterExport {
 		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaigns' );
 
 		return $postdata;
-
 	}
 
 
@@ -83,7 +80,6 @@ class MailsterExport {
 			}
 			echo '<br>';
 		}
-
 	}
 
 	public function set_temporary_export_meta( $args ) {
@@ -99,7 +95,6 @@ class MailsterExport {
 		$sql = "INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) SELECT ID AS post_id, '_mailster_temp_export_hook', '1' FROM {$wpdb->posts} WHERE post_type = 'newsletter'";
 
 		return $wpdb->query( $sql );
-
 	}
 
 	public function unset_temporary_export_meta() {
@@ -109,7 +104,6 @@ class MailsterExport {
 		$sql = "DELETE FROM {$wpdb->postmeta} WHERE meta_key = '_mailster_temp_export_hook'";
 
 		return $wpdb->query( $sql );
-
 	}
 
 	public function add_mailster_data_to_export( $skip_it, $meta_key, $meta ) {
@@ -143,6 +137,4 @@ class MailsterExport {
 
 		return $skip_it;
 	}
-
-
 }

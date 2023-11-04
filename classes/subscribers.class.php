@@ -5,7 +5,6 @@ class MailsterSubscribers {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
 	}
 
 
@@ -47,7 +46,6 @@ class MailsterSubscribers {
 		} else {
 
 		}
-
 	}
 
 
@@ -68,7 +66,6 @@ class MailsterSubscribers {
 			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
 		endif;
-
 	}
 
 
@@ -146,7 +143,6 @@ class MailsterSubscribers {
 				)
 			);
 		endif;
-
 	}
 
 
@@ -251,7 +247,7 @@ class MailsterSubscribers {
 
 			$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
 
-			$page++;
+			++$page;
 			$finished = ( $page == ceil( $total / $limit ) );
 
 			$message_postfix = ' [' . sprintf( '%s/%s', number_format_i18n( $page ), number_format_i18n( ceil( $total / $limit ) ) ) . ']';
@@ -349,14 +345,14 @@ class MailsterSubscribers {
 					if ( is_wp_error( $subscriber ) ) {
 						$this->change_status( $subscriber_id, $this->get_status_by_name( 'error' ) );
 						$this->update_meta( $subscriber_id, 0, 'error', $subscriber->get_error_message() );
-						$unverfied++;
+						++$unverfied;
 					} else {
 						if ( 4 == $subscriber['status'] ) {
 							$subscriber['status'] = 1;
 						}
 
 						$this->update( $subscriber );
-						$verfied++;
+						++$verfied;
 					}
 				}
 
@@ -432,7 +428,6 @@ class MailsterSubscribers {
 			exit;
 
 		}
-
 	}
 
 
@@ -588,7 +583,7 @@ class MailsterSubscribers {
 						mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
 						exit;
 
-					};
+					}
 
 			elseif ( isset( $_POST['confirmation'] ) ) :
 
@@ -598,7 +593,7 @@ class MailsterSubscribers {
 					}
 					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 					exit;
-				};
+				}
 
 			endif;
 
@@ -652,7 +647,6 @@ class MailsterSubscribers {
 		}
 
 		return count( $subscriber_ids );
-
 	}
 
 
@@ -713,7 +707,6 @@ class MailsterSubscribers {
 		add_action( 'update_user_meta', array( &$this, 'sync_wp_user_meta' ), 10, 4 );
 
 		return true;
-
 	}
 
 
@@ -742,7 +735,6 @@ class MailsterSubscribers {
 		}
 
 		return count( $user_ids );
-
 	}
 
 
@@ -788,7 +780,6 @@ class MailsterSubscribers {
 		}
 
 		return $this->update( wp_parse_args( array( 'ID' => $subscriber->ID ), $userdata ), true, true );
-
 	}
 
 
@@ -825,7 +816,6 @@ class MailsterSubscribers {
 		}
 
 		$this->add_custom_value( $subscriber->ID, $key, (string) $meta_value );
-
 	}
 
 
@@ -840,7 +830,6 @@ class MailsterSubscribers {
 			include MAILSTER_DIR . 'views/subscribers/overview.php';
 
 		endif;
-
 	}
 
 
@@ -915,7 +904,6 @@ class MailsterSubscribers {
 			endif;
 
 		endif;
-
 	}
 
 
@@ -944,7 +932,6 @@ class MailsterSubscribers {
 				'option'  => 'mailster_subscribers_per_page',
 			)
 		);
-
 	}
 
 
@@ -964,7 +951,6 @@ class MailsterSubscribers {
 		}
 
 		return $status;
-
 	}
 
 
@@ -991,7 +977,6 @@ class MailsterSubscribers {
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_lists_subscribers AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
-
 	}
 
 
@@ -1223,7 +1208,6 @@ class MailsterSubscribers {
 			}
 			return new WP_Error( $mysql_errno, $wpdb->last_error );
 		}
-
 	}
 
 
@@ -1294,7 +1278,6 @@ class MailsterSubscribers {
 			do_action( 'mailster_add_subscriber', $subscriber_id );
 		}
 		return $subscriber_id;
-
 	}
 
 
@@ -1320,7 +1303,6 @@ class MailsterSubscribers {
 		}
 
 		return $subscriber_id;
-
 	}
 
 
@@ -1378,7 +1360,6 @@ class MailsterSubscribers {
 		$subscriber_id = $this->add( $userdata, true, $merge, $subscriber_notification );
 
 		return $subscriber_id;
-
 	}
 
 
@@ -1435,7 +1416,6 @@ class MailsterSubscribers {
 		$sql .= ' ON DUPLICATE KEY UPDATE subscriber_id = values(subscriber_id), meta_key = values(meta_key), meta_value = values(meta_value)';
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 	/**
@@ -1455,7 +1435,6 @@ class MailsterSubscribers {
 		}
 
 		return false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) );
-
 	}
 
 
@@ -1471,7 +1450,6 @@ class MailsterSubscribers {
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
 
 		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old, $added );
-
 	}
 
 
@@ -1486,7 +1464,6 @@ class MailsterSubscribers {
 	public function unassign_lists( $subscriber_ids, $lists = null, $not_list = null ) {
 
 		return mailster( 'lists' )->unassign_subscribers( $lists, $subscriber_ids );
-
 	}
 
 
@@ -1501,7 +1478,6 @@ class MailsterSubscribers {
 	public function assign_tags( $subscriber_ids, $tags, $remove_old = false ) {
 
 		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids );
-
 	}
 
 
@@ -1515,7 +1491,6 @@ class MailsterSubscribers {
 	public function unassign_tags( $subscriber_ids, $tags = null ) {
 
 		return mailster( 'tags' )->unassign_subscribers( $tags, $subscriber_ids );
-
 	}
 
 	/**
@@ -1527,7 +1502,6 @@ class MailsterSubscribers {
 	public function clear_tags( $subscriber_id ) {
 
 		return mailster( 'tags' )->clear( $subscriber_id );
-
 	}
 
 
@@ -1633,7 +1607,6 @@ class MailsterSubscribers {
 		}
 
 		return $success;
-
 	}
 
 
@@ -1686,7 +1659,6 @@ class MailsterSubscribers {
 		$this->remove( $remove_actions, null, true, false, false );
 
 		return $count;
-
 	}
 
 	public function restore( $ids = array() ) {
@@ -1713,7 +1685,6 @@ class MailsterSubscribers {
 		}
 
 		return $count;
-
 	}
 
 
@@ -1739,7 +1710,6 @@ class MailsterSubscribers {
 				)
 			);
 		}
-
 	}
 
 
@@ -1831,7 +1801,6 @@ class MailsterSubscribers {
 		}
 
 		return isset( $meta[ $id ] ) && isset( $meta[ $id ][ $key ] ) ? $meta[ $id ][ $key ] : ( isset( $default[ $key ] ) ? $default[ $key ] : null );
-
 	}
 
 
@@ -1938,7 +1907,6 @@ class MailsterSubscribers {
 		}
 
 		return false;
-
 	}
 
 
@@ -2021,7 +1989,6 @@ class MailsterSubscribers {
 		}
 
 		return;
-
 	}
 
 
@@ -2063,7 +2030,6 @@ class MailsterSubscribers {
 		}
 
 		return false;
-
 	}
 
 
@@ -2096,7 +2062,6 @@ class MailsterSubscribers {
 		}
 
 		return $count;
-
 	}
 
 
@@ -2118,7 +2083,6 @@ class MailsterSubscribers {
 		);
 
 		return $this->query( $args );
-
 	}
 
 
@@ -2135,7 +2099,6 @@ class MailsterSubscribers {
 		$counts = $this->get_count( false, 1, $statuses );
 
 		return is_array( $counts ) ? array_sum( $counts ) : $counts;
-
 	}
 
 
@@ -2149,7 +2112,6 @@ class MailsterSubscribers {
 	public function get_sent( $id, $total = false ) {
 
 		return mailster( 'actions' )->get_by_subscriber( $id, 'sent' . ( $total ? '_total' : '' ) );
-
 	}
 
 
@@ -2168,7 +2130,6 @@ class MailsterSubscribers {
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
-
 	}
 
 
@@ -2182,7 +2143,6 @@ class MailsterSubscribers {
 	public function get_opens( $id, $total = false ) {
 
 		return mailster( 'actions' )->get_by_subscriber( $id, 'opens' . ( $total ? '_total' : '' ) );
-
 	}
 
 
@@ -2202,7 +2162,6 @@ class MailsterSubscribers {
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
-
 	}
 
 
@@ -2223,7 +2182,6 @@ class MailsterSubscribers {
 		$opens = $this->get_opens( $id );
 
 		return min( 1, ( $opens / $sent ) );
-
 	}
 
 
@@ -2237,7 +2195,6 @@ class MailsterSubscribers {
 	public function get_clicks( $id, $total = false ) {
 
 		return mailster( 'actions' )->get_by_subscriber( $id, 'clicks' . ( $total ? '_total' : '' ) );
-
 	}
 
 
@@ -2258,7 +2215,6 @@ class MailsterSubscribers {
 		$clicks = $this->get_clicks( $id, $total );
 
 		return min( 1, ( $clicks / $sent ) );
-
 	}
 
 
@@ -2279,7 +2235,6 @@ class MailsterSubscribers {
 		$clicks = $this->get_clicks( $id, true );
 
 		return min( 1, ( $clicks / $open ) );
-
 	}
 
 
@@ -2299,7 +2254,6 @@ class MailsterSubscribers {
 		$unsubscribes = $this->get_unsubs( $id, $total );
 
 		return $unsubscribes / $clicks;
-
 	}
 
 
@@ -2319,7 +2273,6 @@ class MailsterSubscribers {
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
-
 	}
 
 
@@ -2333,7 +2286,6 @@ class MailsterSubscribers {
 	public function get_unsubs( $id, $total = false ) {
 
 		return mailster( 'actions' )->get_by_subscriber( $id, 'unsubs' . ( $total ? '_total' : '' ) );
-
 	}
 
 
@@ -2353,7 +2305,6 @@ class MailsterSubscribers {
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
-
 	}
 
 
@@ -2374,7 +2325,6 @@ class MailsterSubscribers {
 		$opens = $this->get_unsubs( $id, $total );
 
 		return min( 1, ( $opens / $sent ) );
-
 	}
 
 
@@ -2388,7 +2338,6 @@ class MailsterSubscribers {
 	public function get_bounces( $id, $total = false ) {
 
 		return mailster( 'actions' )->get_by_subscriber( $id, 'bounces' . ( $total ? '_total' : '' ) );
-
 	}
 
 
@@ -2408,7 +2357,6 @@ class MailsterSubscribers {
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
-
 	}
 
 
@@ -2429,7 +2377,6 @@ class MailsterSubscribers {
 		$opens = $this->get_bounces( $id );
 
 		return min( 1, ( $opens / $sent ) );
-
 	}
 
 
@@ -2443,7 +2390,6 @@ class MailsterSubscribers {
 	public function get_softbounces( $id, $total = false ) {
 
 		return mailster( 'actions' )->get_by_subscriber( $id, 'softbounces' . ( $total ? '_total' : '' ) );
-
 	}
 
 
@@ -2463,7 +2409,6 @@ class MailsterSubscribers {
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $campaigns, 'campaign_id' ) : $campaigns;
-
 	}
 
 
@@ -2484,7 +2429,6 @@ class MailsterSubscribers {
 		$opens = $this->get_softbounces( $id );
 
 		return min( 1, ( $opens / $sent ) );
-
 	}
 
 
@@ -2499,7 +2443,6 @@ class MailsterSubscribers {
 	public function get_activity( $id, $limit = null, $exclude = null ) {
 
 		return mailster( 'actions' )->get_activity( null, $id, $limit, $exclude );
-
 	}
 
 
@@ -2529,7 +2472,6 @@ class MailsterSubscribers {
 		}
 
 		return $result;
-
 	}
 
 
@@ -2578,7 +2520,6 @@ class MailsterSubscribers {
 		$average = array_sum( $times ) / count( $times );
 
 		return $average;
-
 	}
 
 
@@ -2607,7 +2548,6 @@ class MailsterSubscribers {
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
-
 	}
 
 
@@ -2632,7 +2572,6 @@ class MailsterSubscribers {
 		$tags = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $tags, 'ID' ) : $tags;
-
 	}
 
 	public function print_tags( $id, $editable = false ) {
@@ -2652,7 +2591,6 @@ class MailsterSubscribers {
 		}
 
 		echo '</ul>';
-
 	}
 
 
@@ -2682,7 +2620,6 @@ class MailsterSubscribers {
 		$sql .= ' WHERE a.status IN (' . implode( ',', $stati ) . ') AND ab.list_id IN (' . implode( ',', $listids ) . ") GROUP BY ab.list_id, a.ID LIMIT $offset, $limit";
 
 		return $wpdb->get_results( $sql );
-
 	}
 
 
@@ -2698,7 +2635,6 @@ class MailsterSubscribers {
 	public function unsubscribe( $id, $campaign_id = null, $status = null, $index = null ) {
 
 		return $this->unsubscribe_by_type( 'id', $id, $campaign_id, $status, $index );
-
 	}
 
 
@@ -2714,7 +2650,6 @@ class MailsterSubscribers {
 	public function unsubscribe_by_hash( $hash, $campaign_id = null, $status = null, $index = null ) {
 
 		return $this->unsubscribe_by_type( 'hash', $hash, $campaign_id, $status, $index );
-
 	}
 
 
@@ -2730,7 +2665,6 @@ class MailsterSubscribers {
 	public function unsubscribe_by_md5( $md5, $campaign_id = null, $status = null, $index = null ) {
 
 		return $this->unsubscribe_by_type( 'md5', $email, $campaign_id, $status, $index );
-
 	}
 
 
@@ -2746,7 +2680,6 @@ class MailsterSubscribers {
 	public function unsubscribe_by_mail( $email, $campaign_id = null, $status = null, $index = null ) {
 
 		return $this->unsubscribe_by_type( 'email', $email, $campaign_id, $status, $index );
-
 	}
 
 
@@ -2816,7 +2749,6 @@ class MailsterSubscribers {
 		}
 
 		return false;
-
 	}
 
 
@@ -2866,7 +2798,6 @@ class MailsterSubscribers {
 			);
 
 		}
-
 	}
 
 
@@ -2887,7 +2818,6 @@ class MailsterSubscribers {
 				'template' => 'new_subscriber_delayed',
 			)
 		);
-
 	}
 
 
@@ -2938,7 +2868,6 @@ class MailsterSubscribers {
 			);
 
 		}
-
 	}
 
 
@@ -2959,7 +2888,6 @@ class MailsterSubscribers {
 				'template' => 'unsubscribe_delayed',
 			)
 		);
-
 	}
 
 
@@ -3058,12 +2986,11 @@ class MailsterSubscribers {
 				)
 			) ) {
 				$this->update_meta( $subscriber->ID, 0, 'confirmation', ++$subscriber->try );
-				$count++;
+				++$count;
 			}
 		}
 
 		return $count;
-
 	}
 
 
@@ -3100,7 +3027,6 @@ class MailsterSubscribers {
 		require_once MAILSTER_DIR . 'classes/subscriber.query.class.php';
 		$query = MailsterSubscriberQuery::get_instance();
 		return $query->run( $args, $campaign_id );
-
 	}
 
 
@@ -3117,7 +3043,6 @@ class MailsterSubscribers {
 		if ( is_numeric( $ID ) ) {
 			return $this->get_by_type( 'ID', $ID, $custom_fields, $include_deleted );
 		}
-
 	}
 
 
@@ -3141,7 +3066,6 @@ class MailsterSubscribers {
 		}
 
 		return $subscriber;
-
 	}
 
 
@@ -3157,7 +3081,6 @@ class MailsterSubscribers {
 		}
 
 		return false;
-
 	}
 
 
@@ -3172,7 +3095,6 @@ class MailsterSubscribers {
 	public function get_by_mail( $mail, $custom_fields = false, $include_deleted = false ) {
 
 		return $this->get_by_type( 'email', $mail, $custom_fields, $include_deleted );
-
 	}
 
 
@@ -3256,7 +3178,6 @@ class MailsterSubscribers {
 		}
 
 		return $wpdb->get_col( $sql );
-
 	}
 
 
@@ -3318,7 +3239,6 @@ class MailsterSubscribers {
 		}
 
 		return $subscriber;
-
 	}
 
 
@@ -3365,7 +3285,6 @@ class MailsterSubscribers {
 		}
 
 		return isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ] : null;
-
 	}
 
 
@@ -3397,7 +3316,6 @@ class MailsterSubscribers {
 		$subscriber->status = 1;
 
 		return $subscriber;
-
 	}
 
 
@@ -3452,7 +3370,6 @@ class MailsterSubscribers {
 		}
 
 		return $link;
-
 	}
 
 
@@ -3549,7 +3466,6 @@ class MailsterSubscribers {
 		$html .= '</div>';
 
 		return $html;
-
 	}
 
 
@@ -3571,7 +3487,6 @@ class MailsterSubscribers {
 				false
 			);
 		}
-
 	}
 
 
@@ -3652,7 +3567,6 @@ class MailsterSubscribers {
 
 			return true;
 		}
-
 	}
 
 
@@ -3665,7 +3579,6 @@ class MailsterSubscribers {
 		$output = '<p><label for="mailster_user_newsletter_signup"><input name="mailster_user_newsletter_signup" type="checkbox" id="mailster_user_newsletter_signup" value="1" ' . checked( mailster_option( 'register_signup_checked' ), true, false ) . ' />' . mailster_text( 'newsletter_signup' ) . '</label></p>';
 
 		echo apply_filters( 'mailster_register_form_signup_field', $output ) . "\n";
-
 	}
 
 
@@ -3690,7 +3603,6 @@ class MailsterSubscribers {
 		$field .= '</p>';
 
 		echo apply_filters( 'comment_form_field_newsletter_signup', $field ) . "\n";
-
 	}
 
 
@@ -3738,7 +3650,6 @@ class MailsterSubscribers {
 				add_comment_meta( $comment_id, 'newsletter_signup', true, true );
 			}
 		}
-
 	}
 
 
@@ -3785,7 +3696,6 @@ class MailsterSubscribers {
 
 			}
 		}
-
 	}
 
 
@@ -3838,7 +3748,6 @@ class MailsterSubscribers {
 		do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, false, $status, $index );
 
 		return true;
-
 	}
 
 
@@ -3867,7 +3776,6 @@ class MailsterSubscribers {
 		}
 
 		return ( is_null( $id ) ) ? $counts : ( isset( $counts[ $id ] ) ? $counts[ $id ] : 0 );
-
 	}
 
 
@@ -3882,7 +3790,6 @@ class MailsterSubscribers {
 
 		$subscriber = $this->get( $id, false, true );
 		return $this->get_gravatar_uri( $subscriber->email, $size );
-
 	}
 
 
@@ -3910,7 +3817,6 @@ class MailsterSubscribers {
 		}
 
 		return $url;
-
 	}
 
 
@@ -3981,7 +3887,6 @@ class MailsterSubscribers {
 		$userdatafields = wp_parse_args( (array) $custom_field_names, array( 'firstname', 'lastname', 'fullname' ) );
 
 		return (object) array_intersect_key( (array) $data, array_flip( $userdatafields ) );
-
 	}
 
 
@@ -3995,7 +3900,6 @@ class MailsterSubscribers {
 	public function get_metadata( $data, $userdata ) {
 
 		return (object) array_intersect_key( (array) $data, array_flip( array_keys( array_diff_key( (array) $data, (array) $userdata ) ) ) );
-
 	}
 
 
@@ -4058,7 +3962,6 @@ class MailsterSubscribers {
 		}
 
 		return $return;
-
 	}
 
 
@@ -4088,7 +3991,7 @@ class MailsterSubscribers {
 			}
 
 			if ( $subscriber->status == $new_status ) {
-				$count++;
+				++$count;
 				continue;
 			}
 
@@ -4112,13 +4015,12 @@ class MailsterSubscribers {
 					}
 				}
 
-				$count++;
+				++$count;
 				continue;
 			}
 		}
 
 		return $count;
-
 	}
 
 
@@ -4138,8 +4040,5 @@ class MailsterSubscribers {
 
 		$hash = md5( $email . mailster_option( 'ID', '' ) );
 		return apply_filters( 'mailster_subscriber_hash', $hash, $org_email );
-
 	}
-
-
 }

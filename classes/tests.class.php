@@ -38,7 +38,6 @@ class MailsterTests {
 			'notice'        => array(),
 			'success'       => array(),
 		);
-
 	}
 
 	public function __call( $method, $args ) {
@@ -56,7 +55,6 @@ class MailsterTests {
 			$this->run( $method );
 			return ! $this->last_is_error;
 		}
-
 	}
 
 	public function run( $test_id = null, $args = array() ) {
@@ -103,7 +101,6 @@ class MailsterTests {
 		$tests = array_flip( $tests );
 
 		return apply_filters( 'mailster_tests', $tests );
-
 	}
 
 	public function get_message() {
@@ -173,7 +170,6 @@ class MailsterTests {
 	public function get_total() {
 
 		return $this->total;
-
 	}
 	public function get_error_counts() {
 
@@ -183,7 +179,6 @@ class MailsterTests {
 			'notice'  => $this->errors['notice_count'],
 			'success' => $this->errors['success_count'],
 		);
-
 	}
 
 
@@ -191,27 +186,23 @@ class MailsterTests {
 	private function error( $msg, $link = null ) {
 
 		$this->failure( 'error', $msg, $link );
-
 	}
 
 
 	private function warning( $msg, $link = null ) {
 
 		$this->failure( 'warning', $msg, $link );
-
 	}
 
 
 	private function notice( $msg, $link = null ) {
 
 		$this->failure( 'notice', $msg, $link );
-
 	}
 
 	private function success( $msg, $link = null ) {
 
 		$this->failure( 'success', $msg, $link );
-
 	}
 
 
@@ -238,15 +229,14 @@ class MailsterTests {
 			'msg'  => $msg,
 			'data' => $data,
 		);
-		$this->errors['count']++;
-		$this->errors[ $type . '_count' ]++;
+		++$this->errors['count'];
+		++$this->errors[ $type . '_count' ];
 
 		$this->last_is_error      = 'success' != $type;
 		$this->last_error_type    = $type;
 		$this->last_error_test    = $test_id;
 		$this->last_error_message = $msg;
 		$this->last_error_link    = $link;
-
 	}
 
 	public function get() {
@@ -365,7 +355,6 @@ class MailsterTests {
 		delete_option( 'mailster_bulk_import' );
 		delete_option( 'mailster_bulk_import_errors' );
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
-
 	}
 	private function test_verfied_installation() {
 
@@ -374,7 +363,6 @@ class MailsterTests {
 		} else {
 			$this->success( 'Thank you!' );
 		}
-
 	}
 	private function test_update_available() {
 
@@ -383,7 +371,6 @@ class MailsterTests {
 		} else {
 			$this->success( 'You are running the latest version of Mailster!' );
 		}
-
 	}
 	private function test_content_directory() {
 		$content_dir = MAILSTER_UPLOAD_DIR;
@@ -404,7 +391,6 @@ class MailsterTests {
 		} else {
 			$this->success( sprintf( 'Your Mailster content folder in %s is writable.', '"' . $content_dir . '"' ) );
 		}
-
 	}
 	private function test_default_template() {
 
@@ -438,7 +424,6 @@ class MailsterTests {
 		} else {
 			$this->success( sprintf( 'Your Template folder %s exists.', '"' . $template_dir . '"' ) );
 		}
-
 	}
 	private function test_deprecated_hooks() {
 
@@ -471,7 +456,6 @@ class MailsterTests {
 			$this->warning( $msg );
 
 		}
-
 	}
 	private function test_support_account_found() {
 
@@ -497,7 +481,6 @@ class MailsterTests {
 		} elseif ( $code != 200 ) {
 			$this->warning( sprintf( 'The Mailster Editor requires TinyMCE and access to the file %1$s which seems to be blocked by your host. [Error Code %2$s]', '"' . $file . '"', $code ) );
 		}
-
 	}
 	private function test_custom_language() {
 		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_user_locale() . '.mo' ) ) {
@@ -575,10 +558,8 @@ class MailsterTests {
 					$this->warning( $cron_status->get_error_message(), '611bbcaab55c2b04bf6df153' );
 					break;
 			}
-		} else {
-			if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
+		} elseif ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
 				$this->success( sprintf( esc_html__( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
-			}
 		}
 		return;
 	}
@@ -592,7 +573,6 @@ class MailsterTests {
 			$this->success( 'No Cron Lock in place!' );
 		}
 		mailster( 'cron' )->unlock();
-
 	}
 	private function test_mail_throughput() {
 		if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
@@ -641,7 +621,6 @@ class MailsterTests {
 				$this->error( sprintf( esc_html__( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . esc_html__( 'this page', 'mailster' ) . '</a>' ), '611bbb5fb37d837a3d0e47d4' );
 			}
 		}
-
 	}
 	private function test_form_exist() {
 
@@ -650,7 +629,6 @@ class MailsterTests {
 		if ( ! count( $forms ) ) {
 			$this->error( sprintf( esc_html__( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . esc_html__( 'Create a new form now', 'mailster' ) . '</a>' ) );
 		}
-
 	}
 	private function test_update_server_connection() {
 
@@ -697,7 +675,6 @@ class MailsterTests {
 		} else {
 			$this->error( 'does not work: ' . $code );
 		}
-
 	}
 	private function get_test_mail_data() {
 
@@ -719,7 +696,6 @@ class MailsterTests {
 		);
 
 		return $return;
-
 	}
 	private function test_mail() {
 
@@ -750,7 +726,6 @@ class MailsterTests {
 		} else {
 			$this->success( 'Email was successfully delivery to ' . $to );
 		}
-
 	}
 	private function test_wpmail() {
 
@@ -769,7 +744,6 @@ class MailsterTests {
 			remove_action( 'wp_mail_failed', array( $this, 'wp_mail_failed' ) );
 
 		}
-
 	}
 	public function wp_mail_failed( $error ) {
 		$error_message = strip_tags( $error->get_error_message() );
@@ -804,37 +778,30 @@ class MailsterTests {
 	private function _test_port_110() {
 
 		$this->port_test( 110, 'pop.gmx.net' );
-
 	}
 	private function _test_port_995() {
 
 		$this->port_test( 995, 'pop.gmail.com' );
-
 	}
 	private function _test_port_993() {
 
 		$this->port_test( 993, 'smtp.gmail.com' );
-
 	}
 	private function _test_port_25() {
 
 		$this->port_test( 25, 'smtp.gmail.com' );
-
 	}
 	private function _test_port_2525() {
 
 		$this->port_test( 2525, 'smtp.sparkpostmail.com' );
-
 	}
 	private function _test_port_465() {
 
 		$this->port_test( 465, 'smtp.gmail.com' );
-
 	}
 	private function _test_port_587() {
 
 		$this->port_test( 587, 'smtp.gmail.com' );
-
 	}
 	private function test_permalink_structure() {
 
@@ -843,7 +810,6 @@ class MailsterTests {
 		} elseif ( ! mailster()->check_link_structure() ) {
 			$this->error( 'A problem with you permalink structure. Please check the slugs on the <a href="' . admin_url( 'admin.php?page=mailster_settings#frontend' ) . '">frontend tab</a>.' );
 		}
-
 	}
 
 
@@ -863,7 +829,5 @@ class MailsterTests {
 				$this->notice( $message );
 			}
 		}
-
 	}
-
 }

@@ -15,7 +15,6 @@ class MailsterUpgrade {
 		add_action( 'mailster_background_update', array( &$this, 'background_update' ) );
 
 		register_activation_hook( 'myMail/myMail.php', array( &$this, 'maybe_deactivate_mymail' ) );
-
 	}
 
 	public function __call( $method, $args ) {
@@ -30,7 +29,6 @@ class MailsterUpgrade {
 			}
 			return $return;
 		}
-
 	}
 
 	public function init() {
@@ -74,33 +72,30 @@ class MailsterUpgrade {
 					echo $update_msg;
 
 				}
-			} else {
+			} elseif ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
 
-				if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
-
-					if ( $timestamp = wp_next_scheduled( 'mailster_background_update' ) ) {
-						wp_clear_scheduled_hook( 'mailster_background_update' );
-					}
-				} elseif ( ! mailster_option( 'db_update_background' ) ) {
-					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
-						mailster_redirect( $redirectto );
-						exit;
-					} elseif ( ! is_network_admin() && isset( $_GET['page'] ) && 0 === strpos( $_GET['page'], 'mailster_' ) ) {
-						mailster_redirect( $redirectto );
-						exit;
-					} else {
-						mailster_remove_notice( 'no_homepage' );
-						mailster_notice( $update_msg, 'error', true, 'db_update_required' );
-					}
+				if ( $timestamp = wp_next_scheduled( 'mailster_background_update' ) ) {
+					wp_clear_scheduled_hook( 'mailster_background_update' );
+				}
+			} elseif ( ! mailster_option( 'db_update_background' ) ) {
+				if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
+					mailster_redirect( $redirectto );
+					exit;
+				} elseif ( ! is_network_admin() && isset( $_GET['page'] ) && 0 === strpos( $_GET['page'], 'mailster_' ) ) {
+					mailster_redirect( $redirectto );
+					exit;
 				} else {
-					$update_msg  = '<h2>' . esc_html__( 'Mailster database update in progress', 'mailster' ) . '</h2>';
-					$update_msg .= '<p>' . esc_html__( 'Mailster is updating the database in the background. The database update process may take a little while, so please be patient.', 'mailster' ) . '</p>';
-					$update_msg .= '<p><a class="button" href="' . $redirectto . '" target="_top">' . esc_html__( 'View progress →', 'mailster' ) . '</a></p>';
-					mailster_notice( $update_msg, 'info', false, 'background_update' );
+					mailster_remove_notice( 'no_homepage' );
+					mailster_notice( $update_msg, 'error', true, 'db_update_required' );
+				}
+			} else {
+				$update_msg  = '<h2>' . esc_html__( 'Mailster database update in progress', 'mailster' ) . '</h2>';
+				$update_msg .= '<p>' . esc_html__( 'Mailster is updating the database in the background. The database update process may take a little while, so please be patient.', 'mailster' ) . '</p>';
+				$update_msg .= '<p><a class="button" href="' . $redirectto . '" target="_top">' . esc_html__( 'View progress →', 'mailster' ) . '</a></p>';
+				mailster_notice( $update_msg, 'info', false, 'background_update' );
 
-					if ( ! wp_next_scheduled( 'mailster_background_update' ) ) {
-						wp_schedule_single_event( time() + 10, 'mailster_background_update' );
-					}
+				if ( ! wp_next_scheduled( 'mailster_background_update' ) ) {
+					wp_schedule_single_event( time() + 10, 'mailster_background_update' );
 				}
 			}
 		} elseif ( ! $version_match ) {
@@ -127,7 +122,6 @@ class MailsterUpgrade {
 				exit;
 			}
 		}
-
 	}
 
 
@@ -149,14 +143,12 @@ class MailsterUpgrade {
 		$update_msg  = '<h2>' . esc_html__( 'Update finished.', 'mailster' ) . '</h2>';
 		$update_msg .= '<p>' . esc_html__( 'Mailster database update complete. Thank you for updating to the latest version!', 'mailster' ) . '</p>';
 		mailster_notice( $update_msg, 'info', 20, 'background_update' );
-
 	}
 
 
 	public function maybe_deactivate_mymail() {
 
 		add_action( 'update_option_active_plugins', array( &$this, 'deactivate_mymail' ) );
-
 	}
 
 
@@ -204,7 +196,6 @@ class MailsterUpgrade {
 		}
 
 		wp_send_json_success( $return );
-
 	}
 
 
@@ -217,7 +208,6 @@ class MailsterUpgrade {
 
 		$page = add_submenu_page( true, 'Mailster Update', 'Mailster Update', 'manage_options', 'mailster_update', array( &$this, 'page' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
-
 	}
 
 	private function get_actions() {
@@ -247,9 +237,8 @@ class MailsterUpgrade {
 
 			$db_version = get_option( 'mymail_dbversion', 0 );
 
-		} else {
+		} elseif ( ! get_option( 'mailster' ) ) {
 
-			if ( ! get_option( 'mailster' ) ) {
 				$actions = wp_parse_args(
 					array(
 						'maybe_install' => 'Installing Mailster',
@@ -257,15 +246,13 @@ class MailsterUpgrade {
 					$actions
 				);
 
-			} else {
-				$actions = wp_parse_args(
-					array(
-						'db_structure' => 'Checking DB structure',
-					),
-					$actions
-				);
-
-			}
+		} else {
+			$actions = wp_parse_args(
+				array(
+					'db_structure' => 'Checking DB structure',
+				),
+				$actions
+			);
 		}
 
 		if ( isset( $_GET['hard'] ) ) {
@@ -406,7 +393,6 @@ class MailsterUpgrade {
 		wp_localize_script( 'mailster-update-script', 'mailster_updates_performance', array( $performance ) );
 
 		remove_action( 'admin_enqueue_scripts', 'wp_auth_check_load' );
-
 	}
 
 	public function page() {
@@ -529,7 +515,6 @@ class MailsterUpgrade {
 		}
 
 		return true;
-
 	}
 
 
@@ -571,7 +556,6 @@ class MailsterUpgrade {
 		}
 
 		return false;
-
 	}
 
 
@@ -585,7 +569,6 @@ class MailsterUpgrade {
 		}
 
 		return true;
-
 	}
 
 
@@ -634,7 +617,6 @@ class MailsterUpgrade {
 
 		usleep( 1000 );
 		return true;
-
 	}
 
 
@@ -692,7 +674,6 @@ class MailsterUpgrade {
 
 		usleep( 1000 );
 		return true;
-
 	}
 
 	private function do_pre_mailster_updatedpostmeta() {
@@ -786,7 +767,6 @@ class MailsterUpgrade {
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s)", $old_location_url, $new_location_url ) );
 
 		return true;
-
 	}
 
 
@@ -809,7 +789,6 @@ class MailsterUpgrade {
 
 		usleep( 1000 );
 		return true;
-
 	}
 
 
@@ -832,7 +811,6 @@ class MailsterUpgrade {
 
 		usleep( 1000 );
 		return true;
-
 	}
 
 
@@ -850,7 +828,6 @@ class MailsterUpgrade {
 
 		usleep( 1000 );
 		return true;
-
 	}
 
 
@@ -892,7 +869,6 @@ class MailsterUpgrade {
 
 		usleep( 1000 );
 		return true;
-
 	}
 
 
@@ -915,7 +891,6 @@ class MailsterUpgrade {
 
 		usleep( 1000 );
 		return true;
-
 	}
 
 
@@ -972,7 +947,6 @@ class MailsterUpgrade {
 		}
 
 		return true;
-
 	}
 
 
@@ -1020,7 +994,6 @@ class MailsterUpgrade {
 		ob_end_clean();
 
 		return $return;
-
 	}
 
 
@@ -1069,7 +1042,6 @@ class MailsterUpgrade {
 		}
 
 		return true;
-
 	}
 
 
@@ -1143,7 +1115,6 @@ class MailsterUpgrade {
 		}
 
 		return $wpdb->get_var( "SHOW INDEXES FROM {$table} WHERE Key_name = 'PRIMARY'" );
-
 	}
 
 
@@ -1171,7 +1142,6 @@ class MailsterUpgrade {
 		}
 
 		return true;
-
 	}
 
 
@@ -1398,7 +1368,7 @@ class MailsterUpgrade {
 							$update_sql .= " AND $key = '$value'";
 						}
 						if ( $wpdb->query( $sql ) && $wpdb->query( $update_sql ) ) {
-							$count++;
+							++$count;
 						}
 					}
 					break;
@@ -1446,7 +1416,6 @@ class MailsterUpgrade {
 
 	private function do_update_action_table_errors_msg() {
 		return $this->do_update_action_table_msg( 'error' );
-
 	}
 
 	private function do_update_action_table_msg( $type ) {
@@ -1483,7 +1452,6 @@ class MailsterUpgrade {
 		echo number_format( $count ) . " messages moved to table $table.\n";
 		usleep( 1000 );
 		return false;
-
 	}
 
 
@@ -1548,7 +1516,6 @@ class MailsterUpgrade {
 		}
 
 		return false;
-
 	}
 
 
@@ -1605,7 +1572,6 @@ class MailsterUpgrade {
 		$wpdb->query( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, '[newsletter_signup_form]', '[newsletter_signup_form id=0]')" );
 
 		return true;
-
 	}
 
 
@@ -1772,7 +1738,6 @@ class MailsterUpgrade {
 
 		// not finished yet (but successfull)
 		return false;
-
 	}
 
 
@@ -1869,7 +1834,6 @@ class MailsterUpgrade {
 				}
 			}
 		}
-
 	}
 
 
@@ -1935,7 +1899,6 @@ class MailsterUpgrade {
 
 		// not finished yet (but successful)
 		return false;
-
 	}
 
 
@@ -2092,7 +2055,6 @@ class MailsterUpgrade {
 		return false;
 
 		return new WP_Error( 'update_error', 'An error occured during batch update' );
-
 	}
 
 
@@ -2167,7 +2129,6 @@ class MailsterUpgrade {
 		}
 
 		return true;
-
 	}
 
 
@@ -2214,7 +2175,6 @@ class MailsterUpgrade {
 		}
 
 		return true;
-
 	}
 
 
@@ -2263,7 +2223,6 @@ class MailsterUpgrade {
 		mailster_update_option( 'text', $texts );
 
 		return true;
-
 	}
 
 
@@ -2338,7 +2297,6 @@ class MailsterUpgrade {
 		do_action( 'updatecenterplugin_check' );
 
 		return true;
-
 	}
 
 
@@ -2378,14 +2336,10 @@ class MailsterUpgrade {
 		global $mailster_batch_update_output;
 
 		$mailster_batch_update_output[] = $content;
-
 	}
 
 	private function please_die() {
 
 		$this->stop_process = true;
-
 	}
-
-
 }

@@ -30,7 +30,6 @@ class MailsterFrontpage {
 
 		add_shortcode( 'newsletter_subscribers', array( &$this, 'newsletter_subscribers' ) );
 		add_shortcode( 'newsletter_button', array( &$this, 'newsletter_button' ) );
-
 	}
 
 
@@ -42,7 +41,6 @@ class MailsterFrontpage {
 			flush_rewrite_rules( true );
 			mailster_update_option( '_flush_rewrite_rules', false );
 		}
-
 	}
 
 
@@ -88,7 +86,6 @@ class MailsterFrontpage {
 		$rules = apply_filters( 'mailster_rewrite_rules', $rules );
 
 		return $rules + $wp_rules;
-
 	}
 
 
@@ -104,7 +101,6 @@ class MailsterFrontpage {
 			flush_rewrite_rules();
 			do_action( 'mailster_update_homepage', $post );
 		}
-
 	}
 
 
@@ -123,7 +119,6 @@ class MailsterFrontpage {
 		$vars[] = '_mailster_cron';
 		$vars[] = '_mailster_form';
 		return $vars;
-
 	}
 
 
@@ -181,7 +176,6 @@ class MailsterFrontpage {
 		}
 
 		return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
-
 	}
 
 
@@ -447,9 +441,7 @@ class MailsterFrontpage {
 				 */
 				do_action( 'mailster_click', $subscriber_id, $campaign_id, $target, $index, $campaign_index );
 			}
-		} else {
-
-			if ( $subscriber->ID && $meta['track_opens'] ) {
+		} elseif ( $subscriber->ID && $meta['track_opens'] ) {
 
 				/**
 				 * Fires if user opens on a campaign and tracking is enabled
@@ -459,7 +451,6 @@ class MailsterFrontpage {
 				 * @param int $campaign_index The index of the campaign
 				 */
 				do_action( 'mailster_open', $subscriber_id, $campaign_id, $campaign_index );
-			}
 		}
 
 		if ( ! $redirect_to ) {
@@ -666,7 +657,6 @@ class MailsterFrontpage {
 			break;
 
 		}
-
 	}
 
 
@@ -681,7 +671,6 @@ class MailsterFrontpage {
 		add_filter( 'get_post_status', array( &$this, 'status_to_publish' ), 10, 2 );
 
 		return $post_id;
-
 	}
 
 
@@ -699,7 +688,6 @@ class MailsterFrontpage {
 		}
 
 		return $post_status;
-
 	}
 
 
@@ -847,7 +835,6 @@ class MailsterFrontpage {
 
 			// Reset Post Data
 			wp_reset_postdata();
-
 	}
 
 
@@ -890,7 +877,6 @@ class MailsterFrontpage {
 		}
 
 		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . (int) $height . 'px;' : '' ) . '" width="' . apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
-
 	}
 
 
@@ -909,7 +895,6 @@ class MailsterFrontpage {
 			$query->set( 'meta_key', '_mailster_webversion' );
 			$query->set( 'meta_compare', 'NOT EXISTS' );
 		}
-
 	}
 
 
@@ -919,7 +904,6 @@ class MailsterFrontpage {
 
 		wp_register_style( 'mailster-frontpage-style', MAILSTER_URI . 'assets/css/frontpage' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_print_styles( 'mailster-frontpage-style' );
-
 	}
 
 
@@ -931,7 +915,6 @@ class MailsterFrontpage {
 		wp_localize_script( 'mailster-frontpage-script', 'mailster', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 		wp_print_scripts( 'mailster-frontpage-script' );
-
 	}
 
 
@@ -1082,7 +1065,6 @@ class MailsterFrontpage {
 				return do_shortcode( $content );
 
 		}
-
 	}
 
 
@@ -1101,14 +1083,13 @@ class MailsterFrontpage {
 		 *
 		 * @param int $timeout timeout in seconds
 		 */
-		 $cookietime = apply_filters( 'mailster_cookie_time', $timeout );
+		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 
 		if ( $cookietime ) {
 			return setcookie( 'mailster', $hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
 		}
 
 		return false;
-
 	}
 
 
@@ -1141,7 +1122,6 @@ class MailsterFrontpage {
 		);
 
 		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
-
 	}
 
 
@@ -1201,7 +1181,6 @@ class MailsterFrontpage {
 		endif;
 
 		return $return;
-
 	}
 
 
@@ -1293,7 +1272,6 @@ class MailsterFrontpage {
 		$form->is_profile();
 
 		return $form->render( false );
-
 	}
 	/**
 	 *
@@ -1343,7 +1321,6 @@ class MailsterFrontpage {
 	public function do_shortcode_wrong_confirm( $atts, $content ) {
 
 		return $this->do_shortcode_wrong( 'newsletter_confirm', $atts, $content );
-
 	}
 
 
@@ -1387,7 +1364,6 @@ class MailsterFrontpage {
 		);
 
 		return wpautop( mailster( 'forms' )->get_subscribe_button( $args['id'], $args ) );
-
 	}
 
 
@@ -1409,7 +1385,6 @@ class MailsterFrontpage {
 		$rep = preg_replace( "/(<p>)?\[\/($block)](<\/p>|<br \/>)?/", '[/$2]', $rep );
 
 		return $rep;
-
 	}
 
 	private function do_404() {
@@ -1420,6 +1395,4 @@ class MailsterFrontpage {
 		get_template_part( 404 );
 		exit;
 	}
-
-
 }

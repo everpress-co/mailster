@@ -9,7 +9,6 @@ class MailsterSettings {
 		add_action( 'admin_init', array( &$this, 'register_settings' ) );
 		add_action( 'admin_init', array( &$this, 'actions' ) );
 		add_action( 'admin_init', array( &$this, 'maybe_create_homepage' ) );
-
 	}
 
 
@@ -228,7 +227,6 @@ class MailsterSettings {
 			'ID'                                 => md5( uniqid() ),
 
 		);
-
 	}
 
 
@@ -271,7 +269,6 @@ class MailsterSettings {
 			'blocked_ip'            => esc_html__( 'Sorry, your IP address has been blocked from signing up.', 'mailster' ),
 			'blocked_country'       => esc_html__( 'Sorry, your country has been blocked from signing up.', 'mailster' ),
 		);
-
 	}
 
 
@@ -294,7 +291,6 @@ class MailsterSettings {
 		if ( $capabilities ) {
 			$this->set_capabilities();
 		}
-
 	}
 
 	public function define_texts( $overwrite = false ) {
@@ -308,7 +304,6 @@ class MailsterSettings {
 		}
 
 		update_option( 'mailster_texts', $mailster_texts );
-
 	}
 
 
@@ -331,7 +326,6 @@ class MailsterSettings {
 		}
 
 		return $mailster_options;
-
 	}
 
 
@@ -356,7 +350,6 @@ class MailsterSettings {
 		if ( isset( $_GET['reset-lasthit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-reset-lasthit' ) ) {
 			$this->reset_lasthit( true );
 		}
-
 	}
 
 
@@ -376,7 +369,6 @@ class MailsterSettings {
 				esc_html__( 'Newsletter', 'mailster' ),
 			);
 		}
-
 	}
 
 
@@ -418,7 +410,6 @@ class MailsterSettings {
 				'sync_subscriber'  => esc_html__( 'You are about to overwrite all WordPress User data with the matching subscriber data. Continue?', 'mailster' ),
 			)
 		);
-
 	}
 
 
@@ -427,7 +418,6 @@ class MailsterSettings {
 		// General
 		register_setting( 'mailster_settings', 'mailster_options', array( &$this, 'verify' ) );
 		register_setting( 'mailster_settings', 'mailster_texts', array( &$this, 'verify_texts' ) );
-
 	}
 
 
@@ -467,7 +457,6 @@ class MailsterSettings {
 		if ( mailster_option( 'cron_lock' ) == 'file' && ! is_dir( MAILSTER_UPLOAD_DIR ) || ! wp_is_writable( MAILSTER_UPLOAD_DIR ) ) {
 			mailster_update_option( 'cron_lock', 'db' );
 		}
-
 	}
 
 
@@ -518,7 +507,6 @@ class MailsterSettings {
 			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' );
 			exit;
 		}
-
 	}
 
 
@@ -539,7 +527,6 @@ class MailsterSettings {
 				exit;
 			}
 		}
-
 	}
 
 
@@ -550,7 +537,6 @@ class MailsterSettings {
 			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
 		}
-
 	}
 
 	public function reset_lasthit( $redirect = false ) {
@@ -560,7 +546,6 @@ class MailsterSettings {
 			mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
 		}
-
 	}
 
 
@@ -628,7 +613,6 @@ class MailsterSettings {
 
 			}
 		}
-
 	}
 
 
@@ -659,7 +643,6 @@ class MailsterSettings {
 		}
 
 		return true;
-
 	}
 
 
@@ -1282,7 +1265,6 @@ class MailsterSettings {
 		$options = apply_filters( 'mailster_verify_options', $options );
 
 		return $options;
-
 	}
 
 
@@ -1314,7 +1296,6 @@ class MailsterSettings {
 		}
 
 		return apply_filters( 'mailster_verify_texts', $texts );
-
 	}
 
 
@@ -1365,7 +1346,6 @@ class MailsterSettings {
 
 		$message = sprintf( $message, $service, $link );
 		$this->add_settings_error( $message, 'deliverymethod_service' );
-
 	}
 
 
@@ -1382,7 +1362,6 @@ class MailsterSettings {
 		is_resource( $conn ) ? fclose( $conn ) : '';
 
 		return $return;
-
 	}
 
 
@@ -1410,7 +1389,6 @@ class MailsterSettings {
 		$export = base64_encode( $export );
 
 		return $export;
-
 	}
 
 
@@ -1423,7 +1401,7 @@ class MailsterSettings {
 	public function import_settings( $raw ) {
 
 		if ( $this->export_settings() === $raw ) {
-			 return new WP_Error( 'wrong_version', esc_html__( 'Settings are the same. Nothing to import!', 'mailster' ) );
+			return new WP_Error( 'wrong_version', esc_html__( 'Settings are the same. Nothing to import!', 'mailster' ) );
 		}
 
 		$old_options = mailster_options();
@@ -1479,7 +1457,7 @@ class MailsterSettings {
 		$options['ID'] = $old_options['ID'];
 		if ( isset( $old_options['fallback_image'] ) ) {
 			$options['fallback_image'] = $old_options['fallback_image'];
-		};
+		}
 		$options['cron_secret']     = $old_options['cron_secret'];
 		$options['homepage']        = $old_options['homepage'];
 		$options['got_url_rewrite'] = mailster( 'helper' )->got_url_rewrite();
@@ -1490,7 +1468,6 @@ class MailsterSettings {
 			'options' => $options,
 			'texts'   => $texts,
 		);
-
 	}
 
 
@@ -1611,7 +1588,6 @@ class MailsterSettings {
 		}
 
 		return apply_filters( 'mailster_system_info', $settings );
-
 	}
 
 
@@ -1658,7 +1634,7 @@ class MailsterSettings {
 			<label><input type="radio" name="mailster_options[smtp_secure]" value="" <?php checked( ! $secure ); ?> class="smtp secure" data-port="25"> <?php esc_html_e( 'none', 'mailster' ); ?></label>
 			<label><input type="radio" name="mailster_options[smtp_secure]" value="ssl" <?php checked( $secure == 'ssl' ); ?> class="smtp secure" data-port="465"> SSL</label>
 			<label><input type="radio" name="mailster_options[smtp_secure]" value="tls" <?php checked( $secure == 'tls' ); ?> class="smtp secure" data-port="465"> TLS</label>
-			 </td>
+			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row">SMTPAuth</th>
@@ -1689,6 +1665,4 @@ class MailsterSettings {
 	</table>
 		<?php
 	}
-
-
 }

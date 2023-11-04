@@ -11,7 +11,6 @@ class MailsterLogs {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
 	}
 
 
@@ -20,7 +19,6 @@ class MailsterLogs {
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 55 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ), 100 );
 		add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
-
 	}
 
 
@@ -45,7 +43,6 @@ class MailsterLogs {
 			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
 		endif;
-
 	}
 
 
@@ -64,7 +61,6 @@ class MailsterLogs {
 			wp_enqueue_script( 'mailster-logs-table', MAILSTER_URI . 'assets/js/logs-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		endif;
-
 	}
 
 	public function view_logs() {
@@ -79,7 +75,6 @@ class MailsterLogs {
 			include MAILSTER_DIR . 'views/logging/overview.php';
 
 		endif;
-
 	}
 
 	public function save_screen_options( $status, $option, $value ) {
@@ -90,7 +85,6 @@ class MailsterLogs {
 		}
 
 		return $status;
-
 	}
 
 	public function screen_options() {
@@ -107,7 +101,6 @@ class MailsterLogs {
 				'option'  => 'mailster_logs_per_page',
 			)
 		);
-
 	}
 
 	public function edit_entry() {
@@ -130,7 +123,6 @@ class MailsterLogs {
 		if ( isset( $_GET['action'] ) ) {
 			$action = $_GET['action'];
 		}
-
 	}
 
 	public function get_columns() {
@@ -166,7 +158,6 @@ class MailsterLogs {
 		);
 
 		$wpdb->insert( "{$wpdb->prefix}mailster_logs", $data );
-
 	}
 
 	public function cleanup() {
@@ -186,7 +177,6 @@ class MailsterLogs {
 		if ( $max_days ) {
 			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE timestamp < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL %d DAY ) ) ", $max_days ) );
 		}
-
 	}
 
 	public function get( $id ) {
@@ -196,7 +186,6 @@ class MailsterLogs {
 		$sql = "SELECT * FROM {$wpdb->prefix}mailster_logs WHERE ID = %d";
 
 		return $wpdb->get_row( $wpdb->prepare( $sql, $id ) );
-
 	}
 
 	public function get_html( $log ) {
@@ -214,7 +203,5 @@ class MailsterLogs {
 		$html = str_replace( '<a ', '<a target="mailster_preview" ', $html );
 
 		return sprintf( '<iframe class="html-preview" src="data:text/html;base64,%s" scrolling="auto" frameborder="0"></iframe>', base64_encode( $html ) );
-
 	}
-
 }

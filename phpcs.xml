@@ -3,13 +3,12 @@
 	<description>Sniffs for WordPress plugins, with minor modifications for Mailster</description>
 
 	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_wp_version" value="6.0"/>
 
 	<rule ref="WordPress-Core"/>
 	<rule ref="WordPress-Docs"/>
 	<rule ref="WordPress.WP.I18n"/>
 	<config name="text_domain" value="mailster"/>
-
-	<rule ref="WordPress.CodeAnalysis.EmptyStatement"/>
 
 	<rule ref="PEAR.Functions.FunctionCallSignature">
 		<properties>
@@ -20,24 +19,27 @@
 	<rule ref="WordPress"/>
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
-			<property name="prefixes" type="array" value="mailster"/>
+			<property name="prefixes" type="array">
+				<element value="mailster"/>
+			</property>
 		</properties>
 	</rule>
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<!-- Value: replace the text domain used. -->
-			<property name="text_domain" type="array" value="mailster"/>
+			<property name="text_domain" type="array">
+				<element value="mailster"/>
+			</property>
 		</properties>
 	</rule>
 
 	<arg value="ps"/>
 	<arg name="extensions" value="php,css,scss/css"/>
+	<arg name="parallel" value="8"/>
 
 	<!-- Rules: WordPress Coding Standards -->
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards -->
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties -->
-	<config name="minimum_supported_wp_version" value="4.6"/>
+	<config name="minimum_supported_wp_version" value="6.0"/>
 	<file>./</file>
 	<exclude-pattern>*/classes/libs/*</exclude-pattern>
 	<exclude-pattern>*.js</exclude-pattern>
@@ -46,5 +48,6 @@
 	<exclude-pattern>*/assets/css/libs/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
 
 </ruleset>
