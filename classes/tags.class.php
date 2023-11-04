@@ -6,6 +6,7 @@ class MailsterTags {
 
 
 
+
 	/**
 	 *
 	 *
@@ -739,6 +740,5 @@ class MailsterTags {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_install( $new ) {
-	}
+	public function on_install( $new ) {}
 }

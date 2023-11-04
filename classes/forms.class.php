@@ -13,6 +13,7 @@ class MailsterForms {
 
 		add_action( 'admin_enqueue_scripts', array( &$this, 'legacy_badge' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 15 );
+
 		add_action( 'wp', array( &$this, 'form' ) );
 
 		if ( is_admin() ) {
@@ -1572,6 +1573,7 @@ class MailsterForms {
 		$text .= 'END:VCARD' . "\n";
 		return $text;
 	}
+
 
 
 

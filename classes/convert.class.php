@@ -4,6 +4,9 @@ class MailsterConvert {
 
 	public function __construct() {
 
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 100 );
+		add_action( 'wp_version_check', array( &$this, 'notice' ) );
+
 		if ( get_option( 'mailster_freemius' ) ) {
 			return;
 		}

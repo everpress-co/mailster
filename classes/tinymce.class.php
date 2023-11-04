@@ -7,6 +7,7 @@ class MailsterTinymce {
 		add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
 	}
 
+
 	/**
 	 *
 	 *
