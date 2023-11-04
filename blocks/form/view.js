@@ -34,6 +34,7 @@ import apiFetch from '@wordpress/api-fetch';
 	const document = windowObj.document;
 	const setTimeout = windowObj.setTimeout;
 	const clearTimeout = windowObj.clearTimeout;
+	const html = document.documentElement;
 
 	const CLICK = 'click';
 	const SUBMIT = 'submit';
@@ -53,7 +54,6 @@ import apiFetch from '@wordpress/api-fetch';
 		: addEvent(windowObj, DOMCONTENTLOADED, app);
 
 	function app() {
-		const html = document.documentElement;
 		const forms = querySelectorAll(document, '.mailster-block-form');
 		const events = windowObj.mailsterBlockEvents || {};
 

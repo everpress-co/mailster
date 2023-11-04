@@ -179,6 +179,7 @@ class MailsterLogs {
 
 		$html = $log->html;
 
+		// replace custom tracking links
 		foreach ( $links[3] as $link ) {
 			$replace = preg_replace( '/\/([0-9a-f]{32})\//', '/' . str_repeat( '0', 32 ) . '/', $link );
 			$html    = str_replace( $link, $replace, $html );
@@ -198,24 +199,31 @@ class MailsterLogs {
 
 		global $wpdb;
 
-		$max_entries = mailster_option( 'logging_max' );
-		$max_days    = mailster_option( 'logging_days' );
+		$max_entries = (int) mailster_option( 'logging_max' );
+		$max_days    = (int) mailster_option( 'logging_days' );
 		$count       = 0;
 
 		if ( $max_entries ) {
-			// quickyl count the entries
-			$count = max( $count, $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs" ) );
+			// quickly count the entries
+			$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs" );
+
 			// bail out if we are below the limit
 			if ( ! $count ) {
 				return;
 			}
+
+			// get maximum the entries we need to delete
+			$count = max( 0, $count - $max_entries );
+
 		}
+
 		if ( $max_days ) {
-			// quickyl count the entries
-			$count = max( $count, $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs WHERE timestamp < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL $max_days DAY ) )" ) );
+			// quickly count the entries
+			$count = max( $count, $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs WHERE `timestamp` < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL $max_days DAY ) )" ) );
 		}
+
 		if ( $count ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs ORDER BY ID DESC LIMIT %d ", $count ) );
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs ORDER BY ID ASC LIMIT %d ", $count ) );
 		}
 
 	}

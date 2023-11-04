@@ -65,9 +65,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function status(id, append) {
 		var msg = mailster.l10n.precheck[id] || id;
-		$score
-			.removeAttr('class')
-			.addClass('precheck-score precheck-status-' + id);
+		$score.removeAttr('class').addClass('precheck-score precheck-status-' + id);
 		if (append) {
 			$status.html($status.html() + msg);
 		} else {
@@ -76,9 +74,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function error(msg) {
-		var box = $(
-			'<div class="error"><p><strong>' + msg + '</strong></p></div>'
-		)
+		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>')
 			.hide()
 			.appendTo($('.score-message'))
 			.slideDown(200)
@@ -417,9 +413,9 @@ mailster = (function (mailster, $, window, document) {
 				tag = d.tag,
 				attr = d.attr,
 				index = d.index,
-				el = $iframe
-					.contents()
-					.find(tag + '[' + attr + '="' + url + '"]')[index];
+				el = $iframe.contents().find(tag + '[' + attr + '="' + url + '"]')[
+					index
+				];
 			t.data('el', el);
 		} else {
 			el = d.el;
