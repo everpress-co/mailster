@@ -22,7 +22,6 @@ class MailsterImportUpload extends MailsterImport {
 		$offset   = ( $import_data['page'] - 1 ) * $limit;
 
 		return array_slice( $data, $offset, $limit );
-
 	}
 
 	public function get_import_data() {
@@ -43,7 +42,7 @@ class MailsterImportUpload extends MailsterImport {
 		$total_lines = substr_count( $raw_data, "\n" ) + 1;
 		$data        = $this->sanitize_raw_data( $raw_data );
 		if ( isset( $data['header'] ) ) {
-			$total_lines--;
+			--$total_lines;
 			$header = array_shift( $data );
 		}
 		$total   = $total_batch = count( $data );
@@ -63,7 +62,6 @@ class MailsterImportUpload extends MailsterImport {
 			'sample_last' => end( $data ),
 			'encoding'    => $encoding,
 		);
-
 	}
 
 
@@ -77,5 +75,4 @@ class MailsterImportUpload extends MailsterImport {
 
 		return $insert;
 	}
-
 }

@@ -7,7 +7,6 @@ class MailsterSecurity {
 
 		add_action( 'mailster_verify_new_subscriber', array( $this, 'verify_subscriber' ) );
 		add_action( 'mailster_add_subscriber', array( $this, 'flood' ) );
-
 	}
 
 	/**
@@ -32,7 +31,6 @@ class MailsterSecurity {
 		}
 
 		return $entry;
-
 	}
 
 	/**
@@ -124,7 +122,6 @@ class MailsterSecurity {
 		}
 
 		return true;
-
 	}
 
 
@@ -217,7 +214,6 @@ class MailsterSecurity {
 		include MAILSTER_DIR . 'includes/dep.php';
 
 		return apply_filters( 'mailster_dep_domains', $dep_domains );
-
 	}
 
 
@@ -232,7 +228,6 @@ class MailsterSecurity {
 	public function is_flood( $ip ) {
 
 		return get_transient( 'mailster_ip_check_' . md5( ip2long( $ip ) ) );
-
 	}
 
 
@@ -259,7 +254,6 @@ class MailsterSecurity {
 		$valid        = ( isset( $smtp_results[ $email ] ) && 1 == $smtp_results[ $email ] ) || array_sum( $smtp_results['domains'][ $domain ]['mxs'] );
 
 		return (bool) $valid;
-
 	}
 
 	private function ip_has_pending_subscriber( $ip ) {
@@ -301,6 +295,4 @@ class MailsterSecurity {
 		}
 		return false;
 	}
-
-
 }

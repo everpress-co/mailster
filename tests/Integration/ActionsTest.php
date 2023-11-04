@@ -69,5 +69,4 @@ class ActionTests extends TestCase {
 
 		$this->assertEquals( $actions['bounces'], 1 );
 	}
-
 }

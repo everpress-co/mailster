@@ -5,7 +5,6 @@
 		"freemius/wordpress-sdk": "^2.5.10",
 		"composer/installers": "^1.12.0",
 		"geoip2/geoip2": "~2.0",
-		"php": "^7.0 || ^8.0",
 		"dantsu/php-osm-static-api": "^0.4.0"
 	},
 	"require-dev": {
@@ -17,9 +16,9 @@
 		"pronamic/wp-documentor": "^1.2",
 		"wp-coding-standards/wpcs": "^3.0",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"php-parallel-lint/php-parallel-lint": "^1.0"
 	},
+	"prefer-stable": true,
 	"autoload": {
 		"psr-4": {
 			"Mailster\\": "."
@@ -34,7 +33,34 @@
 		"test": "phpunit --config=phpunit-unit.xml",
 		"test:wordpress": "phpunit --config=phpunit-integration.xml",
 		"fix-cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf",
-		"lint": "@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --show-deprecated --exclude vendor --exclude node_modules --exclude .git"
+		"lint": "@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --show-deprecated --exclude vendor --exclude node_modules --exclude .git",
+		"lint": [
+			"@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --show-deprecated --exclude vendor --exclude .git"
+		],
+		"check-cs": [
+			"@php ./vendor/squizlabs/php_codesniffer/bin/phpcs"
+		],
+		"fix-cs": [
+			"@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf"
+		],
+		"run-tests": [
+			"@php ./vendor/phpunit/phpunit/phpunit --filter WordPress ./vendor/squizlabs/php_codesniffer/tests/AllTests.php --no-coverage"
+		],
+		"coverage": [
+			"@php ./vendor/phpunit/phpunit/phpunit --filter WordPress ./vendor/squizlabs/php_codesniffer/tests/AllTests.php"
+		],
+		"check-complete": [
+			"@php ./vendor/phpcsstandards/phpcsdevtools/bin/phpcs-check-feature-completeness -q ./WordPress"
+		],
+		"check-complete-strict": [
+			"@php ./vendor/phpcsstandards/phpcsdevtools/bin/phpcs-check-feature-completeness ./WordPress"
+		],
+		"check-all": [
+			"@lint",
+			"@check-cs",
+			"@run-tests",
+			"@check-complete-strict"
+		]
 	},
 	"config": {
 		"platform": {

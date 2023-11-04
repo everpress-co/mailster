@@ -365,7 +365,7 @@ else :
 			<legend><?php esc_html_e( 'Tags Options', 'mailster' ); ?></legend>
 				<p><?php esc_html_e( 'Assign following tags to subscribers who signup via this form.', 'mailster' ); ?></p>
 				<select multiple name="mailster_tags[]" class="tags-input hide-if-js">
-					 <option></option>
+					<option></option>
 				<?php foreach ( mailster( 'tags' )->get() as $tag ) : ?>
 					<option value="<?php echo esc_attr( $tag->ID ); ?>" <?php selected( in_array( $tag->ID, $form->tags ) ); ?>><?php echo esc_html( $tag->name ); ?></option>
 				<?php endforeach; ?>

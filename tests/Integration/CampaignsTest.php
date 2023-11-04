@@ -41,7 +41,6 @@ class CampaignsTest extends TestCase {
 		$success = mailster( 'campaigns' )->send( self::$campaign_id, 1 );
 
 		self::$message = sendria()->get_by_subject( $subject );
-
 	}
 
 	function testCampaignCreated() {
@@ -78,5 +77,4 @@ class CampaignsTest extends TestCase {
 
 		echo '<pre>' . print_r( $matches, true ) . '</pre>';
 	}
-
 }

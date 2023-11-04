@@ -44,11 +44,11 @@
 			<label><input type="checkbox" name="delete_data" value="1"> <?php esc_html_e( 'Would you like to delete all data?', 'mailster' ); ?></label>
 		</p>
 		<p>
-			 <label><input type="checkbox" name="delete_campaigns" value="1" disabled> <?php esc_html_e( 'Delete Campaigns', 'mailster' ); ?></label><br>
-			 <label><input type="checkbox" name="delete_capabilities" value="1" disabled> <?php esc_html_e( 'Delete Capabilities', 'mailster' ); ?></label><br>
-			 <label><input type="checkbox" name="delete_tables" value="1" disabled> <?php esc_html_e( 'Delete Tables', 'mailster' ); ?></label><br>
-			 <label><input type="checkbox" name="delete_options" value="1" disabled> <?php esc_html_e( 'Delete Options', 'mailster' ); ?></label><br>
-			 <label><input type="checkbox" name="delete_files" value="1" disabled> <?php esc_html_e( 'Delete Files', 'mailster' ); ?></label>
+			<label><input type="checkbox" name="delete_campaigns" value="1" disabled> <?php esc_html_e( 'Delete Campaigns', 'mailster' ); ?></label><br>
+			<label><input type="checkbox" name="delete_capabilities" value="1" disabled> <?php esc_html_e( 'Delete Capabilities', 'mailster' ); ?></label><br>
+			<label><input type="checkbox" name="delete_tables" value="1" disabled> <?php esc_html_e( 'Delete Tables', 'mailster' ); ?></label><br>
+			<label><input type="checkbox" name="delete_options" value="1" disabled> <?php esc_html_e( 'Delete Options', 'mailster' ); ?></label><br>
+			<label><input type="checkbox" name="delete_files" value="1" disabled> <?php esc_html_e( 'Delete Files', 'mailster' ); ?></label>
 		</p>
 		<p><?php esc_html_e( 'Mailster does not delete any data on plugin deactivation by default. If you like to start with a fresh setup you can check this option and Mailster will remove all campaigns, subscribers, actions and other data in your database.', 'mailster' ); ?><br><strong><?php esc_html_e( 'Note: This will permanently delete all Mailster data from your database.', 'mailster' ); ?></strong>
 		</p>

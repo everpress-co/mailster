@@ -11,7 +11,6 @@ class MailsterDashboard {
 
 		add_action( 'admin_init', array( &$this, 'init' ) );
 		add_action( 'admin_menu', array( &$this, 'menu' ), -1 );
-
 	}
 
 
@@ -21,7 +20,6 @@ class MailsterDashboard {
 		add_action( 'wp_dashboard_setup', array( &$this, 'add_widgets' ) );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'remove_menu_entry' ), 10, 4 );
 		add_filter( 'postbox_classes_newsletter_page_mailster_dashboard_mailster-mb-mailster', array( &$this, 'post_box_classes_for_mailster' ) );
-
 	}
 
 
@@ -46,7 +44,6 @@ class MailsterDashboard {
 			mailster_redirect( admin_url( 'admin.php?page=mailster_update' ) );
 			exit;
 		}
-
 	}
 
 
@@ -55,7 +52,6 @@ class MailsterDashboard {
 		if ( current_user_can( 'mailster_dashboard' ) ) {
 			wp_add_inline_style( 'mailster-admin', '@media only screen and (min-width: 783px){#menu-posts-newsletter .wp-first-item{display: none;}}' );
 		}
-
 	}
 
 
@@ -84,7 +80,6 @@ class MailsterDashboard {
 			unset( $submenu[ $slug ][11] );
 			ksort( $submenu[ $slug ] );
 		}
-
 	}
 
 
@@ -138,7 +133,6 @@ class MailsterDashboard {
 		}
 		$this->register_meta_box( 'subscribers', esc_html__( 'My Subscribers', 'mailster' ), array( &$this, 'subscribers' ), 'side' );
 		$this->register_meta_box( 'lists', esc_html__( 'My Lists', 'mailster' ), array( &$this, 'lists' ), 'side' );
-
 	}
 
 
@@ -160,7 +154,6 @@ class MailsterDashboard {
 		}
 
 		return $classes;
-
 	}
 
 
@@ -180,7 +173,6 @@ class MailsterDashboard {
 		$screen = get_current_screen();
 
 		add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
-
 	}
 
 
@@ -196,7 +188,6 @@ class MailsterDashboard {
 		$screen = get_current_screen();
 
 		remove_meta_box( $id, $screen, $context );
-
 	}
 
 
@@ -242,7 +233,6 @@ class MailsterDashboard {
 		add_meta_box( 'dashboard_mailster', esc_html__( 'Newsletter', 'mailster' ), array( &$this, 'widget' ), 'dashboard', 'side', 'high' );
 
 		add_action( 'admin_enqueue_scripts', array( &$this, 'scripts_styles' ), 10, 1 );
-
 	}
 
 
@@ -271,6 +261,4 @@ class MailsterDashboard {
 
 		return $elements;
 	}
-
-
 }
