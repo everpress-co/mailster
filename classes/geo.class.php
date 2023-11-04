@@ -245,6 +245,7 @@ class MailsterGeo {
 		return $sorted;
 	}
 
+
 	/**
 	 *
 	 *

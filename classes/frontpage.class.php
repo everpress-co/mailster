@@ -32,6 +32,7 @@ class MailsterFrontpage {
 		add_shortcode( 'newsletter_button', array( &$this, 'newsletter_button' ) );
 	}
 
+
 	/**
 	 *
 	 *
