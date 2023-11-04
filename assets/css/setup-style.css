@@ -4,6 +4,14 @@
 .updated {
 	display: none !important;
 }
+div.fs-notice.updated,
+div.fs-notice.success,
+div.fs-notice.promotion {
+	display: none !important;
+	visibility: hidden;
+	z-index: -1;
+	position: absolute;
+}
 .notice.inline,
 .error.inline,
 .update-nag.inline,
