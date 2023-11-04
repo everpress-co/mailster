@@ -2788,7 +2788,6 @@ class MailsterAjax {
 			case 'delivery':
 			default:
 				if ( isset( $data['mailster_options'] ) ) {
-					error_log( print_r( $data, true ) );
 					$mailster_options = wp_parse_args( $data['mailster_options'], $mailster_options );
 					update_option( 'mailster_options', $mailster_options );
 				}
