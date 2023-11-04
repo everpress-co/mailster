@@ -1,9 +1,9 @@
 <?php
+#[AllowDynamicProperties]
 
 class MailsterConditions {
 
 	public function __construct( $conditions = array() ) {
-
 	}
 
 
@@ -14,7 +14,6 @@ class MailsterConditions {
 		}
 
 		return $this->{$name};
-
 	}
 
 
@@ -38,7 +37,6 @@ class MailsterConditions {
 		}
 
 		include MAILSTER_DIR . 'views/conditions/conditions.php';
-
 	}
 
 	public function render( $conditions = array(), $echo = true, $plain = false ) {
@@ -68,7 +66,6 @@ class MailsterConditions {
 		}
 
 		echo $output;
-
 	}
 
 	public function fielddropdown() {
@@ -162,21 +159,18 @@ class MailsterConditions {
 			'_click_link'         => esc_html__( 'clicked link', 'mailster' ),
 			'_click_link__not_in' => esc_html__( 'didn\'t clicked link', 'mailster' ),
 		);
-
 	}
 	private function get_list_related() {
 		return array(
 			'_lists__in'     => esc_html__( 'is in List', 'mailster' ),
 			'_lists__not_in' => esc_html__( 'is not in List', 'mailster' ),
 		);
-
 	}
 	private function get_tag_related() {
 		return array(
 			'_tags__in'     => esc_html__( 'has Tag', 'mailster' ),
 			'_tags__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
 		);
-
 	}
 	private function get_operators() {
 		return array(
@@ -193,7 +187,6 @@ class MailsterConditions {
 			'pattern'          => esc_html__( 'match regex pattern', 'mailster' ),
 			'not_pattern'      => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
 		);
-
 	}
 	private function get_simple_operators() {
 		return array(
@@ -204,7 +197,6 @@ class MailsterConditions {
 			'is_greater_equal' => esc_html__( 'is greater or equal', 'mailster' ),
 			'is_smaller_equal' => esc_html__( 'is smaller or equal', 'mailster' ),
 		);
-
 	}
 	private function get_string_operators() {
 		return array(
@@ -217,14 +209,12 @@ class MailsterConditions {
 			'pattern'      => esc_html__( 'match regex pattern', 'mailster' ),
 			'not_pattern'  => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
 		);
-
 	}
 	private function get_bool_operators() {
 		return array(
 			'is'     => esc_html__( 'is', 'mailster' ),
 			'is_not' => esc_html__( 'is not', 'mailster' ),
 		);
-
 	}
 	private function get_date_operators() {
 		return array(
@@ -235,14 +225,12 @@ class MailsterConditions {
 			'is_greater_equal' => esc_html__( 'is after or on the', 'mailster' ),
 			'is_smaller_equal' => esc_html__( 'is before or on the', 'mailster' ),
 		);
-
 	}
 	private function get_relative_date_operators() {
 		return array(
 			'is_older'   => esc_html__( 'is older than', 'mailster' ),
 			'is_younger' => esc_html__( 'is younger than', 'mailster' ),
 		);
-
 	}
 	private function get_special_campaigns() {
 		return array(
@@ -253,7 +241,6 @@ class MailsterConditions {
 			'_last_6month'  => esc_html__( 'Any Campaigns within the last 6 months', 'mailster' ),
 			'_last_12month' => esc_html__( 'Any Campaigns within the last 12 months', 'mailster' ),
 		);
-
 	}
 	private function get_field_operator( $operator ) {
 		$operator = esc_sql( stripslashes( $operator ) );
@@ -286,7 +273,6 @@ class MailsterConditions {
 		}
 
 		return $operator;
-
 	}
 
 
@@ -359,7 +345,6 @@ class MailsterConditions {
 		}
 
 		return $formated ? $return : strip_tags( $return );
-
 	}
 
 
@@ -484,7 +469,5 @@ class MailsterConditions {
 		}
 
 		return $string;
-
 	}
-
 }

@@ -7,7 +7,6 @@ class MailsterQueue {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
 	}
 
 
@@ -33,7 +32,6 @@ class MailsterQueue {
 		add_action( 'mailster_bounce', array( &$this, 'update_after_bounce' ), 10, 3 );
 
 		add_action( 'mailster_subscriber_change_status', array( &$this, 'subscriber_change_status' ), 10, 3 );
-
 	}
 
 
@@ -71,7 +69,6 @@ class MailsterQueue {
 		$sql .= ' ON DUPLICATE KEY UPDATE count = count+1, timestamp = values(timestamp), sent = values(sent), priority = values(priority), tags = values(tags)';
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 
@@ -105,7 +102,6 @@ class MailsterQueue {
 				'requeued'      => 1,
 			)
 		);
-
 	}
 
 
@@ -198,7 +194,6 @@ class MailsterQueue {
 		}
 
 		return $success;
-
 	}
 
 
@@ -238,7 +233,6 @@ class MailsterQueue {
 		}
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 	/**
@@ -269,7 +263,6 @@ class MailsterQueue {
 		$sql .= ' AND a.subscriber_id IN (' . implode( ',', $subscribers ) . ')';
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 
@@ -297,7 +290,6 @@ class MailsterQueue {
 		}
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 
@@ -313,7 +305,6 @@ class MailsterQueue {
 
 		// remove all entries from the queue where campaign has been removed
 		$wpdb->query( "DELETE queue FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->posts} AS p ON p.ID = queue.campaign_id AND p.post_type = 'newsletter' WHERE p.ID IS NULL AND queue.campaign_id != 0" );
-
 	}
 
 
@@ -378,7 +369,6 @@ class MailsterQueue {
 				$offset += $limit;
 			}
 		}
-
 	}
 
 
@@ -627,7 +617,7 @@ class MailsterQueue {
 
 						foreach ( $feeds as $i => $feed ) {
 
-							$autoresponder_meta['post_count_status']++;
+							++$autoresponder_meta['post_count_status'];
 
 							if ( ! ( $autoresponder_meta['post_count_status'] % ( $autoresponder_meta['post_count'] + 1 ) ) ) {
 
@@ -649,9 +639,9 @@ class MailsterQueue {
 
 								if ( $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $send_offset, $autoresponder_meta['issue'], false, $index_offset ) ) {
 
-									$created++;
+									++$created;
 									$new_campaign = mailster( 'campaigns' )->get( $new_id );
-									$autoresponder_meta['issue']++;
+									++$autoresponder_meta['issue'];
 
 									mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent on %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . esc_attr( $new_campaign->ID ) . '&action=edit">' . esc_html( $new_campaign->post_title ) . '</a>"</strong>', '<strong>' . date_i18n( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
 
@@ -673,7 +663,6 @@ class MailsterQueue {
 				}
 			}
 		}
-
 	}
 
 
@@ -833,7 +822,6 @@ class MailsterQueue {
 
 			}
 		}
-
 	}
 
 
@@ -1015,7 +1003,6 @@ class MailsterQueue {
 
 		// remove notifications which are sent over an hour ago
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_queue WHERE sent != 0 AND campaign_id = 0 AND sent < %d", ( time() - 3600 ) ) );
-
 	}
 
 
@@ -1302,7 +1289,7 @@ class MailsterQueue {
 						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $output_php, $output_mail, $output_total );
 					}
 
-					$sent_this_turn++;
+					++$sent_this_turn;
 
 					// error
 				} else {
@@ -1346,16 +1333,13 @@ class MailsterQueue {
 						if ( $campaign->post_status == 'autoresponder' ) {
 							mailster_notice( sprintf( esc_html__( 'Autoresponder %1$s has caused sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );
 
-						} else {
+						} elseif ( mailster_option( 'pause_campaigns' ) ) {
 
-							if ( mailster_option( 'pause_campaigns' ) ) {
 								mailster( 'campaigns' )->change_status( $campaign, 'paused' );
 								mailster_notice( sprintf( esc_html__( 'Campaign %1$s has been paused cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', 7200, 'camp_error_' . $campaign->ID, $campaign->post_author );
 
-							} else {
-								mailster_notice( sprintf( esc_html__( 'Campaign %1$s has some delay cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );
-
-							}
+						} else {
+							mailster_notice( sprintf( esc_html__( 'Campaign %1$s has some delay cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );
 						}
 
 						array_push( $campaign_errors, $data->campaign_id );
@@ -1457,7 +1441,6 @@ class MailsterQueue {
 		do_action( 'mailster_cron_finished' );
 
 		return true;
-
 	}
 
 
@@ -1507,7 +1490,6 @@ class MailsterQueue {
 			$mailster_cron_log_max_fields = 0;
 			$mailster_cron_log[]          = array();
 		}
-
 	}
 
 
@@ -1533,7 +1515,7 @@ class MailsterQueue {
 			$html .= str_repeat( '<td>&nbsp;</td>', max( 0, ( $mailster_cron_log_max_fields + 2 ) - $j - 4 ) );
 			$html .= '<td width="50">' . date( 'H:i:s', round( $time ) + $timeoffset ) . ':' . round( ( $time - floor( $time ) ) * 10000 ) . '</td>';
 			$html .= '</tr>';
-			$i++;
+			++$i;
 		}
 		$html .= '</table>';
 		echo $html;
@@ -1579,7 +1561,6 @@ class MailsterQueue {
 		$sql .= ' AND a.subscriber_id IN (' . implode( ',', $subscribers ) . ')';
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 
@@ -1605,8 +1586,5 @@ class MailsterQueue {
 		$sql = "SELECT COUNT(queue.subscriber_id) AS count FROM {$wpdb->prefix}mailster_queue AS queue WHERE queue.sent = 0 AND queue.timestamp > %d AND queue.campaign_id = %d";
 
 		return $wpdb->get_var( $wpdb->prepare( $sql, $timestamp, $campaign_id ) );
-
 	}
-
-
 }
