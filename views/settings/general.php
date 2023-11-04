@@ -94,7 +94,7 @@
 			'quoted-printable' => 'quoted-printable',
 		)
 		?>
-		 /
+		/
 		<select name="mailster_options[encoding]">
 			<?php foreach ( $encoding as $code ) : ?>
 			<option value="<?php echo $code; ?>" <?php selected( $is == $code ); ?>><?php echo $code; ?></option>

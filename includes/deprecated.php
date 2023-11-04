@@ -105,7 +105,6 @@ function mailster_send_campaign_to_subscriber( $campaign, $subscriber, $track = 
 	}
 
 	return $result;
-
 }
 
 if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
@@ -120,7 +119,7 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 	if ( ! defined( 'DOING_AJAX' ) ) {
 		add_action(
 			'mymail_form_header',
-			function() {
+			function () {
 
 				global $pagenow;
 
@@ -140,7 +139,7 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 
 		add_action(
 			'mymail_cron_worker',
-			function() {
+			function () {
 
 				global $pagenow;
 
@@ -300,7 +299,6 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 	function mymail_send( $headline, $content, $to = '', $replace = array(), $attachments = array(), $template = 'notification.html', $headers = array() ) {
 		_deprecated_function( __FUNCTION__, '2.3', 'mailster_send' );
 		return mailster_send( $headline, $content, $to, $replace, $atachments, $template, $headers );
-
 	}
 
 
@@ -334,7 +332,6 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 	function mymail_send_campaign_to_subscriber( $campaign, $subscriber, $track = false, $forcesend = false, $force = false ) {
 		_deprecated_function( __FUNCTION__, '2.3', 'mailster_send_campaign_to_subscriber' );
 		return mailster_send_campaign_to_subscriber( $campaign, $subscriber, $track, $forcesend, $force );
-
 	}
 
 
@@ -350,7 +347,6 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 	function mymail_form( $id = 0, $echo = true, $classes = '', $depreciated = '' ) {
 		_deprecated_function( __FUNCTION__, '2.3', 'mailster_form' );
 		return mailster_form( $id, $echo, $classes, $depreciated );
-
 	}
 
 
@@ -561,7 +557,6 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 	function mymail_subscribe( $email, $userdata = array(), $lists = array(), $double_opt_in = null, $overwrite = true, $mergelists = null, $template = 'notification.html' ) {
 		_deprecated_function( __FUNCTION__, '2.3', 'mailster_subscribe' );
 		return mailster_subscribe( $email, $userdata, $lists, $double_op_in, $overwrite, $mergelists, $template );
-
 	}
 
 
@@ -576,7 +571,6 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 	function mymail_unsubscribe( $email_hash_id, $campaign_id = null, $logit = true ) {
 		_deprecated_function( __FUNCTION__, '2.3', 'mailster_unsubscribe' );
 		return mailster_unsubscribe( $email_hash_id, $campaign_id, $logit );
-
 	}
 
 

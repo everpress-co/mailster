@@ -32,7 +32,6 @@ class Mailster_Logs_Table extends WP_List_Table {
 		$this->search  = isset( $_GET['s'] ) ? $_GET['s'] : null;
 		$this->orderby = isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'id';
 		$this->order   = isset( $_GET['order'] ) ? $_GET['order'] : 'DESC';
-
 	}
 
 
@@ -44,13 +43,11 @@ class Mailster_Logs_Table extends WP_List_Table {
 	public function get_views() {
 
 		return array();
-
 	}
 
 	public function no_items() {
 
 		esc_html_e( 'No logs found', 'mailster' );
-
 	}
 
 
@@ -93,7 +90,6 @@ class Mailster_Logs_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return mailster( 'logs' )->get_columns();
-
 	}
 
 
@@ -233,8 +229,5 @@ class Mailster_Logs_Table extends WP_List_Table {
 				'per_page'    => $this->per_page,
 			)
 		);
-
 	}
-
-
 }

@@ -52,7 +52,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 			<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> <a class="default-value mailster-icon mailster-icon-restore" data-for="mailster_reply_to" data-value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td><input type="email" class="widefat" value="<?php echo esc_attr( $this->post_data['reply_to'] ); ?>" name="mailster_data[reply_to]" id="mailster_reply_to" aria-label="<?php esc_attr_e( 'reply-to email', 'mailster' ); ?>"></td>
 		</tr>
-	 </tbody>
+	</tbody>
 </table>
 <input type="hidden" value="<?php echo esc_attr( $this->get_template() ); ?>" name="mailster_data[template]" id="mailster_template_name">
 <input type="hidden" value="<?php echo esc_attr( $this->get_file() ); ?>" name="mailster_data[file]" id="mailster_template_file">

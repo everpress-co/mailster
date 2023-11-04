@@ -9,8 +9,5 @@ class MailsterEmpty {
 	 * @param unknown $args
 	 */
 	public function __call( $method, $args ) {
-
 	}
-
-
 }
