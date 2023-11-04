@@ -167,10 +167,10 @@ class MailsterTemplate {
 			$raw = '{headline}<br>{content}';
 		}
 
-			$this->slug   = $slug;
-			$this->exists = file_exists( $file );
+		$this->slug   = $slug;
+		$this->exists = file_exists( $file );
 
-			return $this->load_template_html( $raw );
+		return $this->load_template_html( $raw );
 	}
 
 

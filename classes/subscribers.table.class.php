@@ -20,6 +20,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	private $orderby;
 	private $order;
 	private $since;
+	private $strict;
 
 	public function __construct() {
 

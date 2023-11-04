@@ -1059,6 +1059,9 @@ class Mailster {
 		}
 
 		if ( ! isset( $args['cache_results'] ) || $args['cache_results'] !== false ) {
+			if ( ! $posts ) {
+				$posts = array();
+			}
 			$posts[ $key ] = $post;
 
 			mailster_cache_set( 'get_last_post', $posts );
@@ -2924,7 +2927,7 @@ class Mailster {
 
 	public function is_trial() {
 
-		return ! mailster_freemius()->is_trial();
+		return mailster_freemius()->is_trial();
 	}
 
 	public function is_outdated() {

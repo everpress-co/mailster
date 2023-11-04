@@ -36,7 +36,7 @@ else :
 	class _mailster_phpmailerException extends phpmailerException {}
 
 endif;
-
+#[AllowDynamicProperties]
 // this class extends PHPMailer and offers some fixes
 class mailster_mail_helper extends _mailster_mail_helper {
 

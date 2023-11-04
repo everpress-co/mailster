@@ -1,6 +1,8 @@
 <?php
+#[AllowDynamicProperties]
 
 class MailsterConditions {
+
 
 
 	private $workflow_campaigns = array();
@@ -39,7 +41,7 @@ class MailsterConditions {
 			)
 		);
 
-		return ! empty( $query );
+		return $this->{$name};
 	}
 
 
@@ -339,6 +341,7 @@ class MailsterConditions {
 
 
 	private function get_campaign_related() {
+
 		if ( ! $this->_campaign_related ) {
 			$this->_campaign_related = array(
 				'_sent'               => esc_html__( 'has received', 'mailster' ),
@@ -511,7 +514,9 @@ class MailsterConditions {
 		return $this->_relative_date_operators;
 	}
 
+
 	private function get_special_campaigns() {
+
 		if ( ! $this->_special_campaigns ) {
 			$this->_special_campaigns = array(
 				'_last_5'       => esc_html__( 'Any of the Last 5 Campaigns', 'mailster' ),

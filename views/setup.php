@@ -84,8 +84,7 @@ $beacons = array(
 			</div>
 
 		</div>
-	<?php endforeach; ?>
-	
+	<?php endforeach; ?>	
 
 	</div>
 	

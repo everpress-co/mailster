@@ -1,5 +1,6 @@
 <?php
 
+#[AllowDynamicProperties]
 class MailsterSubscriberQuery {
 
 	private $last_result;
@@ -112,6 +113,7 @@ class MailsterSubscriberQuery {
 		}
 		return self::$_instance;
 	}
+
 
 	public function run( $args = array(), $campaign_id = null ) {
 

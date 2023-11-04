@@ -1631,7 +1631,9 @@ class MailsterAjax {
 			} elseif ( $is_dynmaic_post_type ) {
 					$return['title'] = $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' );
 			} else {
+
 				$return['title'] = '<a href="' . admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) . '" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) ) . '</a>';
+
 			}
 		} else {
 			$return['title'] = esc_html__( 'There\'s currently no match for your selection!', 'mailster' );

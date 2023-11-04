@@ -6,6 +6,12 @@ class MailsterCron {
 
 	public function __construct() {
 
+		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
+	}
+
+
+	public function init() {
+
 		add_filter( 'cron_schedules', array( &$this, 'filter_cron_schedules' ) );
 		add_action( 'mailster_cron', array( &$this, 'hourly_cronjob' ) );
 		add_action( 'mailster_cron_worker', array( &$this, 'handler' ), -1 );
