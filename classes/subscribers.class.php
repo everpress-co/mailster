@@ -438,7 +438,7 @@ class MailsterSubscribers {
 
 		if ( isset( $_POST['mailster_data'] ) ) {
 
-			if ( isset( $_POST['save'] ) ) :
+			if ( isset( $_POST['save'] ) ) {
 
 				parse_str( $_POST['_wp_http_referer'], $urlparams );
 
@@ -538,30 +538,10 @@ class MailsterSubscribers {
 					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 					exit;
 
-				} elseif ( isset( $_POST['delete'] ) || isset( $_POST['delete_actions'] ) ) :
+				}
+			}
 
-					if ( ! current_user_can( 'mailster_delete_subscribers' ) ) {
-						wp_die( esc_html__( 'You are not allowed to delete subscribers!', 'mailster' ) );
-					}
-
-					$remove_actions = isset( $_POST['delete_actions'] );
-
-					if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true, true ) ) {
-						$success = $this->remove( $subscriber->ID, null, $remove_actions );
-						if ( ! $success ) {
-							mailster_notice( esc_html__( 'There was an error while deleting subscribers!', 'mailster' ), 'error', true );
-
-						} else {
-							mailster_notice( sprintf( esc_html__( 'Subscriber %s has been removed', 'mailster' ), '<strong>&quot;' . $subscriber->email . '&quot;</strong>' ), 'error', true, true );
-							do_action( 'mailster_subscriber_delete', $subscriber->ID, $subscriber->email );
-						}
-
-						mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
-						exit;
-
-					}
-
-			elseif ( isset( $_POST['confirmation'] ) ) :
+			if ( isset( $_POST['confirmation'] ) ) {
 
 				if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true ) ) {
 					if ( $this->send_confirmations( $subscriber->ID, true, true ) ) {
@@ -570,11 +550,31 @@ class MailsterSubscribers {
 					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 					exit;
 				}
-
-			endif;
-
+			}
 		}
+		if ( isset( $_POST['delete'] ) || isset( $_POST['delete_actions'] ) ) {
 
+			if ( ! current_user_can( 'mailster_delete_subscribers' ) ) {
+				wp_die( esc_html__( 'You are not allowed to delete subscribers!', 'mailster' ) );
+			}
+
+			$remove_actions = isset( $_POST['delete_actions'] );
+
+			if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true, true ) ) {
+				$success = $this->remove( $subscriber->ID, null, $remove_actions );
+				if ( ! $success ) {
+					mailster_notice( esc_html__( 'There was an error while deleting subscribers!', 'mailster' ), 'error', true );
+
+				} else {
+					mailster_notice( sprintf( esc_html__( 'Subscriber %s has been removed', 'mailster' ), '<strong>&quot;' . $subscriber->email . '&quot;</strong>' ), 'error', true, true );
+					do_action( 'mailster_subscriber_delete', $subscriber->ID, $subscriber->email );
+				}
+
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
+				exit;
+
+			}
+		}
 		if ( isset( $_GET['resendcampaign'] ) ) {
 			if ( ! current_user_can( 'publish_newsletters' ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'mailster-resend-campaign' ) ) {
 				wp_die( esc_html__( 'You are not allowed to publish campaigns!', 'mailster' ) );
