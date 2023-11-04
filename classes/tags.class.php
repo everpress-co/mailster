@@ -97,7 +97,6 @@ class MailsterTags {
 			$wpdb->suppress_errors( $errors );
 			return new WP_Error( 'tag_exists', $wpdb->last_error );
 		}
-
 	}
 
 
@@ -126,7 +125,6 @@ class MailsterTags {
 		);
 
 		return $this->update( $entry, $overwrite, $subscriber_ids );
-
 	}
 
 
@@ -150,7 +148,6 @@ class MailsterTags {
 		}
 
 		return $ids;
-
 	}
 
 	/**
@@ -177,7 +174,6 @@ class MailsterTags {
 		}
 
 		return $tag_id;
-
 	}
 
 	private function get_name_by_id( $id ) {
@@ -189,7 +185,6 @@ class MailsterTags {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -259,7 +254,6 @@ class MailsterTags {
 		$wpdb->suppress_errors( $errors );
 
 		return $success;
-
 	}
 
 
@@ -270,7 +264,6 @@ class MailsterTags {
 	 * @param unknown $subscriber_ids
 	 * @return unknown
 	 */
-
 	public function unassign_subscribers( $tags, $subscriber_ids ) {
 
 		if ( ! is_array( $tags ) ) {
@@ -294,7 +287,6 @@ class MailsterTags {
 		}
 
 		return $success;
-
 	}
 
 
@@ -343,7 +335,6 @@ class MailsterTags {
 	 * @return unknown
 	 */
 	public function remove_if_not_asigned( $ids ) {
-
 	}
 
 	/**
@@ -386,7 +377,6 @@ class MailsterTags {
 		}
 
 		return $this->get_id_by_name( $tag_id, true );
-
 	}
 
 	/**
@@ -440,7 +430,6 @@ class MailsterTags {
 		}
 
 		return false;
-
 	}
 
 
@@ -513,7 +502,6 @@ class MailsterTags {
 		}
 
 		return $tags;
-
 	}
 
 
@@ -560,7 +548,6 @@ class MailsterTags {
 		}
 
 		return $result;
-
 	}
 
 
@@ -580,7 +567,6 @@ class MailsterTags {
 		$result = $wpdb->get_results( $wpdb->prepare( $sql, $subscriber_id ) );
 
 		return $ids_only ? wp_list_pluck( $result, 'ID' ) : $result;
-
 	}
 
 
@@ -624,7 +610,6 @@ class MailsterTags {
 		$result = $wpdb->get_var( $sql );
 
 		return $result ? (int) $result : 0;
-
 	}
 
 
@@ -689,7 +674,6 @@ class MailsterTags {
 		}
 
 		return isset( $tag_counts[ $tag_id ] ) && isset( $tag_counts[ $tag_id ] ) ? (int) $tag_counts[ $tag_id ] : 0;
-
 	}
 
 
@@ -726,14 +710,11 @@ class MailsterTags {
 				}
 				$html .= '</select>';
 			}
-		} else {
-			if ( is_admin() ) {
+		} elseif ( is_admin() ) {
 				$html .= '<ul><li>' . __( 'No Tags found!', 'mailster' ) . '</li></ul>';
-			}
 		}
 
 		return $html;
-
 	}
 
 
@@ -749,7 +730,6 @@ class MailsterTags {
 	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
 
 		echo $this->return_it( $id, $status, $name, $show_count, $checked, $type );
-
 	}
 
 
@@ -760,8 +740,5 @@ class MailsterTags {
 	 * @param unknown $new
 	 */
 	public function on_install( $new ) {
-
 	}
-
-
 }

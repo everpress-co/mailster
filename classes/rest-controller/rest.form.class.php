@@ -79,7 +79,6 @@ class Mailster_REST_Form_Controller extends WP_REST_Controller {
 
 			)
 		);
-
 	}
 
 	public function impression( $request ) {
@@ -232,7 +231,7 @@ class Mailster_REST_Form_Controller extends WP_REST_Controller {
 		}
 
 		if ( empty( $_referer ) ) {
-			 $_referer = $request->get_header( 'referer' );
+			$_referer = $request->get_header( 'referer' );
 		}
 
 		// use can select lists
@@ -267,7 +266,7 @@ class Mailster_REST_Form_Controller extends WP_REST_Controller {
 				if ( 'email_exists' == $subscriber_id->get_error_code() ) {
 					if ( $exists = mailster( 'subscribers' )->get_by_mail( $entry['email'] ) ) {
 
-						 $fields_errors['email'] = mailster_text( 'already_registered' );
+						$fields_errors['email'] = mailster_text( 'already_registered' );
 
 						if ( $exists->status == 0 ) {
 							$fields_errors['confirmation'] = mailster_text( 'new_confirmation_sent' );
@@ -374,7 +373,5 @@ class Mailster_REST_Form_Controller extends WP_REST_Controller {
 		$data = wp_parse_args( $args, array( 'status' => $this->authorization_status_code() ) );
 
 		return $data;
-
 	}
-
 }

@@ -32,7 +32,6 @@ class MailsterPlaceholder {
 
 		$this->set_content( $content );
 		$this->post_types = mailster( 'helper' )->get_dynamic_post_types();
-
 	}
 
 
@@ -375,7 +374,6 @@ class MailsterPlaceholder {
 		 * @param string $content
 		 */
 		return apply_filters( 'mailster_do_placeholder', $this->content );
-
 	}
 
 
@@ -407,7 +405,6 @@ class MailsterPlaceholder {
 		}
 
 		$this->add( $placeholders );
-
 	}
 
 
@@ -445,7 +442,6 @@ class MailsterPlaceholder {
 		$content = apply_filters( 'mailster_share_button_' . $service, $content );
 
 		return '<a href="' . $_url . '" class="social">' . $content . '</a>' . "\n";
-
 	}
 
 
@@ -514,7 +510,6 @@ class MailsterPlaceholder {
 				$this->content = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . self::$global_rss_tag, $this->content );
 			}
 		}
-
 	}
 
 
@@ -533,7 +528,6 @@ class MailsterPlaceholder {
 
 		$feed_url = $this->rss[ $current ];
 		return mailster( 'helper' )->feed( $feed_url, $offset );
-
 	}
 
 
@@ -574,7 +568,6 @@ class MailsterPlaceholder {
 				}
 			}
 		}
-
 	}
 
 
@@ -690,7 +683,6 @@ class MailsterPlaceholder {
 		}
 
 		return $this->content;
-
 	}
 
 
@@ -734,7 +726,6 @@ class MailsterPlaceholder {
 		}
 
 		return false;
-
 	}
 
 
@@ -894,15 +885,13 @@ class MailsterPlaceholder {
 									$post_stuff = str_replace( $imagestring, $img['url'], $post_stuff );
 									$replace_to = '<' . $tag . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
 								}
-							} else {
+							} elseif ( $is_img_tag ) {
 
-								if ( $is_img_tag ) {
 									$replace_to = '';
-								} else {
-									$pre_stuff  = str_replace( $imagestring, '', $pre_stuff );
-									$post_stuff = str_replace( $imagestring, '', $post_stuff );
-									$replace_to = '<' . $tag . $pre_stuff . 'background="" ' . $post_stuff . '>';
-								}
+							} else {
+								$pre_stuff  = str_replace( $imagestring, '', $pre_stuff );
+								$post_stuff = str_replace( $imagestring, '', $post_stuff );
+								$replace_to = '<' . $tag . $pre_stuff . 'background="" ' . $post_stuff . '>';
 							}
 						} else {
 							// not if no ID is provided (custom dynamic post types)
@@ -1058,7 +1047,6 @@ class MailsterPlaceholder {
 				}
 			}
 		}
-
 	}
 
 
@@ -1164,7 +1152,6 @@ class MailsterPlaceholder {
 				$this->content = str_replace( $search, $replace_to, $this->content );
 			}
 		}
-
 	}
 
 	public function get_replace( $post, $what ) {
@@ -1343,7 +1330,6 @@ class MailsterPlaceholder {
 		}
 
 		return apply_filters( 'mailster_replace_' . $post_type . '_' . $what, $replace_to, $post, $extra, $this->campaignID, $this->subscriberID );
-
 	}
 
 
@@ -1438,7 +1424,5 @@ class MailsterPlaceholder {
 			$this->keeptags = array_unique( (array) apply_filters( 'mailster_keep_tags', array() ) );
 		}
 		return $this->keeptags;
-
 	}
-
 }

@@ -15,7 +15,6 @@ class MailsterLicense {
 
 		// always return false to prevent errors
 		return false;
-
 	}
 
 	public function sdk() {
@@ -24,7 +23,7 @@ class MailsterLicense {
 
 		if ( false === $mailster_freemius instanceof Freemius ) {
 
-			require_once dirname( dirname( __FILE__ ) ) . '/vendor/freemius/wordpress-sdk/start.php';
+			require_once dirname( __DIR__ ) . '/vendor/freemius/wordpress-sdk/start.php';
 
 			$args = apply_filters(
 				'mailster_freemius_args',
@@ -72,7 +71,6 @@ class MailsterLicense {
 
 		// add this back as it will get remove from Freemius
 		add_action( 'newsletter_page_mailster-pricing', array( mailster(), 'page_beacon' ), 1 );
-
 	}
 
 
@@ -119,7 +117,6 @@ class MailsterLicense {
 		mailster_remove_notice( 'mailster_freemius' );
 
 		return $migrate;
-
 	}
 
 	public function add_filter( $hook, $callback, $priority = 10, $arguments = 1 ) {
@@ -152,7 +149,6 @@ class MailsterLicense {
 		$url = add_query_arg( $args, $url );
 
 		return $url;
-
 	}
 
 	public function get_user() {
@@ -178,5 +174,4 @@ class MailsterLicense {
 
 		return (object) $user;
 	}
-
 }

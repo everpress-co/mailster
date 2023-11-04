@@ -68,5 +68,3 @@ $mailster_homepage = array(
 	'post_name'    => esc_html_x( 'newsletter-signup', 'Newsletter Homepage page slug', 'mailster' ),
 	'post_content' => $content,
 );
-
-

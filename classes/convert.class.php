@@ -10,21 +10,18 @@ class MailsterConvert {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 100 );
 		add_action( 'wp_version_check', array( &$this, 'notice' ) );
-
 	}
 
 	public function admin_menu() {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert License', 'mailster' ), esc_html__( 'Convert License', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
-
 	}
 
 	public function convert_page() {
 
 		remove_action( 'admin_notices', array( mailster(), 'admin_notices' ) );
 		include MAILSTER_DIR . 'views/convert.php';
-
 	}
 
 	public function script_styles() {
@@ -32,7 +29,6 @@ class MailsterConvert {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 		wp_enqueue_style( 'mailster-convert', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-convert', MAILSTER_URI . 'assets/js/convert-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
 	}
 
 	public function notice() {
@@ -47,7 +43,6 @@ class MailsterConvert {
 		$msg .= '<p><a class="button button-primary button-hero" href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'Convert now', 'mailster' ) . '</a> or <a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" data-article="63fe029de6d6615225474599">' . esc_html__( 'read more about it', 'mailster' ) . '</a></p>';
 
 		mailster_notice( $msg, 'info', false, 'mailster_freemius' );
-
 	}
 
 	public function convert( $email = null, $license = null, $is_marketing_allowed = null ) {
@@ -105,7 +100,6 @@ class MailsterConvert {
 		$response->migrate = $migrate;
 
 		return $response;
-
 	}
 
 	private function clear_fs_cache( $slug = 'mailster', $plugin_id = null ) {
@@ -148,7 +142,5 @@ class MailsterConvert {
 			}
 			update_option( 'fs_accounts', $fs_accounts );
 		}
-
 	}
-
 }

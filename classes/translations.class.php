@@ -12,7 +12,6 @@ class MailsterTranslations {
 		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
 		add_action( 'add_option_WPLANG', array( &$this, 're_check' ), 999 );
 		add_action( 'update_option_WPLANG', array( &$this, 're_check' ), 999 );
-
 	}
 
 
@@ -109,7 +108,6 @@ class MailsterTranslations {
 		$object = get_option( 'mailster_translation' );
 
 		return isset( $object['set'] ) ? ( ! empty( $object['set'] ) ? $object['set'] : null ) : false;
-
 	}
 
 
@@ -211,7 +209,6 @@ class MailsterTranslations {
 		}
 
 		return isset( $object['data'] ) && is_array( $object['data'] ) ? ( ! empty( $object['data'] ) ? $object['data'] : null ) : false;
-
 	}
 
 
@@ -235,7 +232,6 @@ class MailsterTranslations {
 			}
 		} catch ( Exception $e ) {
 		}
-
 	}
 
 
@@ -269,7 +265,6 @@ class MailsterTranslations {
 		}
 
 		return false;
-
 	}
 
 
@@ -295,7 +290,6 @@ class MailsterTranslations {
 		}
 
 		return $value;
-
 	}
 
 	/**
@@ -312,9 +306,5 @@ class MailsterTranslations {
 		}
 		$value->translations = array();
 		return $value;
-
 	}
-
-
-
 }

@@ -38,7 +38,6 @@ class MailsterTrigger {
 		add_action( 'mailster_add_custom_field', array( &$this, 'updated_field' ), 10, 2 );
 		add_action( 'mailster_remove_custom_field', array( &$this, 'updated_field' ), 10, 2 );
 		add_action( 'mailster_update_custom_field', array( &$this, 'updated_field' ), 10, 2 );
-
 	}
 
 
@@ -54,13 +53,11 @@ class MailsterTrigger {
 		// _run_delayed_workflow( $workflow_id, $trigger, $step );
 
 		error_log( print_r( 'RUN LATE', true ) );
-
 	}
 
 	public function trigger( $workflow_id, $trigger, $subscriber_id, $step = null ) {
 
 		$this->add_job( $workflow_id, $trigger, $subscriber_id, $step );
-
 	}
 
 	public function hook( $hook, $subscriber_id, $workflow_id = null, $step = null ) {
@@ -76,7 +73,6 @@ class MailsterTrigger {
 			$this->add_job( $workflow, 'hook', $subscriber_id, $step );
 
 		}
-
 	}
 
 	public function open( $subscriber_id, $campaign_id, $campaign_index = null ) {
@@ -126,7 +122,6 @@ class MailsterTrigger {
 				$this->add_job( $workflow, 'list_add', $subscriber_id );
 			}
 		}
-
 	}
 
 	public function form_conversion( $form_id, $subscriber_id, $post_id ) {
@@ -143,7 +138,6 @@ class MailsterTrigger {
 				$this->add_job( $workflow, 'form_conversion', $subscriber_id );
 			}
 		}
-
 	}
 
 	public function updated_field( $subscriber_id, $field ) {
@@ -158,7 +152,6 @@ class MailsterTrigger {
 				$this->add_job( $workflow, 'updated_field', $subscriber_id );
 			}
 		}
-
 	}
 
 	public function tag_added( $tag_id, $subscriber_id, $tag_name ) {
@@ -171,7 +164,6 @@ class MailsterTrigger {
 				$this->add_job( $workflow, 'tag_added', $subscriber_id );
 			}
 		}
-
 	}
 
 	public function published_post( $post_id, $post, $update, $post_before ) {
@@ -238,7 +230,6 @@ class MailsterTrigger {
 			return $this->add_job( $workflow, 'published_post', null, null, null, $context );
 
 		}
-
 	}
 
 	public function date() {
@@ -248,7 +239,6 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$this->run_date( $workflow );
 		}
-
 	}
 
 	public function run_date( $workflow ) {
@@ -269,7 +259,6 @@ class MailsterTrigger {
 		}
 
 		return false;
-
 	}
 
 	public function anniversary() {
@@ -279,7 +268,6 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$this->run_anniversary( $workflow );
 		}
-
 	}
 
 	public function run_anniversary( $workflow ) {
@@ -300,7 +288,6 @@ class MailsterTrigger {
 		}
 
 		return false;
-
 	}
 
 
@@ -344,7 +331,6 @@ class MailsterTrigger {
 
 			$this->add_job( $workflow_id, 'page_visit', $subscriber_id );
 		}
-
 	}
 
 	private function add_job( $workflow, $trigger, $subscriber_id, $step = null, $timestamp = null, $context = null ) {
@@ -384,7 +370,6 @@ class MailsterTrigger {
 		}
 
 		return $success;
-
 	}
 
 	public function queue_jobs__DELETE() {
@@ -394,7 +379,6 @@ class MailsterTrigger {
 		}
 
 		mailster( 'automations' )->wp_schedule();
-
 	}
 
 	public function bulk_add( $workflow, $trigger, $subscriber_ids, $step, $timestamp = null, $context = null ) {
@@ -402,7 +386,6 @@ class MailsterTrigger {
 		foreach ( (array) $subscriber_ids as $subscriber_id ) {
 			$this->add_job( $workflow, $trigger, $subscriber_id, $step, $timestamp, $context );
 		}
-
 	}
 
 	private function queue_job( $job ) {
@@ -429,7 +412,6 @@ class MailsterTrigger {
 		$wpdb->suppress_errors( $suppress_errors );
 
 		return $success;
-
 	}
 
 	private function get_workflows_by_trigger( $trigger ) {
@@ -458,7 +440,5 @@ class MailsterTrigger {
 		}
 
 		return $workflow_ids;
-
 	}
-
 }

@@ -216,7 +216,6 @@ class MailsterAutomations {
 		}
 
 		return true;
-
 	}
 
 
@@ -237,7 +236,6 @@ class MailsterAutomations {
 		} else {
 			mailster_remove_notice( 'mailster-workflow-limit-reached' );
 		}
-
 	}
 
 
@@ -250,7 +248,6 @@ class MailsterAutomations {
 	public function do_workflow( $workflow_id, $trigger, $subscriber ) {
 
 		return do_action( 'mailster_trigger', $workflow_id, $trigger, $subscriber );
-
 	}
 
 	public function save_workflow( $workflow_id, $post, $update, $post_before ) {
@@ -300,7 +297,6 @@ class MailsterAutomations {
 		}
 
 		return false;
-
 	}
 
 
@@ -333,7 +329,6 @@ class MailsterAutomations {
 		}
 
 		update_option( 'mailster_trigger', $store );
-
 	}
 
 	public function wp_schedule() {
@@ -371,7 +366,6 @@ class MailsterAutomations {
 		}
 
 		return true;
-
 	}
 
 	// only used for mailster_workflow hook
@@ -393,7 +387,6 @@ class MailsterAutomations {
 		}
 
 		add_action( 'shutdown', array( &$this, 'schedule_async_jobs' ) );
-
 	}
 
 	public function schedule_async_jobs() {
@@ -401,7 +394,6 @@ class MailsterAutomations {
 		foreach ( $this->jobs as $i => $job ) {
 			wp_schedule_single_event( time() + floor( $i / 5 ), 'mailster_workflow', $job );
 		}
-
 	}
 
 	private function run_all( $workflow_id, $trigger, $step = null ) {
@@ -461,7 +453,6 @@ class MailsterAutomations {
 			}
 		}
 		add_action( '_shutdown', array( &$this, 'wp_schedule' ) );
-
 	}
 
 	public function get_numbers( $workflow ) {
@@ -530,7 +521,6 @@ class MailsterAutomations {
 		}
 
 		return $numbers;
-
 	}
 
 	public function get_workflow_campaigns( $workflow ) {
@@ -550,7 +540,6 @@ class MailsterAutomations {
 		}
 
 		return $ids;
-
 	}
 
 	public function register_conditions_block() {
@@ -572,7 +561,6 @@ class MailsterAutomations {
 
 		$controller = new Mailster_REST_Automations_Controller();
 		$controller->register_routes();
-
 	}
 
 	public function beta_notice() {
@@ -634,7 +622,6 @@ class MailsterAutomations {
 		$class_name = 'Mailster_Automations_Table';
 
 		return $class_name;
-
 	}
 
 
@@ -822,7 +809,6 @@ class MailsterAutomations {
 			default:
 				break;
 		}
-
 	}
 
 	public function register_post_type() {
@@ -881,7 +867,6 @@ class MailsterAutomations {
 
 		);
 		register_post_type( 'mailster-workflow', $args );
-
 	}
 
 	public function register_post_meta() {
@@ -907,7 +892,6 @@ class MailsterAutomations {
 
 			)
 		);
-
 	}
 
 	public function get( $id ) {
@@ -930,7 +914,7 @@ class MailsterAutomations {
 		if ( 'post-new.php' === $pagenow ) {
 			if ( isset( $_REQUEST['post_type'] ) && post_type_exists( $_REQUEST['post_type'] ) ) {
 				$typenow = sanitize_key( $_REQUEST['post_type'] );
-			};
+			}
 		} elseif ( 'post.php' === $pagenow ) {
 			if ( isset( $_GET['post'] ) && isset( $_POST['post_ID'] ) && (int) $_GET['post'] !== (int) $_POST['post_ID'] ) {
 				// Do nothing
@@ -956,7 +940,6 @@ class MailsterAutomations {
 				register_block_type( $block );
 			}
 		}
-
 	}
 
 	public function render_conditions( $args, $content, WP_Block $block ) {
@@ -1012,7 +995,6 @@ class MailsterAutomations {
 		do_action( 'mailster_admin_header' );
 
 		wp_enqueue_style( 'mailster-automations-overview', MAILSTER_URI . 'assets/css/automations-overview' . $suffix . '.css', array(), MAILSTER_VERSION );
-
 	}
 
 	public function block_script_styles() {
@@ -1029,7 +1011,6 @@ class MailsterAutomations {
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
 	}
 
 	public function block_editor_settings( $editor_settings, $block_editor_context ) {
@@ -1046,7 +1027,6 @@ class MailsterAutomations {
 		$editor_settings['codeEditingEnabled'] = defined( 'WP_DEBUG' ) && WP_DEBUG;
 
 		return $editor_settings;
-
 	}
 
 
@@ -1058,7 +1038,6 @@ class MailsterAutomations {
 		}
 
 		return true;
-
 	}
 
 	public function allowed_block_types( $allowed_block_types, $context ) {
@@ -1075,7 +1054,6 @@ class MailsterAutomations {
 		$types = preg_grep( '/^(mailster-workflow)\//', $types );
 
 		return apply_filters( 'mailster_automations_allowed_block_types', array_values( $types ) );
-
 	}
 
 	public function block_categories( $categories ) {
@@ -1170,7 +1148,6 @@ class MailsterAutomations {
 		register_block_pattern_category( 'mailster-custom-category', array( 'label' => __( 'Mailster Automations', 'mailster' ) ) );
 
 		include_once MAILSTER_DIR . 'patterns/workflows.php';
-
 	}
 
 	private function update_metas( $subscriber_ids, $campaign_id = 0, $key = null, $value = null ) {
@@ -1194,13 +1171,10 @@ class MailsterAutomations {
 		if ( $new ) {
 			update_option( 'mailster_trigger', '' );
 		}
-
 	}
 
 	public function block_forms_shortcode( $atts, $content ) {
 
 		return $this->render_form_with_options( $atts['id'], array(), false );
-
 	}
-
 }

@@ -14,7 +14,6 @@ class ET_Builder_Module_Mailster_Block_Form extends ET_Builder_Module {
 		$this->main_css_element = '%%order_class%%';
 		$this->icon             = '1'; // email icon
 		$this->advanced_fields  = false;
-
 	}
 
 	public function get_fields() {
@@ -51,4 +50,3 @@ class ET_Builder_Module_Mailster_Block_Form extends ET_Builder_Module {
 		return $this->_render_module_wrapper( $output, $render_slug );
 	}
 }
-

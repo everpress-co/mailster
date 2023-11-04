@@ -17,7 +17,6 @@ class Mailster_Forms_Table extends WP_List_Table {
 		);
 
 		add_action( 'admin_footer', array( &$this, 'script' ) );
-
 	}
 
 
@@ -48,7 +47,6 @@ class Mailster_Forms_Table extends WP_List_Table {
 		if ( current_user_can( 'mailster_add_forms' ) ) {
 			echo ' <a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . esc_html__( 'Add New', 'mailster' ) . '</a>';
 		}
-
 	}
 
 	public function get_table_classes() {
@@ -238,7 +236,6 @@ class Mailster_Forms_Table extends WP_List_Table {
 	public function bulk_actions( $which = '' ) {
 
 		parent::bulk_actions( $which );
-
 	}
 
 
@@ -374,8 +371,5 @@ class Mailster_Forms_Table extends WP_List_Table {
 		} else {
 			$this->items = $wpdb->get_results( $sql );
 		}
-
 	}
-
-
 }

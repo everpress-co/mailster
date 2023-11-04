@@ -32,7 +32,6 @@ class MailsterForms {
 			add_action( 'mailster_form_footer', array( &$this, 'form_footer' ) );
 
 		}
-
 	}
 
 
@@ -66,7 +65,6 @@ class MailsterForms {
 			include_once MAILSTER_DIR . 'form.php';
 			exit;
 		}
-
 	}
 
 
@@ -110,7 +108,6 @@ class MailsterForms {
 			echo '<style type="text/css">.mailster-form-wrap{width:' . $width . '}</style>';
 
 		}
-
 	}
 
 
@@ -147,7 +144,6 @@ class MailsterForms {
 			$form->render();
 
 		}
-
 	}
 
 
@@ -182,7 +178,6 @@ class MailsterForms {
 			wp_print_scripts( 'mailster-form' );
 
 		}
-
 	}
 
 
@@ -204,7 +199,6 @@ class MailsterForms {
 			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
 		endif;
-
 	}
 
 
@@ -262,7 +256,6 @@ class MailsterForms {
 			wp_enqueue_style( 'mailster-forms-table', MAILSTER_URI . 'assets/css/forms-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		endif;
-
 	}
 
 
@@ -304,7 +297,6 @@ class MailsterForms {
 			'occurrence' => esc_html__( 'Occurrence', 'mailster' ),
 			'preview'    => '',
 		);
-
 	}
 
 
@@ -351,7 +343,6 @@ class MailsterForms {
 				break;
 
 		}
-
 	}
 
 	public function edit_hook() {
@@ -381,7 +372,6 @@ class MailsterForms {
 				exit;
 			}
 		}
-
 	}
 
 	public function edit_entry() {
@@ -503,7 +493,7 @@ class MailsterForms {
 					mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
 					exit;
 
-				};
+				}
 
 			endif;
 
@@ -511,7 +501,6 @@ class MailsterForms {
 			exit;
 
 		}
-
 	}
 
 
@@ -528,7 +517,6 @@ class MailsterForms {
 			include MAILSTER_DIR . 'views/forms/overview.php';
 
 		endif;
-
 	}
 
 
@@ -557,7 +545,6 @@ class MailsterForms {
 				'option'  => 'mailster_forms_per_page',
 			)
 		);
-
 	}
 
 
@@ -568,7 +555,6 @@ class MailsterForms {
 			$msg .= '<p><a href="' . admin_url( 'edit.php?post_type=mailster-form' ) . '" class="button button-primary">' . esc_html__( 'Create a block form', 'mailster' ) . '</a> <a href="' . mailster_url( 'https://kb.mailster.co/650444f6790a583e6b3b3434' ) . '" class="button button-secondary" data-article="650444f6790a583e6b3b3434">' . esc_html__( 'Convert your old forms', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595' ) . '" class="button button-link" data-article="63fc875152af714471a17595">' . esc_html__( 'Check out our guide', 'mailster' ) . '</a></p>';
 
 			mailster_notice( $msg, 'info', $once, 'mailster_block_form_notice', true, $page );
-
 	}
 
 	/**
@@ -586,7 +572,6 @@ class MailsterForms {
 		}
 
 		return $status;
-
 	}
 
 
@@ -604,7 +589,6 @@ class MailsterForms {
 		}
 
 		return apply_filters( 'mailster_form_url', add_query_arg( $args, $endpoint ) );
-
 	}
 
 
@@ -657,7 +641,6 @@ class MailsterForms {
 
 			return new WP_Error( 'form_exists', $wpdb->last_error );
 		}
-
 	}
 
 
@@ -729,7 +712,6 @@ class MailsterForms {
 
 			return new WP_Error( 'form_exists', $wpdb->last_error );
 		}
-
 	}
 
 
@@ -934,7 +916,6 @@ class MailsterForms {
 
 		}
 		return $success;
-
 	}
 
 
@@ -977,7 +958,6 @@ class MailsterForms {
 		}
 
 		return false;
-
 	}
 
 
@@ -1032,7 +1012,6 @@ class MailsterForms {
 
 		}
 		return $success;
-
 	}
 
 
@@ -1075,7 +1054,6 @@ class MailsterForms {
 		}
 
 		return false;
-
 	}
 
 
@@ -1092,7 +1070,6 @@ class MailsterForms {
 	public function update_field( $form_id, $field, $value, $required = null, $error_msg = '' ) {
 
 		return $this->update_fields( $form_id, array( $field => $value ), ( $required ? array( $field ) : array() ), array( $field => $error_msg ) );
-
 	}
 
 
@@ -1123,7 +1100,6 @@ class MailsterForms {
 		$sql .= ' ON DUPLICATE KEY UPDATE name = values(name), error_msg = values(error_msg), required = values(required), position = values(position)';
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 
@@ -1151,7 +1127,6 @@ class MailsterForms {
 		$sql .= $wpdb->prepare( ' WHERE ID = %d', $form_id );
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 
@@ -1174,7 +1149,6 @@ class MailsterForms {
 		$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_forms SET ID = %d, style = %s, custom_style = %s WHERE ID = %d", $form_id, $style, strip_tags( $custom_style ), $form_id );
 
 		return false !== $wpdb->query( $sql );
-
 	}
 
 
@@ -1200,7 +1174,6 @@ class MailsterForms {
 		}
 
 		return $success;
-
 	}
 
 
@@ -1270,7 +1243,6 @@ class MailsterForms {
 		}
 
 		return is_null( $ID ) ? $forms : $forms[0];
-
 	}
 
 
@@ -1284,7 +1256,6 @@ class MailsterForms {
 	public function get_all( $fields = false, $lists = false ) {
 
 		return $this->get( null, $fields, $lists );
-
 	}
 
 
@@ -1310,7 +1281,6 @@ class MailsterForms {
 		}
 
 		return $return;
-
 	}
 
 
@@ -1341,7 +1311,6 @@ class MailsterForms {
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
-
 	}
 
 	/**
@@ -1365,7 +1334,6 @@ class MailsterForms {
 		$tags = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $tags, 'ID' ) : $tags;
-
 	}
 
 
@@ -1394,7 +1362,6 @@ class MailsterForms {
 		}
 
 		return $fields;
-
 	}
 
 
@@ -1414,7 +1381,6 @@ class MailsterForms {
 		$form->fields = array();
 
 		return $form;
-
 	}
 
 
@@ -1473,7 +1439,6 @@ class MailsterForms {
 		}
 
 		return isset( $occurrence[ $form_id ] ) ? $occurrence[ $form_id ] : null;
-
 	}
 
 
@@ -1488,7 +1453,6 @@ class MailsterForms {
 		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_forms";
 
 		return $wpdb->get_var( $sql );
-
 	}
 
 
@@ -1503,7 +1467,6 @@ class MailsterForms {
 	private function _get_style( $style, $selector, $property ) {
 
 		echo ( isset( $style->{$selector} ) && isset( $style->{$selector}->{$property} ) ) ? $style->{$selector}->{$property} : '';
-
 	}
 
 	/**
@@ -1626,7 +1589,6 @@ class MailsterForms {
 		<h4>&hellip; HTML</h4>
 		<p class="description"><?php esc_html_e( 'Use your form via the HTML markup. This is often required by third party plugins. You can choose between an iframe or the raw HTML.', 'mailster' ); ?></p>
 		<?php
-
 	}
 
 	public function use_it_form_tab_code( $form ) {
@@ -1755,6 +1717,4 @@ class MailsterForms {
 		</div>
 		<?php
 	}
-
-
 }

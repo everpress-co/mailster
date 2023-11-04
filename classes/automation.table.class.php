@@ -14,7 +14,5 @@ class Mailster_Automations_Table extends WP_Posts_List_Table {
 		}
 
 		include_once MAILSTER_DIR . 'views/automation/empty.php';
-
 	}
-
 }
