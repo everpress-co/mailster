@@ -151,6 +151,10 @@
 	border-radius: 5px;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 	padding: 15px;
+	display: none;
+}
+#mailster-setup .current .deliverytab {
+	display: block;
 }
 #mailster-setup .deliverytab:empty {
 	display: none;
@@ -283,13 +287,16 @@ details > div {
 }
 
 section {
-	padding: 1em 0;
-	box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+	padding: 2em 2em;
+	margin-top: 15px;
+	border-radius: 5px;
+	position: relative;
+	border: 1px solid #c3c4c4;
 }
-section:last-of-type {
-	box-shadow: none;
+#step_delivery .deliverymethods {
+	margin-top: 3em;
 }
-
 #step_delivery section img {
 	float: right;
 	width: 128px;
@@ -297,16 +304,15 @@ section:last-of-type {
 	border: 1px solid #c3c4c4;
 	border-radius: 5px;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+#step_delivery section.current img {
 	margin-right: 20px;
 }
+#step_delivery section {
+}
 #step_delivery section.current {
-	padding: 1em;
-	margin-top: 15px;
-	border-radius: 5px;
-	position: relative;
-	border: 1px solid #c3c4c4;
-
-	box-shadow: 0 1px 15px rgba(0, 0, 0, 0.15);
+	border: 1px solid #2bb3e7;
+	box-shadow: 0 1px 15px rgba(43, 179, 231, 0.65);
 }
 #step_delivery section.current::after {
 	contents: s 'current';
@@ -447,7 +453,8 @@ section:last-of-type {
 	height: 100%;
 }
 .mailster-template-preview:hover {
-	box-shadow: 0 1px 15px rgba(0, 0, 0, 0.15);
+	border: 1px solid #2bb3e7;
+	box-shadow: 0 1px 15px rgba(43, 179, 231, 0.65);
 }
 @keyframes skeleton-loading {
 	to {

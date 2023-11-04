@@ -34,8 +34,6 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.next-step', function () {
 			if ($(this).hasClass('disabled')) return false;
 
-			if (tinymce) tinymce.get('post_content').save();
-
 			var form = $(this).parent().parent().find('form'),
 				data = form.serialize();
 			mailster.util.ajax(
@@ -212,7 +210,7 @@ mailster = (function (mailster, $, window, document) {
 							cb
 						);
 					} else if (response.data.content) {
-						el.hide().html(response.data.content).fadeIn();
+						el.html(response.data.content);
 						cb && cb(response);
 					}
 				} else {

@@ -2979,7 +2979,7 @@ class Mailster {
 
 	public function is_trial() {
 
-		return mailster_freemius()->is_trial();
+		return ! mailster_freemius()->is_trial();
 
 	}
 

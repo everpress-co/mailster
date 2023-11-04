@@ -2836,12 +2836,19 @@ class MailsterAjax {
 			case 'finish':
 				// maybe
 				mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
+				mailster( 'geo' )->maybe_update();
 				update_option( 'mailster_setup', time() );
 				// check for updates
 				break;
+			case 'basics':
+			case 'sending':
+				if ( isset( $data['mailster_options']['tags'] ) ) {
+					$data['mailster_options']['tags'] = wp_parse_args( $data['mailster_options']['tags'], $mailster_options['tags'] );
+				}
 			case 'delivery':
 			default:
 				if ( isset( $data['mailster_options'] ) ) {
+					error_log( print_r( $data, true ) );
 					$mailster_options = wp_parse_args( $data['mailster_options'], $mailster_options );
 					update_option( 'mailster_options', $mailster_options );
 				}

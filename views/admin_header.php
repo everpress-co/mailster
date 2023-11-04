@@ -71,7 +71,7 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 	?>
 	
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
-		<?php if ( mailster()->is_trial() ) : ?>
+		<?php if ( mailster()->is_trial() && get_option( 'mailster_setup' ) ) : ?>
 			<?php
 			$license = mailster_freemius()->_get_license();
 			$expires = $license ? strtotime( $license->expiration ) : 0;
