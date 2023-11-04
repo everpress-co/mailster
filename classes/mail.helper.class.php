@@ -16,9 +16,9 @@ if ( file_exists( ABSPATH . WPINC . '/PHPMailer/PHPMailer.php' ) ) :
 		class_alias( PHPMailer\PHPMailer\SMTP::class, 'SMTP' );
 	}
 
-	class _mailster_SMTP extends SMTP {};
-	class _mailster_mail_helper extends PHPMailer {};
-	class _mailster_phpmailerException extends phpmailerException {};
+	class _mailster_SMTP extends SMTP {}
+	class _mailster_mail_helper extends PHPMailer {}
+	class _mailster_phpmailerException extends phpmailerException {}
 
 else :
 
@@ -31,9 +31,9 @@ else :
 		require_once ABSPATH . WPINC . '/class-smtp.php';
 	}
 
-	class _mailster_SMTP extends SMTP {};
-	class _mailster_mail_helper extends PHPMailer {};
-	class _mailster_phpmailerException extends phpmailerException {};
+	class _mailster_SMTP extends SMTP {}
+	class _mailster_mail_helper extends PHPMailer {}
+	class _mailster_phpmailerException extends phpmailerException {}
 
 endif;
 
@@ -113,7 +113,6 @@ class mailster_mail_helper extends _mailster_mail_helper {
 			}
 			return false;
 		}
-
 	}
 
 
@@ -165,10 +164,7 @@ class mailster_mail_helper extends _mailster_mail_helper {
 			ENT_QUOTES,
 			$this->CharSet
 		);
-
 	}
-
-
 }
 
 

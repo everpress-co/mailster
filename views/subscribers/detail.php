@@ -157,7 +157,7 @@ if ( $is_new ) {
 			<?php if ( ! $is_new ) : ?>
 			<div class="info">
 				<strong><?php esc_html_e( 'subscribed at', 'mailster' ); ?>:</strong>
-				  <?php
+					<?php
 					echo $subscriber->signup
 					? date_i18n( $timeformat, $subscriber->signup + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->signup ) )
 					: esc_html__( 'unknown', 'mailster' )
@@ -171,7 +171,7 @@ if ( $is_new ) {
 				<a class="show-more-info alignright"><?php esc_html_e( 'more', 'mailster' ); ?></a>
 				<ul class="more-info">
 					<li><strong><?php esc_html_e( 'confirmed at', 'mailster' ); ?>:</strong>
-					  <?php
+						<?php
 						echo $subscriber->confirm
 						? date_i18n( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( esc_html__( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
 						: esc_html__( 'unknown', 'mailster' )
@@ -182,7 +182,7 @@ if ( $is_new ) {
 			</div>
 			<div class="info">
 				<strong><?php esc_html_e( 'latest updated', 'mailster' ); ?>:</strong>
-				  <?php
+					<?php
 					echo $subscriber->updated
 					? date_i18n( $timeformat, $subscriber->updated + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->updated ) )
 					: esc_html__( 'never', 'mailster' )
@@ -298,7 +298,7 @@ if ( $is_new ) {
 			<div class="mailster-tags">
 				<label><?php esc_html_e( 'Tags', 'mailster' ); ?>:</label>
 				<select multiple name="mailster_tags[]" class="tags-input hide-if-js">
-					 <option></option>
+					<option></option>
 				<?php $tags = mailster( 'tags' )->get(); ?>
 				<?php $subscriber_tags = mailster( 'tags' )->get_by_subscriber( $subscriber->ID, true ); ?>
 				<?php foreach ( $tags as $tag ) : ?>

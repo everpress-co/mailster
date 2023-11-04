@@ -38,7 +38,6 @@ class MailsterTinymce {
 		}
 
 		return $plugin_array;
-
 	}
 
 
@@ -109,7 +108,7 @@ class MailsterTinymce {
 				'tags' => $this->transform_array( $custom ),
 			);
 
-		};
+		}
 
 		if ( $permanent = mailster_option( 'tags' ) ) {
 			$tags['permanent'] = array(
@@ -117,7 +116,7 @@ class MailsterTinymce {
 				'tags' => $this->transform_array( $permanent ),
 			);
 
-		};
+		}
 
 		$tags['date'] = array(
 			'name' => esc_html__( 'Date', 'mailster' ),
@@ -155,7 +154,6 @@ class MailsterTinymce {
 			)
 		);
 		echo '</script>';
-
 	}
 
 
@@ -211,7 +209,6 @@ class MailsterTinymce {
 			)
 		);
 		echo '</script>';
-
 	}
 
 
@@ -230,8 +227,5 @@ class MailsterTinymce {
 		}
 
 		return $return;
-
 	}
-
-
 }

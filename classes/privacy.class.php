@@ -6,7 +6,6 @@ class MailsterPrivacy {
 
 		add_action( 'admin_init', array( &$this, 'init' ) );
 		add_action( 'save_post', array( &$this, 'maybe_update_privacy_link' ), 10, 3 );
-
 	}
 
 
@@ -17,7 +16,6 @@ class MailsterPrivacy {
 		if ( function_exists( 'wp_add_privacy_policy_content' ) ) {
 			wp_add_privacy_policy_content( 'Mailster', $this->privacy_content() );
 		}
-
 	}
 
 	public function privacy_content() {
@@ -237,7 +235,6 @@ class MailsterPrivacy {
 			'data' => $export_items,
 			'done' => true,
 		);
-
 	}
 
 	public function data_erase( $email_address, $page = 1 ) {
@@ -300,7 +297,5 @@ class MailsterPrivacy {
 				}
 			}
 		}
-
 	}
-
 }

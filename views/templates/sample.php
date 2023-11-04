@@ -18,7 +18,7 @@ if ( $item['envato_item_id'] && ! $item['is_premium'] ) {
 }
 
 if ( $slug !== 'mailster' ) {
-	  // return;
+		// return;
 }
 
 

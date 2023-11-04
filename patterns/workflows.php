@@ -302,4 +302,3 @@ register_block_pattern(
 		<!-- /wp:mailster-workflow/conditions -->',
 	)
 );
-

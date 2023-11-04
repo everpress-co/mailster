@@ -45,7 +45,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$this->orderby    = isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'id';
 		$this->order      = isset( $_GET['order'] ) ? $_GET['order'] : 'DESC';
 		$this->since      = isset( $_GET['since'] ) ? strtotime( $_GET['since'] ) : null;
-
 	}
 
 
@@ -97,7 +96,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		if ( current_user_can( 'mailster_add_subscribers' ) ) {
 			echo ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&new">' . esc_html__( 'Add New', 'mailster' ) . '</a>';
 		}
-
 	}
 
 
@@ -204,7 +202,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		}
 
 		return $string;
-
 	}
 
 	/**
@@ -385,7 +382,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		if ( 5 == $this->status ) {
 			echo submit_button( __( 'Permanently remove all deleted Subscribers', 'mailster' ), 'action', 'empty_trash', false );
 		}
-
 	}
 
 
@@ -515,8 +511,5 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				'per_page'    => $this->per_page,
 			)
 		);
-
 	}
-
-
 }

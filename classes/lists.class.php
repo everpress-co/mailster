@@ -5,7 +5,6 @@ class MailsterLists {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 30 );
-
 	}
 
 
@@ -23,7 +22,6 @@ class MailsterLists {
 			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
 		endif;
-
 	}
 
 
@@ -167,7 +165,6 @@ class MailsterLists {
 			break;
 
 		}
-
 	}
 
 
@@ -294,7 +291,6 @@ class MailsterLists {
 		}
 
 		return false;
-
 	}
 
 
@@ -389,7 +385,6 @@ class MailsterLists {
 			$wpdb->suppress_errors( $errors );
 			return new WP_Error( 'list_exists', $wpdb->last_error );
 		}
-
 	}
 
 
@@ -423,7 +418,6 @@ class MailsterLists {
 		add_action( 'mailster_update_list', array( &$this, 'update_forms' ) );
 
 		return $this->update( $entry, $overwrite, $subscriber_ids );
-
 	}
 
 
@@ -447,7 +441,6 @@ class MailsterLists {
 
 			mailster( 'forms' )->assign_lists( $form->ID, $list_id );
 		}
-
 	}
 
 
@@ -467,7 +460,6 @@ class MailsterLists {
 		foreach ( $forms as $form ) {
 			mailster( 'forms' )->unassign_lists( $form->ID, $list_id );
 		}
-
 	}
 
 
@@ -503,7 +495,6 @@ class MailsterLists {
 		}
 
 		return $success;
-
 	}
 
 	/**
@@ -546,7 +537,6 @@ class MailsterLists {
 		$wpdb->suppress_errors( $errors );
 
 		return $success;
-
 	}
 
 	/**
@@ -580,7 +570,6 @@ class MailsterLists {
 		}
 
 		return $success;
-
 	}
 
 
@@ -618,7 +607,6 @@ class MailsterLists {
 		$wpdb->suppress_errors( $errors );
 
 		return $success;
-
 	}
 
 
@@ -710,7 +698,6 @@ class MailsterLists {
 		$wpdb->suppress_errors( $errors );
 
 		return $success;
-
 	}
 
 
@@ -745,7 +732,6 @@ class MailsterLists {
 		}
 
 		return $success;
-
 	}
 
 
@@ -832,7 +818,6 @@ class MailsterLists {
 		}
 
 		return false;
-
 	}
 
 
@@ -845,7 +830,6 @@ class MailsterLists {
 	public function subscribe( $ids ) {
 
 		return $this->change_status( $ids, 1 );
-
 	}
 
 
@@ -858,7 +842,6 @@ class MailsterLists {
 	public function unsubscribe( $ids ) {
 
 		return $this->change_status( $ids, 2 );
-
 	}
 
 
@@ -917,7 +900,6 @@ class MailsterLists {
 		}
 
 		return false;
-
 	}
 
 
@@ -937,7 +919,6 @@ class MailsterLists {
 		$sql = "UPDATE {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS b ON a.ID = b.subscriber_id  SET status = %d, updated = %d WHERE b.list_id IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
 
 		return false !== $wpdb->query( $wpdb->prepare( $sql, $new_status, time() ) );
-
 	}
 
 
@@ -958,7 +939,6 @@ class MailsterLists {
 		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET list_id = %d" . ( $added ? ', added = ' . time() : '' ) . " WHERE {$wpdb->prefix}mailster_lists_subscribers.list_id IN (" . implode( ', ', array_filter( $from, 'is_numeric' ) ) . ');';
 
 		return false !== $wpdb->query( $wpdb->prepare( $sql, $to ) );
-
 	}
 
 
@@ -1047,7 +1027,6 @@ class MailsterLists {
 		}
 
 		return $lists;
-
 	}
 
 
@@ -1099,7 +1078,6 @@ class MailsterLists {
 		}
 
 		return $result;
-
 	}
 
 
@@ -1143,7 +1121,6 @@ class MailsterLists {
 		$result = $wpdb->get_var( $sql );
 
 		return $result ? (int) $result : 0;
-
 	}
 
 
@@ -1173,7 +1150,6 @@ class MailsterLists {
 	public function get_activity( $id, $limit = null, $exclude = null ) {
 
 		return mailster( 'actions' )->get_list_activity( $id, $limit, $exclude );
-
 	}
 
 
@@ -1225,7 +1201,6 @@ class MailsterLists {
 		}
 
 		return isset( $list_counts[ $list_id ] ) && isset( $list_counts[ $list_id ] ) ? (int) $list_counts[ $list_id ] : 0;
-
 	}
 
 
@@ -1261,10 +1236,8 @@ class MailsterLists {
 				}
 				$html .= '</select>';
 			}
-		} else {
-			if ( is_admin() ) {
+		} elseif ( is_admin() ) {
 				$html .= '<ul><li>' . esc_html__( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . esc_html__( 'Create a List now', 'mailster' ) . '</a></li></ul>';
-			}
 		}
 
 		return $html;
@@ -1283,7 +1256,6 @@ class MailsterLists {
 	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
 
 		echo $this->return_it( $id, $status, $name, $show_count, $checked, $type );
-
 	}
 
 
@@ -1297,7 +1269,6 @@ class MailsterLists {
 	public function get_totals( $id = null, $total = false ) {
 
 		return $this->get_action( 'total', $id, $total );
-
 	}
 
 
@@ -1311,7 +1282,6 @@ class MailsterLists {
 	public function get_sent( $id = null, $total = false ) {
 
 		return $this->get_action( 'sent', $id, $total );
-
 	}
 
 
@@ -1332,7 +1302,6 @@ class MailsterLists {
 		$sent = $this->get_sent( $id, $total );
 
 		return min( 1, ( $sent / $totals ) );
-
 	}
 
 
@@ -1346,7 +1315,6 @@ class MailsterLists {
 	public function get_errors( $id = null, $total = false ) {
 
 		return $this->get_action( 'errors', $id, $total );
-
 	}
 
 
@@ -1367,7 +1335,6 @@ class MailsterLists {
 		$errors = $this->get_errors( $id, $total );
 
 		return min( 1, ( $errors / $sent ) );
-
 	}
 
 
@@ -1381,7 +1348,6 @@ class MailsterLists {
 	public function get_opens( $id = null, $total = false ) {
 
 		return $this->get_action( 'opens', $id, $total );
-
 	}
 
 
@@ -1402,7 +1368,6 @@ class MailsterLists {
 		$opens = $this->get_opens( $id, $total );
 
 		return min( 1, ( $opens / $sent ) );
-
 	}
 
 
@@ -1416,7 +1381,6 @@ class MailsterLists {
 	public function get_clicks( $id = null, $total = false ) {
 
 		return $this->get_action( 'clicks', $id, $total );
-
 	}
 
 
@@ -1437,7 +1401,6 @@ class MailsterLists {
 		$clicks = $this->get_clicks( $id, $total );
 
 		return min( 1, ( $clicks / $sent ) );
-
 	}
 
 
@@ -1458,7 +1421,6 @@ class MailsterLists {
 		$clicks = $this->get_clicks( $id, $total );
 
 		return min( 1, ( $clicks / $open ) );
-
 	}
 
 
@@ -1471,7 +1433,6 @@ class MailsterLists {
 	public function get_unsubscribes( $id = null ) {
 
 		return $this->get_action( 'unsubscribes', $id );
-
 	}
 
 
@@ -1492,7 +1453,6 @@ class MailsterLists {
 		$unsubscribes = $this->get_unsubscribes( $id, $total );
 
 		return min( 1, ( $unsubscribes / $sent ) );
-
 	}
 
 
@@ -1513,7 +1473,6 @@ class MailsterLists {
 		$unsubscribes = $this->get_unsubscribes( $id, $total );
 
 		return min( 1, ( $unsubscribes / $open ) );
-
 	}
 
 
@@ -1526,7 +1485,6 @@ class MailsterLists {
 	public function get_bounces( $id = null ) {
 
 		return $this->get_action( 'bounces', $id );
-
 	}
 
 
@@ -1546,7 +1504,6 @@ class MailsterLists {
 		$bounces = $this->get_bounces( $id );
 
 		return min( 1, ( $bounces / ( $totals + $bounces ) ) );
-
 	}
 
 
@@ -1561,7 +1518,6 @@ class MailsterLists {
 	private function get_action( $action, $id = null, $total = false ) {
 
 		return mailster( 'actions' )->get_by_list( $id, $action . ( $total ? '_total' : '' ) );
-
 	}
 
 
@@ -1575,8 +1531,5 @@ class MailsterLists {
 		if ( $new ) {
 			$this->add( array( 'name' => esc_html__( 'Default List', 'mailster' ) ), false, get_current_user_id() );
 		}
-
 	}
-
-
 }

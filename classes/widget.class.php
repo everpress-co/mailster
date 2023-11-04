@@ -113,8 +113,6 @@ class Mailster_Signup_Widget extends WP_Widget {
 
 		echo $after_widget;
 	}
-
-
 }
 
 
@@ -256,8 +254,6 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 		<input id="<?php echo $this->get_field_id( 'number' ); ?>" name="<?php echo $this->get_field_name( 'number' ); ?>" type="text" value="<?php echo $number; ?>" size="3" /></p>
 		<?php
 	}
-
-
 }
 
 
@@ -385,8 +381,6 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 		<?php endif; ?>
 		<?php
 	}
-
-
 }
 
 class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
@@ -551,6 +545,4 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 		<p><label for="<?php echo $this->get_field_id( 'ontop' ); ?>"><input id="<?php echo $this->get_field_id( 'ontop' ); ?>" name="<?php echo $this->get_field_name( 'ontop' ); ?>" type="hidden" value=""><input id="<?php echo $this->get_field_id( 'ontop' ); ?>" name="<?php echo $this->get_field_name( 'ontop' ); ?>" type="checkbox" value="1" <?php checked( $ontop ); ?> /><?php esc_html_e( 'Count above Button', 'mailster' ); ?></label></p>
 		<?php
 	}
-
-
 }

@@ -14,7 +14,5 @@ class Mailster_Block_Forms_Table extends WP_Posts_List_Table {
 		}
 
 		include_once MAILSTER_DIR . 'views/forms/empty.php';
-
 	}
-
 }

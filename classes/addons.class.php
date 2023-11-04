@@ -30,7 +30,6 @@ class MailsterAddons {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 50 );
-
 	}
 
 
@@ -38,7 +37,6 @@ class MailsterAddons {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Add Ons', 'mailster' ), esc_html__( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addons' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
-
 	}
 
 
@@ -70,7 +68,6 @@ class MailsterAddons {
 		}
 
 		return false;
-
 	}
 
 
@@ -80,7 +77,7 @@ class MailsterAddons {
 
 		if ( ! is_null( $file ) ) {
 			$location .= '/' . $file;
-		};
+		}
 
 		$wp_filesystem = mailster_require_filesystem();
 
@@ -98,7 +95,6 @@ class MailsterAddons {
 	public function addons() {
 
 		include MAILSTER_DIR . 'views/addons.php';
-
 	}
 
 
@@ -136,7 +132,6 @@ class MailsterAddons {
 		}
 
 		return $available_addons;
-
 	}
 
 
@@ -170,7 +165,6 @@ class MailsterAddons {
 		}
 
 		return $addons;
-
 	}
 
 	/**
@@ -189,7 +183,6 @@ class MailsterAddons {
 		}
 
 		return ! is_null( $slug ) ? ( isset( $versions[ $slug ] ) ? $versions[ $slug ] : null ) : $versions;
-
 	}
 
 
@@ -216,7 +209,6 @@ class MailsterAddons {
 			$updates = array_sum( wp_list_pluck( $result['items'], 'update_available' ) );
 			update_option( 'mailster_addons_updates', $updates );
 		}
-
 	}
 
 	/**
@@ -262,7 +254,6 @@ class MailsterAddons {
 				'updated'      => esc_html__( 'Add-on has been updated!', 'mailster' ),
 			)
 		);
-
 	}
 
 
@@ -320,7 +311,6 @@ class MailsterAddons {
 
 		mailster_redirect( $redirect );
 		exit;
-
 	}
 
 
@@ -388,7 +378,6 @@ class MailsterAddons {
 		}
 
 		return $result;
-
 	}
 
 	public function prepare_results( $result ) {
@@ -427,7 +416,5 @@ class MailsterAddons {
 		ob_end_clean();
 
 		return $html;
-
 	}
-
 }

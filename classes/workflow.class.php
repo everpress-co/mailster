@@ -19,32 +19,27 @@ class MailsterWorkflow {
 		$this->set_trigger( $trigger );
 		$this->set_subscriber( $subscriber );
 		$this->set_step( $step );
-
 	}
 
 	public function set_workflow( $workflow ) {
 
 		$this->workflow = get_post( $workflow );
 		$this->steps    = $this->get_steps();
-
 	}
 
 	public function set_trigger( $trigger ) {
 
 		$this->trigger = $trigger;
-
 	}
 
 	public function set_subscriber( $subscriber ) {
 
 		$this->subscriber = $subscriber;
-
 	}
 
 	public function set_step( $step ) {
 
 		$this->step = $step;
-
 	}
 
 	public function get_steps() {
@@ -94,7 +89,6 @@ class MailsterWorkflow {
 		}
 
 		return $parsed;
-
 	}
 
 	public function run() {
@@ -168,7 +162,6 @@ class MailsterWorkflow {
 		}
 
 		return $result;
-
 	}
 
 	private function error_notice( WP_Error $error, $notice_id = null ) {
@@ -186,7 +179,6 @@ class MailsterWorkflow {
 			$steplink .= '#step-' . $error_data['id'];
 		}
 		mailster_notice( sprintf( 'Workflow %s had a problem: %s', '"<a href="' . esc_url( $steplink ) . '">' . get_the_title( $this->workflow ) . '</a>"', '<strong>' . $error_msg . '</strong>' ), $error_code, false, $notice_id );
-
 	}
 
 	/**
@@ -243,7 +235,6 @@ class MailsterWorkflow {
 		}
 
 		return false !== $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_workflows WHERE ID = %d", $this->entry->ID ) );
-
 	}
 
 
@@ -284,7 +275,6 @@ class MailsterWorkflow {
 		$wpdb->suppress_errors( $suppress_errors );
 
 		return $success;
-
 	}
 
 	private function do_steps( $steps ) {
@@ -302,7 +292,6 @@ class MailsterWorkflow {
 		}
 
 		return true;
-
 	}
 
 	private function do_step( $step ) {
@@ -351,7 +340,7 @@ class MailsterWorkflow {
 				if ( is_wp_error( $result ) ) {
 
 					$tries = (int) $this->entry->try;
-					$tries++;
+					++$tries;
 					$error_msg = $result->get_error_message();
 					$max_tries = 10;
 
@@ -417,7 +406,6 @@ class MailsterWorkflow {
 		}
 
 		return true;
-
 	}
 
 	private function action( $step ) {
@@ -532,7 +520,6 @@ class MailsterWorkflow {
 		}
 
 		return true;
-
 	}
 
 
@@ -747,7 +734,6 @@ class MailsterWorkflow {
 		// no such trigger found in this workflow
 		$this->delete();
 		return new WP_Error( 'error', 'No matching trigger found ! ', $step );
-
 	}
 
 
@@ -818,7 +804,6 @@ class MailsterWorkflow {
 
 		// return false to not execute the next step
 		return false;
-
 	}
 
 	private function delay( $step ) {
@@ -953,7 +938,6 @@ class MailsterWorkflow {
 
 		// return false to stop the queue from processing
 		return false;
-
 	}
 
 	private function conditions( $step ) {
@@ -973,7 +957,6 @@ class MailsterWorkflow {
 		}
 
 		return $this->do_steps( $use );
-
 	}
 
 	private function sanitize_conditions( $conditions ) {
@@ -993,7 +976,6 @@ class MailsterWorkflow {
 		}
 
 		return $conditions;
-
 	}
 
 	private function finish( array $args = array() ) {

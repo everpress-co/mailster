@@ -49,7 +49,6 @@ class MailsterBlockForms {
 
 		add_filter( 'embed_html', array( &$this, 'embed_html' ), PHP_INT_MAX, 4 );
 		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
-
 	}
 
 
@@ -107,7 +106,6 @@ class MailsterBlockForms {
 
 		$controller = new Mailster_REST_Form_Controller();
 		$controller->register_routes();
-
 	}
 
 	public function register_settings() {
@@ -121,7 +119,6 @@ class MailsterBlockForms {
 				'type'         => 'string',
 			)
 		);
-
 	}
 
 
@@ -177,7 +174,6 @@ class MailsterBlockForms {
 		}
 
 		$this->preview_data = $data;
-
 	}
 
 
@@ -217,7 +213,6 @@ class MailsterBlockForms {
 		$sql .= " AND (wp_posts.post_status = 'publish') ORDER BY wp_posts.post_date DESC LIMIT 0, 1";
 
 		return $wpdb->get_var( $sql );
-
 	}
 
 
@@ -231,7 +226,6 @@ class MailsterBlockForms {
 		$class_name = 'Mailster_Block_Forms_Table';
 
 		return $class_name;
-
 	}
 
 
@@ -278,7 +272,6 @@ class MailsterBlockForms {
 			default:
 				break;
 		}
-
 	}
 
 
@@ -317,7 +310,6 @@ class MailsterBlockForms {
 			$wp_query->post->post_content = $this->maybe_add_form_to_content( $wp_query->post->post_content );
 
 		}
-
 	}
 
 
@@ -362,7 +354,6 @@ class MailsterBlockForms {
 		}
 
 		return false;
-
 	}
 
 	public function deprecated_shortcode( $atts, $content ) {
@@ -370,14 +361,12 @@ class MailsterBlockForms {
 		_deprecated_function( 'Shortcode \'[newsletter_block_form]\'', '4.0', '[mailster_form]' );
 
 		return $this->shortcode( $atts, $content );
-
 	}
 
 	public function shortcode( $atts, $content ) {
 
 		$form_html = $this->render_form( $atts['id'], array(), false );
 		return $this->kses( $form_html );
-
 	}
 
 	public function render_form_in_content( $content ) {
@@ -388,7 +377,6 @@ class MailsterBlockForms {
 		);
 
 		return '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->';
-
 	}
 
 	public function maybe_add_form_to_content( $content ) {
@@ -452,7 +440,6 @@ class MailsterBlockForms {
 		}
 
 		return $content;
-
 	}
 
 	private function get_block_tag_by_tag( $tag, $has_blocks = true ) {
@@ -501,7 +488,6 @@ class MailsterBlockForms {
 		}
 
 		return $forms;
-
 	}
 
 
@@ -571,7 +557,6 @@ class MailsterBlockForms {
 
 		);
 		register_post_type( 'mailster-form', $args );
-
 	}
 
 	public function register_post_meta() {
@@ -832,7 +817,6 @@ class MailsterBlockForms {
 				)
 			);
 		}
-
 	}
 
 
@@ -845,7 +829,6 @@ class MailsterBlockForms {
 		$actions['form_preview'] = '<a href="' . get_permalink( $post->ID ) . '" aria-label="' . esc_attr__( 'Preview this form', 'mailster' ) . '">' . esc_html__( 'Preview', 'mailster' ) . '</a>';
 
 		return $actions;
-
 	}
 
 
@@ -869,7 +852,6 @@ class MailsterBlockForms {
 		$args = wp_parse_args( $args, $defaults );
 
 		return get_posts( $args );
-
 	}
 
 	public function get_list() {
@@ -883,7 +865,6 @@ class MailsterBlockForms {
 		}
 
 		return $list;
-
 	}
 
 
@@ -969,7 +950,6 @@ class MailsterBlockForms {
 				register_block_type( $block, $args );
 			}
 		}
-
 	}
 
 	private function get_blocks() {
@@ -997,7 +977,6 @@ class MailsterBlockForms {
 
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'thickbox' );
-
 	}
 
 	public function block_script_styles() {
@@ -1070,7 +1049,6 @@ class MailsterBlockForms {
 		}
 
 		return apply_filters( 'mailster_forms_allowed_block_types', array_values( $types ) );
-
 	}
 
 	public function block_editor_settings( $editor_settings, $block_editor_context ) {
@@ -1092,7 +1070,6 @@ class MailsterBlockForms {
 		// $editor_settings['codeEditingEnabled'] = false;
 
 		return $editor_settings;
-
 	}
 
 	public function force_block_editor( $bool, $post_type ) {
@@ -1103,7 +1080,6 @@ class MailsterBlockForms {
 		}
 
 		return true;
-
 	}
 
 	public function block_categories( $categories ) {
@@ -1145,7 +1121,6 @@ class MailsterBlockForms {
 
 			register_block_pattern( 'mailster/pattern_' . $key, $args );
 		}
-
 	}
 
 	public function render_form( $form, $options = array(), $check_validity = true ) {
@@ -1185,7 +1160,6 @@ class MailsterBlockForms {
 		}
 
 		return $html;
-
 	}
 
 
@@ -1439,7 +1413,7 @@ class MailsterBlockForms {
 						$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . '{';
 						foreach ( $block['attrs'] as $key => $value ) {
 							if ( ! is_array( $value ) ) {
-								   $embeded_style .= '--mailster--color--' . strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
+									$embeded_style .= '--mailster--color--' . strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
 							}
 						}
 						$embeded_style .= '}';
@@ -1677,7 +1651,6 @@ class MailsterBlockForms {
 		$output = str_replace( '</form>', $inject . '</form>', $output );
 
 		return apply_filters( 'mailster_block_form', $output, $form->ID, $form_args );
-
 	}
 
 	public function get_required_fields( $form ) {
@@ -1696,7 +1669,6 @@ class MailsterBlockForms {
 		}
 
 		return array();
-
 	}
 
 	/**
@@ -1784,14 +1756,12 @@ class MailsterBlockForms {
 		if ( ! $homepage ) {
 
 		}
-
 	}
 
 	public function clear_cache( $post_id ) {
 
 		delete_post_meta( $post_id, '_cached' );
 		set_transient( 'mailster_forms', '' );
-
 	}
 
 	public function clear_inline_style() {
@@ -1803,19 +1773,16 @@ class MailsterBlockForms {
 	public function impression( $form_id, $subscriber_id = null, $post_id = null ) {
 
 		return $this->action( 'impression', $form_id, $subscriber_id, $post_id );
-
 	}
 
 	public function signup( $form_id, $subscriber_id = null, $post_id = null ) {
 
 		return $this->action( 'signup', $form_id, $subscriber_id, $post_id );
-
 	}
 
 	public function conversion( $form_id, $subscriber_id = null, $post_id = null ) {
 
 		return $this->action( 'conversion', $form_id, $subscriber_id, $post_id );
-
 	}
 
 
@@ -1877,7 +1844,6 @@ class MailsterBlockForms {
 		}
 
 		return true;
-
 	}
 
 	public function get_impressions( $form_id = '' ) {
@@ -1898,7 +1864,6 @@ class MailsterBlockForms {
 		}
 
 		return (int) $val;
-
 	}
 
 	public function get_conversions( $form_id = '' ) {
@@ -1924,7 +1889,6 @@ class MailsterBlockForms {
 		}
 
 		return (int) $val;
-
 	}
 
 	public function get_conversion_rate( $form_id = '' ) {
@@ -1935,7 +1899,6 @@ class MailsterBlockForms {
 		$rate = $impressions ? $conversions / $impressions : 0;
 
 		return max( min( 1, $rate ), 0 );
-
 	}
 
 
@@ -1957,6 +1920,5 @@ class MailsterBlockForms {
 			update_option( 'mailster_inline_styles', '', 'no' );
 
 		}
-
 	}
 }

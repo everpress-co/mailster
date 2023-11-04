@@ -13,7 +13,6 @@ class MailsterGeo {
 
 		add_action( 'mailster_location_update', array( &$this, 'maybe_update' ) );
 		add_action( 'mailster_cron', array( &$this, 'maybe_set_cron' ) );
-
 	}
 
 
@@ -43,7 +42,6 @@ class MailsterGeo {
 		} else {
 			$this->clear_cron();
 		}
-
 	}
 
 	public function get_record( $ip ) {
@@ -85,7 +83,6 @@ class MailsterGeo {
 		}
 
 		return $record->country->name;
-
 	}
 
 
@@ -136,7 +133,6 @@ class MailsterGeo {
 		$folder = apply_filters( 'mailster_location_db_folder', MAILSTER_UPLOAD_DIR );
 
 		return apply_filters( 'mailster_location_db_file_city', trailingslashit( $folder ) . 'geo/GeoLite2-City.mmdb' );
-
 	}
 
 
@@ -197,7 +193,6 @@ class MailsterGeo {
 		}
 
 		return file_exists( $file );
-
 	}
 
 
@@ -221,7 +216,6 @@ class MailsterGeo {
 		}
 
 		return 'unknown';
-
 	}
 
 
@@ -249,7 +243,6 @@ class MailsterGeo {
 		}
 
 		return $sorted;
-
 	}
 
 	/**
@@ -276,7 +269,6 @@ class MailsterGeo {
 		asort( $continents );
 
 		return $continents;
-
 	}
 
 
@@ -306,8 +298,5 @@ class MailsterGeo {
 		}
 
 		return array();
-
 	}
-
-
 }

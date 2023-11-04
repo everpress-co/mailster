@@ -46,7 +46,6 @@ class MailsterTemplate {
 		if ( ! is_null( $slug ) ) {
 			$this->load_template( $slug );
 		}
-
 	}
 
 
@@ -172,7 +171,6 @@ class MailsterTemplate {
 			$this->exists = file_exists( $file );
 
 			return $this->load_template_html( $raw );
-
 	}
 
 
@@ -354,7 +352,6 @@ class MailsterTemplate {
 		$this->raw = $html;
 
 		return $html;
-
 	}
 
 
@@ -405,7 +402,6 @@ class MailsterTemplate {
 		wp_mkdir_p( $tempfolder );
 
 		return mailster( 'templates' )->unzip_template( $result['file'], $tempfolder );
-
 	}
 
 
@@ -487,7 +483,6 @@ class MailsterTemplate {
 		}
 
 		return false;
-
 	}
 
 
@@ -565,7 +560,6 @@ class MailsterTemplate {
 		}
 
 		return $list;
-
 	}
 
 
@@ -601,7 +595,6 @@ class MailsterTemplate {
 			: $xpath->query( '//*/module' );
 
 		return $modules;
-
 	}
 
 
@@ -624,7 +617,6 @@ class MailsterTemplate {
 		}
 
 		return $style;
-
 	}
 
 
@@ -642,7 +634,6 @@ class MailsterTemplate {
 			return $this->make_paths_absolute( trim( substr( $this->raw, 0, $pos ) ) );
 		}
 		return '';
-
 	}
 
 
@@ -841,7 +832,6 @@ class MailsterTemplate {
 		}
 
 		return $doc;
-
 	}
 
 
@@ -869,7 +859,6 @@ class MailsterTemplate {
 			}
 		}
 		return $templates;
-
 	}
 
 
@@ -906,7 +895,6 @@ class MailsterTemplate {
 		}
 
 		return $list;
-
 	}
 
 
@@ -926,7 +914,6 @@ class MailsterTemplate {
 		}
 
 		return $return;
-
 	}
 
 
@@ -1013,7 +1000,6 @@ class MailsterTemplate {
 		endif;
 
 		}
-
 	}
 
 
@@ -1049,7 +1035,6 @@ class MailsterTemplate {
 		$btn .= '</ul>';
 
 		return $btn;
-
 	}
 
 
@@ -1126,7 +1111,6 @@ class MailsterTemplate {
 		}
 
 		return $return;
-
 	}
 
 
@@ -1166,7 +1150,6 @@ class MailsterTemplate {
 		// remove CDATA elements (keep content)
 		$html = preg_replace( '~<!\[CDATA\[\s*|\s*\]\]>~', '', $html );
 		return $html;
-
 	}
 
 
@@ -1204,8 +1187,5 @@ class MailsterTemplate {
 	private function get_template_data( $file ) {
 
 		return mailster( 'templates' )->get_template_data( $file );
-
 	}
-
-
 }

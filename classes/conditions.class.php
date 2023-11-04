@@ -63,7 +63,6 @@ class MailsterConditions {
 		}
 
 		include MAILSTER_DIR . 'views/conditions/conditions.php';
-
 	}
 
 	public function render( $conditions = array(), $echo = true, $plain = false ) {
@@ -93,7 +92,6 @@ class MailsterConditions {
 		}
 
 		echo $output;
-
 	}
 
 	public function set_workflow_campaigns( $campaigns ) {
@@ -192,7 +190,6 @@ class MailsterConditions {
 		}
 
 		return $this->_custom_fields;
-
 	}
 
 	private function get_custom_date_fields() {
@@ -357,7 +354,6 @@ class MailsterConditions {
 		}
 
 		return $this->_campaign_related;
-
 	}
 	private function get_list_related() {
 		if ( ! $this->_list_related ) {
@@ -369,7 +365,6 @@ class MailsterConditions {
 		}
 
 		return $this->_list_related;
-
 	}
 	private function get_tag_related() {
 		if ( ! $this->_tag_related ) {
@@ -383,7 +378,6 @@ class MailsterConditions {
 		}
 
 		return $this->_tag_related;
-
 	}
 	private function get_all_operators() {
 		if ( ! $this->_all_operators ) {
@@ -402,7 +396,6 @@ class MailsterConditions {
 		}
 
 		return $this->_all_operators;
-
 	}
 	private function get_all_value_fields() {
 		if ( ! $this->_all_value_fields ) {
@@ -426,7 +419,6 @@ class MailsterConditions {
 		}
 
 		return $this->_all_value_fields;
-
 	}
 	private function get_operators() {
 		if ( ! $this->_operators ) {
@@ -448,7 +440,6 @@ class MailsterConditions {
 		}
 
 		return $this->_operators;
-
 	}
 	private function get_simple_operators() {
 		if ( ! $this->_simple_operators ) {
@@ -464,7 +455,6 @@ class MailsterConditions {
 		}
 
 		return $this->_simple_operators;
-
 	}
 	private function get_string_operators() {
 		if ( ! $this->_string_operators ) {
@@ -482,7 +472,6 @@ class MailsterConditions {
 		}
 
 		return $this->_string_operators;
-
 	}
 	private function get_bool_operators() {
 		if ( ! $this->_bool_operators ) {
@@ -494,7 +483,6 @@ class MailsterConditions {
 		}
 
 		return $this->_bool_operators;
-
 	}
 	private function get_date_operators() {
 		if ( ! $this->_date_operators ) {
@@ -510,7 +498,6 @@ class MailsterConditions {
 		}
 
 		return $this->_date_operators;
-
 	}
 	private function get_relative_date_operators() {
 		if ( ! $this->_relative_date_operators ) {
@@ -522,7 +509,6 @@ class MailsterConditions {
 		}
 
 		return $this->_relative_date_operators;
-
 	}
 
 	private function get_special_campaigns() {
@@ -539,7 +525,6 @@ class MailsterConditions {
 		}
 
 		return $this->_special_campaigns;
-
 	}
 	private function get_field_operator( $operator ) {
 		$operator = esc_sql( stripslashes( $operator ) );
@@ -572,7 +557,6 @@ class MailsterConditions {
 		}
 
 		return $operator;
-
 	}
 
 
@@ -650,7 +634,6 @@ class MailsterConditions {
 		}
 
 		return $formated ? $return : strip_tags( $return );
-
 	}
 
 
@@ -786,7 +769,6 @@ class MailsterConditions {
 		}
 
 		return apply_filters( 'mailster_conditions_nice_name', $string, $type, $field );
-
 	}
 
 
@@ -1117,5 +1099,4 @@ class MailsterConditions {
 	<?php endforeach; ?>
 		<?php
 	}
-
 }

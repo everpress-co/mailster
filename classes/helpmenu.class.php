@@ -45,7 +45,6 @@ class MailsterHelpmenu {
 				$screen->set_help_sidebar( $pages[ $screen->id ]['sidebar'] );
 			}
 		}
-
 	}
 
 
@@ -56,7 +55,6 @@ class MailsterHelpmenu {
 	 * @param unknown $args
 	 */
 	public function __call( $func, $args ) {
-
 	}
 
 
@@ -64,8 +62,5 @@ class MailsterHelpmenu {
 
 		?>
 		<?php
-
 	}
-
-
 }

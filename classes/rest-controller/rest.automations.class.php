@@ -156,7 +156,6 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 			)
 		);
-
 	}
 
 	/**

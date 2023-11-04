@@ -46,7 +46,6 @@ class MailsterNotification {
 		add_filter( 'mailster_notification_preheader', array( &$this, 'filter' ), 1, 4 );
 		add_filter( 'mailster_notification_replace', array( &$this, 'filter' ), 1, 4 );
 		add_filter( 'mailster_notification_attachments', array( &$this, 'filter' ), 1, 4 );
-
 	}
 
 
@@ -131,7 +130,6 @@ class MailsterNotification {
 				)
 			);
 		}
-
 	}
 
 
@@ -298,7 +296,6 @@ class MailsterNotification {
 			default:
 				return apply_filters( "mailster_notification_{$template}_{$filter}", $content, $subscriber, $options );
 		}
-
 	}
 
 
@@ -552,7 +549,6 @@ class MailsterNotification {
 		}
 
 		return true;
-
 	}
 
 
@@ -613,7 +609,6 @@ class MailsterNotification {
 	 * @param unknown $options
 	 */
 	private function template_basic( $subscriber, $options ) {
-
 	}
 
 
@@ -648,13 +643,12 @@ class MailsterNotification {
 			<div itemprop="action" itemscope itemtype="http://schema.org/ConfirmAction">
 			<meta itemprop="name" content="<?php echo esc_url( $form->link ); ?>"/>
 			<div itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
-			  <link itemprop="url" href="{linkaddress}"/>
+				<link itemprop="url" href="{linkaddress}"/>
 			</div>
 			</div>
 			<meta itemprop="description" content="<?php esc_attr_e( 'Confirmation Message', 'mailster' ); ?>"/>
 		</div>
 		<?php
-
 	}
 
 
@@ -669,10 +663,10 @@ class MailsterNotification {
 		$options = mailster_options();
 		?>
 
-	   <style>
-	   .mailster-settings td{border-top:1px solid #ccc;}
-	   pre{line-height:16px;word-wrap:break-word;word-break:break-all;white-space:pre-wrap;font-size:11px;}
-	   </style>
+		<style>
+		.mailster-settings td{border-top:1px solid #ccc;}
+		pre{line-height:16px;word-wrap:break-word;word-break:break-all;white-space:pre-wrap;font-size:11px;}
+		</style>
 		<table width="100%" cellpadding="0" cellspacing="0" class="mailster-settings">
 
 		<?php foreach ( $options as $key => $option ) : ?>
@@ -698,7 +692,6 @@ class MailsterNotification {
 
 		</table>
 		<?php
-
 	}
 
 
@@ -819,7 +812,6 @@ class MailsterNotification {
 		<?php endif; ?>
 
 		<?php
-
 	}
 
 
@@ -929,7 +921,7 @@ class MailsterNotification {
 
 			<?php $link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&since=' . date( 'Y-m-d', $timestamp ) ); ?>
 
-			  <table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">
+				<table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">
 				<tr>
 					<td width="264" valign="top" align="left" class="m-b">
 					<table style="width:100%;table-layout:fixed">
@@ -948,7 +940,7 @@ class MailsterNotification {
 					</table>
 					</td>
 				</tr>
-			   </table>
+				</table>
 
 		<?php endif; ?>
 
@@ -1040,7 +1032,7 @@ class MailsterNotification {
 				if ( ! ! ( $i % 2 ) ) :
 					echo '</td></tr></table><table cellpadding="0" cellspacing="0" class="o-fix"><tr><td width="100%" valign="top" align="center" style="border-top:1px solid #ccc;">';
 				endif;
-				$i++;
+				++$i;
 				?>
 				<?php endforeach; ?>
 
@@ -1075,7 +1067,6 @@ class MailsterNotification {
 	<?php endif; ?>
 
 		<?php
-
 	}
 
 
@@ -1170,7 +1161,6 @@ class MailsterNotification {
 	<?php endif; ?>
 
 		<?php
-
 	}
 
 
@@ -1210,7 +1200,6 @@ class MailsterNotification {
 		</table>
 
 		<?php
-
 	}
 
 
@@ -1348,8 +1337,5 @@ class MailsterNotification {
 	</tr>
 	</table>
 		<?php
-
 	}
-
-
 }
