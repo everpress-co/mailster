@@ -6,6 +6,12 @@ class MailsterCron {
 
 	public function __construct() {
 
+		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
+	}
+
+
+	public function init() {
+
 		add_filter( 'cron_schedules', array( &$this, 'filter_cron_schedules' ) );
 		add_action( 'mailster_cron', array( &$this, 'hourly_cronjob' ) );
 		add_action( 'mailster_cron_worker', array( &$this, 'handler' ), -1 );
@@ -21,7 +27,6 @@ class MailsterCron {
 		add_action( 'wp_ajax_mailster_cron', array( &$this, 'cron_worker' ) );
 		add_action( 'wp_ajax_nopriv_mailster_cron', array( &$this, 'cron_worker' ) );
 		add_action( 'template_redirect', array( &$this, 'template_redirect' ), 1 );
-
 	}
 
 
@@ -38,7 +43,6 @@ class MailsterCron {
 		do_action( 'mailster_resend_confirmations' );
 
 		$this->update();
-
 	}
 
 	/**
@@ -55,7 +59,6 @@ class MailsterCron {
 		define( 'MAILSTER_DOING_CRON', microtime( true ) );
 
 		register_shutdown_function( array( &$this, 'shutdown_function' ) );
-
 	}
 
 
@@ -80,7 +83,6 @@ class MailsterCron {
 			mailster_remove_notice( 'cron_unfinished' );
 
 		}
-
 	}
 
 
@@ -108,7 +110,6 @@ class MailsterCron {
 				set_transient( 'mailster_cron_' . $action, true, $interval );
 			}
 		}
-
 	}
 
 
@@ -144,7 +145,6 @@ class MailsterCron {
 		$this->schedule();
 
 		return false;
-
 	}
 
 
@@ -214,7 +214,6 @@ class MailsterCron {
 		if ( $general ) {
 			wp_clear_scheduled_hook( 'mailster_cron' );
 		}
-
 	}
 
 
@@ -264,7 +263,6 @@ class MailsterCron {
 			endif;
 
 		endif;
-
 	}
 
 
@@ -318,7 +316,6 @@ class MailsterCron {
 			return true;
 
 		}
-
 	}
 
 
@@ -367,11 +364,9 @@ class MailsterCron {
 
 			return false;
 
-		} else {
+		} elseif ( ! is_integer( $key ) ) {
 
-			if ( ! is_integer( $key ) ) {
 				$key = '';
-			}
 		}
 
 		if ( mailster_option( 'cron_lock' ) == 'db' ) {
@@ -388,7 +383,6 @@ class MailsterCron {
 			return ! empty( $lockfiles );
 
 		}
-
 	}
 
 
@@ -431,7 +425,6 @@ class MailsterCron {
 			);
 
 		}
-
 	}
 
 
@@ -444,7 +437,6 @@ class MailsterCron {
 		}
 
 		return $path;
-
 	}
 
 
@@ -453,7 +445,6 @@ class MailsterCron {
 		if ( $secret = get_query_var( '_mailster_cron' ) ) {
 			$this->cron_page( $secret );
 		}
-
 	}
 
 
@@ -461,7 +452,6 @@ class MailsterCron {
 
 		$secret = isset( $_GET['secret'] ) ? $_GET['secret'] : false;
 		$this->cron_page( $secret );
-
 	}
 
 	public function cron_page( $secret ) {
@@ -472,7 +462,6 @@ class MailsterCron {
 
 		include MAILSTER_DIR . 'cron.php';
 		exit();
-
 	}
 
 
@@ -488,15 +477,11 @@ class MailsterCron {
 		if ( $new ) {
 			add_option( 'mailster_cron_lasthit', false, '', 'no' );
 		}
-
 	}
 
 
 	public function on_deactivate() {
 
 		$this->remove_crons( true );
-
 	}
-
-
 }

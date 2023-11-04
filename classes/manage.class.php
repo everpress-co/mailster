@@ -24,7 +24,6 @@ class MailsterManage {
 
 		add_action( 'mailster_cron_cleanup', array( &$this, 'delete_job' ) );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'empty_trash' ) );
-
 	}
 
 
@@ -49,7 +48,6 @@ class MailsterManage {
 				$this->integrations[ $integration_class->get_type() ] = $integration_class;
 			}
 		}
-
 	}
 
 
@@ -69,7 +67,6 @@ class MailsterManage {
 		wp_register_style( 'mailster-import-style', MAILSTER_URI . 'assets/css/import-style' . $suffix . '.css', array( 'thickbox' ), MAILSTER_VERSION );
 		wp_register_style( 'mailster-export-style', MAILSTER_URI . 'assets/css/export-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_register_style( 'mailster-delete-style', MAILSTER_URI . 'assets/css/delete-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-
 	}
 
 
@@ -77,7 +74,6 @@ class MailsterManage {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Manage Subscribers', 'mailster' ), esc_html__( 'Manage Subscribers', 'mailster' ), 'mailster_manage_subscribers', 'mailster_manage_subscribers', array( &$this, 'subscriber_manage' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
-
 	}
 
 
@@ -142,7 +138,6 @@ class MailsterManage {
 		wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
 		wp_enqueue_style( 'mailster-manage-style' );
-
 	}
 
 
@@ -216,7 +211,6 @@ class MailsterManage {
 		$return['identifier'] = $identifier;
 
 		wp_send_json_success( $return );
-
 	}
 
 
@@ -442,7 +436,6 @@ class MailsterManage {
 		$return['html'] = $html;
 
 		wp_send_json_success( $return );
-
 	}
 
 
@@ -701,7 +694,7 @@ class MailsterManage {
 						'email'  => $insert['email'],
 						'reason' => esc_html__( 'Email address is invalid.', 'mailster' ),
 					);
-					$errors++;
+					++$errors;
 					continue;
 				}
 
@@ -758,7 +751,7 @@ class MailsterManage {
 						'email'  => $insert['email'],
 						'reason' => $subscriber_id->get_error_message(),
 					);
-					$errors++;
+					++$errors;
 					continue;
 				}
 				foreach ( $list_array as $list ) {
@@ -841,7 +834,7 @@ class MailsterManage {
 
 				mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );
 
-				$imported++;
+				++$imported;
 
 			}
 		}
@@ -900,7 +893,7 @@ class MailsterManage {
 		} else {
 
 			// increase this for the next batch
-			$import_data['page']++;
+			++$import_data['page'];
 
 			set_transient( '_mailster_bulk_import_' . $identifier, $import_data, DAY_IN_SECONDS );
 			set_transient( '_mailster_bulk_import_errors_' . $identifier, $erroremails, DAY_IN_SECONDS );
@@ -972,7 +965,7 @@ class MailsterManage {
 
 				add_filter(
 					'filesystem_method',
-					function() {
+					function () {
 						return 'direct';
 					}
 				);
@@ -995,7 +988,6 @@ class MailsterManage {
 		}
 
 		wp_send_json_success( $return );
-
 	}
 
 
@@ -1248,7 +1240,7 @@ class MailsterManage {
 
 			$raw_data[] = $row;
 
-			$counter++;
+			++$counter;
 		}
 
 		$output = '';
@@ -1390,7 +1382,6 @@ class MailsterManage {
 
 		$wp_filesystem && $wp_filesystem->delete( $file );
 		exit;
-
 	}
 
 
@@ -1452,7 +1443,6 @@ class MailsterManage {
 		$return['msg'] = sprintf( esc_html__( _n( '%s Subscriber removed.', '%s Subscribers removed.', $count, 'mailster' ) ), number_format_i18n( $count ) );
 
 		wp_send_json_success( $return );
-
 	}
 
 	public function ajax_delete_delete_job() {
@@ -1476,7 +1466,6 @@ class MailsterManage {
 		$return['msg'] = esc_html__( 'Job deleted.', 'mailster' );
 
 		wp_send_json_success( $return );
-
 	}
 
 	public function delete_job() {
@@ -1484,7 +1473,6 @@ class MailsterManage {
 		foreach ( $jobs = get_option( 'mailster_manage_jobs', array() ) as $id => $job ) {
 			$this->delete_contacts( $job, true );
 		}
-
 	}
 
 	public function delete_contacts( $args, $trash = false ) {
@@ -1550,7 +1538,6 @@ class MailsterManage {
 		}
 
 		return $count;
-
 	}
 
 
@@ -1562,7 +1549,6 @@ class MailsterManage {
 				'updated_before' => strtotime( '-14 days' ),
 			)
 		);
-
 	}
 
 
@@ -1580,7 +1566,6 @@ class MailsterManage {
 				die( $return );
 			}
 		}
-
 	}
 
 
@@ -1618,7 +1603,5 @@ class MailsterManage {
 		</section>
 		</form>
 		<?php
-
 	}
-
 }
