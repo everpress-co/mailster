@@ -2,8 +2,10 @@
 
 <p><?php esc_html_e( 'Now you can continue to customize Mailster to your needs.', 'mailster' ); ?></p>
 
+
 <div class="feature-section two-col">
 	<div class="col">
+
 	<ol>
 		<li><a class="external" href="edit.php?post_type=newsletter&page=mailster_settings"><?php esc_html_e( 'Complete your settings', 'mailster' ); ?></a></li>
 		<li><a class="external" href="post-new.php?post_type=newsletter"><?php esc_html_e( 'Create your first campaign', 'mailster' ); ?></a></li>
@@ -13,8 +15,6 @@
 		<li><a class="external" href="edit.php?post_type=newsletter&page=mailster_templates"><?php esc_html_e( 'Check out the templates', 'mailster' ); ?></a></li>
 		<li><a class="external" href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Extend Mailster', 'mailster' ); ?></a></li>
 	</ol>
-	</div>
-	<div class="col">
 	<h3><?php esc_html_e( 'External Resources', 'mailster' ); ?></h3>
 	<ol>
 		<li><a data-mode="modal" data-article="6460f6909a2fac195e609002" href="<?php echo mailster_url( 'https://kb.mailster.co/6460f6909a2fac195e609002' ); ?>"><?php esc_html_e( 'Email Marketing Automation in Mailster', 'mailster' ); ?></a></li>
@@ -24,11 +24,16 @@
 		<li><a data-mode="modal" data-article="611bb8346ffe270af2a9994e" href="<?php echo mailster_url( 'https://kb.mailster.co/611bb8346ffe270af2a9994e/' ); ?>"><?php esc_html_e( 'Learn more about segmentation', 'mailster' ); ?></a></li>
 	</ol>
 	</div>
+	<div class="col">
+	<h3><?php esc_html_e( 'Subscribe', 'mailster' ); ?></h3>
+	<p><?php esc_html_e( 'Keep yourself informed about the most recent updates, enhancements, articles, deals, and promotions offered to the Mailster community by subscribing!', 'mailster' ); ?></p>
+	<div>
+		<iframe src="https://mailster.co/mailster-form/welcome-wizard/" width="100%" height="230" scrolling="no" ></iframe>
+	</div>
+	
+	</div>
 	
 </div>
 
-	<div>
-	<p><a class="button button-hero"><?php esc_html_e( 'knowledge base', 'mailster' ); ?></a></p>
-	<p><?php printf( esc_html__( 'Still need help? Go ask on the %s further questions.', 'mailster' ), '<a href="' . mailster_url( 'https://kb.mailster.co' ) . '" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
-	</div>
+	
 </div>

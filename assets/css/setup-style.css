@@ -22,31 +22,33 @@ div.fs-notice.promotion {
 	display: block;
 }
 #mailster-setup {
-	font-size: 15px;
+	font-size: 16px;
 }
 #mailster-setup p {
-	line-height: 1.5;
-	font-size: 14px;
-}
-#mailster-setup dl {
-	max-width: 700px;
-	margin-top: 14px;
-	margin-bottom: 20px;
 	line-height: 1.5em;
+	font-size: 16px;
 }
-#mailster-setup dl dt {
-	font-weight: 700;
-	margin-left: 15px;
-	margin-top: 8px;
-	margin-bottom: 4px;
-}
-#mailster-setup dl dd {
-	margin-left: 15px;
-	color: #aaa;
+#mailster-setup .two-col {
+	display: flex;
 }
 #mailster-setup .two-col .col {
-	width: 50%;
-	float: left;
+	flex: 1;
+}
+#mailster-setup #step_start .mailster-setup-step-form {
+	display: flex;
+	align-items: center;
+}
+
+#mailster-setup #step_start .welcome-splash {
+	background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="%23F2F4F8" d="M36,-62.2C44.3,-50.6,47.2,-36.7,48.3,-24.8C49.4,-13,48.6,-3,50.4,9.6C52.2,22.2,56.5,37.5,52.4,49.3C48.2,61.1,35.5,69.4,23.4,67.4C11.3,65.3,-0.3,52.9,-13.4,48C-26.5,43,-41.1,45.7,-50.6,40.6C-60.2,35.5,-64.6,22.7,-66.5,9.6C-68.4,-3.6,-67.6,-17.1,-61.4,-26.9C-55.1,-36.6,-43.2,-42.7,-32,-53.1C-20.9,-63.4,-10.4,-78.1,1.7,-80.7C13.8,-83.3,27.6,-73.9,36,-62.2Z" transform="translate(100 100)" /></svg>');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	padding: 3em 0;
+}
+#mailster-setup #step_start .skip-link {
+	font-size: 14px;
+	position: absolute;
+	bottom: 2em;
 }
 #mailster-setup .hide-in-wizard {
 	display: none;
@@ -118,11 +120,18 @@ div.fs-notice.promotion {
 	font-style: italic;
 	line-height: 33px;
 }
+#mailster-setup h2,
+#mailster-setup h3,
+#mailster-setup h4 {
+	font-weight: 400;
+}
+#mailster-setup .mailster-setup-step h2 {
+	font-size: 2em;
+	line-height: 1.2em;
+}
 #mailster-setup .mailster-setup-step h2.section-title {
 	padding: 50px 50px 10px;
 	margin: 0.3em 0 0;
-	font-size: 2em;
-	font-weight: 300;
 }
 #mailster-setup .mailster-setup-step-body {
 	padding: 0 50px 40px;
