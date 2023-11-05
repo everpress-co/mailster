@@ -33,6 +33,10 @@ if ( $block_editor ) {
 	<!-- /wp:mailster/homepage-context -->
 	
 	<!-- wp:mailster/homepage-context {"type":"profile"} -->
+	<!-- wp:heading {"level":3} -->
+	<h3 class="wp-block-heading">' . esc_html__( 'Update your preferences', 'mailster' ) . '</h3>
+	<!-- /wp:heading -->
+	
 	<!-- wp:mailster/form /-->
 	<!-- /wp:mailster/homepage-context -->
 	

@@ -87,7 +87,7 @@ if ( isset( $methods[ $method ] ) ) {
 <div class="deliverymethods">
 <?php foreach ( $methods as $key => $data ) : ?>	
 	<section class="<?php echo ( $method === $key ) ? 'current' : ''; ?>">
-		<img src="<?php echo MAILSTER_URI . '/assets/img/addons/' . esc_attr( $key ); ?>.png" width="128" height="128" loading="lazy">
+		<img src="https://static.mailster.co/images/wizard/<?php echo esc_attr( $key ); ?>.png" width="128" height="128" loading="lazy">
 		<h3><?php echo esc_html( $data['name'] ); ?></h3>
 		<p><?php echo esc_html( $data['desc'] ); ?></p>
 		<div class="deliverytab" id="deliverytab-<?php echo esc_attr( $key ); ?>"><?php	( $method === $key ) ? do_action( 'mailster_deliverymethod_tab_' . $key ) : false; ?></div>

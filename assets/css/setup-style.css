@@ -42,9 +42,16 @@ div.fs-notice.promotion {
 #mailster-setup #step_start .welcome-splash {
 	background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="%23F2F4F8" d="M36,-62.2C44.3,-50.6,47.2,-36.7,48.3,-24.8C49.4,-13,48.6,-3,50.4,9.6C52.2,22.2,56.5,37.5,52.4,49.3C48.2,61.1,35.5,69.4,23.4,67.4C11.3,65.3,-0.3,52.9,-13.4,48C-26.5,43,-41.1,45.7,-50.6,40.6C-60.2,35.5,-64.6,22.7,-66.5,9.6C-68.4,-3.6,-67.6,-17.1,-61.4,-26.9C-55.1,-36.6,-43.2,-42.7,-32,-53.1C-20.9,-63.4,-10.4,-78.1,1.7,-80.7C13.8,-83.3,27.6,-73.9,36,-62.2Z" transform="translate(100 100)" /></svg>');
 	background-repeat: no-repeat;
-	background-size: 100%;
 	padding: 3em 0;
+	background-size: 140%;
+	background-position: center center;
 }
+#mailster-setup #step_start .welcome-splash img {
+	-webkit-filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.15));
+	filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.15));
+	font-size: 3em;
+}
+
 #mailster-setup #step_start .skip-link {
 	font-size: 14px;
 	position: absolute;
@@ -189,118 +196,8 @@ div.fs-notice.promotion {
 	background-position-x: 180%;
 	animation: 1s skeleton-loading ease-in-out infinite;
 }
-#mailster-setup .wp-plugin {
-	margin-bottom: 20px;
-}
-#mailster-setup .wp-plugin a {
-	display: inline-block;
-	position: relative;
-	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
-}
-#mailster-setup .wp-plugin a img {
-	vertical-align: middle;
-}
 #mailster-setup #load_location_db {
 	display: none;
-}
-#mailster-setup .register_form_wrap {
-	margin: 0 auto;
-	width: 70%;
-	min-height: 260px;
-}
-#mailster-setup .register_form_wrap .howto {
-	font-size: 14px;
-}
-
-#mailster-setup .twitter-follow-button,
-#mailster-setup .fb_iframe_widget {
-	vertical-align: bottom;
-}
-
-#mailster-setup .import-wrap {
-}
-#mailster-setup .import-wrap .footer.alternate {
-	background: none;
-}
-#mailster-setup .import-wrap .spinner {
-	float: right;
-}
-#mailster-setup .import-wrap details {
-	margin-left: -2em;
-	margin-right: -2em;
-}
-
-summary,
-details {
-	display: block;
-}
-details {
-	visibility: hidden;
-}
-details > summary {
-	visibility: visible;
-}
-details details {
-	visibility: visible;
-}
-details > summary:before {
-	content: '';
-	display: inline-block;
-	vertical-align: bottom;
-	margin: 0 8px 0 -14px;
-	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 16l4-4 -4-4"></path></g></svg>');
-	transition: transform 0.3s;
-	width: 20px;
-	height: 20px;
-}
-.rtl details > summary:before {
-	margin: 0 -14px 0 8px;
-	transform: rotate(180deg);
-}
-details[open] > summary:before {
-	transform: rotate(90deg);
-}
-details[open] {
-	visibility: visible;
-}
-details summary {
-	cursor: pointer;
-}
-summary:hover {
-	cursor: pointer;
-}
-summary:focus {
-	outline: none;
-}
-details summary::-webkit-details-marker {
-	display: none;
-}
-
-summary {
-	border-top: 1px solid #dfdfdf;
-	padding: 1em 2em;
-	font-weight: bold;
-	line-height: 1.5em;
-}
-details summary.loading {
-	background-position: 94% center;
-	background-repeat: no-repeat;
-	background-size: 20px 20px;
-	background-image: url(../img/loading.gif) !important;
-}
-@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
-	only screen and (-o-min-device-pixel-ratio: 32),
-	only screen and (min--moz-device-pixel-ratio: 1.5),
-	only screen and (min-device-pixel-ratio: 1.5) {
-	details summary.loading {
-		background-image: url(../img/loading_2x.gif) !important;
-	}
-}
-details summary.loaded {
-	color: inherit;
-}
-details > div {
-	padding: 0.5em 3em 1em;
 }
 
 section {
@@ -472,6 +369,13 @@ section {
 .mailster-template-preview:hover {
 	border: 1px solid #2bb3e7;
 	box-shadow: 0 1px 15px rgba(43, 179, 231, 0.65);
+}
+
+#mailster-setup .subscribe iframe {
+	margin-left: -5px;
+	margin-right: -5px;
+	width: 100%;
+	height: 300px;
 }
 @keyframes skeleton-loading {
 	to {

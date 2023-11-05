@@ -155,11 +155,12 @@ mailster = (function (mailster, $, window, document) {
 			currentStep.addClass('active');
 			currentID = id;
 			//smoothly scroll to title
-			window.scrollTo({
-				top: 0,
-				left: 0,
-				behavior: 'smooth',
-			});
+			if (!mailster.util.inViewport(currentStep.find('h2').get(0)))
+				window.scrollTo({
+					top: 0,
+					left: 0,
+					behavior: 'smooth',
+				});
 		}
 	}
 

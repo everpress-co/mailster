@@ -23,7 +23,7 @@
 	<p class="skip-link"><a href="admin.php?page=mailster_dashboard&mailster_setup_complete=<?php echo wp_create_nonce( 'mailster_setup_complete' ); ?>"><?php esc_html_e( 'Skip the Wizard', 'mailster' ); ?></a></p>
 </div>
 	<div class="mailster-setup-col welcome-splash">
-		<img src="<?php echo MAILSTER_URI . '/assets/img/welcome-splash.png'; ?>" width="512" height="512" draggable="false">
+		<img src="https://static.mailster.co/images/wizard/welcome-splash.png" width="512" height="512" draggable="false">
 	</div>
 
 

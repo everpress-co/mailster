@@ -24,12 +24,12 @@
 		<li><a data-mode="modal" data-article="611bb8346ffe270af2a9994e" href="<?php echo mailster_url( 'https://kb.mailster.co/611bb8346ffe270af2a9994e/' ); ?>"><?php esc_html_e( 'Learn more about segmentation', 'mailster' ); ?></a></li>
 	</ol>
 	</div>
-	<div class="col">
+	<div class="col subscribe">
 	<h3><?php esc_html_e( 'Subscribe', 'mailster' ); ?></h3>
 	<p><?php esc_html_e( 'Keep yourself informed about the most recent updates, enhancements, articles, deals, and promotions offered to the Mailster community by subscribing!', 'mailster' ); ?></p>
-	<div>
-		<iframe src="https://mailster.co/mailster-form/welcome-wizard/" width="100%" height="230" scrolling="no" ></iframe>
-	</div>
+	
+	<iframe src="https://mailster.co/mailster-form/welcome-wizard/" scrolling="no" loading="lazy" ></iframe>
+
 	
 	</div>
 	
