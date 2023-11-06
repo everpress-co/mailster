@@ -1,7 +1,7 @@
 
 ### Version 3.3.9 (2023-11-06)
 
-- PHP 8.2 compatilablity 🎉
+- PHP 8.2 compatibility 🎉
 - updated: WP Coding Standards 3.0
 - updated: Freemius SDK to 2.6.0
 - fixed: inline style attribute got removed in some edge cases
