@@ -662,6 +662,7 @@ if ( $old_version ) {
 		case '3.3.6':
 		case '3.3.7':
 		case '3.3.8':
+		case '3.3.9':
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
@@ -691,11 +692,11 @@ if ( $old_version ) {
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
 			// Beta Feedback
-			mailster_beacon_message( '8f069091-c508-47e7-b199-3454492b860c', MONTH_IN_SECONDS );
+			mailster_beacon_message( '8b1d5a1d-6aad-4243-a1c5-73f53407637a', MONTH_IN_SECONDS );
 
 			// NPS if setup is older than 3 month
 			if ( get_option( 'mailster_setup' ) < strtotime( '-3 month' ) ) {
-				mailster_beacon_message( 'edadbb75-de13-4213-8688-5630482a5537', MONTH_IN_SECONDS * 3 );
+				mailster_beacon_message( '295a58cf-4460-4b07-9ed4-0f6f1840699b', MONTH_IN_SECONDS * 3 );
 			}
 
 

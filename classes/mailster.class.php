@@ -1628,6 +1628,18 @@ class Mailster {
 			}
 		}
 
+		// remove block forms and automations
+		if ( true ) {
+
+			$other_ids = $wpdb->get_col( "SELECT ID FROM `$wpdb->posts` WHERE post_type IN ('mailster-form' ,'mailster-workflow')" );
+
+			if ( is_array( $other_ids ) ) {
+				foreach ( $other_ids as $other_id ) {
+					wp_delete_post( $other_id, true );
+				}
+			}
+		}
+
 		if ( $remove_options ) {
 
 			// delete newsletter homepage

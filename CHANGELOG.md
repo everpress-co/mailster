@@ -39,6 +39,21 @@
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
 
+### Version 3.3.9 (2023-11-06)
+
+- PHP 8.2 compatibility 🎉
+- updated: WP Coding Standards 3.0
+- updated: Freemius SDK to 2.6.0
+- fixed: inline style attribute got removed in some edge cases
+- improved: placeholder image tags algorithmus
+- fixes: smaller issue
+
+### Version 3.3.8 (2023-10-05)
+
+- improved: honeypot mechanism to prevent false positives on heavy cached sites.
+- improved: wording on support
+- updated: Freemius SDK to 2.5.12
+
 ### Version 3.3.7 (2023-07-07)
 
 - fixed: missing action on migration process
