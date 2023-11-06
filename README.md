@@ -3,10 +3,10 @@
 Contributors: everpress  
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 6.2  
-Tested up to: 6.3  
+Tested up to: 6.4  
 Stable tag: 4.0.0  
 License: GPLv2 or later  
-Requires PHP: 7.2.5
+Requires PHP: 7.4
 
 ## Description
 
@@ -227,6 +227,15 @@ Get professional development help from our expert support partner _Codeable_ for
 - improved: Autocompletion on conditions
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
+
+### 3.3.9
+
+- PHP 8.2 compatibility 🎉
+- updated: WP Coding Standards 3.0
+- updated: Freemius SDK to 2.6.0
+- fixed: inline style attribute got removed in some edge cases
+- improved: placeholder image tags algorithmus
+- fixes: smaller issue
 
 ### 3.3.8
 
