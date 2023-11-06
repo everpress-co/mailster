@@ -89,6 +89,41 @@ class MailsterTemplates {
 
 
 
+	public function download_by_slug( $slug = null ) {
+
+		$templates = $this->get_templates( true );
+
+		if ( isset( $templates[ $slug ] ) ) {
+			return true;
+		}
+
+		$templates = $this->query(
+			array(
+				's'      => $slug,
+				'browse' => 'latest',
+				'type'   => 'slug',
+			)
+		);
+
+		if ( is_wp_error( $templates ) ) {
+			return $templates;
+		}
+
+		if ( empty( $templates['total'] ) ) {
+			return new WP_Error( 'not_found', esc_html__( 'Template not found', 'mailster' ) );
+		}
+
+		if ( isset( $templates['items'][ $slug ] ) ) {
+
+			return $this->download_template( $templates['items'][ $slug ]['download_url'], $slug );
+
+		}
+
+		return new WP_Error( 'not_found', esc_html__( 'Template not found', 'mailster' ) );
+	}
+
+
+
 	public function download_template( $url, $slug = null ) {
 
 		$download_url = rawurldecode( $url );

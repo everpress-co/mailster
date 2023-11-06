@@ -12,8 +12,9 @@
 		<div class="template loading"><div class="mailster-template-preview"></div></div>
 		<div class="template loading"><div class="mailster-template-preview"></div></div>
 		<div class="template loading"><div class="mailster-template-preview"></div></div>
-
 	</div>
+
+	<input type="hidden" name="mailster_options[default_template]" value="<?php echo esc_attr( mailster_option( 'default_template' ) ); ?>" id="default_template">
 	
 	</form>
 

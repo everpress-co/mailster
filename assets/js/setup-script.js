@@ -102,14 +102,27 @@ mailster = (function (mailster, $, window, document) {
 				.focus()
 				.select();
 		})
-		.on('click', '.mailster-homepage-preview-small', function () {
-			var _this = $(this).find('iframe');
-			var main = $('.mailster-homepage-preview').eq(0).find('iframe');
-			var url = _this.attr('src');
-			var mainurl = main.attr('src');
-			_this.attr('src', mainurl);
-			main.attr('src', url);
+		.on('click', '.action-buttons a', addFocus)
+		.on('click', '.template', function () {
+			$('.template.active').removeClass('active');
+			$(this).addClass('active');
+			$('#default_template').val($(this).data('slug'));
 		});
+
+	function addFocus() {
+		mailster.$.window.one('focus', reloadOnFocus);
+	}
+
+	function reloadOnFocus() {
+		mailster.$.window.one('blur', addFocus);
+		$('.mailster-homepage-previews')
+			.find('iframe')
+			.each(function () {
+				var _this = $(this);
+				var url = _this.attr('src');
+				_this.attr('src', url);
+			});
+	}
 
 	mailster.$.window.on('hashchange', function () {
 		var id = location.hash.substr(1) || 'start',
