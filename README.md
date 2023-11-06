@@ -187,6 +187,15 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.9
+
+- PHP 8.2 compatilablity 🎉
+- updated: WP Coding Standards 3.0
+- updated: Freemius SDK to 2.6.0
+- fixed: inline style attribute got removed in some edge cases
+- improved: placeholder image tags algorithmus 
+- fixes: smaller issue
+
 ### 3.3.8
 
 - improved: honeypot mechanism to prevent false positives on heavy cached sites.
