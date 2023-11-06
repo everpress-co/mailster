@@ -9,7 +9,6 @@ abstract class MailsterImport {
 	public function __construct() {
 
 		$this->init();
-
 	}
 
 	abstract protected function init();

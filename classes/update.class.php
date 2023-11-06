@@ -16,7 +16,6 @@ class MailsterUpdate {
 		add_action( 'install_plugins_pre_plugin-information', array( &$this, 'add_css_for_information_screen' ), 1 );
 
 		add_action( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
-
 	}
 
 
@@ -56,7 +55,6 @@ class MailsterUpdate {
 			$this->tracker();
 
 		}
-
 	}
 
 
@@ -69,7 +67,6 @@ class MailsterUpdate {
 			mailster_notice( '<p><strong>' . esc_html__( 'Automatic Updates are not enabled for Mailster!', 'mailster' ) . '</strong></p>' . $link, 'info', 20, 'ask_for_auto_update' );
 
 		}
-
 	}
 
 	public function get_auto_update_url() {
@@ -81,7 +78,6 @@ class MailsterUpdate {
 		$url        = add_query_arg( $query_args, 'plugins.php' );
 
 		return wp_nonce_url( $url, 'updates' );
-
 	}
 
 	public function is_auto_update() {
@@ -93,7 +89,6 @@ class MailsterUpdate {
 		$auto_updates = (array) get_site_option( 'auto_update_plugins', array() );
 
 		return in_array( MAILSTER_SLUG, $auto_updates );
-
 	}
 
 
@@ -229,7 +224,6 @@ class MailsterUpdate {
 		}
 
 		return $reply;
-
 	}
 
 
@@ -248,7 +242,6 @@ class MailsterUpdate {
 		$response['response']['message'] = $code;
 
 		return $response;
-
 	}
 
 
@@ -257,7 +250,6 @@ class MailsterUpdate {
 		$actions['mailster_get_license'] = '<a href="' . mailster_url( 'https://mailster.co/go/buy' ) . '">' . esc_html__( 'Buy a new Mailster License', 'mailster' ) . '</a>';
 
 		return $actions;
-
 	}
 
 
@@ -303,7 +295,6 @@ class MailsterUpdate {
 			echo '<tr class="plugin-update-tr active" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="4" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
 
 		}
-
 	}
 
 	public function add_css_for_information_screen() {
@@ -321,6 +312,4 @@ class MailsterUpdate {
 
 		return $options;
 	}
-
-
 }

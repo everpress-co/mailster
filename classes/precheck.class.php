@@ -36,7 +36,6 @@ class MailsterPrecheck {
 		ob_end_clean();
 
 		return $script_styles;
-
 	}
 
 
@@ -225,7 +224,6 @@ class MailsterPrecheck {
 		}
 
 		return $html;
-
 	}
 
 
@@ -305,7 +303,5 @@ class MailsterPrecheck {
 		} else {
 			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the test limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) . $body );
 		}
-
 	}
-
 }

@@ -12,7 +12,6 @@ class MailsterBounce {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
 	}
 
 
@@ -20,7 +19,6 @@ class MailsterBounce {
 
 		add_action( 'mailster_cron_bounce', array( &$this, 'check' ), 1 );
 		add_action( 'mailster_check_bounces', array( &$this, 'check' ), 99 );
-
 	}
 
 
@@ -32,7 +30,6 @@ class MailsterBounce {
 	public function bounce_lock( $bool = true ) {
 
 		set_transient( 'mailster_check_bounces_lock', $bool, mailster_option( 'bounce_check', 5 ) * 60 );
-
 	}
 
 
@@ -44,7 +41,6 @@ class MailsterBounce {
 	public function is_bounce_lock() {
 
 		return get_transient( 'mailster_check_bounces_lock' );
-
 	}
 
 
@@ -117,7 +113,6 @@ class MailsterBounce {
 		}
 
 		return $handler;
-
 	}
 
 
@@ -138,7 +133,6 @@ class MailsterBounce {
 		}
 
 		return $handler->check_bounce_message( $identifier );
-
 	}
 
 
@@ -168,8 +162,5 @@ class MailsterBounce {
 		}
 
 		return $handler->process_bounces();
-
 	}
-
-
 }

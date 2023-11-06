@@ -75,7 +75,6 @@ class UpdateCenterPlugin {
 		add_filter( 'upgrader_post_install', array( &$this, 'upgrader_post_install' ), 99, 3 );
 
 		add_filter( 'http_request_args', array( &$this, 'http_request_args' ), 100, 2 );
-
 	}
 
 
@@ -111,7 +110,6 @@ class UpdateCenterPlugin {
 		}
 
 		return null;
-
 	}
 
 
@@ -160,7 +158,6 @@ class UpdateCenterPlugin {
 			return $response;
 
 		}
-
 	}
 
 
@@ -210,7 +207,6 @@ class UpdateCenterPlugin {
 			return $response;
 
 		}
-
 	}
 
 
@@ -259,7 +255,6 @@ class UpdateCenterPlugin {
 			return $response;
 
 		}
-
 	}
 
 
@@ -293,7 +288,6 @@ class UpdateCenterPlugin {
 		if ( empty( self::$plugins ) || 'update-core.php' == $pagenow ) {
 			do_action( 'updatecenterplugin_check' );
 		}
-
 	}
 
 
@@ -342,7 +336,6 @@ class UpdateCenterPlugin {
 			echo '<div class="update-nag notice notice-warning inline update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
 
 		}
-
 	}
 
 
@@ -370,7 +363,6 @@ class UpdateCenterPlugin {
 		}
 
 		return version_compare( $new_version, $old_version, '>' );
-
 	}
 
 
@@ -397,7 +389,6 @@ class UpdateCenterPlugin {
 		}
 
 		return $r;
-
 	}
 
 
@@ -450,7 +441,6 @@ class UpdateCenterPlugin {
 		}
 
 		return $res;
-
 	}
 
 
@@ -473,7 +463,6 @@ class UpdateCenterPlugin {
 		}
 
 		return $res;
-
 	}
 
 
@@ -576,7 +565,6 @@ class UpdateCenterPlugin {
 		}
 
 		self::save_options();
-
 	}
 
 
@@ -637,7 +625,6 @@ class UpdateCenterPlugin {
 			self::$plugins[ $slug ]->update      = null;
 			self::save_options();
 		}
-
 	}
 
 
@@ -650,7 +637,6 @@ class UpdateCenterPlugin {
 
 		self::$plugins = array();
 		update_option( self::$optionname, self::$plugins );
-
 	}
 
 
@@ -662,14 +648,12 @@ class UpdateCenterPlugin {
 	private static function get_options() {
 
 		return get_option( self::$optionname, array() );
-
 	}
 
 
 	private static function save_options() {
 
 		update_option( self::$optionname, self::$plugins );
-
 	}
 
 
@@ -709,7 +693,6 @@ class UpdateCenterPlugin {
 		}
 
 		return is_array( $result ) ? array_combine( array_keys( $plugins ), $result ) : array();
-
 	}
 
 
@@ -767,7 +750,6 @@ class UpdateCenterPlugin {
 		$result = json_decode( $response_body, true );
 
 		return $result;
-
 	}
 
 
@@ -800,7 +782,6 @@ class UpdateCenterPlugin {
 		}
 
 		return $response;
-
 	}
 
 
@@ -866,6 +847,4 @@ class UpdateCenterPlugin {
 
 		return $return;
 	}
-
-
 }

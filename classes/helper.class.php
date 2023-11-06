@@ -213,7 +213,6 @@ class MailsterHelper {
 			$height,
 			$crop
 		);
-
 	}
 
 
@@ -243,7 +242,6 @@ class MailsterHelper {
 		}
 
 		return $meta_values;
-
 	}
 
 
@@ -273,7 +271,6 @@ class MailsterHelper {
 
 		$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
 		return $upgrader->install( $api->download_link );
-
 	}
 
 
@@ -301,7 +298,6 @@ class MailsterHelper {
 		activate_plugin( $plugin );
 
 		return is_plugin_active( $plugin );
-
 	}
 
 
@@ -329,7 +325,6 @@ class MailsterHelper {
 		deactivate_plugins( $plugin );
 
 		return is_plugin_inactive( $plugin );
-
 	}
 
 
@@ -464,7 +459,6 @@ class MailsterHelper {
 		$links = str_replace( '%%USERNAME%%', $username, $links );
 
 		return $links;
-
 	}
 
 
@@ -483,7 +477,6 @@ class MailsterHelper {
 		$link = ( isset( $links[ $service ] ) ) ? $links[ $service ] : '';
 
 		return $link;
-
 	}
 
 
@@ -563,13 +556,12 @@ class MailsterHelper {
 					break;
 				}
 
-				$i++;
+				++$i;
 			}
 		}
 
 		// return as UTC
 		return $nextdate - $offset;
-
 	}
 
 
@@ -636,7 +628,6 @@ class MailsterHelper {
 			: '';
 
 		return $html;
-
 	}
 
 
@@ -649,7 +640,6 @@ class MailsterHelper {
 		include MAILSTER_DIR . 'includes/social_services.php';
 
 		return $mailster_social_services;
-
 	}
 
 
@@ -735,7 +725,6 @@ class MailsterHelper {
 		</div>
 
 		<?php
-
 	}
 
 	public function static_map( $args, $cache = HOUR_IN_SECONDS ) {
@@ -757,7 +746,6 @@ class MailsterHelper {
 		set_transient( '_mailster_staticmap_' . $hash, $args, $cache );
 
 		return get_rest_url( null, 'mailster/v1/staticmap/' . $hash );
-
 	}
 
 
@@ -780,7 +768,7 @@ class MailsterHelper {
 		if ( ! is_null( $timestamp ) ) {
 			$l = localtime( $timestamp, true );
 			if ( $l['tm_isdst'] ) {
-				$offset++;
+				++$offset;
 			}
 		}
 
@@ -802,7 +790,6 @@ class MailsterHelper {
 		date_default_timezone_set( $current );
 
 		return $offset;
-
 	}
 
 
@@ -816,7 +803,6 @@ class MailsterHelper {
 		$format = get_option( 'date_format' );
 
 		return apply_filters( 'mailster_dateformat', $format );
-
 	}
 
 	/**
@@ -829,7 +815,6 @@ class MailsterHelper {
 		$format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 
 		return apply_filters( 'mailster_timeformat', $format );
-
 	}
 
 
@@ -888,7 +873,6 @@ class MailsterHelper {
 
 		date_default_timezone_set( $current_timezone );
 		return $zoneMidnight;
-
 	}
 
 
@@ -919,7 +903,6 @@ class MailsterHelper {
 		}
 
 		return trim( $doc->saveHTML() );
-
 	}
 
 
@@ -957,7 +940,6 @@ class MailsterHelper {
 		}
 
 		return $original;
-
 	}
 
 
@@ -998,7 +980,6 @@ class MailsterHelper {
 		}
 
 		return $status;
-
 	}
 
 
@@ -1033,7 +1014,6 @@ class MailsterHelper {
 		$content = $this->handle_shortcodes( $content );
 
 		return apply_filters( 'mailster_prepare_content', $content );
-
 	}
 
 	/**
@@ -1066,7 +1046,6 @@ class MailsterHelper {
 		}
 
 		return $content;
-
 	}
 
 
@@ -1149,7 +1128,6 @@ class MailsterHelper {
 		}
 
 		return $content;
-
 	}
 
 
@@ -1177,7 +1155,7 @@ class MailsterHelper {
 				array_push( $s, $css[ $i ] );
 
 				// move past first bracket
-				$i++;
+				++$i;
 
 				while ( ! empty( $s ) ) {
 					// if the character is an opening bracket, push it onto the stack, otherwise pop the stack
@@ -1190,7 +1168,7 @@ class MailsterHelper {
 						array_pop( $s );
 					}
 
-					$i++;
+					++$i;
 				}
 
 				// cut the media block out of the css and store
@@ -1215,10 +1193,8 @@ class MailsterHelper {
 			if ( ! method_exists( $callback[0], $callback[1] ) ) {
 				return false;
 			}
-		} else {
-			if ( ! function_exists( $callback ) ) {
+		} elseif ( ! function_exists( $callback ) ) {
 				return false;
-			}
 		}
 
 		$type = $embed ? 'embed' : 'inline';
@@ -1233,7 +1209,6 @@ class MailsterHelper {
 		$mailster_mystyles[ $type ][] = call_user_func_array( $callback, $args );
 
 		return true;
-
 	}
 
 
@@ -1301,7 +1276,6 @@ class MailsterHelper {
 		ob_end_clean();
 
 		echo "<script id='$handle'>$output</script>";
-
 	}
 
 
@@ -1358,7 +1332,6 @@ class MailsterHelper {
 		}
 
 		echo "<style id='$handle' type='text/css'>{$before}{$output}{$after}</style>";
-
 	}
 
 
@@ -1384,7 +1357,6 @@ class MailsterHelper {
 		}
 
 		return is_file( $filename );
-
 	}
 
 
@@ -1420,7 +1392,6 @@ class MailsterHelper {
 			}
 		}
 		return $path;
-
 	}
 
 
@@ -1461,7 +1432,6 @@ class MailsterHelper {
 		}
 
 		return $return;
-
 	}
 
 
@@ -1489,7 +1459,6 @@ class MailsterHelper {
 			}
 		}
 		return ! is_array( $days ) || in_array( $day, $days );
-
 	}
 
 	/**
@@ -1510,7 +1479,6 @@ class MailsterHelper {
 		}
 
 		return $got_url_rewrite;
-
 	}
 
 
@@ -1535,7 +1503,6 @@ class MailsterHelper {
 		}
 
 		return $new;
-
 	}
 
 
@@ -1556,7 +1523,6 @@ class MailsterHelper {
 		}
 
 		return apply_filters( 'mailster_post_types', $post_types, $output );
-
 	}
 
 	/**
@@ -1570,7 +1536,6 @@ class MailsterHelper {
 	public function get_dynamic_post_types( $public_only = true, $output = 'names', $exclude = array( 'attachment', 'newsletter' ) ) {
 
 		return apply_filters( 'mailster_dynamic_post_types', $this->get_post_types( $public_only, $output, $exclude ), $output );
-
 	}
 
 	/**
@@ -1744,7 +1709,6 @@ class MailsterHelper {
 		$post->post_excerpt = preg_replace( '/<img[^>]+\>/i', '', $post->post_excerpt );
 
 		return $post;
-
 	}
 
 
@@ -1770,7 +1734,6 @@ class MailsterHelper {
 		set_transient( '_mailster_feed_dates_' . $feed_id, $dates, WEEK_IN_SECONDS );
 
 		return $dates[ $item_id ];
-
 	}
 
 
@@ -1799,7 +1762,6 @@ class MailsterHelper {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -1825,7 +1787,6 @@ class MailsterHelper {
 		}
 
 		return $return;
-
 	}
 
 
@@ -1877,7 +1838,6 @@ class MailsterHelper {
 		}
 
 		return $tags;
-
 	}
 
 
@@ -1928,7 +1888,6 @@ class MailsterHelper {
 		$excerpt = trim( strip_tags( $excerpt, '<p><br><a><strong><em><i><b><ul><ol><li><span>' ) );
 
 		return apply_filters( 'mailster_get_excerpt', $excerpt, $org_string, $length, $more );
-
 	}
 
 
@@ -1973,7 +1932,6 @@ class MailsterHelper {
 			return $text;
 
 		}
-
 	}
 
 
@@ -1989,7 +1947,6 @@ class MailsterHelper {
 		}
 
 		return $content;
-
 	}
 
 
@@ -2007,7 +1964,7 @@ class MailsterHelper {
 
 			$d = preg_replace_callback(
 				'!s:(\d+):"(.*?)";!',
-				function( $matches ) {
+				function ( $matches ) {
 					return 's:' . strlen( $matches[2] ) . ':"' . $matches[2] . '";';
 				},
 				$d
@@ -2017,7 +1974,6 @@ class MailsterHelper {
 		}
 
 		return $object;
-
 	}
 
 
@@ -2139,8 +2095,5 @@ class MailsterHelper {
 		}
 
 		return json_decode( $body );
-
 	}
-
-
 }

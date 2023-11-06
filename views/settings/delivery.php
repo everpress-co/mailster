@@ -65,7 +65,7 @@
 				<option value="<?php echo $i; ?>" <?php selected( $selected, $i ); ?>><?php echo date_i18n( $time_format, strtotime( 'midnight +' . $i . ' hours' ) ); ?></option>
 			<?php endfor; ?>
 			</select>
-			 <span class="utcoffset"><?php echo ( ( $timeoffset > 0 ) ? 'UTC + ' . ( $timeoffset / 3600 ) : '' ); ?></span></p>
+			<span class="utcoffset"><?php echo ( ( $timeoffset > 0 ) ? 'UTC + ' . ( $timeoffset / 3600 ) : '' ); ?></span></p>
 			<p><?php esc_html_e( 'only on', 'mailster' ); ?>
 			<?php
 			$start_at       = get_option( 'start_of_week' );

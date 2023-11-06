@@ -43,7 +43,7 @@
 				<select name="mailster_options[synclist][<?php echo $i; ?>][field]"><?php echo $customfield_dropdown; ?>:</select>
 				<a class="remove-sync-item">&#10005;</a>
 			</div>
-			<?php $i++; ?>
+			<?php ++$i; ?>
 		<?php endforeach; ?>
 			<a class="button" id="add_sync_item"><?php esc_html_e( 'add', 'mailster' ); ?></a>
 		</td>

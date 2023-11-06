@@ -1,5 +1,6 @@
 <?php
 
+#[AllowDynamicProperties]
 class MailsterSubscriberQuery {
 
 	private $last_result;
@@ -92,7 +93,6 @@ class MailsterSubscriberQuery {
 		if ( ! is_null( $args ) ) {
 			return $this->run( $args, $campaign_id );
 		}
-
 	}
 	public function __destruct() {}
 
@@ -110,7 +110,6 @@ class MailsterSubscriberQuery {
 		}
 
 		return $this->{$name};
-
 	}
 
 	public function run( $args = array(), $campaign_id = null ) {
@@ -255,7 +254,7 @@ class MailsterSubscriberQuery {
 		}
 		if ( $this->args['conditions'] ) {
 
-			 $this->args['conditions'] = array_values( $this->args['conditions'] );
+			$this->args['conditions'] = array_values( $this->args['conditions'] );
 
 			// sanitize
 			if ( empty( $this->args['conditions'][0] ) ) {
@@ -489,7 +488,7 @@ class MailsterSubscriberQuery {
 					}
 					// requires campaign to be sent (removed in 3.3.4)
 					if ( in_array( $field, array( '_open__not_in', '_click__not_in' ) ) ) {
-						 // $this->add_condition( '_sent', '=', $value );
+						// $this->add_condition( '_sent', '=', $value );
 					}
 				}
 			}
@@ -853,13 +852,11 @@ class MailsterSubscriberQuery {
 
 							$searches[] = "(`meta_$search_field`.meta_value LIKE '$wildcard$term$wildcard')";
 
-						} else {
+						} elseif ( 'hash' == $search_field || 'ID' == $search_field ) {
 
-							if ( 'hash' == $search_field || 'ID' == $search_field ) {
 								$searches[] = "(subscribers.$search_field LIKE '$term')";
-							} else {
-								$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
-							}
+						} else {
+							$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
 						}
 					}
 
@@ -1091,7 +1088,6 @@ class MailsterSubscriberQuery {
 		mailster_cache_set( $cache_key, $result );
 
 		return $result;
-
 	}
 
 
@@ -1112,7 +1108,6 @@ class MailsterSubscriberQuery {
 		}
 
 		return $return;
-
 	}
 
 
@@ -1394,7 +1389,6 @@ class MailsterSubscriberQuery {
 				break;
 
 		}
-
 	}
 
 	private function get_field_operator( $operator ) {
@@ -1431,7 +1425,6 @@ class MailsterSubscriberQuery {
 		}
 
 		return $operator;
-
 	}
 
 	private function get_positive_field_operator( $operator ) {
@@ -1468,7 +1461,6 @@ class MailsterSubscriberQuery {
 		}
 
 		return $operator;
-
 	}
 
 	private function get_custom_fields() {
@@ -1534,7 +1526,6 @@ class MailsterSubscriberQuery {
 		}
 
 		array_unshift( $this->args['conditions'], array( $condition ) );
-
 	}
 
 	private function get_campaign_ids_from_value( $value ) {
@@ -1653,10 +1644,7 @@ class MailsterSubscriberQuery {
 		}
 
 		return array_values( array_unique( $return ) );
-
 	}
-
-
 }
 
 /**

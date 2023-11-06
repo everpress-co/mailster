@@ -101,7 +101,6 @@ class MailsterForm {
 
 		// return the form object
 		return $this;
-
 	}
 
 
@@ -150,7 +149,6 @@ class MailsterForm {
 		if ( ( $key = array_search( $class, $this->classes ) ) !== false ) {
 			unset( $this->classes[ $key ] );
 		}
-
 	}
 
 
@@ -180,7 +178,6 @@ class MailsterForm {
 		} else {
 			$this->{$key} = $value;
 		}
-
 	}
 
 
@@ -582,7 +579,6 @@ class MailsterForm {
 		}
 
 		echo $html;
-
 	}
 
 
@@ -699,7 +695,6 @@ class MailsterForm {
 		endif;
 
 		return $html;
-
 	}
 
 
@@ -725,7 +720,6 @@ class MailsterForm {
 			$this->hash = null;
 
 		}
-
 	}
 
 
@@ -761,7 +755,6 @@ class MailsterForm {
 			$this->hash        = null;
 
 		}
-
 	}
 
 
@@ -795,7 +788,6 @@ class MailsterForm {
 		}
 
 		return null;
-
 	}
 
 
@@ -872,13 +864,13 @@ class MailsterForm {
 
 		if ( empty( $_BASE ) ) {
 			wp_die( 'no data' );
-		};
+		}
 
 		$submissiontype = isset( $_BASE['_action'] ) ? $_BASE['_action'] : 'subscribe';
 
 		if ( ! $submissiontype ) {
 			wp_die( 'wrong submissiontype' );
-		};
+		}
 
 		if ( ! is_admin() && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ) ) ) {
 			$honeypot = isset( $_BASE['_n_hp_mail'] ) ? $_BASE['_n_hp_mail'] : null;
@@ -1297,7 +1289,6 @@ class MailsterForm {
 
 		mailster_redirect( $target );
 		exit;
-
 	}
 
 
@@ -1309,7 +1300,7 @@ class MailsterForm {
 
 		if ( empty( $_BASE ) ) {
 			wp_die( 'no data' );
-		};
+		}
 
 		$campaign_id = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
 
@@ -1340,7 +1331,6 @@ class MailsterForm {
 		}
 
 		wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html( mailster_text( 'unsubscribe' ) ) . '</a>' );
-
 	}
 
 
@@ -1377,7 +1367,6 @@ class MailsterForm {
 		return $is_permalink
 			? home_url( $prefix . '/mailster/' . $this->form_endpoint )
 			: add_query_arg( array( 'action' => $action ), admin_url( 'admin-ajax.php', $this->scheme ) );
-
 	}
 
 
@@ -1450,7 +1439,6 @@ class MailsterForm {
 		wp_print_scripts( 'mailster-form' );
 
 		self::$add_script = true;
-
 	}
 
 
@@ -1474,7 +1462,6 @@ class MailsterForm {
 			: wp_print_styles( 'mailster-form-default' );
 
 		self::$add_style = true;
-
 	}
 
 
@@ -1493,7 +1480,6 @@ class MailsterForm {
 		$return['id'] = $return['ID'];
 
 		return $return;
-
 	}
 
 
@@ -1513,7 +1499,6 @@ class MailsterForm {
 		}
 
 		return $forms;
-
 	}
 
 
@@ -1534,7 +1519,6 @@ class MailsterForm {
 		$return['id'] = $return['ID'];
 
 		return $return;
-
 	}
 
 
@@ -1554,7 +1538,6 @@ class MailsterForm {
 		$return['id'] = $return['ID'];
 
 		return $return;
-
 	}
 
 
@@ -1574,8 +1557,5 @@ class MailsterForm {
 		$return['id'] = $return['ID'];
 
 		return $return;
-
 	}
-
-
 }

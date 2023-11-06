@@ -12,7 +12,6 @@ class MailsterActions {
 		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 5 );
 		add_action( 'mailster_subscriber_error', array( &$this, 'error' ), 10, 4 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ) );
-
 	}
 
 
@@ -35,7 +34,6 @@ class MailsterActions {
 			),
 			true
 		);
-
 	}
 
 
@@ -93,7 +91,6 @@ class MailsterActions {
 			$user_meta,
 			$geo_tracking
 		);
-
 	}
 
 
@@ -125,7 +122,6 @@ class MailsterActions {
 				'link_id'       => $link_id,
 			)
 		);
-
 	}
 
 
@@ -148,7 +144,6 @@ class MailsterActions {
 				'type'          => 'unsubs',
 			)
 		);
-
 	}
 
 
@@ -165,7 +160,6 @@ class MailsterActions {
 	public function list_unsubscribe( $subscriber_id, $campaign_id, $lists, $status = null, $index = null ) {
 
 		return $this->unsubscribe( $subscriber_id, $campaign_id, $status );
-
 	}
 
 
@@ -192,7 +186,6 @@ class MailsterActions {
 				'count'         => 1,
 			)
 		);
-
 	}
 
 
@@ -217,7 +210,6 @@ class MailsterActions {
 				'type'          => 'errors',
 			)
 		);
-
 	}
 
 
@@ -246,7 +238,6 @@ class MailsterActions {
 		mailster( 'subscribers' )->update_meta( $args['subscriber_id'], $args['campaign_id'], $user_meta );
 
 		$this->add_action( $args );
-
 	}
 
 
@@ -297,7 +288,6 @@ class MailsterActions {
 
 			return true;
 		}
-
 	}
 
 
@@ -332,7 +322,6 @@ class MailsterActions {
 		}
 
 		return $success;
-
 	}
 
 
@@ -363,7 +352,6 @@ class MailsterActions {
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_errors AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
-
 	}
 
 
@@ -389,7 +377,6 @@ class MailsterActions {
 		}
 
 		return $wpdb->get_var( $wpdb->prepare( $sql, $subscriber_id, $campaign_id ) );
-
 	}
 
 
@@ -490,7 +477,6 @@ class MailsterActions {
 		}
 
 		return isset( $action_counts[ $action ] ) ? $action_counts[ $action ] : 0;
-
 	}
 
 
@@ -673,7 +659,6 @@ class MailsterActions {
 		}
 
 		return isset( $action_counts[ $campaign_id ] ) && isset( $action_counts[ $campaign_id ][ $action ] ) ? $action_counts[ $campaign_id ][ $action ] : 0;
-
 	}
 
 
@@ -803,7 +788,6 @@ class MailsterActions {
 		}
 
 		return 0;
-
 	}
 
 
@@ -906,7 +890,6 @@ class MailsterActions {
 		}
 
 		return isset( $action_counts[ $list_id ] ) && isset( $action_counts[ $list_id ][ $action ] ) ? $action_counts[ $list_id ][ $action ] : 0;
-
 	}
 
 
@@ -963,7 +946,6 @@ class MailsterActions {
 			default:
 				return '128,128,128';
 		}
-
 	}
 
 
@@ -1051,7 +1033,6 @@ class MailsterActions {
 		}
 
 		return isset( $actions[ $subscriber_id ] ) && isset( $actions[ $subscriber_id ][ $action ] ) ? $actions[ $subscriber_id ][ $action ] : false;
-
 	}
 
 
@@ -1095,7 +1076,6 @@ class MailsterActions {
 		}
 
 		return $clicked_links;
-
 	}
 
 
@@ -1134,7 +1114,6 @@ class MailsterActions {
 		}
 
 		return $clients;
-
 	}
 
 
@@ -1170,7 +1149,6 @@ class MailsterActions {
 		}
 
 		return $environment;
-
 	}
 
 
@@ -1195,7 +1173,6 @@ class MailsterActions {
 		}
 
 		return $error_list;
-
 	}
 
 
@@ -1263,7 +1240,6 @@ class MailsterActions {
 		}
 
 		return $wpdb->get_results( $sql );
-
 	}
 
 
@@ -1304,7 +1280,6 @@ class MailsterActions {
 		$sql .= ' ORDER BY a.timestamp DESC, a.type DESC';
 
 		return $wpdb->get_results( $sql );
-
 	}
 
 
@@ -1330,8 +1305,5 @@ class MailsterActions {
 		}
 
 		return null;
-
 	}
-
-
 }

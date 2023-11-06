@@ -108,10 +108,9 @@
 
 	add_filter(
 		'quicktags_settings',
-		function( $qtint, $editor_id ) {
+		function ( $qtint, $editor_id ) {
 			$qtint['buttons'] = apply_filters( 'mailster_editor_quicktags', 'strong,em,link,block,del,img,ul,ol,li,spell,close' );
 			return $qtint;
-
 		},
 		99,
 		2

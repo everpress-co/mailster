@@ -49,7 +49,6 @@ class Mailster_REST_Staticmap_Controller extends WP_REST_Controller {
 
 			)
 		);
-
 	}
 
 	public function get_map( $request ) {
@@ -116,5 +115,4 @@ class Mailster_REST_Staticmap_Controller extends WP_REST_Controller {
 		$map->displayPNG();
 		exit;
 	}
-
 }

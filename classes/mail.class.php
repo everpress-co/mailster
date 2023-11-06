@@ -1,4 +1,5 @@
 <?php
+#[AllowDynamicProperties]
 
 class MailsterMail {
 
@@ -215,7 +216,6 @@ class MailsterMail {
 		}
 
 		$this->hostname = $this->serverHostname();
-
 	}
 
 
@@ -253,7 +253,6 @@ class MailsterMail {
 		if ( ! empty( $str ) ) {
 			$this->error_log[] = $str;
 		}
-
 	}
 
 
@@ -271,7 +270,6 @@ class MailsterMail {
 	public function get_error_log( $separator = "\n" ) {
 
 		return implode( $separator, $this->error_log );
-
 	}
 
 
@@ -488,7 +486,6 @@ class MailsterMail {
 				}
 			}
 		}
-
 	}
 
 
@@ -533,7 +530,6 @@ class MailsterMail {
 				$this->mailer->addCustomHeader( $key . ':' . str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $value ) );
 			}
 		}
-
 	}
 
 
@@ -559,12 +555,10 @@ class MailsterMail {
 		if ( $template && $file ) {
 			$template_obj  = mailster( 'template', $template, $file );
 			$this->content = $template_obj->get( true, true );
+		} elseif ( $file ) {
+			$this->content = '{headline}<br>{content}';
 		} else {
-			if ( $file ) {
-				$this->content = '{headline}<br>{content}';
-			} else {
-				$this->content = '{content}';
-			}
+			$this->content = '{content}';
 		}
 
 		$placeholder = mailster( 'placeholder', $this->content );
@@ -605,7 +599,6 @@ class MailsterMail {
 
 		$this->close();
 		return $success;
-
 	}
 
 
@@ -636,7 +629,7 @@ class MailsterMail {
 
 		if ( $this->sent ) {
 
-			$this->sent_within_period++;
+			++$this->sent_within_period;
 			$this->sentlimitreached = $this->sent_within_period >= $this->send_limit;
 			set_transient( '_mailster_send_period', $this->sent_within_period );
 
@@ -648,7 +641,6 @@ class MailsterMail {
 		} else {
 			return false;
 		}
-
 	}
 
 
@@ -677,7 +669,6 @@ class MailsterMail {
 			$this->sent       = false;
 
 		}
-
 	}
 
 
@@ -687,7 +678,6 @@ class MailsterMail {
 		$this->mailer->clearAttachments();
 		$this->mailer->clearCustomHeaders();
 		$this->mailer->clearReplyTos();
-
 	}
 
 
@@ -839,7 +829,6 @@ class MailsterMail {
 			$this->sent       = false;
 
 		}
-
 	}
 
 
@@ -876,7 +865,6 @@ class MailsterMail {
 		}
 
 		return false;
-
 	}
 
 
@@ -906,7 +894,6 @@ class MailsterMail {
 		}
 
 		return false;
-
 	}
 
 
@@ -1025,6 +1012,4 @@ class MailsterMail {
 
 		return $result;
 	}
-
-
 }
