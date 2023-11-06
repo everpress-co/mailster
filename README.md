@@ -187,6 +187,19 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.0 (Beta 4)
+
+- PHP 8.2 compatibility 🎉
+- updated: WP Coding Standards 3.0
+- updated: Freemius SDK to 2.6.0
+- improved: preview of forms from the block form overview
+- improved: rewrite rules for newsletter homepage
+- fixed: inline style attribute got removed in some edge cases
+- improved: placeholder image tags algorithmus
+- update: csss for form block editor
+- improved: beacon message loader
+- fixed: scroll percentage trigger was not working
+
 ### 4.0.0 (Beta 3)
 
 - breaking change: changed slug of Elementor module from 'mailster-block-form' to 'et-mailster-block-form' to prevent conflicts
