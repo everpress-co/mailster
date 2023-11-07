@@ -40,7 +40,7 @@ $methods = array(
 	),
 	'mailgun'    => array(
 		'name'    => 'Mailgun',
-		'signup'  => 'https://www.mailgun.com/pricing/',
+		'signup'  => 'https://get.sinchemail.com/mailster-mailgun',
 		'desc'    => __( 'Send your campaigns via Mailgun. You need to create an API Key in your Mailgun Account.', 'mailster' ),
 		'article' => '611bb21db55c2b04bf6df0ca',
 		'plugin'  => 'mailster-mailgun/mailster-mailgun.php',
@@ -68,7 +68,7 @@ $methods = array(
 	),
 	'mailjet'    => array(
 		'name'    => 'MailJet',
-		'signup'  => 'https://www.mailjet.com/pricing/',
+		'signup'  => 'https://get.sinchemail.com/mailster-mailjet',
 		'desc'    => __( 'Send your campaigns via MailJet. You need to create an API Key in your MailJet Account.', 'mailster' ),
 		'article' => false,
 		'plugin'  => 'mailster-mailjet/mailster-mailjet.php',
