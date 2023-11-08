@@ -30,7 +30,7 @@ import { useSelect } from '@wordpress/data';
  */
 
 const BASIC_STYLING = `/*some basic CSS for input fields*/
-input, select {
+input, select, textarea {
     border: 1px solid;
     border-radius: 3px;
     padding: .6em;
@@ -278,28 +278,28 @@ const EditTextArea = (props) => {
 	}
 
 	useEffect(() => {
-		const timeout = setTimeout(() => {
-			const placeholder = '/* Style for ' + CSS_TAB_NAMES[tab.name] + ' /*';
+		const el = document.getElementById(id);
+		if (!el) return;
 
-			const el = document.getElementById(id);
-			if (!el) return;
+		document.querySelectorAll('.custom-css-tabs .CodeMirror').forEach((el) => {
+			el.remove();
+		});
 
-			const settings = {
-				...wp.codeEditor.defaultSettings.codemirror,
-				...{
-					mode: 'text/css',
-					autofocus: true,
-					placeholder: placeholder,
-				},
-			};
+		const placeholder = '/* Style for ' + CSS_TAB_NAMES[tab.name] + ' /*';
 
-			wp.CodeMirror.fromTextArea(el, settings).on('change', (editor) =>
-				setCss(tab.name, editor.getValue())
-			);
-		}, 0);
+		const settings = {
+			...wp.codeEditor.defaultSettings.codemirror,
+			...{
+				mode: 'text/css',
+				autofocus: true,
+				placeholder: placeholder,
+			},
+		};
 
-		return () => clearTimeout(timeout);
-	}, []);
+		wp.CodeMirror.fromTextArea(el, settings).on('change', (editor) => {
+			setCss(tab.name, editor.getValue());
+		});
+	}, [id]);
 
 	return (
 		<TextareaControl
@@ -308,7 +308,7 @@ const EditTextArea = (props) => {
 				'Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form.',
 				'mailster'
 			)}
-			value={css[tab.name]}
+			value={css[tab.name] || ''}
 			onChange={(value) => setCssDebounce(tab, tab.name)}
 		/>
 	);
