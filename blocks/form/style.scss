@@ -35,6 +35,9 @@ body.single-mailster-form {
 		position: fixed;
 		visibility: visible;
 		overflow: auto;
+		display: flex;
+		justify-items: center;
+		align-items: center;
 	}
 	.mailster-block-form-type-content * {
 		visibility: visible;

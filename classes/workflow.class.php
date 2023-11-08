@@ -780,13 +780,34 @@ class MailsterWorkflow {
 				'tags'          => $tags,
 			);
 
-			if ( mailster( 'queue' )->add( $args ) ) {
-				$this->update( array( 'timestamp' => $timestamp ) );
+			// TODO: send via queue or directly
+			$queue = true;
+
+			// if timestamp is in the future
+			if ( $timestamp > time() ) {
+				$queue = true;
 			}
 
-			return false;
+			if ( $queue ) {
+				if ( mailster( 'queue' )->add( $args ) ) {
+					$this->update( array( 'timestamp' => $timestamp ) );
+				}
+				return false;
+			}
+
+			$track       = null;
+			$force       = false;
+			$log         = true;
+			$attachments = array();
+
+			$result = mailster( 'campaigns' )->send( $args['campaign_id'], $args['subscriber_id'], $track, $force, $log, $args['tags'], $attachments );
+
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
 		}
 
+		// step done => continue
 		return true;
 
 		// TODO check when step is inclomplete and the campaigns hasn't been sent already

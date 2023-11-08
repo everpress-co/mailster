@@ -187,6 +187,13 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.0 (Beta 5)
+
+- fixed: forms popup appear on wrong places
+- fixed: conditions were sometimes wrongly not fullfilled
+- fixed: automations don't get triggered caused by a wrong db column
+- change: hide "Show form" option if used in content
+
 ### 4.0.0 (Beta 4)
 
 - PHP 8.2 compatibility 🎉
