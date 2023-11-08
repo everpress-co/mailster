@@ -142,35 +142,37 @@ const EditTextArea = (props) => {
 	}
 
 	useEffect(() => {
-		const timeout = setTimeout(() => {
-			const placeholder =
-				'/* JavaScript triggered on ' + EVENT_TAB_NAMES[tab.name] + ' /*';
+		const el = document.getElementById(id);
+		if (!el) return;
 
-			const el = document.getElementById(id);
-			if (!el) return;
+		document
+			.querySelectorAll('.custom-events-tabs .CodeMirror')
+			.forEach((el) => {
+				el.remove();
+			});
 
-			const settings = {
-				...wp.codeEditor.defaultSettings.codemirror,
-				...{
-					mode: 'text/css',
-					autofocus: true,
-					placeholder: placeholder,
-				},
-			};
+		const placeholder =
+			'/* JavaScript triggered on ' + EVENT_TAB_NAMES[tab.name] + ' /*';
 
-			wp.CodeMirror.fromTextArea(el, settings).on('change', (editor) =>
-				setEventsDebounce(tab.name, editor.getValue())
-			);
-		}, 0);
+		const settings = {
+			...wp.codeEditor.defaultSettings.codemirror,
+			...{
+				mode: 'text/css',
+				autofocus: true,
+				placeholder: placeholder,
+			},
+		};
 
-		return () => clearTimeout(timeout);
-	}, []);
+		wp.CodeMirror.fromTextArea(el, settings).on('change', (editor) =>
+			setEventsDebounce(tab.name, editor.getValue())
+		);
+	}, [id]);
 
 	return (
 		<TextareaControl
 			id={id}
 			help={EVENT_EXPLANATIONS[tab.name]}
-			value={events[tab.name]}
+			value={events[tab.name] || ''}
 			onChange={(value) => setEventsDebounce(tab, tab.name)}
 		/>
 	);
