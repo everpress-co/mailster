@@ -674,22 +674,23 @@ if ( $old_version ) {
 				$mailster_options['legacy_forms'] = true;
 			}
 
+			$flush_rewrite_rules = true;
+
 			mailster( 'geo' )->clear_cron();
 			mailster( 'geo' )->set_cron( 'single' );
 
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_colors', 'mailster_texts', 'mailster_notices', 'mailster_updated')" );
 			update_option( 'mailster_notices_count', 0 );
 
+			// since Beta 4 v5
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_workflows CHANGE `context` `context` longtext" );
+
 			mailster( 'convert' )->notice();
 
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
-
 			$texts = wp_parse_args( $texts, $default_texts );
-
-			do_action( 'mailster_update', $old_version_sanitized, $new_version );
-			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
 			// Beta Feedback
 			mailster_beacon_message( '8b1d5a1d-6aad-4243-a1c5-73f53407637a', MONTH_IN_SECONDS );
@@ -699,8 +700,9 @@ if ( $old_version ) {
 				mailster_beacon_message( '295a58cf-4460-4b07-9ed4-0f6f1840699b', MONTH_IN_SECONDS * 3 );
 			}
 
+			do_action( 'mailster_update', $old_version_sanitized, $new_version );
+			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
-			$flush_rewrite_rules = true;
 	}
 
 	update_option( 'mailster_version_old', $old_version );

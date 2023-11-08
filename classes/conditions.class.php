@@ -41,7 +41,7 @@ class MailsterConditions {
 			)
 		);
 
-		return $this->{$name};
+		return ! empty( $query );
 	}
 
 

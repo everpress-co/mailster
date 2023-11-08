@@ -402,7 +402,6 @@ class MailsterTrigger {
 
 		$suppress_errors = $wpdb->suppress_errors( true );
 
-		// if ( $wpdb->insert( "{$wpdb->prefix}mailster_workflows", $job ) ) {
 		if ( false !== $wpdb->query( $sql ) ) {
 			$success = true;
 		} else {
