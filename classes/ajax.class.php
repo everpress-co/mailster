@@ -612,6 +612,8 @@ class MailsterAjax {
 
 			$return['log'] = $mail->get_error_log();
 
+			$receivers = explode( ',', $to );
+
 		} else {
 
 			$success = true;
@@ -819,7 +821,7 @@ class MailsterAjax {
 
 		if ( ! isset( $return['msg'] ) ) {
 			$return['msg'] = ( $success )
-				? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
+				? sprintf( esc_html__( 'Message sent to %s. Check your inbox!', 'mailster' ), implode( ', ', $receivers ) )
 				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<br><strong>' . $mail->get_errors() . '</strong>';
 		}
 
@@ -2704,6 +2706,7 @@ class MailsterAjax {
 			case 'activate':
 				$success        = mailster( 'helper' )->activate_plugin( $plugin );
 				$return['next'] = 'content';
+				mailster_remove_notice( 'delivery_method' );
 				break;
 			case 'deactivate':
 				$success = mailster( 'helper' )->deactivate_plugin( $plugin );

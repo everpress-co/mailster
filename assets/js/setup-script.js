@@ -34,16 +34,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.next-step', function () {
 			if ($(this).hasClass('disabled')) return false;
 
-			var form = $(this).parent().parent().find('form'),
-				data = form.serialize();
-			mailster.util.ajax(
-				'wizard_save',
-				{
-					id: currentID,
-					data: data,
-				},
-				function (response) {}
-			);
+			save();
 		})
 		.on('click', '.load-language', function () {
 			status.html(mailster.l10n.setup.load_language);
@@ -59,34 +50,118 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 		.on('click', '.quick-install', function () {
-			var _this = $(this);
+			var _this = $(this),
+				section = _this.closest('section'),
+				name = section.data('name'),
+				method = section.data('method'),
+				plugin = section.data('plugin');
+
 			if (_this.hasClass('loading')) return false;
 			_this.addClass('loading');
 			_this.prop('disabled', true);
 
-			quickInstall(
-				_this.data('method'),
-				_this.data('plugin'),
-				'install',
-				null,
-				function () {
-					$('section.current').removeClass('current');
-					_this.closest('section').addClass('current');
-					status.html('');
-					spinner.css('visibility', 'hidden');
-					$('#deliverymethod').val(_this.data('method'));
-					$('#step_delivery')
-						.find('.next-step')
-						.html(
-							sprintf(
-								mailster.l10n.setup.use_deliverymethod,
-								_this.data('name')
-							)
-						);
+			quickInstall(method, plugin, 'install', null, function () {
+				$('section.current').removeClass('current');
+				_this.closest('section').addClass('current');
+
+				$('#deliverymethod').val(method);
+				$('#step_delivery')
+					.find('.next-step')
+					.html(sprintf(mailster.l10n.setup.use_deliverymethod, name));
+				_this.removeClass('loading');
+				$('#step_delivery').find('.quick-install').removeClass('disabled');
+				_this.addClass('disabled');
+				_this.prop('disabled', false);
+				save();
+			});
+		})
+		.on('click', '.save-delivery', function () {
+			var _this = $(this),
+				form = _this.closest('form'),
+				data = form.serialize(),
+				section = _this.closest('section'),
+				name = section.data('name'),
+				method = section.data('method'),
+				plugin = section.data('plugin');
+
+			if (section.hasClass('loading')) return false;
+
+			section.addClass('loading');
+			_this.addClass('loading');
+
+			save(function () {
+				quickInstall(method, plugin, 'install', null, function (response) {
+					section.removeClass('loading');
 					_this.removeClass('loading');
-					$('#step_delivery').find('.quick-install').removeClass('disabled');
-					_this.addClass('disabled');
-					//_this.prop('disabled', false);
+				});
+			});
+		})
+		.on('click', '.send-test', function () {
+			var _this = $(this),
+				section = _this.closest('section'),
+				to = $('input[name="mailster_options[from]"]').val(),
+				formdata = _this.closest('form').serialize();
+
+			if (section.hasClass('loading')) return false;
+			section.addClass('loading');
+			_this.addClass('loading');
+			_this.prop('disabled', true);
+
+			mailster.util.ajax(
+				'send_test',
+				{
+					test: true,
+					formdata: formdata,
+					basic: true,
+					to: to,
+				},
+				function (response) {
+					if (response.data.log)
+						response.success
+							? mailster.log(response.data.log)
+							: mailster.log(response.data.log, 'error');
+
+					section.removeClass('loading');
+					_this.removeClass('loading');
+
+					_this.prop('disabled', false);
+					var msg = $('<span>' + response.data.msg + '</span>')
+						.hide()
+						.appendTo($('.deliverystatus'))
+						.slideDown(200)
+						.delay(200)
+						.fadeIn()
+						.delay(4000)
+						.fadeTo(200, 0)
+						.delay(200)
+						.slideUp(200, function () {
+							msg.remove();
+						});
+				},
+				function (jqXHR, textStatus, errorThrown) {
+					section.removeClass('loading');
+					_this.removeClass('loading');
+					_this.prop('disabled', false);
+					var msg = $(
+						'<span>' +
+							textStatus +
+							' ' +
+							jqXHR.status +
+							': ' +
+							errorThrown +
+							'</span>'
+					)
+						.hide()
+						.appendTo($('.deliverystatus'))
+						.slideDown(200)
+						.delay(200)
+						.fadeIn()
+						.delay(4000)
+						.fadeTo(200, 0)
+						.delay(200)
+						.slideUp(200, function () {
+							msg.remove();
+						});
 				}
 			);
 		})
@@ -124,6 +199,18 @@ mailster = (function (mailster, $, window, document) {
 			});
 	}
 
+	function save(cb) {
+		var data = currentStep.find('form').serialize();
+
+		mailster.util.ajax(
+			'wizard_save',
+			{ id: currentID, data: data },
+			function (response) {
+				response.success && cb && cb(response);
+			}
+		);
+	}
+
 	mailster.$.window.on('hashchange', function () {
 		var id = location.hash.substr(1) || 'start',
 			current = $('.mailster-setup-steps-nav').find("a[href='#" + id + "']");
@@ -147,10 +234,8 @@ mailster = (function (mailster, $, window, document) {
 				}
 				break;
 			case 'finish':
-				mailster.util.ajax('wizard_save', {
-					id: id,
-					data: null,
-				});
+				save();
+
 				break;
 		}
 	});
@@ -225,6 +310,8 @@ mailster = (function (mailster, $, window, document) {
 						);
 					} else if (response.data.content) {
 						el.html(response.data.content);
+						status.html('');
+						spinner.css('visibility', 'hidden');
 						cb && cb(response);
 					}
 				} else {

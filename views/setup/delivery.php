@@ -86,21 +86,26 @@ if ( isset( $methods[ $method ] ) ) {
 
 <div class="deliverymethods">
 <?php foreach ( $methods as $key => $data ) : ?>	
-	<section class="<?php echo ( $method === $key ) ? 'current' : ''; ?>">
+	<section class="<?php echo ( $method === $key ) ? 'current' : ''; ?>"  data-plugin="<?php echo esc_attr( $data['plugin'] ); ?>" data-name="<?php echo esc_attr( $data['name'] ); ?>" data-method="<?php echo esc_attr( $key ); ?>">
 		<img src="https://static.mailster.co/images/wizard/<?php echo esc_attr( $key ); ?>.png" width="128" height="128" loading="lazy">
 		<h3><?php echo esc_html( $data['name'] ); ?></h3>
 		<p><?php echo esc_html( $data['desc'] ); ?></p>
-		<div class="deliverytab" id="deliverytab-<?php echo esc_attr( $key ); ?>"><?php	( $method === $key ) ? do_action( 'mailster_deliverymethod_tab_' . $key ) : false; ?></div>
+		<div class="deliverytab" id="deliverytab-<?php echo esc_attr( $key ); ?>">
+			<?php ( $method === $key ) ? do_action( 'mailster_deliverymethod_tab_' . $key ) : false; ?>
+		</div>
+		<p class="alignright">			
+			<a class="button button-secondary send-test" title="<?php printf( esc_attr__( 'Send a test message to your current from address via "%s"', 'mailster' ), esc_html( $data['name'] ) ); ?>"><?php esc_html_e( 'Send Test', 'mailster' ); ?></a>
+			<a class="button button-primary save-delivery"><?php printf( esc_html__( 'Save Settings for %s', 'mailster' ), esc_html( $data['name'] ) ); ?></a>
+		</p>
 		<p>
-		<a class="button quick-install" data-plugin="<?php echo esc_attr( $data['plugin'] ); ?>" data-name="<?php echo esc_attr( $data['name'] ); ?>" data-method="<?php echo esc_attr( $key ); ?>">
-			<?php printf( __( 'Use %s', 'mailster' ), esc_html( $data['name'] ) ); ?>
-		</a>
+		<a class="button quick-install"><?php printf( esc_html__( 'Use %s', 'mailster' ), esc_html( $data['name'] ) ); ?></a>
+		<span class="deliverystatus"></span>
 		<?php if ( $data['article'] ) : ?>
 			<?php esc_html_e( 'or', 'mailster' ); ?> <a class="button button-link" href="<?php echo mailster_url( 'https://kb.mailster.co/' . $data['article'] ); ?>" class="button button-secondary" data-article="<?php echo esc_attr( $data['article'] ); ?>"><?php esc_html_e( 'Get Help', 'mailster' ); ?></a>
 		<?php endif; ?>
 		</p>
 		<div><?php if ( $data['signup'] ) : ?>
-			<a class="button button-link external" href="<?php echo esc_url( $data['signup'] ); ?>" class="button button-secondary"><?php printf( esc_html__( 'Signup for an %s account', 'mailster' ), $data['name'] ); ?></a>
+			<a class="button button-link external" href="<?php echo esc_url( $data['signup'] ); ?>"><?php printf( esc_html__( 'Signup for an %s account', 'mailster' ), $data['name'] ); ?></a>
 		<?php endif; ?></div>
 	</section>
 <?php endforeach; ?>
