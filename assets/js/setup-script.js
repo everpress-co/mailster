@@ -127,7 +127,7 @@ mailster = (function (mailster, $, window, document) {
 					_this.prop('disabled', false);
 					var msg = $('<span>' + response.data.msg + '</span>')
 						.hide()
-						.appendTo($('.deliverystatus'))
+						.appendTo(section.find('.deliverystatus'))
 						.slideDown(200)
 						.delay(200)
 						.fadeIn()
@@ -152,7 +152,7 @@ mailster = (function (mailster, $, window, document) {
 							'</span>'
 					)
 						.hide()
-						.appendTo($('.deliverystatus'))
+						.appendTo(section.find('.deliverystatus'))
 						.slideDown(200)
 						.delay(200)
 						.fadeIn()
@@ -177,7 +177,7 @@ mailster = (function (mailster, $, window, document) {
 				.focus()
 				.select();
 		})
-		.on('click', '.action-buttons a', addFocus)
+		.on('click', '.action-buttons a.edit-homepage', addFocus)
 		.on('click', '.template', function () {
 			$('.template.active').removeClass('active');
 			$(this).addClass('active');
@@ -185,10 +185,12 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	function addFocus() {
-		mailster.$.window.one('focus', reloadOnFocus);
+		mailster.$.window.on('focus', reloadOnFocus);
 	}
 
 	function reloadOnFocus() {
+		mailster.$.window.off('focus', reloadOnFocus);
+		mailster.$.window.off('blur', addFocus);
 		mailster.$.window.one('blur', addFocus);
 		$('.mailster-homepage-previews')
 			.find('iframe')

@@ -69,7 +69,7 @@ $beacons = array(
 			<div class="mailster-setup-step-buttons">
 
 			<?php if ( $prev ) : ?>
-				<a class="button button-link last-step alignleft" href="#<?php echo esc_attr( $prev ); ?>" title="<?php printf( esc_html__( 'Back to %s', 'mailster' ), $sections[ $id ] ); ?>"><?php esc_html_e( 'Back', 'mailster' ); ?></a>
+				<a class="button button-link last-step alignleft" href="#<?php echo esc_attr( $prev ); ?>" title="<?php printf( esc_attr__( 'Back to "%s"', 'mailster' ), $sections[ $id ] ); ?>">← <?php esc_html_e( 'Go Back', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<span class="alignleft status"></span>
 			<i class="spinner"></i>

@@ -95,7 +95,7 @@ if ( isset( $methods[ $method ] ) ) {
 		</div>
 		<p class="alignright">			
 			<a class="button button-secondary send-test" title="<?php printf( esc_attr__( 'Send a test message to your current from address via "%s"', 'mailster' ), esc_html( $data['name'] ) ); ?>"><?php esc_html_e( 'Send Test', 'mailster' ); ?></a>
-			<a class="button button-primary save-delivery"><?php printf( esc_html__( 'Save Settings for %s', 'mailster' ), esc_html( $data['name'] ) ); ?></a>
+			<a class="button button-primary save-delivery"><?php esc_html_e( 'Save Delivery Settings', 'mailster' ); ?></a>
 		</p>
 		<p>
 		<a class="button quick-install"><?php printf( esc_html__( 'Use %s', 'mailster' ), esc_html( $data['name'] ) ); ?></a>
@@ -105,7 +105,7 @@ if ( isset( $methods[ $method ] ) ) {
 		<?php endif; ?>
 		</p>
 		<div><?php if ( $data['signup'] ) : ?>
-			<a class="button button-link external" href="<?php echo esc_url( $data['signup'] ); ?>"><?php printf( esc_html__( 'Signup for an %s account', 'mailster' ), $data['name'] ); ?></a>
+			<a class="button button-link external" href="<?php echo mailster_url( 'https://mailster.co/go/' . $key ); ?>"><?php printf( esc_html__( 'Signup for an %s account', 'mailster' ), $data['name'] ); ?></a>
 		<?php endif; ?></div>
 	</section>
 <?php endforeach; ?>
