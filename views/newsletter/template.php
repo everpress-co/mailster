@@ -5,7 +5,8 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$module_list = $this->templateobj->get_module_list();
+$custom_list = $this->templateobjcustom->get_modules_list();
+$module_list = $this->templateobj->get_modules_list();
 
 $classes = array( 'load' );
 if ( $editable ) {
@@ -65,9 +66,8 @@ if ( $editable ) {
 	<div id="html-wrap">
 		<?php
 		if ( $editable && ! empty( $module_list ) ) :
-			$screenshots                   = $this->templateobj->get_module_screenshots();
-			$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $this->get_template() . '/modules/';
-			$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $this->get_template() . '/modules/';
+			$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/';
+			$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/';
 			?>
 			<div id="module-selector">
 				<a class="toggle-modules mailster-btn mailster-icon" title="<?php esc_attr_e( 'Modules', 'mailster' ); ?>"></a>
@@ -76,20 +76,19 @@ if ( $editable ) {
 					<a id="module-search-remove" href="#" title="<?php esc_attr_e( 'clear search', 'mailster' ); ?>">&#10005;</a>
 				</div>
 				<div class="inner">
-					<ul>
-					<?php
-					foreach ( $module_list as $i => $module ) {
-
-						if ( isset( $screenshots[ $i ] ) && file_exists( $screenshot_modules_folder . $screenshots[ $i ] ) ) {
-							$has_screenshots = getimagesize( $screenshot_modules_folder . $screenshots[ $i ] );
-							$factor          = round( $has_screenshots[0] / 150 );
-						} else {
-							$has_screenshots = false;
-						}
-
-						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module['name'] . '"' ) ) . '" data-id="' . $i . '" tabindex="0"><span>' . esc_html( $module['name'] ) . '</span><span class="hidden">' . esc_html( strtolower( $module['name'] ) ) . '</span></a><script type="text/html">' . $module['html'] . '</script></li>';
-					}
-					?>
+					<?php if ( ! empty( $custom_list ) ) : ?>
+					<ul class="custom-modules">
+						<?php foreach ( $custom_list as $i => $module ) : ?>
+							<?php echo $module['module']; ?>
+						<?php endforeach; ?>
+					</ul>
+					<?php else : ?>
+					<ul class="custom-modules"></ul>
+					<?php endif; ?>
+					<ul class="default-modules">
+					<?php foreach ( $module_list as $i => $module ) : ?>
+						<?php echo $module['module']; ?>
+					<?php endforeach; ?>
 					</ul>
 				</div>
 			</div>
@@ -114,6 +113,26 @@ if ( $editable ) {
 			?>
 			<iframe id="mailster_iframe" class="loading" data-src="<?php echo esc_url( $url ); ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
+		</div>
+		<div id="module-save-dialog" style="display:none;">
+		<div class="mailster_template_save">
+			<div class="inner">
+				<p>
+					<label><?php esc_html_e( 'Module Name', 'mailster' ); ?><br><input type="text" class="widefat" id="new_module_name" placeholder="<?php esc_attr_e( 'Module name', 'mailster' ); ?>" value=""></label>
+				</p>
+				<p class="description">
+					<?php esc_html_e( 'Save this module to use it later. Custom modules will appear at the top of the module selector list.', 'mailster' ); ?>
+				</p>
+				<input type="hidden" id="new_module_type">
+				<textarea id="new_module_content" class="hidden"></textarea>				
+
+			</div>
+			<div class="foot">			
+				<button class="button button-primary save-module"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
+				<button class="button save-module-cancel"><?php esc_html_e( 'Cancel', 'mailster' ); ?></button>
+				<span class="spinner" id="new_module-ajax-loading"></span>
+			</div>
+	</div>
 		</div>
 	</div>
 

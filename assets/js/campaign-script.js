@@ -342,12 +342,14 @@ mailster = (function (mailster, $, window, document) {
 
 	function addmodule() {
 		var module = selector.data('current'),
-			html = $(this).parent().find('script').html();
+			html = $(this).parent().find('script').html(),
+			module_id = $(this).parent().data('id');
 		insert(
 			colorSwap(html),
 			module && module.is('module') ? module : false,
 			true,
-			true
+			true,
+			module_id
 		);
 	}
 
@@ -442,19 +444,6 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
-	function changeName() {
-		var _this = $(this),
-			value = _this.val(),
-			module = _this.parent().parent();
-
-		if (!value) {
-			value = _this.attr('placeholder');
-			_this.val(value);
-		}
-
-		module.attr('label', value);
-	}
-
 	function remove() {
 		var module = $(this).parent().parent().parent();
 		module.fadeTo(25, 0, function () {
@@ -468,7 +457,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
-	function insert(html_or_clone, element, before, scroll) {
+	function insert(html_or_clone, element, before, scroll, module_id) {
 		var clone;
 
 		if (typeof html_or_clone == 'string') {
@@ -483,6 +472,10 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		if (!element && !mailster.editor.$.container.length) return false;
+
+		if (module_id) {
+			clone.attr('data-module', module_id);
+		}
 
 		if (element) {
 			before
@@ -524,6 +517,22 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
+	function save() {
+		var module = $(this).parent().parent().parent(),
+			name = module.attr('label'),
+			auto = module[0].hasAttribute('auto'),
+			html = mailster.editor.cleanHTML(module.html());
+
+		mailster.util.tb_show(
+			mailster.l10n.campaigns.save_module,
+			'#TB_inline?x=1&width=480&height=220&inlineId=module-save-dialog',
+			null
+		);
+		$('#new_module_name').val(name).focus().select();
+		$('#new_module_content').val(html);
+		$('#new_module_type').val(auto);
+	}
+
 	function toggleModules() {
 		mailster.$.templateWrap.toggleClass('show-modules');
 		mailster.modules.showSelector = !mailster.modules.showSelector;
@@ -537,6 +546,49 @@ mailster = (function (mailster, $, window, document) {
 	function searchModules() {
 		module_thumbs.hide();
 		selector.find("li:contains('" + $(this).val() + "')").show();
+	}
+
+	function saveModule() {
+		mailster.trigger('disable');
+
+		var name = $('#new_module_name').val();
+		if (!name) {
+			return false;
+		}
+
+		var loader = $('#new_module-ajax-loading').css('visibility', 'visible'),
+			content = $('#new_module_content').val(),
+			auto = $('#new_module_type').val(),
+			file = $('#new_template_saveas_dropdown').val();
+
+		mailster.util.ajax(
+			'create_new_module',
+			{
+				name: name,
+				template: $('#mailster_template_name').val(),
+				auto: auto,
+				file: file,
+				content: content,
+			},
+			function (response) {
+				if (response.success) {
+					$('#module-selector')
+						.find('.custom-modules')
+						.html(response.data.html);
+					tb_remove();
+					!mailster.modules.showSelector && toggleModules();
+				} else {
+					alert(response.data.msg);
+				}
+				mailster.trigger('enable');
+				loader.css('visibility', 'hidden');
+			},
+			function (jqXHR, textStatus, errorThrown) {
+				mailster.trigger('enable');
+				loader.css('visibility', 'hidden');
+			}
+		);
+		return false;
 	}
 
 	function initFrame() {
@@ -553,7 +605,7 @@ mailster = (function (mailster, $, window, document) {
 			.on('click.mailster', 'button.duplicate', duplicate)
 			.on('click.mailster', 'button.remove', remove)
 			.on('click.mailster', 'button.codeview', codeView)
-			.on('change.mailster', 'input.modulelabel', changeName);
+			.on('click.mailster', 'button.save', save);
 
 		selector
 			.off('.mailster')
@@ -588,7 +640,9 @@ mailster = (function (mailster, $, window, document) {
 						event.preventDefault();
 					})
 					.on('drop.mailster', function (event) {
-						var html = $(startevent.target).find('script').html();
+						var html = $(startevent.target).find('script').html(),
+							module_id = $(startevent.target).data('id');
+
 						insert(
 							colorSwap(html),
 							mailster.editor.$.modules.length
@@ -599,7 +653,7 @@ mailster = (function (mailster, $, window, document) {
 								: false,
 							pre_dropzone[0] === event.target,
 							false,
-							true
+							module_id
 						);
 						event.preventDefault();
 					});
@@ -635,18 +689,24 @@ mailster = (function (mailster, $, window, document) {
 		}
 	});
 
-	mailster.$.template
-		.on('click', 'a.toggle-modules', toggleModules)
-		.on('keydown', 'a.addmodule', function (event) {
-			if (13 == event.which) {
-				addmodule.call(this);
-			}
-		})
-		.on('click', 'a.addmodule', addmodule)
-		.on('click', '#module-search-remove', function () {
-			search.val('').focus().trigger('keyup');
-			return false;
-		});
+	mailster.editable &&
+		mailster.$.template
+			.on('click', 'a.toggle-modules', toggleModules)
+			.on('keydown', 'a.addmodule', function (event) {
+				if (13 == event.which) {
+					addmodule.call(this);
+				}
+			})
+			.on('click', 'a.addmodule', addmodule)
+			.on('click', '#module-search-remove', function () {
+				search.val('').focus().trigger('keyup');
+				return false;
+			});
+
+	mailster.editable &&
+		mailster.$.document
+			.on('click', 'button.save-module', saveModule)
+			.on('click', 'button.save-module-cancel', tb_remove);
 
 	search.on('keyup', searchModules).on('focus', function () {
 		search.select();

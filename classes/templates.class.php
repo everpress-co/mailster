@@ -51,7 +51,7 @@ class MailsterTemplates {
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 50 );
 		add_action( 'mailster_copy_template', array( &$this, 'copy_template' ) );
 		add_action( 'wp_version_check', array( &$this, 'check_for_updates' ) );
-		add_action( 'mailster_get_screenshots', array( &$this, 'get_screenshots' ), 10, 3 );
+		add_action( 'mailster_get_screenshots', array( &$this, 'get_screenshots' ), 10, 4 );
 	}
 
 
@@ -812,8 +812,9 @@ class MailsterTemplates {
 	 * @param unknown $slug
 	 * @param unknown $file    (optional)
 	 * @param unknown $async   (optional)
+	 * @param unknown $custom_modules (optional)
 	 */
-	public function get_screenshots( $slug, $file = 'index.html', $async = true ) {
+	public function get_screenshots( $slug, $file = 'index.html', $async = true, $custom_modules = false ) {
 
 		$slug = ( $slug );
 		$file = ( $file );
@@ -833,17 +834,47 @@ class MailsterTemplates {
 		$screenshot_modules_folder = $screenshot_folder_base . $slug . '/modules/' . $hash . '/';
 		$screenshoturi             = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
+		$raw = file_get_contents( $filedir );
+
+		if ( $custom_modules ) {
+
+			$module_dir = dirname( $filedir ) . '/modules/';
+			// no modules
+			if ( ! is_dir( $module_dir ) ) {
+				return;
+			}
+
+			$modules = glob( $module_dir . '*.html' );
+
+			$html = '';
+
+			foreach ( $modules as $module ) {
+
+				$module = basename( $module );
+
+				$html .= file_get_contents( $module_dir . $module ) . "\n";
+			}
+
+			$raw = preg_replace( '#<modules>(.*)<\/modules>#is', '<modules>' . trim( $html ) . '</modules>', $raw );
+
+		}
+
+		// no modules found
+		if ( ! preg_match( '#<modules([^>]*)>(.*?)<\/modules>#is', $raw, $modules ) ) {
+			return;
+		}
+
+		if ( ! preg_match_all( '#<module([^>]*)>(.*?)<\/module>#is', $modules[2], $matches ) ) {
+			return;
+		}
+
+		$template = mailster( 'template', $slug, $file, $custom_modules );
+		$modules  = $template->get_modules_list();
+
 		$wp_filesystem = mailster_require_filesystem();
 
 		if ( ! is_dir( $screenshot_folder ) ) {
 			mailster( 'helper' )->mkdir( $screenshot_folder, true );
-		}
-
-		$raw = file_get_contents( $filedir );
-
-		// no modules found
-		if ( ! preg_match( '#<module([^>]*)>(.*)<\/module>#is', $raw, $matches ) ) {
-			return;
 		}
 
 		$request_url = 'https://api.mailster.co/module/v2/';
@@ -864,6 +895,7 @@ class MailsterTemplates {
 			'x-mailster-site'    => get_bloginfo( 'url' ),
 			'x-mailster-license' => mailster()->get_license(),
 			'x-mailster-url'     => $fileuri,
+			'x-mailster-custom'  => $custom_modules,
 		);
 
 		$response = wp_remote_get(
@@ -896,9 +928,8 @@ class MailsterTemplates {
 			unset( $raw );
 
 			if ( $async ) {
-				$this->schedule_screenshot( $slug, $file, 10, $async );
+				$this->schedule_screenshot( $slug, $file, 10, $async, $custom_modules );
 				return;
-
 			}
 
 			$response_headers = wp_remote_retrieve_headers( $response );
@@ -910,11 +941,11 @@ class MailsterTemplates {
 
 			switch ( $response_code ) {
 				case 201:
-					$this->schedule_screenshot( $slug, $file, 10, $async );
+					$this->schedule_screenshot( $slug, $file, 10, $async, $custom_modules );
 					break;
 				case 500:
 				case 503:
-					$this->schedule_screenshot( $slug, $file, 1800, $async );
+					$this->schedule_screenshot( $slug, $file, 1800, $async, $custom_modules );
 					break;
 				case 406:
 					if ( ! is_array( $blocked ) ) {
@@ -935,13 +966,19 @@ class MailsterTemplates {
 
 		if ( ! function_exists( 'download_url' ) ) {
 			include ABSPATH . 'wp-admin/includes/file.php';
+
 		}
 
 		$processed = 0;
 
 		if ( isset( $result->modules ) && is_array( $result->modules ) ) {
 			foreach ( $result->modules as $i => $fileurl ) {
-				if ( file_exists( $screenshot_modules_folder . $i . '.jpg' ) ) {
+
+				$hash = $modules[ $i ]['id'];
+
+				$screenshot_name = $screenshot_modules_folder . $hash . '.jpg';
+
+				if ( file_exists( $screenshot_name ) ) {
 					continue;
 				}
 
@@ -953,18 +990,18 @@ class MailsterTemplates {
 						continue;
 					}
 
-					if ( ! is_dir( $screenshot_modules_folder ) ) {
-						wp_mkdir_p( $screenshot_modules_folder );
+					if ( ! is_dir( dirname( $screenshot_name ) ) ) {
+						wp_mkdir_p( dirname( $screenshot_name ) );
 					}
 
-					if ( ! $wp_filesystem->copy( $tempfile, $screenshot_modules_folder . $i . '.jpg' ) ) {
-						copy( $tempfile, $screenshot_modules_folder . $i . '.jpg' );
+					if ( ! $wp_filesystem->copy( $tempfile, $screenshot_name ) ) {
+						copy( $tempfile, $screenshot_name );
 					}
 
 					++$processed;
 
 					if ( $processed >= 30 ) {
-						$this->schedule_screenshot( $slug, $file, 1 );
+						$this->schedule_screenshot( $slug, $file, 1, $custom_modules );
 						break;
 					}
 				}
@@ -980,15 +1017,20 @@ class MailsterTemplates {
 	 * @param unknown $file
 	 * @param unknown $delay   (optional)
 	 * @param unknown $async   (optional)
+	 * @param unknown $custom_modules (optional)
 	 */
-	public function schedule_screenshot( $slug, $file, $delay = 0, $async = true ) {
+	public function schedule_screenshot( $slug, $file, $delay = 0, $async = true, $custom_modules = null ) {
 
 		if ( ! mailster_option( 'module_thumbnails' ) ) {
-			$modules = false;
+			return false;
+		}
+		// schedule custom modules first
+		if ( ! wp_next_scheduled( 'mailster_get_screenshots', array( $slug, $file, $async, true ) ) ) {
+			wp_schedule_single_event( time() + $delay, 'mailster_get_screenshots', array( $slug, $file, $async, true ) );
 		}
 
-		if ( ! wp_next_scheduled( 'mailster_get_screenshots', array( $slug, $file, $async ) ) ) {
-			wp_schedule_single_event( time() + $delay, 'mailster_get_screenshots', array( $slug, $file, $async ) );
+		if ( ! wp_next_scheduled( 'mailster_get_screenshots', array( $slug, $file, $async, false ) ) ) {
+			wp_schedule_single_event( time() + $delay, 'mailster_get_screenshots', array( $slug, $file, $async, false ) );
 		}
 	}
 

@@ -6,6 +6,7 @@ class MailsterCampaigns {
 	private $template;
 	private $templatefile;
 	private $templateobj;
+	private $templateobjcustom;
 	private $post_changed = array();
 
 	public $post_data;
@@ -1646,6 +1647,7 @@ class MailsterCampaigns {
 					'remove_module'          => esc_html__( 'Remove module', 'mailster' ),
 					'remove_all_modules'     => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
 					'save_template'          => esc_html__( 'Save Template File', 'mailster' ),
+					'save_module'            => esc_html__( 'Save Module', 'mailster' ),
 					'add_module'             => esc_html__( 'Add Module', 'mailster' ),
 					'module'                 => esc_html__( 'Module %s', 'mailster' ),
 					'codeview'               => esc_html__( 'Codeview', 'mailster' ),
@@ -5178,7 +5180,8 @@ class MailsterCampaigns {
 		$this->template     = $slug;
 		$this->templatefile = $file;
 
-		$this->templateobj = mailster( 'template', $slug, $file );
+		$this->templateobj       = mailster( 'template', $slug, $file );
+		$this->templateobjcustom = mailster( 'template', $slug, $file, true );
 	}
 
 

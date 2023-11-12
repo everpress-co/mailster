@@ -213,9 +213,10 @@ class Mailster {
 	 *
 	 * @param unknown $slug (optional)
 	 * @param unknown $file (optional)
+	 * @param unknown $custom_modules (optional)
 	 * @return unknown
 	 */
-	public function template( $slug = null, $file = null ) {
+	public function template( $slug = null, $file = null, $custom_modules = false ) {
 
 		if ( is_null( $slug ) ) {
 			$slug = mailster_option( 'default_template', 'mailster' );
@@ -223,7 +224,7 @@ class Mailster {
 		$file = is_null( $file ) ? 'index.html' : $file;
 		require_once MAILSTER_DIR . 'classes/template.class.php';
 
-		$template = new MailsterTemplate( $slug, $file );
+		$template = new MailsterTemplate( $slug, $file, $custom_modules );
 
 		return $template;
 	}
@@ -1077,9 +1078,10 @@ class Mailster {
 	 * @param unknown $content
 	 * @param unknown $customhead (optional)
 	 * @param unknown $preserve_comments (optional)
+	 * @param unknown $body_only (optional)
 	 * @return unknown
 	 */
-	public function sanitize_content( $content, $customhead = null, $preserve_comments = false ) {
+	public function sanitize_content( $content, $customhead = null, $preserve_comments = false, $body_only = false ) {
 		if ( empty( $content ) ) {
 			return '';
 		}
@@ -1196,6 +1198,12 @@ class Mailster {
 			$content = preg_replace( $regex, '<html$1', $content );
 		}
 		$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
+		if ( $body_only ) {
+			preg_match( '#<body([^>]*)>(.*)<\/body>#is', $content, $matches );
+			if ( ! empty( $matches ) ) {
+				$content = $matches[2];
+			}
+		}
 
 		return apply_filters( 'mailster_sanitize_content', $content, $org_content );
 	}

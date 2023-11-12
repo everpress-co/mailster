@@ -1216,6 +1216,9 @@ a.mailster-btn.editbutton {
 #ui-datepicker-div {
 	width: 230px;
 }
+#new_module_name {
+	font-size: 1.8em;
+}
 .fixed-optionbar #iframe-wrap {
 	margin-top: 42px;
 }
@@ -1417,6 +1420,7 @@ a.mailster-btn.editbutton {
 #module-selector ul {
 	margin: 0;
 	padding: 0;
+	overflow: hidden;
 }
 #mailster_template #template-wrap.load #module-selector {
 	opacity: 0.2;
@@ -1424,6 +1428,7 @@ a.mailster-btn.editbutton {
 #module-selector ul li {
 	display: block;
 	margin: 0;
+	overflow: hidden;
 	float: none;
 }
 #module-selector ul li a.mailster-btn {
@@ -1443,11 +1448,22 @@ a.mailster-btn.editbutton {
 	width: 160px;
 	text-align: center;
 	border-radius: 4px;
+	transition: all 0.25s ease;
+	overflow: hidden;
 }
 .dark-mode #module-selector ul li a.mailster-btn {
 	border-color: #32373c;
 }
 
+#module-selector ul.custom-modules {
+	margin-bottom: 18px;
+}
+#module-selector ul.custom-modules:empty {
+	margin-bottom: 0px;
+}
+#module-selector ul.custom-modules li a.mailster-btn {
+	border-color: #2bb3e7;
+}
 #module-selector ul li a.mailster-btn.has-screenshot {
 	background-size: 100%;
 	background-position: 50% 50%;
@@ -1475,6 +1491,10 @@ a.mailster-btn.editbutton {
 	border: 1px solid #999;
 	color: #23282d;
 	box-shadow: 0 2px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 5%);
+}
+#module-selector ul.custom-modules li a.mailster-btn,
+#module-selector ul.custom-modules li a.mailster-btn:focus {
+	border-color: #2bb3e7;
 }
 #module-selector ul li.ui-draggable-dragging {
 	background-color: red;

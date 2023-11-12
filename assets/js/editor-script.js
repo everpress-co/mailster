@@ -58,9 +58,7 @@ mailster = (function (mailster, $, window, document) {
 				mailster.editbar.open({
 					type: 'btn',
 					offset: data.offset,
-					element: $(element)
-						.attr('tmpbutton', '')
-						.appendTo(data.element),
+					element: $(element).attr('tmpbutton', '').appendTo(data.element),
 					name: data.name,
 				});
 				return false;
@@ -116,19 +114,8 @@ mailster = (function (mailster, $, window, document) {
 		}
 	});
 
-	mailster.editor.getFrameContent = function () {
-		if (!mailster.editor.$.body.length) {
-			return false;
-		}
-
-		var body = mailster.editor.$.body[0],
-			clone,
-			content,
-			bodyattributes,
-			attrcount,
-			s = '';
-
-		clone = $('<div>' + body.innerHTML + '</div>');
+	mailster.editor.cleanHTML = function (html) {
+		var clone = $('<div>' + html + '</div>');
 
 		clone
 			.find(
@@ -139,15 +126,25 @@ mailster = (function (mailster, $, window, document) {
 		clone
 			.find('single, multi, module, modules, buttons')
 			.removeAttr('contenteditable spellcheck id dir style class active');
-		content = mailster.util.trim(
+
+		return mailster.util.trim(
 			clone
 				.html()
 				.replace(/\u200c/g, '&zwnj;')
 				.replace(/\u200d/g, '&zwj;')
 		);
+	};
 
-		bodyattributes = body.attributes || [];
-		attrcount = bodyattributes.length;
+	mailster.editor.getFrameContent = function () {
+		if (!mailster.editor.$.body.length) {
+			return false;
+		}
+
+		var body = mailster.editor.$.body[0],
+			content = mailster.editor.cleanHTML(body.innerHTML),
+			bodyattributes = body.attributes || [],
+			attrcount = bodyattributes.length,
+			s = '';
 
 		if (attrcount) {
 			while (attrcount--) {
@@ -295,29 +292,25 @@ mailster = (function (mailster, $, window, document) {
 					modulehelper = true;
 				}
 			)
-			.on(
-				'click.mailster',
-				'td[background], th[background]',
-				function (event) {
-					event.stopPropagation();
-					if (!modulehelper && event.target != this) return;
-					modulehelper = null;
+			.on('click.mailster', 'td[background], th[background]', function (event) {
+				event.stopPropagation();
+				if (!modulehelper && event.target != this) return;
+				modulehelper = null;
 
-					var $this = $(this),
-						offset = $this.offset(),
-						top = offset.top + 61,
-						left = offset.left,
-						name = $this.attr('label'),
-						type = 'img';
+				var $this = $(this),
+					offset = $this.offset(),
+					top = offset.top + 61,
+					left = offset.left,
+					name = $this.attr('label'),
+					type = 'img';
 
-					mailster.editbar.open({
-						offset: offset,
-						type: type,
-						name: name,
-						element: $this,
-					});
-				}
-			)
+				mailster.editbar.open({
+					offset: offset,
+					type: type,
+					name: name,
+					element: $this,
+				});
+			})
 			.on('click.mailster', 'a[editable]', function (event) {
 				event.stopPropagation();
 				event.preventDefault();
@@ -436,10 +429,7 @@ mailster = (function (mailster, $, window, document) {
 			if ($this.is('module') && !$this.find('modulebuttons').length) {
 				var name =
 						$this.attr('label') ||
-						mailster.util.sprintf(
-							mailster.l10n.campaigns.module,
-							'#' + ++mc
-						),
+						mailster.util.sprintf(mailster.l10n.campaigns.module, '#' + ++mc),
 					codeview = mailsterdata.codeview
 						? '<button class="mailster-btn codeview" title="' +
 						  mailster.l10n.campaigns.codeview +
@@ -449,17 +439,16 @@ mailster = (function (mailster, $, window, document) {
 						? '<button class="mailster-btn auto" title="' +
 						  mailster.l10n.campaigns.auto +
 						  '"></button>'
+						: '',
+					save = mailsterdata.codeview
+						? '<button class="mailster-btn save" title="' +
+						  mailster.l10n.campaigns.save_module +
+						  '"></button>'
 						: '';
 
 				$(
 					'<modulebuttons>' +
-						'<input class="modulelabel" type="text" value="' +
-						name +
-						'" placeholder="' +
-						name +
-						'" title="' +
-						mailster.l10n.campaigns.module_label +
-						'" tabindex="-1"><span>' +
+						'<span>' +
 						auto +
 						'<button class="mailster-btn duplicate" title="' +
 						mailster.l10n.campaigns.duplicate_module +
@@ -468,6 +457,7 @@ mailster = (function (mailster, $, window, document) {
 						'"></button><button class="mailster-btn down" title="' +
 						mailster.l10n.campaigns.move_module_down +
 						'"></button>' +
+						save +
 						codeview +
 						'<button class="mailster-btn remove" title="' +
 						mailster.l10n.campaigns.remove_module +
@@ -569,163 +559,123 @@ mailster = (function (mailster, $, window, document) {
 					org.addClass('mailster-loading');
 					target.addClass('mailster-loading');
 
-					mailster.util.getRealDimensions(
-						org,
-						function (org_w, org_h, org_f) {
-							mailster.util.getRealDimensions(
-								target,
-								function (target_w, target_h, target_f) {
-									if (event.altKey) {
-										org.removeClass('mailster-loading');
-										target.removeClass('mailster-loading');
-									} else if (target_id) {
-										mailster.util.ajax(
-											'create_image',
-											{
-												id: target_id,
-												width: org_w,
-												height: org_h,
-												crop: org.data('crop'),
-											},
-											function (response) {
-												org.removeAttr('src')
-													.attr({
-														'data-id': target_id,
-														title: target.attr(
-															'title'
-														),
-														alt: target.attr('alt'),
-														src: response.data.image
-															.url,
-														width: Math.round(
-															response.data.image
-																.width / org_f
-														),
-														height: Math.round(
-															response.data.image
-																.height / org_f
-														),
-													})
-													.data('id', target_id)
-													.removeClass(
-														'mailster-loading'
-													);
-											},
-											function (
-												jqXHR,
-												textStatus,
-												errorThrown
-											) {
-												alert(
-													textStatus +
-														' ' +
-														jqXHR.status +
-														': ' +
-														errorThrown +
-														'\n\nCheck the JS console for more info!'
-												);
-											}
-										);
-									} else {
-										org.removeAttr('src')
-											.attr({
-												'data-id': 0,
-												title: target.attr('title'),
-												alt: target.attr('alt'),
-												src: target.attr('src'),
-												width: Math.round(
-													org_w / org_f
-												),
-												height: Math.round(
-													org_w /
-														(target_w / target_h) /
-														org_f
-												),
-											})
-											.data('id', 0)
-											.removeClass('mailster-loading');
-									}
-
-									if (org_id) {
-										mailster.util.ajax(
-											'create_image',
-											{
-												id: org_id,
-												width: target_w,
-												height: target_h,
-												crop: target.data('crop'),
-											},
-											function (response) {
-												target
-													.removeAttr('src')
-													.attr({
-														'data-id': org_id,
-														title: org.attr(
-															'title'
-														),
-														alt: org.attr('alt'),
-														src: response.data.image
-															.url,
-														width: Math.round(
-															response.data.image
-																.width /
-																target_f
-														),
-														height: Math.round(
-															response.data.image
-																.height /
-																target_f
-														),
-													})
-													.data('id', org_id)
-													.removeClass(
-														'mailster-loading'
-													);
-
-												mailster.trigger('refresh');
-											},
-											function (
-												jqXHR,
-												textStatus,
-												errorThrown
-											) {
-												alert(
-													textStatus +
-														' ' +
-														jqXHR.status +
-														': ' +
-														errorThrown +
-														'\n\nCheck the JS console for more info!'
-												);
-											}
-										);
-									} else {
-										target
-											.removeAttr('src')
-											.attr({
-												'data-id': 0,
-												title: copy.attr('title'),
-												alt: copy.attr('alt'),
-												src: copy.attr('src'),
-												width: Math.round(
-													target_w / target_f
-												),
-												height: Math.round(
-													target_w /
-														(org_w / org_h) /
-														target_f
-												),
-											})
-											.data('id', 0)
-											.removeClass('mailster-loading');
-									}
-
-									if (!org_id && !target_id)
-										mailster.trigger('refresh');
+					mailster.util.getRealDimensions(org, function (org_w, org_h, org_f) {
+						mailster.util.getRealDimensions(
+							target,
+							function (target_w, target_h, target_f) {
+								if (event.altKey) {
+									org.removeClass('mailster-loading');
+									target.removeClass('mailster-loading');
+								} else if (target_id) {
+									mailster.util.ajax(
+										'create_image',
+										{
+											id: target_id,
+											width: org_w,
+											height: org_h,
+											crop: org.data('crop'),
+										},
+										function (response) {
+											org
+												.removeAttr('src')
+												.attr({
+													'data-id': target_id,
+													title: target.attr('title'),
+													alt: target.attr('alt'),
+													src: response.data.image.url,
+													width: Math.round(response.data.image.width / org_f),
+													height: Math.round(
+														response.data.image.height / org_f
+													),
+												})
+												.data('id', target_id)
+												.removeClass('mailster-loading');
+										},
+										function (jqXHR, textStatus, errorThrown) {
+											alert(
+												textStatus +
+													' ' +
+													jqXHR.status +
+													': ' +
+													errorThrown +
+													'\n\nCheck the JS console for more info!'
+											);
+										}
+									);
+								} else {
+									org
+										.removeAttr('src')
+										.attr({
+											'data-id': 0,
+											title: target.attr('title'),
+											alt: target.attr('alt'),
+											src: target.attr('src'),
+											width: Math.round(org_w / org_f),
+											height: Math.round(org_w / (target_w / target_h) / org_f),
+										})
+										.data('id', 0)
+										.removeClass('mailster-loading');
 								}
-							);
-						}
-					);
+
+								if (org_id) {
+									mailster.util.ajax(
+										'create_image',
+										{
+											id: org_id,
+											width: target_w,
+											height: target_h,
+											crop: target.data('crop'),
+										},
+										function (response) {
+											target
+												.removeAttr('src')
+												.attr({
+													'data-id': org_id,
+													title: org.attr('title'),
+													alt: org.attr('alt'),
+													src: response.data.image.url,
+													width: Math.round(
+														response.data.image.width / target_f
+													),
+													height: Math.round(
+														response.data.image.height / target_f
+													),
+												})
+												.data('id', org_id)
+												.removeClass('mailster-loading');
+
+											mailster.trigger('refresh');
+										},
+										function (jqXHR, textStatus, errorThrown) {
+											alert(
+												textStatus +
+													' ' +
+													jqXHR.status +
+													': ' +
+													errorThrown +
+													'\n\nCheck the JS console for more info!'
+											);
+										}
+									);
+								} else {
+									target
+										.removeAttr('src')
+										.attr({
+											'data-id': 0,
+											title: copy.attr('title'),
+											alt: copy.attr('alt'),
+											src: copy.attr('src'),
+											width: Math.round(target_w / target_f),
+											height: Math.round(target_w / (org_w / org_h) / target_f),
+										})
+										.data('id', 0)
+										.removeClass('mailster-loading');
+								}
+
+								if (!org_id && !target_id) mailster.trigger('refresh');
+							}
+						);
+					});
 				},
 			});
 	}
@@ -762,9 +712,7 @@ mailster = (function (mailster, $, window, document) {
 					} else {
 						tmpl = $('<a href="" editable label="Button"></a>');
 					}
-					tmpl = $('<div/>')
-						.text(encodeURIComponent(tmpl[0].outerHTML))
-						.html();
+					tmpl = $('<div/>').text(encodeURIComponent(tmpl[0].outerHTML)).html();
 				}
 
 				$this.attr('data-tmpl', tmpl).data('tmpl', tmpl);
@@ -883,14 +831,11 @@ mailster = (function (mailster, $, window, document) {
 
 					preloader.downsize(dimensions[0], dimensions[1]);
 					preview.css({
-						'background-image':
-							'url(' + preloader.getAsDataURL() + ')',
+						'background-image': 'url(' + preloader.getAsDataURL() + ')',
 						'background-size':
 							dimensions[0] +
 							'px ' +
-							(crop
-								? dimensions[1]
-								: dimensions[0] / file._dimensions[2]) +
+							(crop ? dimensions[1] : dimensions[0] / file._dimensions[2]) +
 							'px',
 					});
 
@@ -1011,11 +956,7 @@ mailster = (function (mailster, $, window, document) {
 						.addClass('error')
 						.find('.mailster-upload-info-text')
 						.html(mailster.l10n.campaigns.error);
-					alert(
-						mailster.l10n.campaigns.error_occurs +
-							'\n' +
-							err.message
-					);
+					alert(mailster.l10n.campaigns.error_occurs + '\n' + err.message);
 					source._preview.fadeOut(function () {
 						source._element.insertAfter(source._upload);
 						source._upload.remove();
@@ -1128,10 +1069,9 @@ mailster = (function (mailster, $, window, document) {
 										poststuff = 'link';
 									case 'homepage':
 										if (
-											(selection =
-												editor.selection.getContent({
-													format: 'text',
-												}))
+											(selection = editor.selection.getContent({
+												format: 'text',
+											}))
 										) {
 											editor.insertContent(
 												'<a href="{' +
@@ -1183,8 +1123,7 @@ mailster = (function (mailster, $, window, document) {
 					emojipicker.pickerEl.style.position = 'absolute';
 					emojipicker.pickerEl.style.top =
 						iOffset.top + mailster.util.top() + offset.top + 'px';
-					emojipicker.pickerEl.style.left =
-						iOffset.left + offset.left + 'px';
+					emojipicker.pickerEl.style.left = iOffset.left + offset.left + 'px';
 					emojipicker.on('emoji', function (emoji) {
 						editor.insertContent(emoji + ' ');
 					});
@@ -1201,10 +1140,7 @@ mailster = (function (mailster, $, window, document) {
 						c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
 					if (c) {
 						for (var i = c.length - 1; i >= 0; i--) {
-							content = content.replace(
-								c[i],
-								mailster.util.rgb2hex(c[i])
-							);
+							content = content.replace(c[i], mailster.util.rgb2hex(c[i]));
 						}
 						_self.bodyElement.innerHTML = content;
 					}
