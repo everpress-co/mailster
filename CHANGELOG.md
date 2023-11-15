@@ -1,7 +1,12 @@
+### Version 3.3.10 (2023-11-15)
+
+- fixed warning on PHP 8.2 if subscriber count is 0
+- fixed: issue with the admin bar
+- fixes: smaller issue
 
 ### Version 3.3.9 (2023-11-06)
 
-- PHP 8.2 compatilablity 🎉
+- PHP 8.2 compatibility 🎉
 - updated: WP Coding Standards 3.0
 - updated: Freemius SDK to 2.6.0
 - fixed: inline style attribute got removed in some edge cases

@@ -2905,9 +2905,65 @@ class Mailster {
 		return version_compare( $new_version, MAILSTER_VERSION, '>' );
 	}
 
+	public function get_upgrade_url( $args = array() ) {
+
+		$url = mailster_freemius()->get_upgrade_url();
+		$url = add_query_arg( $args, $url );
+
+		return $url;
+	}
+
+
+	public function checkout_url( $args = array() ) {
+
+		$url = mailster_freemius()->checkout_url();
+		$url = add_query_arg( $args, $url );
+
+		return $url;
+	}
+
 	public function is_trial() {
 
 		return mailster_freemius()->is_trial();
+	}
+
+	public function is_bf2023() {
+		// check if install is older than three month
+		if ( get_option( 'mailster_freemius' ) + ( MONTH_IN_SECONDS * 3 ) > time() ) {
+			return false;
+		}
+
+		// official time in UTC
+		return strtotime( '2023-11-20 00:00:00' ) < time() && strtotime( '2023-12-02 00:00:00' ) > time();
+	}
+
+	public function is_legacy_expired() {
+
+		// check if install is older than a year
+		$setup = get_option( 'mailster_setup' );
+		if ( get_option( 'mailster_freemius' ) + ( YEAR_IN_SECONDS ) > time() ) {
+			return false;
+		}
+
+		// check if license is legacy
+		$plan = mailster_freemius()->get_plan();
+		if ( $plan->name !== 'legacy' ) {
+			return false;
+		}
+
+		$license = mailster_freemius()->_get_license();
+
+		// lifetime license
+		if ( ! $license->expiration ) {
+			return false;
+		}
+
+		// check if expiration is older than a day
+		if ( strtotime( $license->expiration ) > strtotime( '-1 day' ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function is_outdated() {
