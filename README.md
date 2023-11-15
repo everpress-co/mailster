@@ -219,6 +219,7 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### 3.3.5
 
+- fixed warning on PHP 8.2 if subscriber count is 0
 - updated: Freemius SDK to 2.5.9
 - fixed: small CSS issues on RTL
 
