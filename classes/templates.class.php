@@ -1292,6 +1292,45 @@ class MailsterTemplates {
 
 
 	/**
+	 * Rename old way of storing module screnshots (indexes) with the new way (module id)
+	 *
+	 * Since 4.0.0
+	 */
+	public function update_module_thumbnails() {
+
+		if ( ! mailster_option( 'module_thumbnails' ) ) {
+			return;
+		}
+
+		$templates = $this->get_templates();
+
+		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );
+
+		$wp_filesystem = mailster_require_filesystem();
+
+		foreach ( $templates as $template ) {
+
+			$t = mailster( 'template', $template['slug'], basename( $template['src'] ) );
+
+			$modules = $t->get_modules_list();
+
+			$file = $t->path . '/' . $t->slug . '/' . basename( $template['src'] );
+
+			$hash = hash( 'crc32', md5_file( $file ) );
+
+			$screenshot_modules_folder = $screenshot_folder_base . $template['slug'] . '/modules/' . $hash . '/';
+			foreach ( $modules as $i => $modules ) {
+				if ( ! file_exists( $screenshot_modules_folder . $i . '.jpg' ) ) {
+					continue;
+				}
+				// rename it
+				$wp_filesystem->move( $screenshot_modules_folder . $i . '.jpg', $screenshot_modules_folder . $modules['id'] . '.jpg' );
+			}
+		}
+	}
+
+
+	/**
 	 *
 	 *
 	 * @param unknown $errors (optional)

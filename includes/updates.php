@@ -671,10 +671,7 @@ if ( $old_version ) {
 
 			}
 		case '3.3.9':
-
-
 		default:
-		
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
@@ -683,14 +680,16 @@ if ( $old_version ) {
 			mailster( 'geo' )->clear_cron();
 			mailster( 'geo' )->set_cron( 'single' );
 
-			// change the post type of the forms
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
-
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_colors', 'mailster_texts', 'mailster_notices', 'mailster_updated')" );
 			update_option( 'mailster_notices_count', 0 );
 
 			// since Beta 4 v5
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_workflows CHANGE `context` `context` longtext" );
+
+
+			mailster( 'templates' )->update_module_thumbnails();
+
+
 			mailster( 'convert' )->notice();
 
 			// reset translations
