@@ -519,7 +519,7 @@ class MailsterActions {
 					return $action_counts[ $campaign_id ];
 				}
 
-				return isset( $action_counts[ $campaign_id ][ $action ] ) ? $action_counts[ $campaign_id ][ $action ] : null;
+				return isset( $action_counts[ $campaign_id ][ $action ] ) ? $action_counts[ $campaign_id ][ $action ] : 0;
 			}
 
 			$campaign_ids = array( (int) $campaign_id );
@@ -699,7 +699,7 @@ class MailsterActions {
 					return $action_counts[ $subscriber_id ];
 				}
 
-				return isset( $action_counts[ $subscriber_id ][ $action ] ) ? $action_counts[ $subscriber_id ][ $action ] : null;
+				return isset( $action_counts[ $subscriber_id ][ $action ] ) ? $action_counts[ $subscriber_id ][ $action ] : 0;
 			}
 
 			$subscriber_ids = array( $subscriber_id );
@@ -816,7 +816,7 @@ class MailsterActions {
 					return $action_counts[ $list_id ];
 				}
 
-				return isset( $action_counts[ $list_id ][ $action ] ) ? $action_counts[ $list_id ][ $action ] : null;
+				return isset( $action_counts[ $list_id ][ $action ] ) ? $action_counts[ $list_id ][ $action ] : 0;
 			}
 
 			$list_ids = array( $list_id );
