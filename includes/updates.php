@@ -657,10 +657,7 @@ if ( $old_version ) {
 		case '3.3.5':
 		case '3.3.6':
 		case '3.3.7':
-			// do nothing
-
-
-		default:
+		case '3.3.8':
 			if ( get_option( 'mailster_freemius' ) ) {
 				$msg  = '<h2>' . esc_html__( 'Mailster 4.0 beta is now available!', 'mailster' ) . '</h2>';
 				$msg .= '<p>' . esc_html__( 'We\'re existed to announce the next major version of Mailster.', 'mailster' ) . '</p>';
@@ -668,7 +665,11 @@ if ( $old_version ) {
 
 				mailster_notice( $msg, 'info', DAY_IN_SECONDS, 'mailster_beta_notice', true );
 			}
+		case '3.3.9':
+			// do nothing
 
+
+		default:
 			mailster( 'convert' )->notice();
 
 			// reset translations
