@@ -2980,8 +2980,7 @@ class Mailster {
 	public function is_legacy_expired() {
 
 		// check if install is older than a year
-		$setup = get_option( 'mailster_setup' );
-		if ( get_option( 'mailster_freemius' ) + ( YEAR_IN_SECONDS ) > time() ) {
+		if ( get_option( 'mailster_freemius' ) + YEAR_IN_SECONDS > time() ) {
 			return false;
 		}
 
