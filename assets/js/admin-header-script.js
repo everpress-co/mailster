@@ -199,43 +199,40 @@ mailster = (function (mailster, $, window, document) {
 		return true;
 	}
 
-	function trial() {
-		var btn = $('#mailster-trial-upgrade');
+	function countdowns() {
+		var countdowns = $('[data-offset]');
 
-		if (!btn.length) return;
+		$.each(countdowns, function (i, el) {
+			var btn = $(this),
+				offset = btn.data('offset');
 
-		btn.on('click', function () {
-			location.href = $(this).attr('href');
-			return false;
+			if (!offset || offset > 86400) return;
+
+			var b = btn.find('span')[0],
+				f = btn.data('format') || '%s',
+				e = new Date().getTime(),
+				f = setInterval(function () {
+					var x = offset - Math.ceil((new Date().getTime() - e) / 1000),
+						t = new Date(x * 1000),
+						h = t.getHours() - 1,
+						m = t.getMinutes(),
+						s = t.getSeconds(),
+						o =
+							(h < 10 ? '0' + h : h) +
+							':' +
+							(m < 10 ? '0' + m : m) +
+							':' +
+							(s < 10 ? '0' + s : s);
+
+					if (x <= 0) {
+						clearInterval(f);
+					}
+					b.innerHTML = mailster.util.sprintf(f, o);
+				}, 1000);
 		});
-
-		var offset = btn.data('offset');
-
-		if (!offset || offset > 86400) return;
-
-		var b = btn.find('span')[0],
-			e = new Date().getTime(),
-			f = setInterval(function () {
-				var x = offset - Math.ceil((new Date().getTime() - e) / 1000),
-					t = new Date(x * 1000),
-					h = t.getHours() - 1,
-					m = t.getMinutes(),
-					s = t.getSeconds(),
-					o =
-						(h < 10 ? '0' + h : h) +
-						':' +
-						(m < 10 ? '0' + m : m) +
-						':' +
-						(s < 10 ? '0' + s : s);
-
-				if (x <= 0) {
-					clearInterval(f);
-				}
-				b.innerHTML = o;
-			}, 1000);
 	}
 
-	trial();
+	countdowns();
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);

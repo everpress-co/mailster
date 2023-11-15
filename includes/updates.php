@@ -662,29 +662,35 @@ if ( $old_version ) {
 		case '3.3.6':
 		case '3.3.7':
 		case '3.3.8':
-		case '3.3.9':
-			// change the post type of the forms
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
+			if ( get_option( 'mailster_freemius' ) ) {
+				$msg  = '<h2>' . esc_html__( 'Mailster 4.0 beta is now available!', 'mailster' ) . '</h2>';
+				$msg .= '<p>' . esc_html__( 'We\'re existed to announce the next major version of Mailster.', 'mailster' ) . '</p>';
+				$msg .= '<p><a href="' . mailster_url( 'https://mailster.co/blog/mailster-4-0/', array( 'utm_term' => 'beta notice' ) ) . '" class="button button-primary external">' . esc_html__( 'Read the officeal announcement', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ) . '" class="button button-link">' . esc_html__( 'Join the Beta program', 'mailster' ) . '</a></p>';
 
-			// enable legacy forms (disabled by default)
+				mailster_notice( $msg, 'info', DAY_IN_SECONDS, 'mailster_beta_notice', true );
+
+			}
+		case '3.3.9':
 
 
 		default:
-			if ( mailster( 'forms' )->get_all() ) {
-				$mailster_options['legacy_forms'] = true;
-			}
+		
+			// change the post type of the forms
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
 			$flush_rewrite_rules = true;
 
 			mailster( 'geo' )->clear_cron();
 			mailster( 'geo' )->set_cron( 'single' );
 
+			// change the post type of the forms
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
+
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_colors', 'mailster_texts', 'mailster_notices', 'mailster_updated')" );
 			update_option( 'mailster_notices_count', 0 );
 
 			// since Beta 4 v5
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_workflows CHANGE `context` `context` longtext" );
-
 			mailster( 'convert' )->notice();
 
 			// reset translations

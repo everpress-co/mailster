@@ -59,6 +59,12 @@
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
 
+### Version 3.3.10 (2023-11-15)
+
+- fixed warning on PHP 8.2 if subscriber count is 0
+- fixed: issue with the admin bar
+- fixes: smaller issue
+
 ### Version 3.3.9 (2023-11-06)
 
 - PHP 8.2 compatibility 🎉

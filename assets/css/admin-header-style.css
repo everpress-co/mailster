@@ -32,6 +32,9 @@
 #mailster-admin-toolbar .mailster-tab:hover {
 	opacity: 1;
 }
+#mailster-admin-toolbar .panel-tabs .panel-tab {
+	text-decoration: none;
+}
 #mailster-admin-toolbar .panel-tabs button.panel-tab {
 	width: 80px;
 	height: 58px;
@@ -109,13 +112,13 @@
 	color: #757575;
 	white-space: nowrap;
 }
-#mailster-admin-toolbar .panel-tabs .panel-tab.trial {
+#mailster-admin-toolbar .panel-tabs .panel-tab.action {
 	font-weight: bold;
 	line-height: 1.5em;
 	width: auto;
 	padding: 0 2em;
 }
-#mailster-admin-toolbar .panel-tabs .panel-tab.trial.expired {
+#mailster-admin-toolbar .panel-tabs .panel-tab.action.expired {
 	color: #fff;
 	background-color: #e74c3c;
 }
@@ -163,4 +166,22 @@
 }
 #fs_frame iframe {
 	min-height: 900px !important;
+}
+
+#mailster-bf2023dash {
+	opacity: 0.8;
+}
+#mailster-bf2023dash:hover {
+	animation: blink normal 1.5s infinite ease-in-out;
+}
+@keyframes blink {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.2;
+	}
+	100% {
+		opacity: 1;
+	}
 }
