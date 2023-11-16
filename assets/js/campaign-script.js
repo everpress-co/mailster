@@ -353,6 +353,39 @@ mailster = (function (mailster, $, window, document) {
 		);
 	}
 
+	function deletemodule() {
+		var module = $(this).parent(),
+			name = module.find('span').eq(0).text(),
+			module_id = module.data('id'),
+			text = mailster.util.sprintf(
+				mailster.l10n.campaigns.delete_module,
+				'"' + name + '"'
+			);
+
+		if (confirm(text)) {
+			mailster.util.ajax(
+				'delete_module',
+				{
+					id: module_id,
+					template: $('#mailster_template_name').val(),
+					file: $('#new_template_saveas_dropdown').val(),
+				},
+				function (response) {
+					if (response.success) {
+						module.fadeTo(25, 0, function () {
+							module.slideUp(100, function () {
+								module.remove();
+							});
+						});
+					} else {
+						alert(response.data.msg);
+					}
+				},
+				function (jqXHR, textStatus, errorThrown) {}
+			);
+		}
+	}
+
 	function up() {
 		var module = $(this)
 				.parent()
@@ -698,6 +731,7 @@ mailster = (function (mailster, $, window, document) {
 				}
 			})
 			.on('click', 'a.addmodule', addmodule)
+			.on('click', 'a.deletemodule', deletemodule)
 			.on('click', '#module-search-remove', function () {
 				search.val('').focus().trigger('keyup');
 				return false;

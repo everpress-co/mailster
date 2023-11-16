@@ -10,6 +10,7 @@ class MailsterAjax {
 		'get_plaintext'               => 'edit_newsletters',
 		'create_new_template'         => 'mailster_edit_templates',
 		'create_new_module'           => 'mailster_edit_templates',
+		'delete_module'               => 'mailster_change_template',
 		'toggle_codeview'             => 'mailster_see_codeview',
 		'set_preview'                 => 'edit_newsletters',
 		'get_preview'                 => 'edit_newsletters',
@@ -380,6 +381,25 @@ class MailsterAjax {
 		}
 		$return['html'] = $html;
 		wp_send_json_success( $return );
+	}
+
+
+	private function delete_module() {
+
+		$this->ajax_nonce();
+
+		$this->ajax_filesystem();
+
+		$id       = stripslashes( $_POST['id'] );
+		$template = stripslashes( $_POST['template'] );
+		$file     = stripslashes( $_POST['file'] );
+
+		$t = mailster( 'template', $template, $file, true );
+		if ( $t->delete_module( $id ) ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 

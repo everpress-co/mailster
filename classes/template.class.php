@@ -507,22 +507,83 @@ class MailsterTemplate {
 
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
 
+		$content = '<module label="' . esc_attr( $name ) . '"' . ( $auto ? ' auto' : '' ) . '>' . "\n" . $content . "\n" . '</module>';
+
 		// sanitize content
 		$content = mailster()->sanitize_content( $content, null, false, true );
 
-		$module = '<module label="' . esc_attr( $name ) . '"' . ( $auto ? ' auto' : '' ) . '>' . "\n" . $content . "\n" . '</module>';
+		// fixes potential HTML issues
+		$content = $this->module_parser( $content );
 
-		$hash = hash( 'crc32', md5( $module ) );
+		$hash = hash( 'crc32', md5( $content ) );
 
 		$filename = strtolower( sanitize_file_name( $name ) ) . '-' . $hash . '.html';
 
-		if ( mailster( 'helper' )->file_put_contents( $this->templatepath . '/modules/' . $filename, $module ) ) {
+		if ( mailster( 'helper' )->file_put_contents( $this->templatepath . '/modules/' . $filename, $content ) ) {
 			mailster( 'templates' )->reset_query_cache();
 			mailster( 'templates' )->schedule_screenshot( $this->slug, 'index.html', true, 0, true );
 			return $filename;
 		}
 
 		return false;
+	}
+
+
+	/**
+	 *
+	 * Delete a custom module
+	 *
+	 * @param mixed $id
+	 * @return bool
+	 */
+	public function delete_module( $id ) {
+
+		// find module file
+		$modules = glob( $this->templatepath . '/modules/*-' . $id . '.html' );
+
+		if ( ! $modules ) {
+			return false;
+		}
+		$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/';
+
+		$wp_filesystem = mailster_require_filesystem();
+		if ( ! $wp_filesystem ) {
+			return false;
+		}
+		foreach ( $modules as $file ) {
+			if ( $wp_filesystem->delete( $file, true ) ) {
+				$screenshot = $this->get_module_image( $id );
+				$wp_filesystem->delete( $screenshot_modules_folder . $screenshot, true );
+			}
+		}
+		return true;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $activeonly (optional)
+	 * @return unknown
+	 */
+	private function module_parser( $html ) {
+
+		$i_error              = libxml_use_internal_errors( true );
+		$doc                  = new DOMDocument();
+		$doc->validateOnParse = true;
+		$doc->formatOutput    = true;
+
+		$doc->loadHTML( $html );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $i_error );
+
+		$xpath = new DOMXpath( $doc );
+
+		$module = $xpath->query( '//*/module' );
+
+		$html = $this->get_html_from_nodes( $module );
+
+		return $html;
 	}
 
 
@@ -589,6 +650,7 @@ class MailsterTemplate {
 			$html  = $this->get_html_from_node( $module );
 			$id    = hash( 'crc32', md5( $html ) );
 			$label = $modules->item( $i )->getAttribute( 'label' );
+
 			if ( isset( $labels[ strtolower( $label ) ] ) ) {
 				$label = $labels[ strtolower( $label ) ];
 			} elseif ( empty( $label ) ) {
@@ -608,6 +670,9 @@ class MailsterTemplate {
 				$module_html .= '<a class="mailster-btn addmodule has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $image . '\');height:' . ( ceil( $image_size[1] / $factor ) + 6 ) . 'px;" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $label . '"' ) ) . '" data-id="' . $id . '" tabindex="0"><span>' . esc_html( $label ) . '</span><span class="hidden">' . esc_html( strtolower( $label ) ) . '</span></a>';
 			} else {
 				$module_html .= '<a class="mailster-btn addmodule" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $label . '"' ) ) . '" data-id="' . $id . '" tabindex="0"><span>' . esc_html( $label ) . '</span><span class="hidden">' . esc_html( strtolower( $label ) ) . '</span></a>';
+			}
+			if ( $this->custom_modules ) {
+				$module_html .= '<a class="deletemodule" title="' . esc_attr( sprintf( esc_html__( 'Delete Module %s', 'mailster' ), '"' . $label . '"' ) ) . '" data-id="' . esc_attr( $id ) . '" tabindex="-1">✕</a>';
 			}
 			$module_html .= '</li>';
 
@@ -684,9 +749,9 @@ class MailsterTemplate {
 	}
 
 
-	public function get_module_image( $id, $file = 'index.html' ) {
+	private function get_module_image( $id ) {
 
-		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $this->slug . '/' . $file;
+		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $this->slug . '/' . $this->file;
 
 		$hash = hash( 'crc32', md5_file( $filedir ) );
 
@@ -1260,7 +1325,7 @@ class MailsterTemplate {
 	 */
 	private function get_html_from_node( $node ) {
 
-		$html = $node->ownerDocument->saveXML( $node );
+		$html = $node->ownerDocument->saveHTML( $node );
 
 		// remove CDATA elements (keep content)
 		$html = preg_replace( '~<!\[CDATA\[\s*|\s*\]\]>~', '', $html );

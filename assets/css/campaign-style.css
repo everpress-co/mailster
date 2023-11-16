@@ -1430,6 +1430,7 @@ a.mailster-btn.editbutton {
 	margin: 0;
 	overflow: hidden;
 	float: none;
+	position: relative;
 }
 #module-selector ul li a.mailster-btn {
 	border: 1px solid #ccd0d4;
@@ -1464,6 +1465,28 @@ a.mailster-btn.editbutton {
 #module-selector ul.custom-modules li a.mailster-btn {
 	border-color: #2bb3e7;
 }
+#module-selector ul li a.deletemodule {
+	position: absolute;
+	top: 5px;
+	right: 13px;
+	font-size: 16px;
+	display: none;
+	width: 20px;
+	height: 20px;
+	background: rgba(255, 255, 255, 0.8);
+
+	cursor: pointer;
+	justify-content: center;
+	align-items: center;
+	border-radius: 3px;
+}
+#module-selector ul li:hover a.deletemodule {
+	display: flex;
+}
+#module-selector ul li a.deletemodule:hover {
+	background: #fff;
+}
+
 #module-selector ul li a.mailster-btn.has-screenshot {
 	background-size: 100%;
 	background-position: 50% 50%;

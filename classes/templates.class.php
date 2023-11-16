@@ -148,11 +148,8 @@ class MailsterTemplates {
 
 		if ( $wp_filesystem && $wp_filesystem->delete( $location, true ) ) {
 
-			if ( is_null( $file ) ) {
-				$screenshots = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug;
-				if ( is_dir( $screenshots ) ) {
-					$wp_filesystem->delete( $screenshots, true );
-				}
+			if ( ! $file ) {
+				$this->remove_screenshot( $slug );
 			}
 
 			$this->reset_query_cache();

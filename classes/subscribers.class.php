@@ -3476,7 +3476,7 @@ class MailsterSubscribers {
 
 		$custom_fields = $this->get_custom_fields( $subscriber_id );
 
-		return isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ] : null;
+		return isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ] : '';
 	}
 
 	public function get_custom_fields( $subscriber_id, $deprecated = false ) {
@@ -3492,9 +3492,9 @@ class MailsterSubscribers {
 
 			$custom_field_names = mailster()->get_custom_fields( true );
 
-			$custom_fields              = array_fill_keys( $custom_field_names, null );
-			$custom_fields['firstname'] = null;
-			$custom_fields['lastname']  = null;
+			$custom_fields              = array_fill_keys( $custom_field_names, '' );
+			$custom_fields['firstname'] = '';
+			$custom_fields['lastname']  = '';
 
 			$sql = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id );
 

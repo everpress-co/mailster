@@ -117,11 +117,14 @@ if ( $editable ) {
 		<div id="module-save-dialog" style="display:none;">
 		<div class="mailster_template_save">
 			<div class="inner">
+				<div class="alignright">
+					<?php echo mailster()->beacon( '6555c7f616990139f308b93f' ); ?>				
+				</div>
 				<p>
 					<label><?php esc_html_e( 'Module Name', 'mailster' ); ?><br><input type="text" class="widefat" id="new_module_name" placeholder="<?php esc_attr_e( 'Module name', 'mailster' ); ?>" value=""></label>
 				</p>
 				<p class="description">
-					<?php esc_html_e( 'Save this module to use it later. Custom modules will appear at the top of the module selector list.', 'mailster' ); ?>
+					<?php esc_html_e( 'Save this module to use it later. Custom modules will appear at the top of the module selector list.', 'mailster' ); ?>					
 				</p>
 				<input type="hidden" id="new_module_type">
 				<textarea id="new_module_content" class="hidden"></textarea>				

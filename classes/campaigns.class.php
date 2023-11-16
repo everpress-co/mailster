@@ -1645,6 +1645,7 @@ class MailsterCampaigns {
 					'move_module_down'       => esc_html__( 'Move module down', 'mailster' ),
 					'duplicate_module'       => esc_html__( 'Duplicate module', 'mailster' ),
 					'remove_module'          => esc_html__( 'Remove module', 'mailster' ),
+					'delete_module'          => esc_html__( 'Do you really like to delete %s?', 'mailster' ),
 					'remove_all_modules'     => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
 					'save_template'          => esc_html__( 'Save Template File', 'mailster' ),
 					'save_module'            => esc_html__( 'Save Module', 'mailster' ),
