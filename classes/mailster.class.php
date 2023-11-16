@@ -738,11 +738,19 @@ class Mailster {
 	public function replace_links( $content = '', $hash = '', $campaign_id = '', $index = 0 ) {
 
 		// get all links from the basecontent
-		preg_match_all( '#<a (.*?)href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
-		$links = $links[3];
+		preg_match_all( '# href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
+		$links = $links[2];
 
 		if ( empty( $links ) ) {
 			return $content;
+		}
+
+		// get all href links in link tags from the basecontent and remove them
+		if ( preg_match_all( '#<link (.*?)href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $link_links ) ) {
+			$link_links = $link_links[3];
+
+			// remove link tags from the content
+			$links = array_values( array_diff( $links, $link_links ) );
 		}
 
 		$used = array();
