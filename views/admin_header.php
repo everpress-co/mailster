@@ -71,7 +71,24 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 	?>
 	
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
-		<?php if ( mailster()->is_trial() && get_option( 'mailster_setup' ) ) : ?>
+
+	<?php if ( mailster()->is_bf2023() && ! mailster_freemius()->is_whitelabeled() ) : ?>
+			<?php
+				$discount      = '50%';
+				$checkout_args = array(
+					'id'     => 'bf2023dash',
+					'coupon' => 'BFD2023DASH',
+				);
+				$expires       = strtotime( '2023-12-02 00:00:00' );
+				$offset        = $expires - time();
+				$format        = _x( 'only %s left!', 'time left', 'mailster' );
+				$display       = $offset > DAY_IN_SECONDS ? human_time_diff( $expires ) : date( 'H:i:s', strtotime( 'midnight' ) + $offset - 1 );
+				$display       = sprintf( $format, $display )
+				?>
+			<a class="panel-tab action" id="mailster-bf2023dash" href="<?php echo mailster()->checkout_url( $checkout_args ); ?>" data-offset=<?php echo absint( $offset ); ?> data-format="<?php echo esc_attr( $format ); ?>" title="<?php echo esc_attr( sprintf( __( 'Grab a new license for Mailster with %s off the first year!', 'mailster' ), $discount ) ); ?>"><?php printf( esc_html__( 'Get %s off for Black Friday!', 'mailster' ), $discount ); ?><?php echo '<span>' . esc_html( $display ) . '</span>'; ?></a>
+
+		<?php elseif ( mailster()->is_trial() && get_option( 'mailster_setup' ) ) : ?>
+
 			<?php
 			$license = mailster_freemius()->_get_license();
 			$expires = $license ? strtotime( $license->expiration ) : 0;
@@ -79,10 +96,9 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 			$display = $offset > DAY_IN_SECONDS ? human_time_diff( $expires ) : date( 'H:i:s', strtotime( 'midnight' ) + $offset - 1 );
 			?>
 			<?php if ( $offset > 0 ) : ?>
-				<button type="button" role="tab" aria-controls="activity-panel-help" id="mailster-trial-upgrade" class="panel-tab trial" href="<?php echo mailster_freemius()->get_upgrade_url(); ?>" data-offset=<?php echo absint( $offset ); ?> title="<?php esc_attr_e( 'Upgrade now!', 'mailster' ); ?>"><?php printf( esc_html__( 'Your trial expires in %s', 'mailster' ), '<span>' . $display . '</span>' ); ?></button>
+				<a role="tab" aria-controls="activity-panel-help" id="mailster-trial-upgrade" class="panel-tab action" href="<?php echo mailster()->get_upgrade_url(); ?>" data-offset=<?php echo absint( $offset ); ?> title="<?php esc_attr_e( 'Upgrade now!', 'mailster' ); ?>"><?php printf( esc_html__( 'Your trial expires in %s', 'mailster' ), '<span>' . esc_html( $display ) . '</span>' ); ?></a>
 			<?php else : ?>
-				<button type="button" role="tab" aria-controls="activity-panel-help" id="mailster-trial-upgrade" class="panel-tab trial expired" href="<?php echo mailster_freemius()->get_upgrade_url(); ?>" title="<?php esc_attr_e( 'Upgrade now!', 'mailster' ); ?>"><?php esc_html_e( 'Your trial has expired!', 'mailster' ); ?><span><?php esc_html_e( 'Upgrade now!', 'mailster' ); ?></span></button>
-
+				<a role="tab" aria-controls="activity-panel-help" id="mailster-trial-upgrade" class="panel-tab action expired" href="<?php echo mailster()->get_upgrade_url(); ?>" title="<?php esc_attr_e( 'Upgrade now!', 'mailster' ); ?>"><?php esc_html_e( 'Your trial has expired!', 'mailster' ); ?><span><?php esc_html_e( 'Upgrade now!', 'mailster' ); ?></span></a>
 			<?php endif; ?>
 		<?php endif; ?>
 		<button type="button" role="tab" aria-controls="activity-panel-help" id="mailster-admin-help" class="panel-tab" href="<?php echo mailster_freemius()->contact_url(); ?>">

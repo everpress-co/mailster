@@ -989,6 +989,8 @@ mailster = (function (mailster, $, window, document) {
 			var html = codeeditor.codemirror.getValue();
 			current.element.html(html);
 			current.modulebuttons.prependTo(current.element);
+
+			current.element.attr('label', $('#module-name').val());
 		}
 
 		close();
@@ -1344,19 +1346,8 @@ mailster = (function (mailster, $, window, document) {
 				clone = el.clone();
 
 			current.modulebuttons = clone.find('modulebuttons');
-
-			clone.find('modulebuttons').remove();
-			clone
-				.find('single, multi')
-				.removeAttr('contenteditable spellcheck id dir style class');
-
-			var html = mailster.util.trim(
-				clone
-					.html()
-					.replace(/\u200c/g, '&zwnj;')
-					.replace(/\u200d/g, '&zwj;')
-			);
-			textarea.show().html(html);
+			textarea.show().html(mailster.editor.cleanHTML(el.html()));
+			$('#module-name').val(name);
 		}
 
 		offset =

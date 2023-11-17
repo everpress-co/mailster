@@ -213,9 +213,10 @@ class Mailster {
 	 *
 	 * @param unknown $slug (optional)
 	 * @param unknown $file (optional)
+	 * @param unknown $custom_modules (optional)
 	 * @return unknown
 	 */
-	public function template( $slug = null, $file = null ) {
+	public function template( $slug = null, $file = null, $custom_modules = false ) {
 
 		if ( is_null( $slug ) ) {
 			$slug = mailster_option( 'default_template', 'mailster' );
@@ -223,7 +224,7 @@ class Mailster {
 		$file = is_null( $file ) ? 'index.html' : $file;
 		require_once MAILSTER_DIR . 'classes/template.class.php';
 
-		$template = new MailsterTemplate( $slug, $file );
+		$template = new MailsterTemplate( $slug, $file, $custom_modules );
 
 		return $template;
 	}
@@ -582,7 +583,7 @@ class Mailster {
 
 			$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
 
-			$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
+			$unsubscribe_homepage = get_post( mailster_option( 'homepage' ) );
 
 			if ( $unsubscribe_homepage ) {
 				$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
@@ -761,11 +762,19 @@ class Mailster {
 	public function replace_links( $content = '', $hash = '', $campaign_id = '', $index = 0 ) {
 
 		// get all links from the basecontent
-		preg_match_all( '#<a (.*?)href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
-		$links = $links[3];
+		preg_match_all( '# href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
+		$links = $links[2];
 
 		if ( empty( $links ) ) {
 			return $content;
+		}
+
+		// get all href links in link tags from the basecontent and remove them
+		if ( preg_match_all( '#<link (.*?)href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $link_links ) ) {
+			$link_links = $link_links[3];
+
+			// remove link tags from the content
+			$links = array_values( array_diff( $links, $link_links ) );
 		}
 
 		$used = array();
@@ -1077,9 +1086,10 @@ class Mailster {
 	 * @param unknown $content
 	 * @param unknown $customhead (optional)
 	 * @param unknown $preserve_comments (optional)
+	 * @param unknown $body_only (optional)
 	 * @return unknown
 	 */
-	public function sanitize_content( $content, $customhead = null, $preserve_comments = false ) {
+	public function sanitize_content( $content, $customhead = null, $preserve_comments = false, $body_only = false ) {
 		if ( empty( $content ) ) {
 			return '';
 		}
@@ -1196,6 +1206,12 @@ class Mailster {
 			$content = preg_replace( $regex, '<html$1', $content );
 		}
 		$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
+		if ( $body_only ) {
+			preg_match( '#<body([^>]*)>(.*)<\/body>#is', $content, $matches );
+			if ( ! empty( $matches ) ) {
+				$content = $matches[2];
+			}
+		}
 
 		return apply_filters( 'mailster_sanitize_content', $content, $org_content );
 	}
@@ -2937,9 +2953,64 @@ class Mailster {
 		return version_compare( $new_version, MAILSTER_VERSION, '>' );
 	}
 
+	public function get_upgrade_url( $args = array() ) {
+
+		$url = mailster_freemius()->get_upgrade_url();
+		$url = add_query_arg( $args, $url );
+
+		return $url;
+	}
+
+
+	public function checkout_url( $args = array() ) {
+
+		$url = mailster_freemius()->checkout_url();
+		$url = add_query_arg( $args, $url );
+
+		return $url;
+	}
+
 	public function is_trial() {
 
 		return mailster_freemius()->is_trial();
+	}
+
+	public function is_bf2023() {
+		// check if install is older than three month
+		if ( get_option( 'mailster_freemius' ) + ( MONTH_IN_SECONDS * 3 ) > time() ) {
+			return false;
+		}
+
+		// official time in UTC
+		return strtotime( '2023-11-20 00:00:00' ) < time() && strtotime( '2023-12-02 00:00:00' ) > time();
+	}
+
+	public function is_legacy_expired() {
+
+		// check if install is older than a year
+		if ( get_option( 'mailster_freemius' ) + YEAR_IN_SECONDS > time() ) {
+			return false;
+		}
+
+		// check if license is legacy
+		$plan = mailster_freemius()->get_plan();
+		if ( $plan->name !== 'legacy' ) {
+			return false;
+		}
+
+		$license = mailster_freemius()->_get_license();
+
+		// lifetime license
+		if ( ! $license->expiration ) {
+			return false;
+		}
+
+		// check if expiration is older than a day
+		if ( strtotime( $license->expiration ) > strtotime( '-1 day' ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function is_outdated() {

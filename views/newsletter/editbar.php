@@ -65,7 +65,7 @@
 			</div>
 			<div id="single-link">
 				<div class="clearfix">
-						<label class="block"><div class="left"><?php esc_html_e( 'Link', 'mailster' ); ?></div><div class="right"><input type="text" class="input singlelink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Link', 'mailster' ); ?></div><div class="right"><input type="text" class="input singlelink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
 				</div>
 				<div class="link-wrap">
 					<div class="postlist">
@@ -84,17 +84,17 @@
 			<?php $this->templateobj->buttons(); ?>
 			<?php $this->templateobj->buttons( MAILSTER_DIR . 'assets/img/social/' ); ?>
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
+				<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 			<div id="text_button" class="tab" style="display:none">
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_attr_e( 'button label', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Button Label', 'mailster' ); ?>"></div></label>
+				<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_attr_e( 'button label', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Button Label', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Link of the button', 'mailster' ); ?>"></div></label>
+				<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Link of the button', 'mailster' ); ?>"></div></label>
 			</div>
 			<div class="link-wrap">
 				<div class="postlist">
@@ -327,7 +327,12 @@
 
 		</div>
 			<div class="type codeview">
-				<textarea id="module-codeview-textarea" autocomplete="off"></textarea>
+				<p>
+					<label class="block"><div class="left"><?php esc_html_e( 'Module Name', 'mailster' ); ?></div><div class="right"><input type="text" id="module-name" class="widefat" value="" aria-label="<?php esc_attr_e( 'Module Name', 'mailster' ); ?>"></div></label>
+				</p>
+				<p>
+					<textarea id="module-codeview-textarea" autocomplete="off"></textarea>
+				</p>
 			</div>
 
 		</div>

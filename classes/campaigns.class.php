@@ -6,6 +6,7 @@ class MailsterCampaigns {
 	private $template;
 	private $templatefile;
 	private $templateobj;
+	private $templateobjcustom;
 	private $post_changed = array();
 
 	public $post_data;
@@ -1644,8 +1645,10 @@ class MailsterCampaigns {
 					'move_module_down'       => esc_html__( 'Move module down', 'mailster' ),
 					'duplicate_module'       => esc_html__( 'Duplicate module', 'mailster' ),
 					'remove_module'          => esc_html__( 'Remove module', 'mailster' ),
+					'delete_module'          => esc_html__( 'Do you really like to delete %s?', 'mailster' ),
 					'remove_all_modules'     => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
 					'save_template'          => esc_html__( 'Save Template File', 'mailster' ),
+					'save_module'            => esc_html__( 'Save Module', 'mailster' ),
 					'add_module'             => esc_html__( 'Add Module', 'mailster' ),
 					'module'                 => esc_html__( 'Module %s', 'mailster' ),
 					'codeview'               => esc_html__( 'Codeview', 'mailster' ),
@@ -4776,6 +4779,32 @@ class MailsterCampaigns {
 
 		}
 
+		if ( mailster_option( 'mailster_branding' ) ) {
+
+			$unsubscribe_link = mailster()->get_unsubscribe_link( $campaign->ID, $subscriber->hash, $campaignindex );
+			$branding_url     =
+				mailster_url(
+					'https://mailster.co/sent-with-mailster',
+					array(
+						'utm_source'       => rawurlencode( wp_parse_url( home_url(), PHP_URL_HOST ) ),
+						'utm_medium'       => 'email',
+						'utm_term'         => 'mailster_branding',
+						'unsubscribe_link' => rawurlencode( $unsubscribe_link ),
+					)
+				);
+
+			$insert  = '<table width="100%" role="presentation"><tr><td align="center" width="130"><a href="' . $branding_url . '" title="' . esc_attr__( 'Sent with Mailster', 'mailster' ) . '"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33" style="max-width:130px;width:130px;"></a></td></tr></table>';
+			$content = str_replace( '</body>', $insert . '</body>', $content );
+
+		}
+
+		// ad an unsubscribe link if not in the content
+		if ( ! preg_match( '/\{unsub|unsublink\}/', $content ) ) {
+			$insert = '<table width="100%" role="presentation"><tr><td align="center" width="130">{unsub}</td></tr></table>';
+
+			$content = str_replace( '</body>', $insert . '</body>', $content );
+		}
+
 		$placeholder->add_defaults( $campaign->ID );
 		$placeholder->set_content( $content );
 
@@ -4783,12 +4812,7 @@ class MailsterCampaigns {
 		$placeholder->replace_custom_tags( true );
 
 		$placeholder->set_subscriber( $subscriber->ID );
-		$placeholder->add_custom(
-			$campaign->ID,
-			array(
-				'emailaddress' => $subscriber->email,
-			)
-		);
+		$placeholder->add_custom( $campaign->ID, array( 'emailaddress' => $subscriber->email ) );
 
 		// add subscriber info
 		$placeholder->add( (array) $subscriber );
@@ -4816,23 +4840,6 @@ class MailsterCampaigns {
 			// always replace links
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID, $campaignindex );
 
-		}
-
-		if ( mailster_option( 'mailster_branding' ) ) {
-
-			$listunsubscribe_link = mailster()->get_unsubscribe_link( $campaign->ID, $subscriber->hash, $campaignindex );
-			$branding_url         =
-				mailster_url(
-					'https://mailster.co/sent-with-mailster',
-					array(
-						'utm_source'       => rawurlencode( wp_parse_url( home_url(), PHP_URL_HOST ) ),
-						'utm_medium'       => 'email',
-						'utm_term'         => 'mailster_branding',
-						'unsubscribe_link' => rawurlencode( $listunsubscribe_link ),
-					)
-				);
-
-			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center" width="130"><a href="' . $branding_url . '" title="' . esc_attr__( 'Sent with Mailster', 'mailster' ) . '"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33" style="max-width:130px;width:130px;"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
 		}
 
 		// strip all unwanted stuff from the content
@@ -5178,7 +5185,8 @@ class MailsterCampaigns {
 		$this->template     = $slug;
 		$this->templatefile = $file;
 
-		$this->templateobj = mailster( 'template', $slug, $file );
+		$this->templateobj       = mailster( 'template', $slug, $file );
+		$this->templateobjcustom = mailster( 'template', $slug, $file, true );
 	}
 
 

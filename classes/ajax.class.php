@@ -9,6 +9,8 @@ class MailsterAjax {
 		'get_template'                => 'edit_newsletters',
 		'get_plaintext'               => 'edit_newsletters',
 		'create_new_template'         => 'mailster_edit_templates',
+		'create_new_module'           => 'mailster_edit_templates',
+		'delete_module'               => 'mailster_change_template',
 		'toggle_codeview'             => 'mailster_see_codeview',
 		'set_preview'                 => 'edit_newsletters',
 		'get_preview'                 => 'edit_newsletters',
@@ -330,6 +332,8 @@ class MailsterAjax {
 		$t        = mailster( 'template', $template );
 		$filename = $t->create_new( $name, $content, $modules, $activemodules, $overwrite );
 
+		$return = array();
+
 		if ( $filename !== false ) {
 			$return['url'] = add_query_arg(
 				array(
@@ -345,6 +349,57 @@ class MailsterAjax {
 		}
 
 		wp_send_json_success( $return );
+	}
+
+	private function create_new_module() {
+
+		$this->ajax_nonce();
+
+		$this->ajax_filesystem();
+
+		$name     = stripslashes( $_POST['name'] );
+		$template = stripslashes( $_POST['template'] );
+		$file     = stripslashes( $_POST['file'] );
+		$content  = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : null;
+		$auto     = $_POST['auto'] === 'false' ? false : true;
+
+		$t        = mailster( 'template', $template, $file );
+		$filename = $t->add_module( $name, $content, $auto );
+
+		$return = array();
+		if ( ! $filename ) {
+			$return['msg'] = esc_html__( 'Unable to save template!', 'mailster' );
+			wp_send_json_success( $return );
+			exit;
+		}
+
+		$t->reload( true );
+		$modules = $t->get_modules_list();
+		$html    = '';
+		foreach ( $modules as $module ) {
+			$html .= $module['module'];
+		}
+		$return['html'] = $html;
+		wp_send_json_success( $return );
+	}
+
+
+	private function delete_module() {
+
+		$this->ajax_nonce();
+
+		$this->ajax_filesystem();
+
+		$id       = stripslashes( $_POST['id'] );
+		$template = stripslashes( $_POST['template'] );
+		$file     = stripslashes( $_POST['file'] );
+
+		$t = mailster( 'template', $template, $file, true );
+		if ( $t->delete_module( $id ) ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 
