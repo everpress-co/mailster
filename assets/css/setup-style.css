@@ -190,6 +190,9 @@ div.fs-notice.promotion {
 #mailster-setup .current .deliverytab {
 	display: block;
 }
+#mailster-setup .current .deliverytab .hide-on-setup {
+	display: none;
+}
 #mailster-setup .current .deliverytab > * {
 	transition: all 0.3s ease-in-out;
 }

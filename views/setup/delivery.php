@@ -70,7 +70,7 @@ $methods = array(
 		'name'    => 'MailJet',
 		'signup'  => 'https://get.sinchemail.com/mailster-mailjet',
 		'desc'    => __( 'Send your campaigns via MailJet. You need to create an API Key in your MailJet Account.', 'mailster' ),
-		'article' => false,
+		'article' => '654df29e4e8b0f49d3d23b7f',
 		'plugin'  => 'mailster-mailjet/mailster-mailjet.php',
 	),
 
@@ -101,7 +101,7 @@ if ( isset( $methods[ $method ] ) ) {
 		<a class="button quick-install"><?php printf( esc_html__( 'Use %s', 'mailster' ), esc_html( $data['name'] ) ); ?></a>
 		<span class="deliverystatus"></span>
 		<?php if ( $data['article'] ) : ?>
-			<?php esc_html_e( 'or', 'mailster' ); ?> <a class="button button-link" href="<?php echo mailster_url( 'https://kb.mailster.co/' . $data['article'] ); ?>" class="button button-secondary" data-article="<?php echo esc_attr( $data['article'] ); ?>"><?php esc_html_e( 'Get Help', 'mailster' ); ?></a>
+			<?php esc_html_e( 'or', 'mailster' ); ?> <a class="button button-link" href="<?php echo mailster_url( 'https://kb.mailster.co/' . $data['article'] ); ?>" data-article="<?php echo esc_attr( $data['article'] ); ?>"><?php esc_html_e( 'Get Help', 'mailster' ); ?></a>
 		<?php endif; ?>
 		</p>
 		<div><?php if ( $data['signup'] ) : ?>
