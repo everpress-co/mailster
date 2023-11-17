@@ -61,9 +61,9 @@
 
 ### Version 3.3.10 (2023-11-15)
 
-- fixed warning on PHP 8.2 if subscriber count is 0
+- fixed: warning on PHP 8.2 if subscriber count is 0
 - fixed: issue with the admin bar
-- fixes: smaller issue
+- fixed: smaller issue
 
 ### Version 3.3.9 (2023-11-06)
 
@@ -72,7 +72,7 @@
 - updated: Freemius SDK to 2.6.0
 - fixed: inline style attribute got removed in some edge cases
 - improved: placeholder image tags algorithmus
-- fixes: smaller issue
+- fixed: smaller issue
 
 ### Version 3.3.8 (2023-10-05)
 

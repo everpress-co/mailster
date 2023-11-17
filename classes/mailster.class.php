@@ -583,7 +583,7 @@ class Mailster {
 
 			$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
 
-			$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
+			$unsubscribe_homepage = get_post( mailster_option( 'homepage' ) );
 
 			if ( $unsubscribe_homepage ) {
 				$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
