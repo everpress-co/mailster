@@ -7,6 +7,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import styled from '@emotion/styled';
 
 import {
 	InspectorControls,
@@ -23,6 +24,13 @@ import {
 	Button,
 } from '@wordpress/components';
 
+import {
+	__experimentalBoxControl as BoxControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
+	__experimentalUnitControl as UnitControl,
+} from '@wordpress/components';
+
 import { useState } from '@wordpress/element';
 import { select, dispatch } from '@wordpress/data';
 
@@ -34,6 +42,7 @@ import { external } from '@wordpress/icons';
 
 import { InputStylesPanel } from '../form-inspector/InputStylesPanel';
 import Values from './Values';
+import { searchBlocks } from '../../util';
 
 export default function InputFieldInspectorControls(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
@@ -64,53 +73,18 @@ export default function InputFieldInspectorControls(props) {
 		});
 	}
 
-	function applyStyle() {
-		const root = select('core/block-editor').getBlocks();
-		const { width, ...newStyle } = style;
-		root.map((block) => {
-			let style = {
-				...select('core/block-editor').getBlockAttributes(block.clientId).style,
-			};
-
-			dispatch('core/block-editor').updateBlockAttributes(block.clientId, {
-				style: { ...style, ...newStyle },
-			});
-
-			dispatch('core/block-editor').clearSelectedBlock(block.clientId);
-			dispatch('core/block-editor').selectBlock(block.clientId);
-		});
-
-		dispatch('core/block-editor').updateBlockAttributes(clientId, {
-			style: {
-				width,
-			},
-		});
-	}
+	const resetColors = () => {};
+	const setHeight = () => {};
+	const setPadding = () => {};
+	const height = style?.height;
+	const padding = style?.padding;
 
 	return (
 		<>
 			<InspectorControls group="styles">
-				<Panel>
-					<PanelBody
-						title={__('Colors & Borders', 'mailster')}
-						initialOpen={true}
-					>
-						<InputStylesPanel {...props}>
-							{type !== 'submit' && (
-								<PanelRow>
-									<Button
-										onClick={applyStyle}
-										variant="primary"
-										icon={external}
-									>
-										{__('Apply to all input fields', 'mailster')}
-									</Button>
-								</PanelRow>
-							)}
-						</InputStylesPanel>
-					</PanelBody>
-				</Panel>
+				<InputStylesPanel {...props} inInput={true} />
 			</InspectorControls>
+
 			<InspectorControls>
 				<Panel>
 					<PanelBody

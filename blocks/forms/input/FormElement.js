@@ -2,8 +2,6 @@
  * External dependencies
  */
 
-import classnames from 'classnames';
-
 /**
  * WordPress dependencies
  */
@@ -24,14 +22,13 @@ export default function FormElement(props) {
 		setAttributes,
 		isSelected,
 		isEditor,
-		clientId,
 		borderProps,
 		colorProps,
 		spacingProps,
 		innerStyle,
-		autoComplete,
 	} = props;
 	const {
+		id,
 		label,
 		name,
 		selected,
@@ -41,12 +38,7 @@ export default function FormElement(props) {
 		native,
 		style = {},
 		values,
-		pattern,
 	} = attributes;
-
-	const elem = classnames(colorProps.className, borderProps.className);
-
-	const id = attributes.id;
 
 	const inputStyle = {
 		...borderProps.style,
@@ -56,10 +48,6 @@ export default function FormElement(props) {
 		...{
 			color: style.inputColor,
 			backgroundColor: style.backgroundColor,
-			borderColor: style.borderColor,
-			borderWidth: style.borderWidth,
-			borderStyle: style.borderStyle,
-			borderRadius: style.borderRadius,
 		},
 	};
 
@@ -69,9 +57,7 @@ export default function FormElement(props) {
 				<fieldset>
 					<legend>{label}</legend>
 					{values.map((value, i) => {
-						const fieldid = isEditor
-							? null
-							: attributes.id + (i ? '-' + i : '');
+						const fieldid = isEditor ? null : id + (i ? '-' + i : '');
 						return (
 							<div
 								className="mailster-group mailster-group-radio"
@@ -102,7 +88,7 @@ export default function FormElement(props) {
 				</fieldset>
 			);
 		case 'checkbox':
-			const fieldid = isEditor ? null : attributes.id;
+			const fieldid = isEditor ? null : id;
 			return (
 				<fieldset
 					className="mailster-group mailster-group-checkbox"
@@ -179,7 +165,7 @@ export default function FormElement(props) {
 					}
 					onChange={() => {}}
 					className="input"
-					autoComplete={autoComplete}
+					autoComplete="new-password"
 					style={inputStyle}
 					placeholder=" "
 				/>
@@ -202,7 +188,7 @@ export default function FormElement(props) {
 					value={isSelected && !inline ? sample : ''}
 					onChange={() => {}}
 					className="input"
-					autoComplete={autoComplete}
+					autoComplete="new-password"
 					style={inputStyle}
 					placeholder=" "
 				/>

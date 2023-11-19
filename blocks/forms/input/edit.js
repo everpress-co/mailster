@@ -72,10 +72,17 @@ export default function Edit(props) {
 	});
 
 	const innerStyle = blockProps.style;
-	blockProps.style = undefined;
+	// console.warn(type);
+	// console.warn('borderProps', borderProps.style);
+	// console.warn('colorProps', colorProps.style);
+	// console.warn('spacingProps', spacingProps.style);
+	// console.warn('blockProps', blockProps.style);
+	// console.warn('attributes', attributes);
+	//blockProps.style = undefined;
 
 	let labelStyle = { color: style.labelColor };
 
+	//apply style to label if inline
 	if (inline) labelStyle = { ...labelStyle, ...innerStyle };
 
 	useEffect(() => {
@@ -102,7 +109,6 @@ export default function Edit(props) {
 				<FormElement
 					{...props}
 					isEditor
-					autoComplete="new-password"
 					borderProps={borderProps}
 					colorProps={colorProps}
 					spacingProps={spacingProps}
