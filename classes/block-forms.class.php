@@ -424,7 +424,7 @@ class MailsterBlockForms {
 				$content = $content . "\n\n" . $form_html;
 			} else {
 				$split_at = $this->get_block_tag_by_tag( $options['tag'], has_blocks( $content ) );
-				$pos      = $options['pos'];
+				$pos      = (int) $options['pos'];
 
 				if ( 'more' === $options['tag'] ) {
 					$pos = 1;

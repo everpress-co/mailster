@@ -46,15 +46,6 @@ class MailsterTrigger {
 		$this->anniversary();
 	}
 
-	public function run_late( $args ) {
-
-		error_log( print_r( func_get_args(), true ) );
-
-		// _run_delayed_workflow( $workflow_id, $trigger, $step );
-
-		error_log( print_r( 'RUN LATE', true ) );
-	}
-
 	public function trigger( $workflow_id, $trigger, $subscriber_id, $step = null ) {
 
 		$this->add_job( $workflow_id, $trigger, $subscriber_id, $step );
@@ -413,26 +404,30 @@ class MailsterTrigger {
 		return $success;
 	}
 
-	private function get_workflows_by_trigger( $trigger ) {
+	private function get_workflows_by_trigger( string $trigger ) {
 
 		if ( ! ( $workflow_ids = mailster_cache_get( 'workflow_by_trigger_' . $trigger ) ) ) {
 
-			// TODO DO NOT USE get_posts
+			global $wpdb;
 
-			$workflow_ids = get_posts(
-				array(
-					'fields'     => 'ids',
-					'post_type'  => 'mailster-workflow',
-					'meta_key'   => 'trigger',
-					'meta_query' => array(
-						array(
-							'key'     => 'trigger',
-							'value'   => $trigger,
-							'compare' => '=',
-						),
-					),
-				)
-			);
+			// TODO DO NOT USE get_posts
+			// $workflow_ids = get_posts(
+			// array(
+			// 'fields'     => 'ids',
+			// 'post_type'  => 'mailster-workflow',
+			// 'meta_key'   => 'trigger',
+			// 'meta_query' => array(
+			// array(
+			// 'key'     => 'trigger',
+			// 'value'   => $trigger,
+			// 'compare' => '=',
+			// ),
+			// ),
+			// )
+			// );
+
+			// faster, if we really need the post query it later explicitly
+			$workflow_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM wp_posts WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'", '%"trigger":"' . sanitize_key( $trigger ) . '"%' ) );
 
 			mailster_cache_set( 'workflow_by_trigger_' . $trigger, $workflow_ids );
 
