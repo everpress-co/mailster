@@ -523,8 +523,8 @@ export function useEmailSteps() {
 	return [attributes, setAttributes];
 }
 
-export function searchBlock(blockName, clientId) {
-	const blocks = searchBlocks(blockName, clientId, false);
+export function searchBlock(blockName, clientId, innerBlocks = true) {
+	const blocks = searchBlocks(blockName, clientId, innerBlocks);
 
 	if (blocks.length) {
 		return blocks[0];
@@ -533,20 +533,22 @@ export function searchBlock(blockName, clientId) {
 	return false;
 }
 
-export function searchBlocks(pattern, clientId = null, deep = true) {
-	const allBlocks = select('core/block-editor').getBlocks(clientId);
+export function searchBlocks(pattern, clientId = null, innerBlocks = true) {
+	const { getBlocks, getBlockRootClientId } = select('core/block-editor');
+	const allBlocks = getBlocks(clientId);
 	let matchingBlocks = [];
 
 	function _s(blocks) {
 		blocks.forEach((block) => {
 			// Check if the block matches the pattern. This example checks the block's content.
 			if (block.name && new RegExp(pattern, 'g').test(block.name)) {
+				//store the root client ID as well
+				block.rootClientId = getBlockRootClientId(block.clientId);
 				matchingBlocks.push(block);
-				if (!deep) return;
 			}
 
 			// If the block has inner blocks, search them as well
-			if (block.innerBlocks.length > 0) {
+			if (innerBlocks && block.innerBlocks.length > 0) {
 				_s(block.innerBlocks);
 			}
 		});
