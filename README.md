@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 4.6  
 Tested up to: 6.4  
-Stable tag: 3.3.10  
+Stable tag: 3.3.11  
 License: GPLv2 or later  
 Requires PHP: 7.2.5
 
@@ -187,10 +187,17 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.11
+
+- fixed: deprecated method
+- fixed: issue when replacing links introduced in 3.3.9
+- fixed: BF sales dates
+
 ### 3.3.10
 
+- fixed: warning on PHP 8.2 if subscriber count is 0
 - fixed: issue with the admin bar
-- fixes: smaller issue
+- fixed: smaller issue
 
 ### 3.3.9
 
@@ -199,7 +206,7 @@ Get professional development help from our expert support partner _Codeable_ for
 - updated: Freemius SDK to 2.6.0
 - fixed: inline style attribute got removed in some edge cases
 - improved: placeholder image tags algorithmus
-- fixes: smaller issue
+- fixed: smaller issue
 
 ### 3.3.8
 
