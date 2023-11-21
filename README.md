@@ -189,7 +189,9 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### 3.3.11
 
--fixed: BF sales dates
+- fixed: deprecated method
+- fixed: issue when replacing links introduced in 3.3.9
+- fixed: BF sales dates
 
 ### 3.3.10
 

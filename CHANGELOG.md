@@ -1,5 +1,7 @@
 ### Version 3.3.11 (2023-11-21)
 
+- fixed: deprecated method
+- fixed: issue when replacing links introduced in 3.3.9
 - fixed: BF sales dates
 
 ### Version 3.3.10 (2023-11-15)
