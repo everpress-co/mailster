@@ -248,6 +248,12 @@ Get professional development help from our expert support partner _Codeable_ for
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
 
+### 3.3.11
+
+- fixed: deprecated method
+- fixed: issue when replacing links introduced in 3.3.9
+- fixed: BF sales dates
+
 ### 3.3.10
 
 - fixed: warning on PHP 8.2 if subscriber count is 0
