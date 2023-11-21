@@ -85,6 +85,17 @@ class MailsterGeo {
 		return $record->country->name;
 	}
 
+	public function get_country_code_for_ip( $ip ) {
+
+		$record = $this->get_record( $ip );
+
+		if ( ! $record ) {
+			return 'unknown';
+		}
+
+		return $record->country->isoCode;
+	}
+
 
 
 	public function get_city_for_ip( $ip ) {
