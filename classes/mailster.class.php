@@ -1330,6 +1330,9 @@ class Mailster {
 			case 'edit-newsletter':
 				echo mailster()->beacon( array( '63fa049c0b394c459d8a5ae4' ) );
 				break;
+			case 'edit-mailster-workflow':
+				echo mailster()->beacon( array( '6460f6909a2fac195e609002' ) );
+				break;
 			case 'newsletter_page_mailster_subscribers':
 				if ( isset( $_GET['new'] ) || isset( $_GET['ID'] ) ) {
 

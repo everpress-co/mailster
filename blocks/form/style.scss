@@ -331,6 +331,7 @@ body.single-mailster-form {
 		.wp-block-column {
 			gap: 0;
 			align-items: inherit;
+			align-content: space-around;
 		}
 		.wp-block-column.is-vertically-aligned-top {
 			align-self: flex-start;
@@ -353,6 +354,7 @@ body.single-mailster-form {
 		margin-bottom: 0;
 		padding: 0;
 		gap: 0;
+		align-content: space-around;
 		.wp-block-group__inner-container {
 			gap: 0;
 		}
@@ -393,6 +395,7 @@ body.single-mailster-form {
 
 		input[type='submit'] {
 			_appearance: none;
+			font: inherit;
 			//border: unset;
 		}
 

@@ -82,8 +82,7 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 				$expires       = strtotime( '2023-12-02 00:00:00' );
 				$offset        = $expires - time();
 				$format        = _x( 'only %s left!', 'time left', 'mailster' );
-				$display       = $offset > DAY_IN_SECONDS ? human_time_diff( $expires ) : date( 'H:i:s', strtotime( 'midnight' ) + $offset - 1 );
-				$display       = sprintf( $format, $display )
+				$display       = $offset > DAY_IN_SECONDS ? '' : sprintf( $format, date( 'H:i:s', strtotime( 'midnight' ) + $offset - 1 ) );
 				?>
 			<a class="panel-tab action" id="mailster-bf2023dash" href="<?php echo mailster()->checkout_url( $checkout_args ); ?>" data-offset=<?php echo absint( $offset ); ?> data-format="<?php echo esc_attr( $format ); ?>" title="<?php echo esc_attr( sprintf( __( 'Grab a new license for Mailster with %s off the first year!', 'mailster' ), $discount ) ); ?>"><?php printf( esc_html__( 'Get %s off for Black Friday!', 'mailster' ), $discount ); ?><?php echo '<span>' . esc_html( $display ) . '</span>'; ?></a>
 

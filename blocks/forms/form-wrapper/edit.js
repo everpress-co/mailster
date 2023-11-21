@@ -123,6 +123,7 @@ export default function Edit(props) {
 		},
 	};
 
+	// remove empty entries
 	const cleanedFormStyle = Object.fromEntries(
 		Object.entries(formStyle).filter(([_, v]) => v != null)
 	);
@@ -131,6 +132,7 @@ export default function Edit(props) {
 		return `${Math.round(x * 200) - 50}% ${Math.round(y * 100)}%`;
 	};
 
+	// the background image and styles
 	const backgroundStyles = useMemo(() => {
 		let s = '';
 		if (background.image) {
@@ -158,6 +160,7 @@ export default function Edit(props) {
 		return s;
 	}, [background, attributes.borderRadius]);
 
+	// the input styles
 	const inputStyle = useMemo(() => {
 		let s = '';
 		style &&

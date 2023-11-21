@@ -175,7 +175,6 @@ function SettingsPanelPlugin() {
 				console.warn('Add message block');
 				const block = wp.blocks.createBlock('mailster/messages');
 				const reference = searchBlock(/^mailster\/field-/);
-				console.log(reference);
 				const pos = reference
 					? select('core/block-editor').getBlockIndex(
 							reference.clientId,

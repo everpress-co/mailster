@@ -209,7 +209,7 @@ mailster = (function (mailster, $, window, document) {
 			if (!offset || offset > 86400) return;
 
 			var b = btn.find('span')[0],
-				f = btn.data('format') || '%s',
+				format = btn.data('format') || '%s',
 				e = new Date().getTime(),
 				f = setInterval(function () {
 					var x = offset - Math.ceil((new Date().getTime() - e) / 1000),
@@ -227,7 +227,7 @@ mailster = (function (mailster, $, window, document) {
 					if (x <= 0) {
 						clearInterval(f);
 					}
-					b.innerHTML = mailster.util.sprintf(f, o);
+					b.innerHTML = mailster.util.sprintf(format, o);
 				}, 1000);
 		});
 	}

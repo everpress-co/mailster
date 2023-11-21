@@ -523,62 +523,37 @@ export function useEmailSteps() {
 	return [attributes, setAttributes];
 }
 
-export function searchBlock(blockName, clientId, deep = true) {
-	const all = select('core/block-editor').getBlocks(clientId);
+export function searchBlock(blockName, clientId, innerBlocks = true) {
+	const blocks = searchBlocks(blockName, clientId, innerBlocks);
 
-	var found = all.find((block) => {
-		return new RegExp(blockName, 'g').test(block.name);
-	});
-
-	if (found) {
-		found.rootClientId = clientId;
-		return found;
-	} else if (deep) {
-		for (var i = 0; i < all.length; i++) {
-			if ((found = searchBlock(blockName, all[i].clientId))) {
-				return found;
-			}
-		}
+	if (blocks.length) {
+		return blocks[0];
 	}
 
 	return false;
 }
 
-export function searchBlocks(blockName, clientId = null, deep = true) {
-	const blocks = select('core/block-editor').getBlocks(clientId);
+export function searchBlocks(pattern, clientId = null, innerBlocks = true) {
+	const { getBlocks, getBlockRootClientId } = select('core/block-editor');
+	const allBlocks = getBlocks(clientId);
+	let matchingBlocks = [];
 
-	const matchingBlocks = blocks.filter((block) => block.name === blockName);
-
-	for (const block of blocks) {
-		if (deep && block.innerBlocks.length > 0) {
-			for (const innerblock of block.innerBlocks) {
-				matchingBlocks.push(
-					...searchBlocks(blockName, innerblock.clientId, deep)
-				);
+	function _s(blocks) {
+		blocks.forEach((block) => {
+			// Check if the block matches the pattern. This example checks the block's content.
+			if (block.name && new RegExp(pattern, 'g').test(block.name)) {
+				//store the root client ID as well
+				block.rootClientId = getBlockRootClientId(block.clientId);
+				matchingBlocks.push(block);
 			}
-		}
+
+			// If the block has inner blocks, search them as well
+			if (innerBlocks && block.innerBlocks.length > 0) {
+				_s(block.innerBlocks);
+			}
+		});
 	}
 
-	return matchingBlocks;
-}
-
-export function searchBlocksNew(blockName, clientId = null, deep = true) {
-	const blocks = select('core/block-editor').getBlocks(clientId);
-
-	let matchingBlocks = blocks.filter((block) => block.name === blockName);
-
-	for (const block of blocks) {
-		if (deep && block.innerBlocks.length > 0) {
-			for (const innerblock of block.innerBlocks) {
-				if (innerblock.name === blockName) matchingBlocks.push(innerblock);
-				//if (innerblock.innerBlocks.length > 0) {
-				matchingBlocks.push(
-					...searchBlocks(blockName, innerblock.clientId, deep)
-				);
-				//}
-			}
-		}
-	}
-
+	_s(allBlocks);
 	return matchingBlocks;
 }

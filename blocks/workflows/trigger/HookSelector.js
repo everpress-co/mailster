@@ -53,10 +53,6 @@ export default function Selector(props) {
 	);
 
 	const setHook = (value) => {
-		value = value.toLowerCase();
-		value = value.replace(' ', '_');
-		value = value.replace(/[^a-z0-9_-]/, '');
-
 		setAttributes({ hook: value ? value : undefined });
 	};
 

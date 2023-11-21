@@ -543,6 +543,11 @@ function mailster_ip2Country( $ip = '', $get = 'code', $local = null ) {
 	if ( empty( $ip ) ) {
 		$ip = mailster_get_ip();
 	}
+
+	if ( $get === 'code' ) {
+		return mailster( 'geo' )->get_country_code_for_ip( $ip );
+	}
+
 	if ( empty( $local ) ) {
 		$local = get_locale();
 	}
