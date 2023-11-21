@@ -187,6 +187,16 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.0 (Beta 6)
+
+- improved: allow any type of hook in hook triggers
+- fixed: warning on PHP 8.2 if subscriber count is 0
+- fixed: BF sale dates
+- fixed: CodeMirror editor not responding
+- fixed: `mailster_ip2Country` didn't return country codes
+- fixed: deprecated method
+- new: save custom modules
+
 ### 4.0.0 (Beta 5)
 
 - fixed: forms popup appear on wrong places

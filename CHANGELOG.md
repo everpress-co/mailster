@@ -1,4 +1,13 @@
-<<<<<<< HEAD
+### Version 4.0.0 Beta 6 (2023-11-21)
+
+- improved: allow any type of hook in hook triggers
+- fixed: warning on PHP 8.2 if subscriber count is 0
+- fixed: BF sale dates
+- fixed: CodeMirror editor not responding
+- fixed: `mailster_ip2Country` didn't return country codes
+- fixed: deprecated method
+- new: save custom modules
+
 ### Version 4.0.0 Beta 5 (2023-11-08)
 
 - fixed: forms popup appear on wrong places
@@ -59,13 +68,12 @@
 - improved: Autocompletion on conditions
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
-=======
+
 ### Version 3.3.11 (2023-11-21)
 
 - fixed: deprecated method
 - fixed: issue when replacing links introduced in 3.3.9
 - fixed: BF sales dates
->>>>>>> origin/develop
 
 ### Version 3.3.10 (2023-11-15)
 
