@@ -34,7 +34,7 @@ export default function HomepageBlockControls(props) {
 	const { attributes, setAttributes, current, onSelect } = props;
 	const {} = attributes;
 
-	const currentTab = TABS.find((tab) => tab.id === current);
+	const currentTab = Object.keys(TABS).find((tab) => tab.id === current);
 
 	return (
 		<BlockControls group="block">

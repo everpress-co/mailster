@@ -42,13 +42,18 @@ const SUBSCRIBE_TEMPLATE = [
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, context } = props;
 
-	const { id, type = 'submission' } = attributes;
+	const { type = 'submission' } = attributes;
 
 	const contextAlign = context['mailster-homepage-context/align'];
 
 	useEffect(() => {
 		setAttributes({ align: contextAlign });
 	}, [contextAlign]);
+
+	useEffect(() => {
+		if (!isSelected) return;
+		location.hash = '#mailster-' + type;
+	}, [isSelected]);
 
 	const className = ['mailster-form-type'];
 
@@ -66,7 +71,6 @@ export default function Edit(props) {
 			<div {...blockProps}>
 				<InnerBlocks templateLock={false} template={template} />
 			</div>
-			<InspectorControls></InspectorControls>
 			<HomepageContextInspectorControls {...props} />
 		</>
 	);

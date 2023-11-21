@@ -44,7 +44,7 @@ export const TABS = [
 		title_DEL: '/subscribe',
 		label: __('This is the Landing page', 'mailster'),
 		help: __(
-			'Use this section to define the content when people click on the link in the confirmation email.',
+			'This section to displayed when people click on the link in the confirmation email.',
 			'mailster'
 		),
 	},

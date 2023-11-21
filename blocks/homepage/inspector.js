@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import styled from '@emotion/styled';
 
 /**
  * WordPress dependencies
@@ -10,26 +11,28 @@ import { __, sprintf } from '@wordpress/i18n';
 
 import { InspectorControls } from '@wordpress/block-editor';
 import {
+	Button,
 	Panel,
 	PanelBody,
 	PanelRow,
-	ItemGroup,
 	BaseControl,
 	MenuGroup,
 	MenuItem,
-	CheckboxControl,
-	TextControl,
-	RangeControl,
-	Button,
 	Tip,
 	ExternalLink,
 } from '@wordpress/components';
 
-import { useState } from '@wordpress/element';
-import { select, dispatch, useSelect } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 
 import { external } from '@wordpress/icons';
 
+const PanelDescription = styled.div`
+	grid-column: span 2;
+`;
+
+const SingleColumnItem = styled.div`
+	grid-column: span 1;
+`;
 /**
  * Internal dependencies
  */
@@ -48,12 +51,18 @@ export default function HomepageInspectorControls(props) {
 		return select('core/editor').getPermalink();
 	});
 
+	// get current status
+	const status = useSelect((select) => {
+		return select('core/editor').getEditedPostAttribute('status');
+	}, []);
+
+	const disabled = status == 'auto-draft';
+
+	const currentTab = TABS.find((tab) => tab.id === current);
+
 	const ContextButtons = ({ onClose = () => {} }) => {
 		return TABS.map((a, i) => {
-			const link =
-				a.id == 'submission'
-					? permalink
-					: sprintf('%s%s', permalink, mailster_homepage_slugs[a.id] || a.id);
+			const link = getPermalink(a.id);
 			const defined = attributes[a.id] || a.id == 'subscribe';
 			return (
 				<MenuGroup key={i} isSelected={a.id === current}>
@@ -67,19 +76,44 @@ export default function HomepageInspectorControls(props) {
 						}}
 					>
 						{a.name}
-						<ExternalLink href={link} />
+						{!disabled && <ExternalLink href={link} />}
 					</MenuItem>
 				</MenuGroup>
 			);
 		});
 	};
 
-	const getHelp = () => {
-		if (TABS[current]) return TABS[current].help;
+	const getPermalink = (id) => {
+		return id == 'submission'
+			? permalink
+			: sprintf('%s%s', permalink, mailster_homepage_slugs[id] || id);
+	};
 
-		return __(
-			'You have to define a form for each section. You can use the same form as well.',
-			'mailster'
+	const getHelp = () => {
+		if (!currentTab) return <></>;
+
+		return <p>{currentTab.help}</p>;
+	};
+	const getTitle = () => {
+		if (!currentTab) return <></>;
+
+		return <h2>{sprintf(__('[Section] %s', 'mailster'), currentTab.name)}</h2>;
+	};
+	const getLink = () => {
+		if (!currentTab) return <></>;
+
+		const link = getPermalink(currentTab.id);
+
+		return (
+			<Button
+				href={link}
+				icon={external}
+				disabled={disabled}
+				variant="secondary"
+				target="mailster-newsletter-homepage-preview"
+			>
+				{sprintf(__('Preview %s', 'mailster'), currentTab.name)}
+			</Button>
 		);
 	};
 
@@ -87,9 +121,18 @@ export default function HomepageInspectorControls(props) {
 		<InspectorControls>
 			<Panel>
 				<PanelBody initialOpen={true}>
+					<HelpBeacon id="6453abdab9f4b70821b98a1b" align="right" />
+					<PanelDescription>
+						{getTitle()}
+						{getHelp()}
+						{getLink()}
+					</PanelDescription>
+				</PanelBody>
+			</Panel>
+			<Panel>
+				<PanelBody initialOpen={true}>
 					<PanelRow>
 						<BaseControl label={__('Newsletter Homepage Sections', 'mailster')}>
-							<HelpBeacon id="6453abdab9f4b70821b98a1b" align="right" />
 							<div className="components-dropdown-menu__menu context-buttons">
 								<ContextButtons />
 							</div>
@@ -98,7 +141,12 @@ export default function HomepageInspectorControls(props) {
 				</PanelBody>
 				<PanelBody initialOpen={true}>
 					<PanelRow>
-						<Tip>{getHelp()}</Tip>
+						<Tip>
+							{__(
+								'You have to define a form for each section. You can use the same form as well.',
+								'mailster'
+							)}
+						</Tip>
 					</PanelRow>
 				</PanelBody>
 				{(current == 'profile' || current == 'unsubscribe') && (

@@ -223,27 +223,6 @@ export const FormStylesPanel = (props) => {
 			)}
 
 			<PanelRow>
-				<BoxControl
-					label={__('Form Padding', 'mailster')}
-					values={style?.spacing?.padding}
-					help={__('Set the padding of your form in %', 'mailster')}
-					resetValues={{
-						top: undefined,
-						left: undefined,
-						right: undefined,
-						bottom: undefined,
-					}}
-					onChange={(val) =>
-						setAttributes({
-							padding: val,
-						})
-					}
-					onChange={(value) => {
-						setStyle('spacing', { padding: value });
-					}}
-				/>
-			</PanelRow>
-			<PanelRow>
 				<RangeControl
 					className="widefat"
 					label={__('Border Radius', 'mailster')}
