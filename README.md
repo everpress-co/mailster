@@ -187,6 +187,10 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.11
+
+-fixed: BF sales dates
+
 ### 3.3.10
 
 - fixed: warning on PHP 8.2 if subscriber count is 0

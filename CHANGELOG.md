@@ -1,3 +1,7 @@
+### Version 3.3.11 (2023-11-21)
+
+- fixed: BF sales dates
+
 ### Version 3.3.10 (2023-11-15)
 
 - fixed: warning on PHP 8.2 if subscriber count is 0
