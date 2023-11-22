@@ -43,13 +43,18 @@
 		},
 		"unsubscribe_button": {
 			"type": "string"
+		},
+		"showAll": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"providesContext": {
 		"mailster-homepage-context/align": "align",
 		"mailster-homepage-context/submission": "submission",
 		"mailster-homepage-context/profile": "profile",
-		"mailster-homepage-context/unsubscribe": "unsubscribe"
+		"mailster-homepage-context/unsubscribe": "unsubscribe",
+		"mailster-homepage-context/showAll": "showAll"
 	},
 	"textdomain": "mailster",
 	"editorScript": "file:./index.js",

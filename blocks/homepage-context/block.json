@@ -29,7 +29,10 @@
 			"enum": ["submission", "profile", "unsubscribe", "subscribe"]
 		}
 	},
-	"usesContext": ["mailster-homepage-context/align"],
+	"usesContext": [
+		"mailster-homepage-context/align",
+		"mailster-homepage-context/showAll"
+	],
 	"providesContext": {
 		"mailster-homepage-context/type": "type"
 	},

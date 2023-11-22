@@ -16,14 +16,14 @@ import {
 } from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
 import apiFetch from '@wordpress/api-fetch';
-import { TabPanel } from '@wordpress/components';
+import { TabPanel, Tooltip } from '@wordpress/components';
 import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-
+import { TABS } from '../homepage/constants';
 import HomepageContextInspectorControls from './inspector';
 
 const SUBSCRIBE_TEMPLATE = [
@@ -63,12 +63,21 @@ export default function Edit(props) {
 		className: classnames({}, className),
 	});
 
+	const currentTab = TABS.find((tab) => tab.id === type);
+
 	const template =
 		type != 'subscribe' ? [['mailster/form']] : SUBSCRIBE_TEMPLATE;
 
 	return (
 		<>
 			<div {...blockProps}>
+				{currentTab && (
+					<Tooltip text={currentTab.label}>
+						<span className="section-info">
+							{sprintf(__('[Mailster]: %s', 'mailster'), currentTab.name)}
+						</span>
+					</Tooltip>
+				)}
 				<InnerBlocks templateLock={false} template={template} />
 			</div>
 			<HomepageContextInspectorControls {...props} />

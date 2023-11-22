@@ -14,7 +14,7 @@ export const TABS = [
 		title_DEL: '/',
 		label: __('This is the homepage', 'mailster'),
 		help: __(
-			'This section is displayed if users visit the newsletter homepage.',
+			"This section is displayed if users visit the newsletter homepage. It's your regular signup form for the newsletter.",
 			'mailster'
 		),
 	},

@@ -45,12 +45,11 @@ const BLOCK_TEMPLATE = [
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
 
-	const {} = attributes;
+	const { showAll } = attributes;
 
 	const className = ['mailster-homepage'];
 
 	const [current, setCurrent] = useState();
-	const [showAll, setShowAll] = useState(false);
 	const [shortcodes, setShortCodes] = useState(false);
 	const [shortcodesModal, setShortCodesModal] = useState(false);
 
@@ -179,32 +178,10 @@ export default function Edit(props) {
 						</Button>
 					</Modal>
 				)}
-				{!showAll && currentTab && (
-					<Tooltip text={currentTab.label}>
-						<span className="section-info">
-							{sprintf(__('[Mailster]: %s', 'mailster'), currentTab.name)}
-						</span>
-					</Tooltip>
-				)}
+
 				<InnerBlocks template={BLOCK_TEMPLATE} templateLock="all" />
 			</div>
-			<InspectorControls>
-				<Panel>
-					<PanelBody initialOpen={true}>
-						<ToggleControl
-							label={__('Show all sections', 'mailster')}
-							help={__(
-								'Show all 4 section at once. This is only for preview purposes.',
-								'mailster'
-							)}
-							checked={showAll}
-							onChange={() => {
-								setShowAll((state) => !state);
-							}}
-						/>
-					</PanelBody>
-				</Panel>
-			</InspectorControls>
+			<InspectorControls></InspectorControls>
 			<HomepageInspectorControls
 				current={current || 'submission'}
 				onSelect={onSelect}

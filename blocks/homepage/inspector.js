@@ -20,9 +20,10 @@ import {
 	MenuItem,
 	Tip,
 	ExternalLink,
+	ToggleControl,
 } from '@wordpress/components';
 
-import { useSelect } from '@wordpress/data';
+import { useSelect, dispatch } from '@wordpress/data';
 
 import { external } from '@wordpress/icons';
 
@@ -47,6 +48,19 @@ export default function HomepageInspectorControls(props) {
 	const attributes = useSelect((select) => {
 		return select('core/block-editor').getBlockAttributes(homepage.clientId);
 	});
+
+	const setAttributes = (object) => {
+		const merged = { ...attributes, ...object };
+		const homepage = searchBlock('mailster/homepage');
+
+		return dispatch('core/block-editor').updateBlockAttributes(
+			homepage.clientId,
+			merged
+		);
+	};
+
+	const { showAll } = attributes;
+
 	const permalink = useSelect((select) => {
 		return select('core/editor').getPermalink();
 	});
@@ -92,12 +106,12 @@ export default function HomepageInspectorControls(props) {
 	const getHelp = () => {
 		if (!currentTab) return <></>;
 
-		return <p>{currentTab.help}</p>;
+		return <p className="section-info">{currentTab.help}</p>;
 	};
 	const getTitle = () => {
 		if (!currentTab) return <></>;
 
-		return <h2>{sprintf(__('[Section] %s', 'mailster'), currentTab.name)}</h2>;
+		return <h3>{sprintf(__('[Section] %s', 'mailster'), currentTab.name)}</h3>;
 	};
 	const getLink = () => {
 		if (!currentTab) return <></>;
@@ -140,6 +154,19 @@ export default function HomepageInspectorControls(props) {
 					</PanelRow>
 				</PanelBody>
 				<PanelBody initialOpen={true}>
+					<PanelRow>
+						<ToggleControl
+							label={__('Show all sections', 'mailster')}
+							help={__(
+								'Show all sections at once. This is only for preview purposes.',
+								'mailster'
+							)}
+							checked={showAll}
+							onChange={() => {
+								setAttributes({ showAll: !showAll });
+							}}
+						/>
+					</PanelRow>
 					<PanelRow>
 						<Tip>
 							{__(

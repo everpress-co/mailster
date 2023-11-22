@@ -127,6 +127,11 @@ export default function Edit(props) {
 		setAttributes({ align: contextAlign });
 	}, [contextAlign]);
 
+	useEffect(() => {
+		if (!isSelected || !contextType) return;
+		location.hash = '#mailster-' + contextType;
+	}, [isSelected]);
+
 	const selectForm = (id) => {
 		// if we are in context of the homepage block
 		if (contextType) {
