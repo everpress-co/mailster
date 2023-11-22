@@ -43,17 +43,14 @@ import {
 } from './constants';
 
 import { HelpBeacon } from '../../util';
+import { getLabel } from './functions';
 
 const ORDERERD_WEEK_OPTIONS = [
 	...WEEK_OPTIONS.slice(START_OF_WEEK),
 	...WEEK_OPTIONS.slice(0, START_OF_WEEK),
 ];
 
-export default function DelayInspectorControls({
-	attributes,
-	setAttributes,
-	getLabel,
-}) {
+export default function DelayInspectorControls({ attributes, setAttributes }) {
 	const {
 		amount,
 		date,
@@ -156,7 +153,7 @@ export default function DelayInspectorControls({
 											variant="secondary"
 											onClick={(e) => setPopover(true)}
 										>
-											{getLabel()}
+											{getLabel(attributes)}
 											{popover && (
 												<Popover
 													onClose={(e) => setPopover(false)}
@@ -185,7 +182,7 @@ export default function DelayInspectorControls({
 									)}
 								>
 									<Button variant="secondary" onClick={(e) => setPopover(true)}>
-										{getLabel()}
+										{getLabel(attributes)}
 										{popover && (
 											<Popover
 												onClose={(e) => setPopover(false)}
@@ -240,7 +237,7 @@ export default function DelayInspectorControls({
 									)}
 								>
 									<Button variant="secondary" onClick={(e) => setPopover(true)}>
-										{getLabel()}
+										{getLabel(attributes)}
 										{popover && (
 											<Popover
 												onClose={(e) => setPopover(false)}
