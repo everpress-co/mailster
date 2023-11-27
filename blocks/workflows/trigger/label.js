@@ -17,5 +17,5 @@ export default function Label(attributes, { context }) {
 
 	return trigger
 		? sprintf(__('Trigger %s', 'mailster'), '"' + trigger + '"')
-		: content;
+		: __('No Trigger defined', 'mailster');
 }

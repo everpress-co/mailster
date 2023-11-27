@@ -122,10 +122,22 @@ class MailsterAutomations {
 				'info'  => esc_html__( 'When a subscriber joins a list', 'mailster' ),
 			),
 			array(
+				'id'    => 'list_remove',
+				'icon'  => 'formatListBullets',
+				'label' => esc_html__( 'Subscriber removed from a list', 'mailster' ),
+				'info'  => esc_html__( 'When a subscriber is removed from a list', 'mailster' ),
+			),
+			array(
 				'id'    => 'tag_added',
 				'icon'  => 'tag',
 				'label' => esc_html__( 'Tag added', 'mailster' ),
 				'info'  => esc_html__( 'When a Tag is added to a subscriber', 'mailster' ),
+			),
+			array(
+				'id'    => 'tag_removed',
+				'icon'  => 'tag',
+				'label' => esc_html__( 'Tag removed', 'mailster' ),
+				'info'  => esc_html__( 'When a Tag is removed from a subscriber', 'mailster' ),
 			),
 			array(
 				'id'    => 'updated_field',

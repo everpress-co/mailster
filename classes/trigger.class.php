@@ -4,13 +4,15 @@ class MailsterTrigger {
 
 	public function __construct() {
 
-		// subscriber added to list
+		// subscriber added/removed to list
 		add_action( 'mailster_list_confirmed', array( &$this, 'list_confirmed' ), 10, 2 );
+		add_action( 'mailster_list_removed', array( &$this, 'list_removed' ), 10, 2 );
 
 		add_action( 'mailster_form_conversion', array( &$this, 'form_conversion' ), 10, 3 );
 
-		// subscriber added to list
+		// subscriber added/removed to tag
 		add_action( 'mailster_tag_added', array( &$this, 'tag_added' ), 10, 3 );
+		add_action( 'mailster_tag_removed', array( &$this, 'tag_removed' ), 10, 3 );
 
 		// Visited a page
 		add_action( 'shutdown', array( &$this, 'front_page_hooks' ) );
@@ -97,20 +99,30 @@ class MailsterTrigger {
 
 	public function list_confirmed( $list_id, $subscriber_id ) {
 
-		$workflows = $this->get_workflows_by_trigger( 'list_add' );
+		$this->run_list( 'list_confirmed', $list_id, $subscriber_id );
+	}
+
+	public function list_removed( $list_id, $subscriber_id ) {
+
+		$this->run_list( 'list_removed', $list_id, $subscriber_id );
+	}
+
+	private function run_list( $type, $list_id, $subscriber_id ) {
+
+		$workflows = $this->get_workflows_by_trigger( $type );
 		foreach ( $workflows as $workflow ) {
-			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'list_add' );
+			$options = mailster( 'automations' )->get_trigger_option( $workflow, $type );
 
 			if ( ! isset( $options['lists'] ) ) {
 				continue;
 			}
 
 			if ( in_array( $list_id, $options['lists'] ) ) {
-				$this->add_job( $workflow, 'list_add', $subscriber_id );
+				$this->add_job( $workflow, $type, $subscriber_id );
 
 				// any list
 			} elseif ( in_array( '-1', $options['lists'] ) ) {
-				$this->add_job( $workflow, 'list_add', $subscriber_id );
+				$this->add_job( $workflow, $type, $subscriber_id );
 			}
 		}
 	}
@@ -147,12 +159,22 @@ class MailsterTrigger {
 
 	public function tag_added( $tag_id, $subscriber_id, $tag_name ) {
 
-		$workflows = $this->get_workflows_by_trigger( 'tag_added' );
+		$this->run_tag( 'tag_added', $tag_id, $subscriber_id, $tag_name );
+	}
+
+	public function tag_removed( $tag_id, $subscriber_id, $tag_name ) {
+
+		$this->run_tag( 'tag_removed', $tag_id, $subscriber_id, $tag_name );
+	}
+
+	private function run_tag( $type, $tag_id, $subscriber_id, $tag_name ) {
+
+		$workflows = $this->get_workflows_by_trigger( $type );
 		foreach ( $workflows as $workflow ) {
-			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'tag_added' );
+			$options = mailster( 'automations' )->get_trigger_option( $workflow, $type );
 
 			if ( in_array( $tag_name, $options['tags'] ) ) {
-				$this->add_job( $workflow, 'tag_added', $subscriber_id );
+				$this->add_job( $workflow, $type, $subscriber_id );
 			}
 		}
 	}
@@ -232,7 +254,7 @@ class MailsterTrigger {
 		}
 	}
 
-	public function run_date( $workflow ) {
+	private function run_date( $workflow ) {
 
 		$options = mailster( 'automations' )->get_trigger_option( $workflow, 'date' );
 
@@ -261,7 +283,7 @@ class MailsterTrigger {
 		}
 	}
 
-	public function run_anniversary( $workflow ) {
+	private function run_anniversary( $workflow ) {
 
 		$options = mailster( 'automations' )->get_trigger_option( $workflow, 'anniversary' );
 
