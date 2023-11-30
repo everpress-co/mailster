@@ -82,3 +82,36 @@
 .empty-table-wrap .empty-table-wrap-inner p {
 	font-size: 110%;
 }
+#form-preview-overlay {
+	display: none;
+}
+
+body #TB_window {
+	background-color: transparent !important;
+	box-shadow: none !important;
+	inset: 0;
+	margin: 0 !important;
+}
+#TB_title {
+	_display: none;
+	position: fixed;
+	inset: 0;
+	margin: 0 !important;
+}
+@supports (backdrop-filter: blur(3px)) {
+	#TB_window {
+		-webkit-backdrop-filter: blur(3px);
+		backdrop-filter: blur(3px);
+	}
+}
+#TB_window iframe {
+	height: 95%;
+	width: 100%;
+	max-width: 900px;
+	border: none;
+}
+#TB_window #TB_ajaxContent {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
