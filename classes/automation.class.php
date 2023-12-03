@@ -928,6 +928,7 @@ class MailsterAutomations {
 				$typenow = sanitize_key( $_REQUEST['post_type'] );
 			}
 		} elseif ( 'post.php' === $pagenow ) {
+			$post_id = null;
 			if ( isset( $_GET['post'] ) && isset( $_POST['post_ID'] ) && (int) $_GET['post'] !== (int) $_POST['post_ID'] ) {
 				// Do nothing
 			} elseif ( isset( $_GET['post'] ) ) {

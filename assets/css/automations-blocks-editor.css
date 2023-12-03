@@ -527,13 +527,17 @@
 }
 
 .mailster-step .mailster-step-info,
-.mailster-step .mailster-step-meta {
+.mailster-step .mailster-step-meta,
+.mailster-step .mailster-trigger-repeats {
 	text-align: left;
 	opacity: 0.8;
 	font-size: 80%;
 	line-height: 1.5em;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+.mailster-step .mailster-trigger-repeats {
+	opacity: 0.4;
 }
 .mailster-step .mailster-step-meta {
 	opacity: 0.3;

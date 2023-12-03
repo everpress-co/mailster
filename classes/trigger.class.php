@@ -287,12 +287,18 @@ class MailsterTrigger {
 
 		$options = mailster( 'automations' )->get_trigger_option( $workflow, 'anniversary' );
 
-		$date  = isset( $options['date'] ) ? strtotime( $options['date'] ) : null;
-		$field = isset( $options['field'] ) ? $options['field'] : null;
+		$date   = isset( $options['date'] ) ? strtotime( $options['date'] ) : null;
+		$field  = isset( $options['field'] ) ? $options['field'] : null;
+		$offset = isset( $options['offset'] ) ? (int) $options['offset'] : 0;
 
 		// get timestamp from today at the time of $date if a userfield is set
 		if ( $field ) {
+
 			$date = strtotime( 'today ' . date( 'H:i', $date ) );
+
+			// add offset in seconds
+			$date += $offset;
+
 		}
 
 		// if date is within one hour

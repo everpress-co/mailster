@@ -155,7 +155,7 @@ class Mailster_REST_Form_Controller extends WP_REST_Controller {
 		$_campaign_id    = $request->get_param( '_campaign_id' );
 		$_campaign_index = 0;
 		// get the campaign index
-		if ( false !== strpos( $_campaign_id, '-' ) ) {
+		if ( $_campaign_id && false !== strpos( $_campaign_id, '-' ) ) {
 			$_campaign_index = absint( strrchr( $_campaign_id, '-' ) );
 			$_campaign_id    = absint( $_campaign_id );
 		}

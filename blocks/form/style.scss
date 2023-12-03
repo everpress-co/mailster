@@ -4,10 +4,6 @@ html.mailster-form-active {
 		overflow: hidden;
 	}
 }
-body.single-mailster-form * {
-	visibility: hidden;
-}
-
 body.single-mailster-form #wpadminbar,
 body.single-mailster-form #wpadminbar * {
 	_visibility: visible;
@@ -16,11 +12,14 @@ body.single-mailster-form::after,
 body.single-mailster-form::before {
 	display: none;
 }
+body.single-mailster-form > * {
+	display: none !important;
+}
 
 body.single-mailster-form {
+	background: none;
 	overflow: hidden;
 	.mailster-block-form-type-content:not(.foo) {
-		position: absolute;
 		inset: 0;
 		top: 0;
 		right: 0;
@@ -35,9 +34,12 @@ body.single-mailster-form {
 		position: fixed;
 		visibility: visible;
 		overflow: auto;
-		display: flex;
+		display: flex !important;
 		justify-items: center;
 		align-items: center;
+		form {
+			background-color: #fff;
+		}
 	}
 	.mailster-block-form-type-content * {
 		visibility: visible;

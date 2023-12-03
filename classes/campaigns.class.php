@@ -269,7 +269,7 @@ class MailsterCampaigns {
 
 			$original = get_post( $campaign_id );
 
-			$campaign_id = mailster( 'campaigns' )->duplicate(
+			$campaign_id = $this->duplicate(
 				$campaign_id,
 				array(
 					'post_title'  => $original->post_title,
@@ -657,6 +657,16 @@ class MailsterCampaigns {
 				exit;
 			}
 
+			// convert to block form
+			if ( isset( $_GET['convert'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_convert_nonce' ) ) {
+				$id = (int) $_GET['convert'];
+				$id = $this->convert( $id );
+
+				mailster_redirect( admin_url( 'post.php?post=' . $id . '&action=edit' ) );
+				exit;
+
+			}
+
 			add_filter( 'the_excerpt', '__return_false' );
 			add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
 			add_filter( 'page_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
@@ -667,6 +677,48 @@ class MailsterCampaigns {
 			add_filter( 'pre_get_posts', array( &$this, 'pre_get_posts' ) );
 
 			$this->handle_bulk_actions();
+
+		}
+	}
+
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function convert_message() {
+
+		if ( get_post_type() != 'newsletter' ) {
+			return;
+		}
+
+		if ( get_post_status() != 'autoresponder' ) {
+			return;
+		}
+
+		$meta          = $this->meta( get_the_ID() );
+		$autoresponder = $meta['autoresponder'];
+
+		echo '<pre>' . print_r( $autoresponder, true ) . '</pre>';
+
+		$supported = array( 'mailster_autoresponder_usertime', 'mailster_autoresponder_hook', 'mailster_subscriber_insert' );
+
+		if ( ! isset( $autoresponder['action'] ) || ! in_array( $autoresponder['action'], $supported ) ) {
+			return;
+		}
+
+		$args = array(
+			'post_type' => 'newsletter',
+			'convert'   => get_the_ID(),
+			'_wpnonce'  => wp_create_nonce( 'mailster_convert_nonce' ),
+		);
+
+		if ( $workflow_id = get_post_meta( get_the_ID(), 'workflow', true ) ) {
+			echo '<div class="notice-warning notice notice-large inline"><h3>' . esc_html__( 'This Autoresponder has been converted already!', 'mailster' ) . '</h3><p>' . esc_html__( 'You have converted this autoresponder already. You can convert it again to create a new workflow or you can edit the original one.', 'mailster' ) . '</p><p><a class="button button-secondary" href="' . esc_url( add_query_arg( $args, admin_url( 'edit.php' ) ) ) . '" title="' . esc_html__( 'Convert Autoreponder', 'mailster' ) . '">' . esc_html__( 'Convert to Workflow again', 'mailster' ) . '</a>  <a class="button button-primary" href="' . esc_url( admin_url( 'post.php?post=' . $workflow_id . '&action=edit' ) ) . '">' . esc_html__( 'Open Workflow', 'mailster' ) . '</a></p></div>';
+		} else {
+			echo '<div class="notice-warning notice notice-large inline"><h3>' . esc_html__( 'Convert this Autoreponder to a workflow.', 'mailster' ) . '</h3><p>' . esc_html__( 'Workflows offer a more flexible and clearer method for constructing your automations.', 'mailster' ) . '</p><p>' . esc_html__( 'Should you choose to convert this autoresponder, it will be deactivated and the campaign will be duplicated.', 'mailster' ) . '</p><p><a class="button button-primary" href="' . esc_url( add_query_arg( $args, admin_url( 'edit.php' ) ) ) . '" title="' . esc_html__( 'Convert Autoreponder', 'mailster' ) . '">' . esc_html__( 'Convert to Workflow', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a class="button button-link" href="' . esc_url( add_query_arg( $args, admin_url( 'edit.php' ) ) ) . '">' . esc_html__( 'Learn more about workflows', 'mailster' ) . '</a></p></div>';
 
 		}
 	}
@@ -1473,7 +1525,17 @@ class MailsterCampaigns {
 				unset( $actions['view'] );
 			}
 		}
-		return array_intersect_key( $actions, array_flip( array( 'edit', 'trash', 'view', 'statistics', 'duplicate', 'autoresponder_link' ) ) );
+
+		$actions['convert'] = '<a href="' . esc_url(
+			add_query_arg(
+				array(
+					'convert'  => $campaign->ID,
+					'_wpnonce' => wp_create_nonce( 'mailster_convert_nonce' ),
+				)
+			)
+		) . '" title="' . esc_html__( 'Convert Autoreponder', 'mailster' ) . '">' . esc_html__( 'Convert to Workflow', 'mailster' ) . '</a>';
+
+		return array_intersect_key( $actions, array_flip( array( 'edit', 'trash', 'view', 'statistics', 'duplicate', 'autoresponder_link', 'convert' ) ) );
 	}
 
 
@@ -1526,6 +1588,7 @@ class MailsterCampaigns {
 			}
 
 			add_action( 'submitpost_box', array( &$this, 'notice' ) );
+			add_action( 'edit_form_after_title', array( &$this, 'convert_message' ) );
 
 			if ( isset( $_GET['template'] ) ) {
 				$file = ( isset( $_GET['file'] ) ) ? $_GET['file'] : 'index.html';
@@ -2817,6 +2880,191 @@ class MailsterCampaigns {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
+	 * @return unknown
+	 */
+	public function convert( $id ) {
+
+		$campaign = get_post( $id );
+
+		if ( ! $campaign ) {
+			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		if ( $campaign->post_status !== 'autoresponder' ) {
+			return new WP_Error( 'no_campaign', esc_html__( 'Only Autoresponder can get converted.', 'mailster' ) );
+		}
+
+		$meta          = $this->meta( $campaign->ID );
+		$autoresponder = $meta['autoresponder'];
+
+		$triggers        = array();
+		$lists           = $meta['ignore_lists'] ? array( -1 ) : array_map( 'absint', $meta['lists'] );
+		$steps           = array();
+		$list_conditions = $meta['list_conditions'] ? (array) $meta['list_conditions'] : array();
+
+		$timeoffset = mailster( 'helper' )->gmt_offset( true );
+
+		// TODO: make sure & work and get saved correctly
+		// $list_conditions = str_replace( '&', "\u0026", $list_conditions );
+		// $list_conditions = mb_convert_encoding( $list_conditions, 'UTF-8', 'HTML-ENTITIES' );
+
+		$workflow_id = $this->duplicate(
+			$campaign->ID,
+			array(
+				'post_title'  => $campaign->post_title,
+				'post_status' => 'workflow',
+			),
+			array(
+				'autoresponder' => array(),
+			)
+		);
+
+		switch ( $autoresponder['action'] ) {
+			case 'mailster_autoresponder_hook';
+				$trigger = 'hook';
+				if ( ! $meta['ignore_lists'] ) {
+					$list_conditions[] = array(
+						array(
+							'field'    => '_lists__in',
+							'operator' => 'is',
+							'value'    => $lists,
+						),
+					);
+				}
+				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode(
+					array(
+						'conditions' => build_query( array( 'conditions' => $list_conditions ) ),
+						'trigger'    => $trigger,
+						'hook'       => $autoresponder['hook'],
+						'lists'      => $lists,
+					)
+				) . ' /-->';
+				if ( $autoresponder['amount'] ) {
+					$steps[] = '<!-- wp:mailster-workflow/delay {"amount":' . absint( $autoresponder['amount'] ) . ',"unit":"' . ( $autoresponder['unit'] ) . 's"} /-->';
+				}
+				$steps[] = '<!-- wp:mailster-workflow/email {"name":"' . ( $campaign->post_title ) . '","campaign":' . absint( $workflow_id ) . '} /-->';
+			break;
+			case 'mailster_subscriber_insert':
+				$trigger    = 'list_add';
+				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode(
+					array(
+						'conditions' => build_query( array( 'conditions' => $list_conditions ) ),
+						'trigger'    => $trigger,
+						'lists'      => $lists,
+					)
+				) . ' /-->';
+				if ( $autoresponder['amount'] ) {
+					$steps[] = '<!-- wp:mailster-workflow/delay {"amount":' . absint( $autoresponder['amount'] ) . ',"unit":"' . ( $autoresponder['unit'] ) . 's"} /-->';
+				}
+				$steps[] = '<!-- wp:mailster-workflow/email {"name":"' . ( $campaign->post_title ) . '","campaign":' . absint( $workflow_id ) . '} /-->';
+				break;
+			case 'mailster_autoresponder_timebased':
+			case 'mailster_autoresponder_usertime':
+				$trigger = $autoresponder['userexactdate'] ? 'date' : 'anniversary';
+				// before
+				if ( $autoresponder['before_after'] == -1 ) {
+					$date   = strtotime( 'today -' . $autoresponder['amount'] . ' ' . $autoresponder['unit'] );
+					$offset = -1 * $autoresponder['before_after'] * floor( ( $date - time() ) / DAY_IN_SECONDS );
+				} else {
+					$date   = strtotime( 'today +' . $autoresponder['amount'] . ' ' . $autoresponder['unit'] );
+					$offset = $autoresponder['before_after'] * floor( ( $date - time() ) / DAY_IN_SECONDS ) + 1;
+					// if offset is more than a day add a delay step
+					if ( $offset ) {
+						$steps[] = '<!-- wp:mailster-workflow/delay {"amount":' . absint( $autoresponder['amount'] ) . ',"unit":"' . ( $autoresponder['unit'] ) . 's"} /-->';
+					}
+					$offset = 0;
+				}
+				if ( ! $meta['ignore_lists'] ) {
+					$list_conditions[] = array(
+						array(
+							'field'    => '_lists__in',
+							'operator' => 'is',
+							'value'    => $lists,
+						),
+					);
+				}
+				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode(
+					array(
+						'conditions' => build_query( array( 'conditions' => $list_conditions ) ),
+						'trigger'    => $trigger,
+						'repeat'     => ( $autoresponder['once'] ? 0 : -1 ),
+						'date'       => date( 'c', $date - $timeoffset ),
+						'offset'     => $offset * DAY_IN_SECONDS,
+						'field'      => $autoresponder['uservalue'],
+					)
+				) . ' /-->';
+				$steps[]    = '<!-- wp:mailster-workflow/email {"name":"' . ( $campaign->post_title ) . '","campaign":' . absint( $workflow_id ) . '} /-->';
+				break;
+
+			default:
+				$autoresponder['action'] = 'mailster_autoresponder_timebased';
+		}
+
+		// check for follow up campaigns
+		$follow_ups = $this->get_autoresponder(
+			array(
+				'post_parent' => $campaign->ID,
+				'order'       => 'ASC',
+			)
+		);
+
+		error_log( print_r( wp_list_pluck( $follow_ups, 'post_title' ), true ) );
+
+		foreach ( $follow_ups as $key => $follow_up ) {
+			$follow_up_meta          = $this->meta( $follow_up->ID );
+			$follow_up_autoresponder = $follow_up_meta['autoresponder'];
+			$steps[]                 = '<!-- wp:mailster-workflow/delay {"amount":' . absint( $follow_up_autoresponder['amount'] ) . ',"unit":"' . ( $follow_up_autoresponder['unit'] ) . 's"} /-->';
+			$steps[]                 = '<!-- wp:mailster-workflow/email {"name":"' . ( $follow_up->post_title ) . '","campaign":' . absint( $follow_up->ID ) . '} /-->';
+		}
+
+		// add comment
+		array_unshift(
+			$steps,
+			'<!-- wp:mailster-workflow/comment {"comment":"' . htmlentities( sprintf( 'Converted from Autoresponder %s', '"' . $campaign->post_title . '"' ) ) . '"} /-->'
+		);
+
+		// add triggers
+		array_unshift(
+			$steps,
+			'<!-- wp:mailster-workflow/triggers -->' . implode( "\n", $triggers ) . '<!-- /wp:mailster-workflow/triggers -->'
+		);
+
+		$post_content = implode( "\n", $steps );
+
+		$die = false;
+
+		if ( $die ) {
+			die();
+		}
+
+		$workflow_id = wp_insert_post(
+			array(
+				'post_title'   => $campaign->post_title,
+				'post_author'  => $campaign->post_author,
+				'post_content' => $post_content,
+				'post_type'    => 'mailster-workflow',
+				'post_status'  => 'draft',
+			)
+		);
+
+		update_post_meta( $workflow_id, 'trigger', $trigger );
+
+		// cross reference
+		update_post_meta( $campaign->ID, 'workflow', $workflow_id );
+		update_post_meta( $workflow_id, 'autoresponder', $campaign->ID );
+
+		// deactive the autoresponder
+		$this->deactivate( $campaign->ID );
+
+		return $workflow_id;
 	}
 
 

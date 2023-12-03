@@ -14,7 +14,7 @@ import {
 	DropdownMenu,
 	TextControl,
 	MenuGroup,
-	MenuItem,
+	__experimentalNumberControl as NumberControl,
 	Spinner,
 	PanelBody,
 	__experimentalItemGroup as ItemGroup,
@@ -41,7 +41,7 @@ import {
 	useBlockProps,
 	__experimentalLinkControl as LinkControl,
 } from '@wordpress/block-editor';
-import { dateI18n, gmdateI18n } from '@wordpress/date';
+import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
 
 /**
  * Internal dependencies
@@ -55,7 +55,7 @@ import {
 
 export default function Selector(props) {
 	const { attributes, setAttributes, isAnniversary = false } = props;
-	const { date, field } = attributes;
+	const { date, field, offset } = attributes;
 
 	const site = useSelect((select) => select('core').getSite());
 	const [popover, setPopover] = useState(false);
@@ -167,6 +167,15 @@ export default function Selector(props) {
 										</Popover>
 									)}
 								</Button>
+								<NumberControl
+									label={__('Offset', 'mailster')}
+									labelPosition="side"
+									value={offset}
+									onChange={(val) => {
+										setAttributes({ offset: parseInt(val, 10) });
+									}}
+									step={1}
+								/>
 							</>
 						)}
 					</BaseControl>
@@ -238,6 +247,15 @@ export default function Selector(props) {
 										</Popover>
 									)}
 								</Button>
+								<NumberControl
+									label={__('Offset', 'mailster')}
+									labelPosition="side"
+									value={offset}
+									onChange={(val) => {
+										setAttributes({ offset: parseInt(val, 10) });
+									}}
+									step={1}
+								/>
 							</>
 						)}
 					</BaseControl>
