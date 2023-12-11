@@ -688,24 +688,44 @@ class MailsterCampaigns {
 	 *
 	 * @return unknown
 	 */
-	public function convert_message() {
+	public function can_convert_to_workflow( $campaign = null ) {
 
-		if ( get_post_type() != 'newsletter' ) {
-			return;
+		if ( ! is_null( $campaign ) ) {
+			$campaign = get_post( $campaign );
+		} else {
+			$campaign = get_post();
 		}
 
-		if ( get_post_status() != 'autoresponder' ) {
-			return;
+		if ( get_post_type( $campaign ) != 'newsletter' ) {
+			return false;
 		}
 
-		$meta          = $this->meta( get_the_ID() );
+		if ( get_post_status( $campaign ) != 'autoresponder' ) {
+			return false;
+		}
+
+		$meta          = $this->meta( $campaign->ID );
 		$autoresponder = $meta['autoresponder'];
-
-		echo '<pre>' . print_r( $autoresponder, true ) . '</pre>';
 
 		$supported = array( 'mailster_autoresponder_usertime', 'mailster_autoresponder_hook', 'mailster_subscriber_insert' );
 
 		if ( ! isset( $autoresponder['action'] ) || ! in_array( $autoresponder['action'], $supported ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function convert_message() {
+
+		if ( ! $this->can_convert_to_workflow() ) {
 			return;
 		}
 
@@ -718,7 +738,7 @@ class MailsterCampaigns {
 		if ( $workflow_id = get_post_meta( get_the_ID(), 'workflow', true ) ) {
 			echo '<div class="notice-warning notice notice-large inline"><h3>' . esc_html__( 'This Autoresponder has been converted already!', 'mailster' ) . '</h3><p>' . esc_html__( 'You have converted this autoresponder already. You can convert it again to create a new workflow or you can edit the original one.', 'mailster' ) . '</p><p><a class="button button-secondary" href="' . esc_url( add_query_arg( $args, admin_url( 'edit.php' ) ) ) . '" title="' . esc_html__( 'Convert Autoreponder', 'mailster' ) . '">' . esc_html__( 'Convert to Workflow again', 'mailster' ) . '</a>  <a class="button button-primary" href="' . esc_url( admin_url( 'post.php?post=' . $workflow_id . '&action=edit' ) ) . '">' . esc_html__( 'Open Workflow', 'mailster' ) . '</a></p></div>';
 		} else {
-			echo '<div class="notice-warning notice notice-large inline"><h3>' . esc_html__( 'Convert this Autoreponder to a workflow.', 'mailster' ) . '</h3><p>' . esc_html__( 'Workflows offer a more flexible and clearer method for constructing your automations.', 'mailster' ) . '</p><p>' . esc_html__( 'Should you choose to convert this autoresponder, it will be deactivated and the campaign will be duplicated.', 'mailster' ) . '</p><p><a class="button button-primary" href="' . esc_url( add_query_arg( $args, admin_url( 'edit.php' ) ) ) . '" title="' . esc_html__( 'Convert Autoreponder', 'mailster' ) . '">' . esc_html__( 'Convert to Workflow', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a class="button button-link" href="' . esc_url( add_query_arg( $args, admin_url( 'edit.php' ) ) ) . '">' . esc_html__( 'Learn more about workflows', 'mailster' ) . '</a></p></div>';
+			echo '<div class="notice-warning notice notice-large inline"><h3>' . esc_html__( 'Convert this Autoreponder to a workflow.', 'mailster' ) . '</h3><p>' . esc_html__( 'Workflows offer a more flexible and clearer method for constructing your automations.', 'mailster' ) . '</p><p>' . esc_html__( 'Should you choose to convert this autoresponder, it will be deactivated and the campaign will be duplicated.', 'mailster' ) . '</p><p><a class="button button-primary" href="' . esc_url( add_query_arg( $args, admin_url( 'edit.php' ) ) ) . '" title="' . esc_html__( 'Convert Autoreponder', 'mailster' ) . '">' . esc_html__( 'Convert to Workflow', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a class="button button-link" href="' . mailster_url( 'https://kb.mailster.co/6460f6909a2fac195e609002' ) . '" data-article="6460f6909a2fac195e609002">' . esc_html__( 'Learn more about workflows', 'mailster' ) . '</a></p></div>';
 
 		}
 	}
@@ -1525,15 +1545,6 @@ class MailsterCampaigns {
 				unset( $actions['view'] );
 			}
 		}
-
-		$actions['convert'] = '<a href="' . esc_url(
-			add_query_arg(
-				array(
-					'convert'  => $campaign->ID,
-					'_wpnonce' => wp_create_nonce( 'mailster_convert_nonce' ),
-				)
-			)
-		) . '" title="' . esc_html__( 'Convert Autoreponder', 'mailster' ) . '">' . esc_html__( 'Convert to Workflow', 'mailster' ) . '</a>';
 
 		return array_intersect_key( $actions, array_flip( array( 'edit', 'trash', 'view', 'statistics', 'duplicate', 'autoresponder_link', 'convert' ) ) );
 	}
