@@ -2940,7 +2940,12 @@ class MailsterCampaigns {
 
 		switch ( $autoresponder['action'] ) {
 			case 'mailster_autoresponder_hook';
-				$trigger = 'hook';
+				$trigger      = 'hook';
+				$trigger_args = array(
+					'trigger' => $trigger,
+					'hook'    => $autoresponder['hook'],
+					'lists'   => $lists,
+				);
 				if ( ! $meta['ignore_lists'] ) {
 					$list_conditions[] = array(
 						array(
@@ -2950,28 +2955,27 @@ class MailsterCampaigns {
 						),
 					);
 				}
-				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode(
-					array(
-						'conditions' => build_query( array( 'conditions' => $list_conditions ) ),
-						'trigger'    => $trigger,
-						'hook'       => $autoresponder['hook'],
-						'lists'      => $lists,
-					)
-				) . ' /-->';
+				if ( ! empty( $list_conditions ) ) {
+					$trigger_args['conditions'] = build_query( array( 'conditions' => $list_conditions ) );
+				}
+				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode( $trigger_args ) . ' /-->';
 				if ( $autoresponder['amount'] ) {
 					$steps[] = '<!-- wp:mailster-workflow/delay {"amount":' . absint( $autoresponder['amount'] ) . ',"unit":"' . ( $autoresponder['unit'] ) . 's"} /-->';
 				}
 				$steps[] = '<!-- wp:mailster-workflow/email {"name":"' . ( $campaign->post_title ) . '","campaign":' . absint( $workflow_id ) . '} /-->';
 			break;
 			case 'mailster_subscriber_insert':
-				$trigger    = 'list_add';
-				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode(
-					array(
-						'conditions' => build_query( array( 'conditions' => $list_conditions ) ),
-						'trigger'    => $trigger,
-						'lists'      => $lists,
-					)
-				) . ' /-->';
+				$trigger      = 'list_add';
+				$trigger_args = array(
+					'trigger' => $trigger,
+					'hook'    => $autoresponder['hook'],
+					'lists'   => $lists,
+				);
+				if ( ! empty( $list_conditions ) ) {
+					$trigger_args['conditions'] = build_query( array( 'conditions' => $list_conditions ) );
+				}
+				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode( $trigger_args ) . ' /-->';
+
 				if ( $autoresponder['amount'] ) {
 					$steps[] = '<!-- wp:mailster-workflow/delay {"amount":' . absint( $autoresponder['amount'] ) . ',"unit":"' . ( $autoresponder['unit'] ) . 's"} /-->';
 				}
@@ -2980,7 +2984,6 @@ class MailsterCampaigns {
 			case 'mailster_autoresponder_timebased':
 			case 'mailster_autoresponder_usertime':
 				$trigger = $autoresponder['userexactdate'] ? 'date' : 'anniversary';
-				// before
 				if ( $autoresponder['before_after'] == -1 ) {
 					$date   = strtotime( 'today -' . $autoresponder['amount'] . ' ' . $autoresponder['unit'] );
 					$offset = -1 * $autoresponder['before_after'] * floor( ( $date - time() ) / DAY_IN_SECONDS );
@@ -2993,6 +2996,15 @@ class MailsterCampaigns {
 					}
 					$offset = 0;
 				}
+
+				$trigger_args = array(
+					'trigger' => $trigger,
+					'repeat'  => $autoresponder['once'] ? 0 : -1,
+					'date'    => date( 'c', $date - $timeoffset ),
+					'offset'  => $offset * DAY_IN_SECONDS,
+					'field'   => $autoresponder['uservalue'],
+				);
+
 				if ( ! $meta['ignore_lists'] ) {
 					$list_conditions[] = array(
 						array(
@@ -3002,16 +3014,10 @@ class MailsterCampaigns {
 						),
 					);
 				}
-				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode(
-					array(
-						'conditions' => build_query( array( 'conditions' => $list_conditions ) ),
-						'trigger'    => $trigger,
-						'repeat'     => ( $autoresponder['once'] ? 0 : -1 ),
-						'date'       => date( 'c', $date - $timeoffset ),
-						'offset'     => $offset * DAY_IN_SECONDS,
-						'field'      => $autoresponder['uservalue'],
-					)
-				) . ' /-->';
+				if ( ! empty( $list_conditions ) ) {
+					$trigger_args['conditions'] = build_query( array( 'conditions' => $list_conditions ) );
+				}
+				$triggers[] = '<!-- wp:mailster-workflow/trigger ' . json_encode( $trigger_args ) . ' /-->';
 				$steps[]    = '<!-- wp:mailster-workflow/email {"name":"' . ( $campaign->post_title ) . '","campaign":' . absint( $workflow_id ) . '} /-->';
 				break;
 
@@ -3026,8 +3032,6 @@ class MailsterCampaigns {
 				'order'       => 'ASC',
 			)
 		);
-
-		error_log( print_r( wp_list_pluck( $follow_ups, 'post_title' ), true ) );
 
 		foreach ( $follow_ups as $key => $follow_up ) {
 			$follow_up_meta          = $this->meta( $follow_up->ID );
