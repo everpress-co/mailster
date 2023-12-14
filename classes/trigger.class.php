@@ -328,7 +328,7 @@ class MailsterTrigger {
 
 		$links = array_keys( $triggers );
 
-		$matching_links = preg_grep( '|^' . preg_quote( $wp->request ) . '$|', $links );
+		$matching_links = preg_grep( '|^' . preg_quote( '/' . $wp->request ) . '$|', $links );
 
 		// no matching links
 		if ( empty( $matching_links ) ) {

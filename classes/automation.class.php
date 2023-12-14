@@ -316,9 +316,9 @@ class MailsterAutomations {
 
 		global $wpdb;
 
-		$sql = "SELECT post_id FROM `{$wpdb->postmeta}` AS postmeta LEFT JOIN {$wpdb->posts} AS posts ON postmeta.post_id = posts.id WHERE posts.post_type = %s AND posts.post_status = 'publish' AND postmeta.meta_key = 'trigger' AND postmeta.meta_value = %s;";
+		$sql = "SELECT ID FROM wp_posts WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'";
 
-		$sql = $wpdb->prepare( $sql, 'mailster-workflow', 'page_visit' );
+		$sql = $wpdb->prepare( $sql, '%"trigger":"page_visit"%' );
 
 		$workflow_ids = $wpdb->get_col( $sql );
 
@@ -330,7 +330,7 @@ class MailsterAutomations {
 
 			if ( isset( $options['pages'] ) ) {
 				foreach ( $options['pages'] as $page ) {
-					$page = trim( $page, '/' );
+					$page = '/' . trim( $page, '/' );
 					if ( ! isset( $store[ $page ] ) ) {
 						$store[ $page ] = array();
 					}
@@ -340,6 +340,7 @@ class MailsterAutomations {
 			}
 		}
 
+		// save this as it's faster to check
 		update_option( 'mailster_trigger', $store );
 	}
 
