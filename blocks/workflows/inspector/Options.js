@@ -24,7 +24,6 @@ import { useEntityProp } from '@wordpress/core-data';
  */
 
 export default function Options(props) {
-	const { meta, setMeta } = props;
 	const [title, setTitle] = useEntityProp(
 		'postType',
 		'mailster-workflow',

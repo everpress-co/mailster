@@ -344,7 +344,13 @@ class MailsterAutomations {
 		update_option( 'mailster_trigger', $store );
 	}
 
-	public function wp_schedule() {
+	/**
+	 * Find all initialed workflows and starte them if they are due
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function wp_schedule( $queue_ids = array() ) {
 		global $wpdb;
 
 		// time to schedule upfront ins seconds
@@ -355,7 +361,14 @@ class MailsterAutomations {
 
 		$now = time();
 
-		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL) AND finished = 0 AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` LIMIT %d", $now, $now + $queue_upfront, $limit ) );
+		$sql       = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL)";
+		$queue_ids = array_map( 'absint', (array) $queue_ids );
+		if ( ! empty( $queue_ids ) ) {
+			$sql .= ' AND ID IN (' . implode( ',', $queue_ids ) . ')';
+		}
+		$sql .= ' AND finished = 0 AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` LIMIT %d';
+
+		$entries = $wpdb->get_results( $wpdb->prepare( $sql, $now, $now + $queue_upfront, $limit ) );
 
 		if ( empty( $entries ) ) {
 			return;
@@ -884,16 +897,16 @@ class MailsterAutomations {
 
 	public function register_post_meta() {
 
-		register_post_meta(
-			'mailster-workflow',
-			'trigger',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => false,
+		// register_post_meta(
+		// 'mailster-workflow',
+		// 'trigger',
+		// array(
+		// 'type'         => 'string',
+		// 'show_in_rest' => true,
+		// 'single'       => false,
 
-			)
-		);
+		// )
+		// );
 
 		register_post_meta(
 			'mailster-workflow',

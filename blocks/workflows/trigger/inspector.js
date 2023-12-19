@@ -9,32 +9,18 @@
 import { sprintf, __ } from '@wordpress/i18n';
 
 import { InspectorControls } from '@wordpress/block-editor';
-import ServerSideRender from '@wordpress/server-side-render';
 import {
 	Panel,
 	PanelRow,
 	PanelBody,
-	CheckboxControl,
-	TextControl,
-	RangeControl,
-	SelectControl,
-	FlexItem,
-	Flex,
-	Spinner,
-	DropdownMenu,
-	MenuGroup,
-	MenuItem,
 	Button,
-	Modal,
 	Tip,
 	ToggleControl,
 	__experimentalNumberControl as NumberControl,
 	BaseControl,
 } from '@wordpress/components';
 
-import { useEffect, useState } from '@wordpress/element';
 import { useSelect, dispatch, select } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
 import { useEntityProp } from '@wordpress/core-data';
 
 /**
@@ -53,11 +39,11 @@ export default function TriggerInspectorControls(props) {
 	const { attributes, setAttributes, clientId } = props;
 	const { trigger, repeat } = attributes;
 
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'mailster-workflow',
-		'meta'
-	);
+	// const [meta, setMeta] = useEntityProp(
+	// 	'postType',
+	// 	'mailster-workflow',
+	// 	'meta'
+	// );
 
 	const rootClientId = useSelect((select) =>
 		select('core/block-editor').getBlockRootClientId(clientId)
@@ -71,12 +57,12 @@ export default function TriggerInspectorControls(props) {
 		});
 		dispatch('core/block-editor').removeBlocks(clientId);
 
-		const index = meta.trigger.indexOf(trigger);
-		const newTrigger = [...meta.trigger];
-		if (index > -1) {
-			newTrigger.splice(index, 1);
-		}
-		setMeta({ trigger: newTrigger });
+		// const index = meta.trigger.indexOf(trigger);
+		// const newTrigger = [...meta.trigger];
+		// if (index > -1) {
+		// 	newTrigger.splice(index, 1);
+		// }
+		// setMeta({ trigger: newTrigger });
 	};
 
 	const addTrigger = () => {

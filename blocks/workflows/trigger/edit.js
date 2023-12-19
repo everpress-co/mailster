@@ -53,24 +53,24 @@ export default function Edit(props) {
 	const { trigger, conditions, repeat } = attributes;
 	const className = [];
 
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'mailster-workflow',
-		'meta'
-	);
+	// const [meta, setMeta] = useEntityProp(
+	// 	'postType',
+	// 	'mailster-workflow',
+	// 	'meta'
+	// );
 
 	const allTriggers = useSelect((select) =>
 		select('mailster/automation').getTriggers()
 	);
 
-	//make sure the trigger is in the workflows meta
-	useEffect(() => {
-		if (trigger && !meta.trigger.includes(trigger)) {
-			var newTrigger = [...meta.trigger];
-			newTrigger.push(trigger);
-			setMeta({ trigger: newTrigger });
-		}
-	}, []);
+	// //make sure the trigger is in the workflows meta
+	// useEffect(() => {
+	// 	if (trigger && !meta.trigger.includes(trigger)) {
+	// 		var newTrigger = [...meta.trigger];
+	// 		newTrigger.push(trigger);
+	// 		setMeta({ trigger: newTrigger });
+	// 	}
+	// }, []);
 
 	const getTrigger = (id) => {
 		if (!allTriggers) {

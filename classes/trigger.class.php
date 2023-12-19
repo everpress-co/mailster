@@ -2,6 +2,8 @@
 
 class MailsterTrigger {
 
+	private $queue_ids = array();
+
 	public function __construct() {
 
 		// subscriber added/removed to list
@@ -99,7 +101,7 @@ class MailsterTrigger {
 
 	public function list_confirmed( $list_id, $subscriber_id ) {
 
-		$this->run_list( 'list_confirmed', $list_id, $subscriber_id );
+		$this->run_list( 'list_add', $list_id, $subscriber_id );
 	}
 
 	public function list_removed( $list_id, $subscriber_id ) {
@@ -381,24 +383,34 @@ class MailsterTrigger {
 
 			// TODO this will trigger each workflow imidiatly - consider to run it only once a minute
 
-			if ( ! $subscriber_id ) {
-				require_once MAILSTER_DIR . 'classes/workflow.class.php';
-				$wf     = new MailsterWorkflow( $workflow, $trigger, $subscriber_id, $step );
-				$result = $wf->run();
-			}
+			// if ( ! $subscriber_id ) {
+			// require_once MAILSTER_DIR . 'classes/workflow.class.php';
+			// $wf     = new MailsterWorkflow( $workflow, $trigger, $subscriber_id, $step );
+			// $result = $wf->run();
+			// }
+
+			add_action( 'shutdown', array( $this, 'post_add_job' ), PHP_INT_MAX );
+
 		}
 
 		return $success;
 	}
 
-	public function queue_jobs__DELETE() {
 
-		foreach ( $this->jobs as $job ) {
-			$this->queue_job( $job );
+	/**
+	 * This runs if a job was added once
+	 *
+	 * @return void
+	 */
+	public function post_add_job() {
+
+		if ( empty( $this->queue_ids ) ) {
+			return;
 		}
 
-		mailster( 'automations' )->wp_schedule();
+		mailster( 'automations' )->wp_schedule( $this->queue_ids );
 	}
+
 
 	public function bulk_add( $workflow, $trigger, $subscriber_ids, $step, $timestamp = null, $context = null ) {
 
@@ -422,7 +434,9 @@ class MailsterTrigger {
 		$suppress_errors = $wpdb->suppress_errors( true );
 
 		if ( false !== $wpdb->query( $sql ) ) {
-			$success = true;
+			$last_insert_id    = $wpdb->insert_id;
+			$this->queue_ids[] = $last_insert_id;
+			$success           = true;
 		} else {
 			$success = false;
 		}
