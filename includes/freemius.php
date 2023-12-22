@@ -23,6 +23,11 @@ function mailster_freemius_custom_icon() {
 	return MAILSTER_DIR . 'assets/img/opt-in.png';
 }
 
+add_action( 'load-toplevel_page_mailster', 'mailster_freemius_load_page' );
+function mailster_freemius_load_page() {
+	$suffix = SCRIPT_DEBUG ? '' : '.min';
+	wp_enqueue_style( 'freemius-style', MAILSTER_URI . 'assets/css/freemius-style' . $suffix . '.css', array(), MAILSTER_BUILT );
+}
 
 mailster_freemius()->add_action( 'after_account_connection', 'mailster_freemius_install' );
 function mailster_freemius_install() {
