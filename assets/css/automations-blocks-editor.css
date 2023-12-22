@@ -19,7 +19,7 @@
 .components-notice-list {
 	position: fixed;
 	top: 90px;
-	z-index: 50;
+	z-index: 90;
 	left: 160px;
 	right: 0px;
 }
@@ -527,13 +527,17 @@
 }
 
 .mailster-step .mailster-step-info,
-.mailster-step .mailster-step-meta {
+.mailster-step .mailster-step-meta,
+.mailster-step .mailster-trigger-repeats {
 	text-align: left;
 	opacity: 0.8;
 	font-size: 80%;
 	line-height: 1.5em;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+.mailster-step .mailster-trigger-repeats {
+	opacity: 0.4;
 }
 .mailster-step .mailster-step-meta {
 	opacity: 0.3;

@@ -37,6 +37,7 @@ import {
 	formatTags,
 	formatPages,
 	formatField,
+	formatOffset,
 	formatLinks,
 } from '../../util';
 
@@ -49,27 +50,27 @@ import {
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { trigger, conditions } = attributes;
+	const { trigger, conditions, repeat } = attributes;
 	const className = [];
 
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'mailster-workflow',
-		'meta'
-	);
+	// const [meta, setMeta] = useEntityProp(
+	// 	'postType',
+	// 	'mailster-workflow',
+	// 	'meta'
+	// );
 
 	const allTriggers = useSelect((select) =>
 		select('mailster/automation').getTriggers()
 	);
 
-	//make sure the trigger is in the workflows meta
-	useEffect(() => {
-		if (trigger && !meta.trigger.includes(trigger)) {
-			var newTrigger = [...meta.trigger];
-			newTrigger.push(trigger);
-			setMeta({ trigger: newTrigger });
-		}
-	}, []);
+	// //make sure the trigger is in the workflows meta
+	// useEffect(() => {
+	// 	if (trigger && !meta.trigger.includes(trigger)) {
+	// 		var newTrigger = [...meta.trigger];
+	// 		newTrigger.push(trigger);
+	// 		setMeta({ trigger: newTrigger });
+	// 	}
+	// }, []);
 
 	const getTrigger = (id) => {
 		if (!allTriggers) {
@@ -82,7 +83,8 @@ export default function Edit(props) {
 	};
 
 	const getInfo = () => {
-		const { lists, forms, tags, pages, links, hook, field, date } = attributes;
+		const { lists, forms, tags, pages, links, hook, field, date, offset } =
+			attributes;
 		if (!trigger) return __('Set up a trigger', 'mailster');
 
 		switch (trigger) {
@@ -105,10 +107,12 @@ export default function Edit(props) {
 				);
 			case 'date':
 				if (field) {
-					return formatField(
-						field,
-						dateI18n(TIME_FORMAT, date),
-						__('On subscribers %s field at %s', 'mailster')
+					return (
+						formatField(
+							field,
+							dateI18n(TIME_FORMAT, date),
+							__('On subscribers %s field at %s', 'mailster')
+						) + formatOffset(offset)
 					);
 				}
 				return sprintf(
@@ -122,10 +126,12 @@ export default function Edit(props) {
 				);
 			case 'anniversary':
 				if (field) {
-					return formatField(
-						field,
-						dateI18n(TIME_FORMAT, date),
-						__('Yearly based on the subscribers %s field at %s', 'mailster')
+					return (
+						formatField(
+							field,
+							dateI18n(TIME_FORMAT, date),
+							__('Yearly based on the subscribers %s field at %s', 'mailster')
+						) + formatOffset(offset)
 					);
 				}
 				return sprintf(
@@ -160,6 +166,11 @@ export default function Edit(props) {
 				<Card className="mailster-step">
 					<QueueBadge {...props} />
 					<CardBody>
+						{repeat != 0 && (
+							<div className="mailster-trigger-repeats">
+								{repeat == -1 ? '∞' : sprintf('%d ×', repeat + 1)}
+							</div>
+						)}
 						{trigger && <div className="mailster-step-label">{label}</div>}
 						<div
 							className="mailster-step-info"

@@ -58,11 +58,11 @@ const selectBlockFromHash = () => {
 };
 
 function SettingsPanelPlugin() {
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'mailster-workflow',
-		'meta'
-	);
+	// const [meta, setMeta] = useEntityProp(
+	// 	'postType',
+	// 	'mailster-workflow',
+	// 	'meta'
+	// );
 
 	const {
 		selectBlock,
@@ -216,7 +216,7 @@ function SettingsPanelPlugin() {
 				PluginPostPublishPanel
 			</PluginPostPublishPanel>
 
-			<PublishInfo meta={meta} setMeta={setMeta} />
+			<PublishInfo />
 			<PluginPostStatusInfo className="status-numbers">
 				<Flex align="center" justify="space-between">
 					<FlexItem>
@@ -236,9 +236,7 @@ function SettingsPanelPlugin() {
 				</Flex>
 			</PluginPostStatusInfo>
 
-			<Options meta={meta} setMeta={setMeta} />
-
-			{false && <Triggers meta={meta} setMeta={setMeta} />}
+			<Options />
 		</>
 	);
 }

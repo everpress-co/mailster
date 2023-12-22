@@ -1,7 +1,5 @@
 <?php
 
-
-
 $forms = wp_get_recent_posts(
 	array(
 		'post_type'   => 'mailster-form',
@@ -26,7 +24,7 @@ if ( $block_editor ) {
 	$content = '<!-- wp:mailster/homepage ' . $str . '-->
 	<!-- wp:mailster/homepage-context {"type":"submission"} -->
 	<!-- wp:heading {"level":3} -->
-	<h3 class="wp-block-heading">' . esc_html__( 'Signup for the newsletter', 'mailster' ) . '</h3>
+	<h2 class="wp-block-heading">' . esc_html__( 'Signup for the newsletter', 'mailster' ) . '</h2>
 	<!-- /wp:heading -->
 	
 	<!-- wp:mailster/form /-->
@@ -42,7 +40,7 @@ if ( $block_editor ) {
 	
 	<!-- wp:mailster/homepage-context {"type":"unsubscribe"} -->
 	<!-- wp:heading {"level":3} -->
-	<h3 class="wp-block-heading">' . esc_html__( 'Do you really want to unsubscribe?', 'mailster' ) . '</h3>
+	<h2 class="wp-block-heading">' . esc_html__( 'Do you really want to unsubscribe?', 'mailster' ) . '</h2>
 	<!-- /wp:heading -->
 	
 	<!-- wp:mailster/form /-->

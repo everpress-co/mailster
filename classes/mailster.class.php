@@ -1737,9 +1737,13 @@ class Mailster {
 
 		if ( $blog_id ) {
 			switch_to_blog( $old_blog );
-			return;
+		}
+
+		if ( get_transient( 'mailster_freemius_install' ) ) {
+			$this->install();
 		}
 	}
+
 
 
 	public function deactivate() {
@@ -1775,7 +1779,6 @@ class Mailster {
 
 		if ( $blog_id ) {
 			switch_to_blog( $old_blog );
-			return;
 		}
 	}
 

@@ -1,3 +1,14 @@
+### Version 4.0.0 Beta 7 (2023-12-11)
+
+- fixed: custom fields were not saved in some cases
+- added: new trigger for automations: Tag removed, removed from list
+- added: specific date and anniversary can now have an offset
+- added: option to convert cetain autoresponders to workflows
+- improved: list view labels are now more descriptive
+- improved: block form preview
+- improved: newsletter homepage block
+- change: moved form padding to style section
+
 ### Version 4.0.0 Beta 6 (2023-11-21)
 
 - improved: allow any type of hook in hook triggers

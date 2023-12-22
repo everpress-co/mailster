@@ -46,11 +46,11 @@ export default function Selector(props) {
 	const { attributes, setAttributes } = props;
 	const { trigger, hook = '', lists = [], forms = [] } = attributes;
 
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'mailster-workflow',
-		'meta'
-	);
+	// const [meta, setMeta] = useEntityProp(
+	// 	'postType',
+	// 	'mailster-workflow',
+	// 	'meta'
+	// );
 	const [title, setTitle] = useEntityProp(
 		'postType',
 		'mailster-workflow',
@@ -61,16 +61,17 @@ export default function Selector(props) {
 		select('mailster/automation').getTriggers()
 	);
 
-	const index = meta.trigger.indexOf(trigger);
+	//const index = meta.trigger.indexOf(trigger);
+	const index = -1;
 
 	function setTrigger(trigger) {
-		var newTrigger = [...meta.trigger];
-		if (index !== -1) {
-			newTrigger[index] = trigger.id;
-		} else {
-			newTrigger.push(trigger.id);
-		}
-		setMeta({ trigger: newTrigger });
+		// var newTrigger = [...meta.trigger];
+		// if (index !== -1) {
+		// 	newTrigger[index] = trigger.id;
+		// } else {
+		// 	newTrigger.push(trigger.id);
+		// }
+		// setMeta({ trigger: newTrigger });
 
 		setAttributes({ trigger: trigger.id });
 
@@ -89,11 +90,13 @@ export default function Selector(props) {
 		return trigger.length ? trigger[0] : null;
 	};
 
-	const filterTrigger =
-		allTriggers &&
-		allTriggers.filter((t) => {
-			return !meta.trigger.includes(t.id) || t.id === trigger;
-		});
+	// const filterTrigger =
+	// 	allTriggers &&
+	// 	allTriggers.filter((t) => {
+	// 		return !meta.trigger.includes(t.id) || t.id === trigger;
+	// 	});
+
+	const filterTrigger = allTriggers;
 
 	const label =
 		getTrigger(trigger)?.label ||

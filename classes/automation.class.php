@@ -122,10 +122,22 @@ class MailsterAutomations {
 				'info'  => esc_html__( 'When a subscriber joins a list', 'mailster' ),
 			),
 			array(
+				'id'    => 'list_remove',
+				'icon'  => 'formatListBullets',
+				'label' => esc_html__( 'Subscriber removed from a list', 'mailster' ),
+				'info'  => esc_html__( 'When a subscriber is removed from a list', 'mailster' ),
+			),
+			array(
 				'id'    => 'tag_added',
 				'icon'  => 'tag',
 				'label' => esc_html__( 'Tag added', 'mailster' ),
 				'info'  => esc_html__( 'When a Tag is added to a subscriber', 'mailster' ),
+			),
+			array(
+				'id'    => 'tag_removed',
+				'icon'  => 'tag',
+				'label' => esc_html__( 'Tag removed', 'mailster' ),
+				'info'  => esc_html__( 'When a Tag is removed from a subscriber', 'mailster' ),
 			),
 			array(
 				'id'    => 'updated_field',
@@ -304,9 +316,9 @@ class MailsterAutomations {
 
 		global $wpdb;
 
-		$sql = "SELECT post_id FROM `{$wpdb->postmeta}` AS postmeta LEFT JOIN {$wpdb->posts} AS posts ON postmeta.post_id = posts.id WHERE posts.post_type = %s AND posts.post_status = 'publish' AND postmeta.meta_key = 'trigger' AND postmeta.meta_value = %s;";
+		$sql = "SELECT ID FROM wp_posts WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'";
 
-		$sql = $wpdb->prepare( $sql, 'mailster-workflow', 'page_visit' );
+		$sql = $wpdb->prepare( $sql, '%"trigger":"page_visit"%' );
 
 		$workflow_ids = $wpdb->get_col( $sql );
 
@@ -318,7 +330,7 @@ class MailsterAutomations {
 
 			if ( isset( $options['pages'] ) ) {
 				foreach ( $options['pages'] as $page ) {
-					$page = trim( $page, '/' );
+					$page = '/' . trim( $page, '/' );
 					if ( ! isset( $store[ $page ] ) ) {
 						$store[ $page ] = array();
 					}
@@ -328,10 +340,17 @@ class MailsterAutomations {
 			}
 		}
 
+		// save this as it's faster to check
 		update_option( 'mailster_trigger', $store );
 	}
 
-	public function wp_schedule() {
+	/**
+	 * Find all initialed workflows and starte them if they are due
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function wp_schedule( $queue_ids = array() ) {
 		global $wpdb;
 
 		// time to schedule upfront ins seconds
@@ -342,7 +361,14 @@ class MailsterAutomations {
 
 		$now = time();
 
-		$entries = $wpdb->get_results( $wpdb->prepare( "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL) AND finished = 0 AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` LIMIT %d", $now, $now + $queue_upfront, $limit ) );
+		$sql       = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL)";
+		$queue_ids = array_map( 'absint', (array) $queue_ids );
+		if ( ! empty( $queue_ids ) ) {
+			$sql .= ' AND ID IN (' . implode( ',', $queue_ids ) . ')';
+		}
+		$sql .= ' AND finished = 0 AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` LIMIT %d';
+
+		$entries = $wpdb->get_results( $wpdb->prepare( $sql, $now, $now + $queue_upfront, $limit ) );
 
 		if ( empty( $entries ) ) {
 			return;
@@ -871,16 +897,16 @@ class MailsterAutomations {
 
 	public function register_post_meta() {
 
-		register_post_meta(
-			'mailster-workflow',
-			'trigger',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => false,
+		// register_post_meta(
+		// 'mailster-workflow',
+		// 'trigger',
+		// array(
+		// 'type'         => 'string',
+		// 'show_in_rest' => true,
+		// 'single'       => false,
 
-			)
-		);
+		// )
+		// );
 
 		register_post_meta(
 			'mailster-workflow',
@@ -916,6 +942,7 @@ class MailsterAutomations {
 				$typenow = sanitize_key( $_REQUEST['post_type'] );
 			}
 		} elseif ( 'post.php' === $pagenow ) {
+			$post_id = null;
 			if ( isset( $_GET['post'] ) && isset( $_POST['post_ID'] ) && (int) $_GET['post'] !== (int) $_POST['post_ID'] ) {
 				// Do nothing
 			} elseif ( isset( $_GET['post'] ) ) {

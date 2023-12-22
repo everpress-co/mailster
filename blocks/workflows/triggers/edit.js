@@ -33,14 +33,14 @@ export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const className = ['mailster-step-triggers', 'canvas-handle'];
 
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'mailster-workflow',
-		'meta'
-	);
+	// const [meta, setMeta] = useEntityProp(
+	// 	'postType',
+	// 	'mailster-workflow',
+	// 	'meta'
+	// );
 	const [triggerBlocks, setTriggerBlocks] = useState(0);
 
-	const { trigger } = meta;
+	// const { trigger } = meta;
 
 	const { selectBlock, toggleBlockHighlight, flashBlock, moveBlockToPosition } =
 		useDispatch('core/block-editor');
@@ -93,9 +93,11 @@ export default function Edit(props) {
 		className: classnames({}, className),
 	});
 
-	const BLOCK_TEMPLATE = trigger.length
-		? trigger.map((t, i) => ['mailster-workflow/trigger', { trigger: t }])
-		: [['mailster-workflow/trigger', {}]];
+	// const BLOCK_TEMPLATE_OLD = trigger.length
+	// 	? trigger.map((t, i) => ['mailster-workflow/trigger', { trigger: t }])
+	// 	: [['mailster-workflow/trigger', {}]];
+
+	const BLOCK_TEMPLATE = [['mailster-workflow/trigger', {}]];
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{

@@ -11,37 +11,19 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	Button,
 	PanelRow,
-	DropdownMenu,
-	TextControl,
-	MenuGroup,
-	MenuItem,
-	Spinner,
-	PanelBody,
-	__experimentalItemGroup as ItemGroup,
+	__experimentalNumberControl as NumberControl,
 	BaseControl,
-	Card,
-	Flex,
-	FlexBlock,
-	FlexItem,
-	Tip,
 	DateTimePicker,
 	SelectControl,
 	Popover,
-	DatePicker,
 	TimePicker,
+	FlexBlock,
 } from '@wordpress/components';
 
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
 import { useEffect, useState } from '@wordpress/element';
 
-import * as Icons from '@wordpress/icons';
-import {
-	useBlockProps,
-	__experimentalLinkControl as LinkControl,
-} from '@wordpress/block-editor';
-import { dateI18n, gmdateI18n } from '@wordpress/date';
+import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
 
 /**
  * Internal dependencies
@@ -52,13 +34,19 @@ import {
 	TIME_FORMAT,
 	DATE_FORMAT,
 } from './constants';
+import { set } from 'lodash';
+import { Flex } from '@wordpress/components';
+import { FlexItem } from '@wordpress/components';
 
 export default function Selector(props) {
 	const { attributes, setAttributes, isAnniversary = false } = props;
-	const { date, field } = attributes;
+	const { date, field, offset = 0 } = attributes;
 
 	const site = useSelect((select) => select('core').getSite());
 	const [popover, setPopover] = useState(false);
+	const [relative, setRelative] = useState('');
+	const [amount, setAmount] = useState(0);
+	const [unit, setUnit] = useState(0);
 
 	const setDate = (newDate) => {
 		// store in UTC
@@ -73,7 +61,35 @@ export default function Selector(props) {
 		return field.type == 'date';
 	});
 
-	const isInPast = +new Date() - +new Date(date) > 0;
+	useEffect(() => {
+		if (!offset) return;
+		if (offset % 604800 == 0) {
+			setUnit(604800);
+			setAmount(offset / 604800);
+		} else if (offset % 86400 == 0) {
+			setUnit(86400);
+			setAmount(offset / 86400);
+		} else if (offset % 3600 == 0) {
+			setUnit(3600);
+			setAmount(offset / 3600);
+		} else {
+			setUnit(60);
+			setAmount(Math.floor(offset / 60));
+		}
+	}, [offset]);
+	useEffect(() => {
+		if (field) return;
+
+		setUnit(0);
+		setAmount(0);
+	}, [field]);
+
+	useEffect(() => {
+		const newOffset = amount * unit;
+		setAttributes({ offset: newOffset || undefined });
+	}, [unit, amount]);
+
+	const isInPast = +new Date() - +new Date(date) - offset * 1000 > 0;
 
 	return (
 		<>
@@ -243,6 +259,55 @@ export default function Selector(props) {
 					</BaseControl>
 				)}
 			</PanelRow>
+			{field && (
+				<PanelRow>
+					<BaseControl
+						label={__('Offset', 'mailster')}
+						help={__(
+							'Offset the time to trigger either before ar after the defined date.',
+							'mailster'
+						)}
+					>
+						<Flex expanded={false}>
+							<FlexBlock>
+								<NumberControl
+									step={1}
+									shiftStep={10}
+									value={amount}
+									onChange={(val) => {
+										setAmount(val);
+									}}
+								/>
+							</FlexBlock>
+							<FlexBlock>
+								<SelectControl
+									value={unit}
+									onChange={(val) => {
+										setUnit(val);
+									}}
+									options={[
+										{ value: 1, label: __('Seconds', 'mailster') },
+										{ value: 60, label: __('Minutes', 'mailster') },
+										{ value: 3600, label: __('Hours', 'mailster') },
+										{ value: 86400, label: __('Days', 'mailster') },
+										{ value: 604800, label: __('Weeks', 'mailster') },
+									]}
+								/>
+							</FlexBlock>
+							<FlexBlock>
+								<Button
+									variant="link"
+									size={'compact'}
+									isDestructive
+									onClick={() => setAmount(0)}
+								>
+									{__('Reset', 'mailster')}
+								</Button>
+							</FlexBlock>
+						</Flex>
+					</BaseControl>
+				</PanelRow>
+			)}
 			{!isAnniversary && !field && isInPast && (
 				<PanelRow>
 					<Button

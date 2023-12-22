@@ -49,6 +49,12 @@ export default function ConditionsModal(props) {
 			clearInterval(i);
 		};
 	});
+	useEffect(() => {
+		if (!conditions) return;
+
+		//TODO: should be done serveer side
+		setAttributes({ conditions: conditions.replace('&amp;', '&') });
+	}, [conditions]);
 
 	return (
 		<>
@@ -103,7 +109,6 @@ export default function ConditionsModal(props) {
 							variant="primary"
 							disabled={!isLoaded}
 							onClick={() => {
-								console.log(mailster.conditions.get());
 								setOpen(false);
 								setAttributes({ conditions: mailster.conditions.serialize() });
 							}}

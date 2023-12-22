@@ -41,7 +41,48 @@
 	.mailster-form-type {
 	display: none;
 }
-
+.wp-block-mailster-homepage.show-all
+	> .block-editor-inner-blocks
+	> .block-editor-block-list__layout
+	.mailster-form-type {
+	display: block;
+}
+.wp-block-mailster-homepage.show-all.is-selected,
+.wp-block-mailster-homepage.show-all.has-child-selected {
+	outline: 0;
+}
+.wp-block-mailster-homepage.show-all .wp-block-mailster-homepage-context {
+	opacity: 1;
+	transition: opacity 0.1s linear;
+	outline-offset: 5px;
+	outline: 2px dashed var(--wp-admin-theme-color);
+	margin-bottom: 50px;
+}
+.wp-block-mailster-homepage.show-all
+	.wp-block-mailster-homepage-context:last-child {
+	margin-bottom: auto;
+}
+.wp-block-mailster-homepage.show-all .wp-block-mailster-homepage-context {
+}
+.wp-block-mailster-homepage.show-all:hover .wp-block-mailster-homepage-context,
+.wp-block-mailster-homepage.show-all.has-child-selected
+	.wp-block-mailster-homepage-context {
+	opacity: 0.2;
+}
+.wp-block-mailster-homepage.show-all.is-selected
+	.wp-block-mailster-homepage-context,
+.wp-block-mailster-homepage.show-all.has-child-selected
+	.wp-block-mailster-homepage-context.is-selected,
+.wp-block-mailster-homepage.show-all.has-child-selected
+	.wp-block-mailster-homepage-context.has-child-selected {
+	opacity: 1;
+}
+.wp-block-mailster-homepage.show-all .wp-block-mailster-homepage-context:hover,
+.wp-block-mailster-homepage .wp-block-mailster-homepage-context.is-selected,
+.wp-block-mailster-homepage
+	.wp-block-mailster-homepage-context.has-child-selected {
+	opacity: 1;
+}
 .wp-block-mailster-homepage.tab-submission
 	.block-editor-block-list__layout
 	.mailster-form-type-submission {
@@ -71,4 +112,16 @@
 }
 .edit-post-sidebar .context-buttons .is-pressed:hover {
 	color: var(--wp-admin-theme-color, #007cba);
+}
+.edit-post-sidebar .section-info {
+	min-height: 80px;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-wrap: pretty;
+	color: #757575;
+	font-weight: 400;
+	font-size: 13px;
+	line-height: 1.5;
 }

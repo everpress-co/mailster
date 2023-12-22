@@ -1,6 +1,8 @@
 /**
  * External dependencies
  */
+import { escape } from 'lodash';
+import moment from 'moment';
 
 /**
  * WordPress dependencies
@@ -14,7 +16,7 @@ import {
 	useCallback,
 } from '@wordpress/element';
 import { select, subscribe, useSelect, useDispatch } from '@wordpress/data';
-import { escape } from 'lodash';
+import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
 
 /**
  * Internal dependencies
@@ -236,6 +238,25 @@ export function formatField(field, value, string) {
 			nameStr,
 			valueStr
 		);
+	}
+}
+
+export function formatOffset(offset) {
+	if (!offset) {
+		return '';
+	}
+
+	const now = +new Date();
+	const dateMoment = moment(now + offset * 1000);
+
+	const offsetStr =
+		'<strong class="mailster-step-badge">' +
+		escape(dateMoment.fromNow(true)) +
+		'</strong>';
+	if (offset < 0) {
+		return sprintf(__('but %s before the date.', 'mailster'), offsetStr);
+	} else if (offset > 0) {
+		return sprintf(__('but %s after the date.', 'mailster'), offsetStr);
 	}
 }
 

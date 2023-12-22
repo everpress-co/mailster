@@ -94,7 +94,6 @@ export default function ActiveStatus(props) {
 			}}
 			icon={isActive ? check : cancelCircleFilled}
 			variant="secondary"
-			_isPressed={isActive}
 			isDestructive={!isActive}
 		>
 			{isActive

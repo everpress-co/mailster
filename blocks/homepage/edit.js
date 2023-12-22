@@ -14,9 +14,14 @@ import {
 	InnerBlocks,
 	InspectorControls,
 } from '@wordpress/block-editor';
-import ServerSideRender from '@wordpress/server-side-render';
-import apiFetch from '@wordpress/api-fetch';
-import { Flex, Guide, TabPanel, Tooltip } from '@wordpress/components';
+import {
+	Tooltip,
+	PanelBody,
+	Panel,
+	ToggleControl,
+	Button,
+	Modal,
+} from '@wordpress/components';
 import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 
@@ -25,10 +30,10 @@ import { useEffect, useState } from '@wordpress/element';
  */
 
 import './editor.scss';
-import HomepageInspectorControls from './inspector';
 import { TABS } from './constants';
+import HomepageInspectorControls from './inspector';
 import HomepageBlockControls from './BlockControls';
-import { searchBlocks } from '../util';
+import { HelpBeacon, searchBlocks } from '../util';
 
 const BLOCK_TEMPLATE = [
 	['mailster/homepage-context', { type: 'submission' }],
@@ -40,15 +45,29 @@ const BLOCK_TEMPLATE = [
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
 
-	const {} = attributes;
+	const { showAll } = attributes;
 
 	const className = ['mailster-homepage'];
 
 	const [current, setCurrent] = useState();
+	const [shortcodes, setShortCodes] = useState(false);
+	const [shortcodesModal, setShortCodesModal] = useState(false);
+
+	useEffect(() => {
+		if (!isSelected) return;
+		location.hash = '';
+	}, [isSelected]);
 
 	useEffect(() => {
 		if (!current) return;
+
 		history.replaceState(undefined, undefined, '#mailster-' + current);
+
+		const block = searchBlocks('mailster/homepage-context').find((block) => {
+			return block.attributes.type === current;
+		});
+
+		block && dispatch('core/block-editor').selectBlock(block.clientId);
 
 		return () => {
 			history.pushState(
@@ -60,16 +79,25 @@ export default function Edit(props) {
 	}, [current]);
 
 	useEffect(() => {
+		const hash = location.hash.substring(10);
+		hash && setCurrent(hash);
 		window.addEventListener('hashchange', onHashChange);
-
 		return () => {
 			window.removeEventListener('hashchange', onHashChange);
 		};
 	}, []);
-
 	useEffect(() => {
-		const hash = location.hash.substring(10);
-		hash && setCurrent(hash);
+		const shortcodes = searchBlocks('core/shortcode').filter((block) => {
+			return (
+				block.attributes.text.match(/^\[newsletter_signup/) ||
+				block.attributes.text.match(/^\[newsletter_confirm/) ||
+				block.attributes.text.match(/^\[newsletter_unsubscribe/)
+			);
+		});
+		if (shortcodes.length) {
+			setShortCodes(shortcodes);
+			setShortCodesModal(true);
+		}
 	}, []);
 
 	//set other forms if only "submission" is set
@@ -82,14 +110,17 @@ export default function Edit(props) {
 		}
 	}, [attributes]);
 
+	const removeLegacyBlocks = () => {
+		shortcodes.forEach((block) => {
+			dispatch('core/block-editor').removeBlock(block.clientId);
+		});
+		setShortCodes(false);
+		setShortCodesModal(false);
+	};
+
 	const onSelect = (type, index) => {
 		location.hash = '#mailster-' + type;
 		setCurrent(type);
-
-		//select current block
-		//const formBlocks = searchBlocks('mailster/form');
-		//select the active block
-		//dispatch('core/block-editor').selectBlock(formBlocks[index].clientId);
 	};
 
 	const onHashChange = () => {
@@ -100,6 +131,8 @@ export default function Edit(props) {
 
 	className.push('tab-' + (current || 'submission'));
 
+	if (showAll) className.push('show-all');
+
 	const blockProps = useBlockProps({
 		className: classnames({}, className),
 	});
@@ -107,15 +140,48 @@ export default function Edit(props) {
 	return (
 		<>
 			<div {...blockProps}>
-				{currentTab && (
-					<Tooltip text={currentTab.label}>
-						<span className="section-info">
-							{sprintf(__('[Mailster]: %s', 'mailster'), currentTab.name)}
-						</span>
-					</Tooltip>
+				{shortcodesModal && shortcodes && (
+					<Modal
+						title={__(
+							'Mailster Legacy Shortcodes have been detected!',
+							'mailster'
+						)}
+						onRequestClose={() => setShortCodesModal(false)}
+					>
+						<p>
+							{sprintf(
+								__(
+									'If you use the legacy shortcodes (%s) you can remove them now.',
+									'mailster'
+								),
+								'[newsletter_signup]'
+							)}
+						</p>
+						<p>
+							{__(
+								'The new newsletter homepage block will replace them.',
+								'mailster'
+							)}
+						</p>
+						<Button
+							onClick={removeLegacyBlocks}
+							variant="secondary"
+							isDestructive={true}
+						>
+							{__('Remove Legacy Shortcodes', 'mailster')}
+						</Button>{' '}
+						<Button
+							onClick={() => setShortCodesModal(false)}
+							variant="tertiary"
+						>
+							{__('Keep them', 'mailster')}
+						</Button>
+					</Modal>
 				)}
+
 				<InnerBlocks template={BLOCK_TEMPLATE} templateLock="all" />
 			</div>
+			<InspectorControls></InspectorControls>
 			<HomepageInspectorControls
 				current={current || 'submission'}
 				onSelect={onSelect}

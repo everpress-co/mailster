@@ -56,11 +56,11 @@ export default function PatternModal(props) {
 		'mailster-workflow',
 		'title'
 	);
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'mailster-workflow',
-		'meta'
-	);
+	// const [meta, setMeta] = useEntityProp(
+	// 	'postType',
+	// 	'mailster-workflow',
+	// 	'meta'
+	// );
 
 	const [patterns, setPatterns] = useState([]);
 
@@ -83,7 +83,7 @@ export default function PatternModal(props) {
 		!title && !isScratchPattern && setTitle(pattern.title || '');
 
 		//reset saved meta triggers
-		setMeta({ trigger: [] });
+		//setMeta({ trigger: [] });
 
 		showPatternModal(false);
 	};

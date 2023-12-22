@@ -297,7 +297,11 @@ class MailsterBlockForms {
 			} else {
 				// TODO: check if there's a better way to alter the post content
 				// $wp_query->post->post_content = $this->render_form_in_content( $wp_query->post->post_content );
-				add_filter( 'the_content', array( &$this, 'render_form_in_content' ) );
+				// add_filter( 'the_content', array( &$this, 'render_form_in_content' ) );
+						// no output on the content
+				add_filter( 'the_content', '__return_empty_string', PHP_INT_MAX );
+				show_admin_bar( false );
+				add_action( 'wp_body_open', array( &$this, 'render_form_in_body' ), PHP_INT_MIN );
 			}
 		} elseif ( $forms = $this->query_forms() ) {
 			$this->forms = $forms;
@@ -375,7 +379,11 @@ class MailsterBlockForms {
 		return $this->render_form( $atts['id'], array(), false );
 	}
 
-	public function render_form_in_content( $content ) {
+	public function render_form_in_body() {
+		echo $this->render_form_in_content();
+	}
+
+	public function render_form_in_content( $content = '' ) {
 
 		$options = array(
 			// 'id'      => get_the_ID(),
@@ -840,7 +848,7 @@ class MailsterBlockForms {
 			return $actions;
 		}
 
-		$actions['form_preview'] = '<a href="' . get_permalink( $post->ID ) . '" aria-label="' . esc_attr__( 'Preview this form', 'mailster' ) . '">' . esc_html__( 'Preview', 'mailster' ) . '</a>';
+		$actions['form_preview'] = '<a href="' . get_permalink( $post->ID ) . '" data-title="' . esc_attr( sprintf( __( 'Preview %s', 'mailster' ), '"' . get_the_title( $post ) . '"' ) ) . '" aria-label="' . esc_attr__( 'Preview this form', 'mailster' ) . '">' . esc_html__( 'Preview', 'mailster' ) . '</a>';
 
 		return $actions;
 	}

@@ -41,7 +41,8 @@
 		"mailster-homepage-context/align",
 		"mailster-homepage-context/submission",
 		"mailster-homepage-context/profile",
-		"mailster-homepage-context/unsubscribe"
+		"mailster-homepage-context/unsubscribe",
+		"mailster-homepage-context/showAll"
 	],
 	"textdomain": "mailster",
 	"editorScript": "file:./index.js",

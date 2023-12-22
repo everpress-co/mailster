@@ -62,7 +62,7 @@ $sent = $this->get_sent( $post->ID );
 		<div class="active_overlay"></div>
 		<?php
 			esc_html_e( 'on', 'mailster' );
-			echo ' <input name="mailster_data[date]" class="datepicker deliverydate inactive" type="datetime-local" value="' . date( 'Y-m-d H:i', $timestamp + $timeoffset ) . '" min="' . date( 'Y-m-d\TH:i', time() + $timeoffset ) . '" maxlength="10" readonly' . ( ( ( ! $this->post_data['active'] && ! $is_autoresponder ) || ! $editable ) ? ' disabled' : '' ) . '>';
+			echo ' <input name="mailster_data[date]" class="datepicker deliverydate inactive" type="datetime-local" value="' . date( 'Y-m-d H:i', $timestamp + $timeoffset ) . '" _min="' . date( 'Y-m-d\TH:i', time() + $timeoffset ) . '" maxlength="10" readonly' . ( ( ( ! $this->post_data['active'] && ! $is_autoresponder ) || ! $editable ) ? ' disabled' : '' ) . '>';
 		?>
 		<?php if ( mailster_option( 'track_location' ) ) : ?>
 			<p><label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
