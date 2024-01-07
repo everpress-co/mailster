@@ -14,15 +14,15 @@ $plugins            = array_keys( get_plugins() );
 $pluginslugs        = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 $sections     = array(
-	'basics'     => __( 'Business Details', 'mailster' ),
-	'sending'    => __( 'Sending Information', 'mailster' ),
-	'privacy'    => __( 'Privacy & Compliance', 'mailster' ),
-	'homepage'   => __( 'Newsletter Homepage', 'mailster' ),
-	'templates'  => __( 'What should your campaigns look like?', 'mailster' ),
-	'delivery'   => __( 'What is your preferred method for email delivery?', 'mailster' ),
-	'extensions' => sprintf( __( 'Recommendations for %s', 'mailster' ), wp_parse_url( home_url(), PHP_URL_HOST ) ),
-	'community'  => __( 'Join the Community', 'mailster' ),
-	'finish'     => __( 'Great, you\'re done!', 'mailster' ),
+	'basics'    => __( 'Business Details', 'mailster' ),
+	'sending'   => __( 'Sending Information', 'mailster' ),
+	'privacy'   => __( 'Privacy & Compliance', 'mailster' ),
+	'homepage'  => __( 'Newsletter Homepage', 'mailster' ),
+	'templates' => __( 'What should your campaigns look like?', 'mailster' ),
+	'delivery'  => __( 'What is your preferred method for email delivery?', 'mailster' ),
+	// 'extensions' => sprintf( __( 'Recommendations for %s', 'mailster' ), wp_parse_url( home_url(), PHP_URL_HOST ) ),
+	'community' => __( 'Join the Community', 'mailster' ),
+	'finish'    => __( 'Great, you\'re done!', 'mailster' ),
 );
 $section_keys = array_keys( $sections );
 

@@ -1,7 +1,21 @@
 <div class="mailster-setup-step-body">
 
+<?php if ( mailster()->is_trial() ) : ?>
+	<?php
+			$license = mailster_freemius()->_get_license();
+			$expires = $license ? strtotime( $license->expiration ) : 0;
+			$offset  = $expires - time();
+			$display = $offset > DAY_IN_SECONDS ? human_time_diff( $expires ) : date( 'H:i:s', strtotime( 'midnight' ) + $offset - 1 );
+	?>
+	<?php if ( $offset > 0 ) : ?>
+		<a role="tab" aria-controls="activity-panel-help" id="mailster-trial-upgrade" class="panel-tab action" href="<?php echo mailster()->get_upgrade_url(); ?>" data-offset=<?php echo absint( $offset ); ?> title="<?php esc_attr_e( 'Upgrade now!', 'mailster' ); ?>"><?php printf( esc_html__( 'Your trial expires in %s', 'mailster' ), '<span>' . esc_html( $display ) . '</span>' ); ?></a>
+	<?php else : ?>
+		<a role="tab" aria-controls="activity-panel-help" id="mailster-trial-upgrade" class="panel-tab action expired" href="<?php echo mailster()->get_upgrade_url(); ?>" title="<?php esc_attr_e( 'Upgrade now!', 'mailster' ); ?>"><?php esc_html_e( 'Your trial has expired!', 'mailster' ); ?><span><?php esc_html_e( 'Upgrade now!', 'mailster' ); ?></span></a>
+	<?php endif; ?>
 <p><?php esc_html_e( 'Now you can continue to customize Mailster to your needs.', 'mailster' ); ?></p>
-
+<?php else : ?>
+<p><?php esc_html_e( 'Now you can continue to customize Mailster to your needs.', 'mailster' ); ?></p>
+<?php endif; ?>
 
 <div class="feature-section two-col">
 	<div class="col">
