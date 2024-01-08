@@ -753,36 +753,6 @@ class MailsterAjax {
 				$mail->set_campaign( $ID );
 				$placeholder->set_campaign( $ID );
 
-				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
-
-				$listunsubscribe = array();
-				if ( mailster_option( 'mail_opt_out' ) ) {
-					$listunsubscribe_mail    = $bouncemail ? $bouncemail : $from;
-					$listunsubscribe_subject = 'Please remove me from the list';
-					$listunsubscribe_link    = mailster()->get_unsubscribe_link( $ID, $mail->hash );
-					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
-
-					$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
-				}
-				$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $mail->hash, $ID ) . '>';
-
-				$headers = array(
-					'X-Mailster'          => $mail->hash,
-					'X-Mailster-Campaign' => (string) $ID,
-					'X-Mailster-ID'       => $MID,
-					'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
-				);
-
-				if ( mailster_option( 'single_opt_out' ) ) {
-					$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
-				}
-
-				if ( 'autoresponder' != get_post_status( $ID ) ) {
-					$headers['Precedence'] = 'bulk';
-				}
-
-				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
-
 				// check for subscriber by mail
 				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) ) {
 					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true, true );
@@ -807,6 +777,8 @@ class MailsterAjax {
 					$mail->set_subscriber( $subscriber->ID );
 					$placeholder->set_subscriber( $subscriber->ID );
 
+					$mail->add_header( mailster( 'campaigns' )->get_headers( $ID, $subscriber->ID ) );
+
 				} elseif ( $current_user ) {
 
 					$profilelink = mailster()->get_profile_link( $ID, '' );
@@ -818,6 +790,9 @@ class MailsterAjax {
 						'fullname'     => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
 						'emailaddress' => $current_user->user_email,
 					);
+
+					$mail->add_header( mailster( 'campaigns' )->get_headers( $ID ) );
+
 				} else {
 					// no subscriber found for data
 					$names = null;

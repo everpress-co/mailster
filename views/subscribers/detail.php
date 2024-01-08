@@ -445,16 +445,16 @@ if ( ! $is_new ) :
 								printf( esc_html__( 'Campaign %s has been sent', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 'open':
-									echo '<span class="mailster-icon mailster-icon-open"></span></td><td>';
-									printf( esc_html__( 'opened Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+								echo '<span class="mailster-icon mailster-icon-open"></span></td><td>';
+								printf( esc_html__( 'opened Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 'click':
-									echo '<span class="mailster-icon mailster-icon-click"></span></td><td>';
-									printf( esc_html__( 'clicked %1$s in Campaign %2$s', 'mailster' ), '<a href="' . $activity->link . '">' . esc_html__( 'a link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+								echo '<span class="mailster-icon mailster-icon-click"></span></td><td>';
+								printf( esc_html__( 'clicked %1$s in Campaign %2$s', 'mailster' ), '<a href="' . $activity->link . '">' . esc_html__( 'a link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 'unsub':
-									echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
-									$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
+								echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
+								$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
 								if ( preg_match( '/_list$/', $unsub_status ) ) {
 									esc_html_e( 'unsubscribed from a list', 'mailster' );
 								} else {
@@ -462,24 +462,22 @@ if ( ! $is_new ) :
 								}
 								break;
 							case 'softbounce':
-									echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';
-									printf( esc_html__( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
-
+								echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';
+								printf( esc_html__( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
 								break;
 							case 'bounce':
-									echo '<span class="mailster-icon mailster-icon-bounce hard"></span></td><td>';
-									esc_html_e( 'Hard bounce', 'mailster' );
+								echo '<span class="mailster-icon mailster-icon-bounce hard"></span></td><td>';
+								esc_html_e( 'Hard bounce', 'mailster' );
 								break;
 							case 'error':
-									echo '<span class="mailster-icon mailster-icon-error"></span></td><td>';
-									esc_html_e( 'Error', 'mailster' );
+								echo '<span class="mailster-icon mailster-icon-error"></span></td><td>';
+								esc_html_e( 'Error', 'mailster' );
 								break;
 							default:
-									echo '</td><td>';
+								echo '</td><td>';
 								break;
 						}
 						?>
-
 						</td>
 						<td>
 						<?php if ( $activity->campaign_id ) : ?>
@@ -508,8 +506,9 @@ if ( ! $is_new ) :
 							<a href="<?php echo esc_url( $activity->link ); ?>"><?php echo esc_url( $activity->link ); ?></a>
 
 							<?php
-						elseif ( $activity->type == 'unsub' && $activity->text ) :
-							$message = mailster( 'helper' )->get_unsubscribe_message( $activity->text );
+						elseif ( $activity->type == 'unsub' ) :
+							$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
+							$message      = mailster( 'helper' )->get_unsubscribe_message( $unsub_status );
 							?>
 							<div class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ); ?>] <?php echo esc_html( $message ); ?></div>
 
