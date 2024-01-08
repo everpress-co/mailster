@@ -5120,39 +5120,7 @@ class MailsterCampaigns {
 			$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 		}
 
-		$MID             = mailster_option( 'ID' );
-		$campaign_string = (string) $campaign->ID;
-		if ( $campaignindex ) {
-			$campaign_string .= '-' . $campaignindex;
-		}
-
-		$listunsubscribe = array();
-		if ( mailster_option( 'mail_opt_out' ) ) {
-			$listunsubscribe_mail    = $mail->bouncemail ? $mail->bouncemail : $mail->from;
-			$listunsubscribe_subject = rawurlencode( 'Please remove me from the list' );
-			$listunsubscribe_link    = mailster()->get_unsubscribe_link( $campaign->ID, $subscriber->hash, $campaignindex );
-			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign_string} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
-
-			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
-		}
-		$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
-
-		$headers = array(
-			'X-Mailster'          => $subscriber->hash,
-			'X-Mailster-Campaign' => $campaign_string,
-			'X-Mailster-ID'       => $MID,
-			'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
-		);
-
-		if ( mailster_option( 'single_opt_out' ) ) {
-			$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
-		}
-
-		if ( 'autoresponder' != get_post_status( $campaign->ID ) ) {
-			$headers['Precedence'] = 'bulk';
-		}
-
-		$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $campaign->ID, $subscriber->ID ) );
+		$mail->add_header( $this->get_headers( $campaign->ID, $subscriber->ID ) );
 
 		$placeholder->set_content( $mail->subject );
 		$mail->subject = $placeholder->get_content();
@@ -5210,9 +5178,91 @@ class MailsterCampaigns {
 	 * @return unknown
 	 */
 	public function get_campaign_index( $campaign_id, $subscriber_id ) {
-		global $wpdb;
 
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM `{$wpdb->prefix}mailster_action_sent` WHERE campaign_id = %d AND subscriber_id = %d", $campaign_id, $subscriber_id ) );
+		$cache_key = 'get_campaign_index_' . $campaign_id . '_' . $subscriber_id;
+
+		$index = mailster_cache_get( $cache_key );
+
+		if ( $index === false ) {
+			global $wpdb;
+
+			$index = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM `{$wpdb->prefix}mailster_action_sent` WHERE campaign_id = %d AND subscriber_id = %d", $campaign_id, $subscriber_id ) );
+
+			mailster_cache_set( $cache_key, $index );
+
+		}
+
+		return $index;
+	}
+
+	public function get_headers( $campaign_id, $subscriber_id = null ) {
+
+		$MID     = mailster_option( 'ID' );
+		$headers = array( 'X-Mailster-ID' => $MID );
+
+		$campaign = $this->get( $campaign_id );
+
+		if ( ! $campaign ) {
+			return $headers;
+		}
+
+		$campaign_string = (string) $campaign->ID;
+		$subscriber      = false;
+		$campaign_index  = 0;
+
+		if ( ! is_null( $subscriber_id ) ) {
+			$subscriber = mailster( 'subscribers' )->get( $subscriber_id );
+
+			if ( ! $subscriber ) {
+				return $headers;
+			}
+
+			$campaign_index = $this->get_campaign_index( $campaign->ID, $subscriber->ID );
+
+			if ( $campaign_index ) {
+				$campaign_string .= '-' . $campaign_index;
+			}
+		} else {
+			$subscriber = (object) array(
+				'ID'    => 0,
+				'hash'  => '00000000000000000000000000000000',
+				'email' => '',
+			);
+		}
+
+		$listunsubscribe   = array();
+		$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
+		if ( $subscriber && mailster_option( 'mail_opt_out' ) ) {
+			$listunsubscribe_mail = mailster_option( 'bounce' );
+			if ( ! $listunsubscribe_mail ) {
+				$listunsubscribe_mail = $this->meta( $campaign->ID, 'from_email' );
+			}
+
+			$listunsubscribe_subject = rawurlencode( 'Please remove me from the list' );
+			$listunsubscribe_link    = mailster()->get_unsubscribe_link( $campaign->ID, $subscriber->hash, $campaign_index );
+			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign_string} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
+
+			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
+		}
+
+		$headers['X-Mailster']            = $subscriber->hash;
+		$headers['X-Mailster-Campaign']   = $campaign_string;
+		$headers['List-Unsubscribe']      = implode( ',', $listunsubscribe );
+		$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+		$headers['List-ID']               = '<' . $subscriber->hash . '-' . $campaign->ID . '>';
+
+		if ( 'autoresponder' != get_post_status( $campaign->ID ) ) {
+			$headers['Precedence'] = 'bulk';
+		}
+
+		/**
+		 * Filter the headers values which where added to the campaign
+		 *
+		 * @param array $headers default header values
+		 * @param int $campaign_id
+		 * @param int $subscriber_id
+		 */
+		return apply_filters( 'mailster_mail_headers', $headers, $campaign->ID, $subscriber->ID );
 	}
 
 

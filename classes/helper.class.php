@@ -965,6 +965,9 @@ class MailsterHelper {
 			case 'profile_unsubscribe':
 			case 'profile_unsubscribe_list':
 				return esc_html__( 'The user updated the status via the profile page.', 'mailster' );
+			case 'list_unsubscribe_one_click':
+			case 'list_unsubscribe_one_click_list':
+				return esc_html__( 'The user uses one-click-unsubscribe (RFC 8058)', 'mailster' );
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
 				return esc_html__( 'The user clicked on the unsubscribe option in the Mail application.', 'mailster' );

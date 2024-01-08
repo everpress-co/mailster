@@ -498,19 +498,24 @@ class MailsterFrontpage {
 				break;
 
 			case 'unsubscribe':
-					$hash = get_query_var( '_mailster_hash' );
+				$hash = get_query_var( '_mailster_hash' );
 				// handle one click unsubscribe for RFC8058 (https://tools.ietf.org/html/rfc8058)
 				if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 
-					$campaign_id = get_query_var( '_mailster_extra' );
-					$status      = 'list_unsubscribe';
+					$campaign_id    = get_query_var( '_mailster_extra' );
+					$campaign_index = null;
 
-					if ( mailster( 'subscribers' )->unsubscribe_by_hash( $hash, $campaign_id, $status ) ) {
-						status_header( 200 );
-					} else {
-						status_header( 404 );
+					// get the campaign index
+					if ( false !== strpos( $campaign_id, '-' ) ) {
+						$campaign_index = absint( strrchr( $campaign_id, '-' ) );
+						$campaign_id    = absint( $campaign_id );
 					}
+					$status = 'list_unsubscribe_one_click';
+
+					// unsubscribe by hash and always return 200
 					nocache_headers();
+					mailster( 'subscribers' )->unsubscribe_by_hash( $hash, $campaign_id, $status, $campaign_index );
+					status_header( 200 );
 					exit;
 
 				}
@@ -519,7 +524,7 @@ class MailsterFrontpage {
 				// if tracking is disabled
 				if ( ! empty( $hash ) && strpos( $unsubscribe_url, $wp->request ) === false ) {
 					$this->setcookie( $hash );
-					$redirect_to = $this->get_link( 'unsubscribe', $hash, get_query_var( '_mailster_extra' ) );
+					$redirect_to = $unsubscribe_url;
 					mailster_redirect( $redirect_to, 307 );
 					exit;
 				}
