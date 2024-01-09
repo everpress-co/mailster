@@ -2453,6 +2453,10 @@ class MailsterAjax {
 			'page'   => absint( $_POST['page'] ),
 		);
 
+		if ( ( isset( $_POST['reload_license'] ) && $_POST['reload_license'] === 'true' ) ) {
+			mailster_freemius()->_sync_cron();
+		}
+
 		$result = mailster( 'templates' )->query( $query );
 
 		if ( ! is_wp_error( $result ) ) {

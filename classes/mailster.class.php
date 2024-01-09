@@ -1509,6 +1509,34 @@ class Mailster {
 			)
 		);
 
+		wp_localize_script(
+			'mailster-setup',
+			'mailster_freemius',
+			apply_filters(
+				'mailster_freemius_args',
+				array(
+					'plugin_id'   => mailster_freemius()->get_id(),
+					'public_key'  => 'pk_1efa30140fc34f21e5b89959bb877',
+					'user_email'  => $this->get_email(),
+					'license_key' => $this->get_license(),
+				)
+			)
+		);
+
+		mailster_localize_script(
+			'freemius',
+			array(
+				'load_language'      => esc_html__( 'Loading Languages', 'mailster' ),
+				'enable_first'       => esc_html__( 'Enable %s first', 'mailster' ),
+				'use_deliverymethod' => esc_html__( 'Use %s as your delivery method', 'mailster' ),
+				'check_language'     => esc_html__( 'Check for languages', 'mailster' ),
+				'install_addon'      => esc_html__( 'Installing Add on', 'mailster' ),
+				'activate_addon'     => esc_html__( 'Activating Add on', 'mailster' ),
+				'receiving_content'  => esc_html__( 'Receiving Content', 'mailster' ),
+				'skip_validation'    => esc_html__( 'Without Registration you are not able to get automatic update or support!', 'mailster' ),
+			)
+		);
+
 		mailster_localize_script(
 			'manage',
 			array(
@@ -2880,6 +2908,7 @@ class Mailster {
 		if ( false === ( $info = mailster_cache_get( 'plugin_info' ) ) || $force ) {
 
 			if ( $force ) {
+				mailster_freemius()->_sync_cron();
 				mailster_freemius()->_sync_licenses();
 				mailster_freemius()->get_update();
 			}
@@ -2920,6 +2949,19 @@ class Mailster {
 		$license = mailster_freemius()->_get_license();
 
 		return $license ? $license->secret_key : $fallback;
+	}
+
+	public function get_plans( $force = false ) {
+
+		if ( ! ( $plans = get_transient( 'mailster_freemius_plans' ) ) || $force ) {
+
+			$plans = mailster_freemius()->_sync_plans();
+
+			set_transient( 'mailster_freemius_plans', $plans, DAY_IN_SECONDS );
+
+		}
+
+		return $plans;
 	}
 
 	public function get_email( $fallback = '' ) {

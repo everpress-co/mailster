@@ -388,6 +388,37 @@ section {
 	width: 33%;
 	box-sizing: border-box;
 }
+.templates .template .locked {
+	display: none;
+}
+.templates .template.is-locked header::before {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="2.0" stroke="%23545454" fill="none" stroke-linejoin="round"><path d="M17 21h-10c-1.105 0-2-.895-2-2v-7c0-1.105.895-2 2-2h10c1.105 0 2 .895 2 2v7c0 1.105-.895 2-2 2Z"></path><path d="M8 10v-3 0c0-2.209 1.791-4 4-4v0c2.209 0 4 1.791 4 4v0 3"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
+	background-size: 100%;
+	content: ' ';
+	width: 16px;
+	height: 15px;
+	display: inline-block;
+}
+.templates .template.is-locked .locked {
+	position: absolute;
+	z-index: 100;
+	height: 100%;
+	display: none;
+	flex-direction: column;
+	padding: 0 1em;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.55);
+	text-align: center;
+}
+.templates .template.is-locked:hover .locked {
+	display: flex;
+}
+.templates .template.is-locked:hover .mailster-template-preview-browser {
+	filter: blur(12px);
+	opacity: 0.5;
+}
 .mailster-template-previews {
 	display: flex;
 	gap: 8px;
@@ -396,7 +427,6 @@ section {
 .mailster-template-preview {
 	position: relative;
 	left: 0;
-	width: 250px;
 	width: 300px;
 	height: 400px;
 	transform-origin: top left;
@@ -412,7 +442,10 @@ section {
 	overflow: hidden;
 	cursor: pointer;
 	transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-	filter: grayscale(50%);
+	_filter: grayscale(50%);
+}
+.mailster-template-preview a.button-link {
+	color: #fff;
 }
 .loading .mailster-template-preview {
 	background-color: #ededed;
@@ -427,8 +460,11 @@ section {
 	background-position-x: 180%;
 	animation: 1s skeleton-loading ease-in-out infinite;
 }
+.loading .mailster-template-preview * {
+	display: none;
+}
 .mailster-template-preview .mailster-template-preview-browser {
-	width: 330%;
+	width: 333%;
 	height: 333%;
 	pointer-events: none;
 	scale: 0.3;
@@ -439,30 +475,52 @@ section {
 	margin: 0;
 }
 .mailster-template-preview header {
-	font-size: 14px;
-	background-color: #ededed;
-	padding: 1em 20px;
+	font-size: 15px;
+	font-weight: 600;
+	background-color: #fff;
+	background-color: rgba(255, 255, 255, 0.65);
+	padding: 15px;
 	box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-	text-align: center;
 }
 .mailster-template-preview .mailster-template-preview-browser iframe {
 	width: 100%;
 	height: 100%;
 }
+
+.template.is-premium .mailster-template-preview {
+	border: 1px solid #ffb900;
+}
+.template.is-premium .mailster-template-preview:hover {
+	border: 1px solid #2bb3e7;
+	box-shadow: 0 1px 15px rgba(255, 185, 0, 0.65);
+}
+.template.is-premium .mailster-template-preview header:after {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23ffb900" fill="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.458 20.86l2.81526e-08-1.51005e-08c-.584032.313263-1.31143.093761-1.6247-.490271 -.126301-.23547-.170399-.506358-.125305-.769729l.868-5.023 -3.676-3.559 4.32484e-08 4.2531e-08c-.472532-.464694-.478886-1.22447-.0141923-1.697 .183566-.186662.42314-.308172.682192-.346003l5.082-.733 2.27-4.574 3.97642e-08-7.94342e-08c.299141-.597572 1.02607-.839499 1.62364-.540358 .233761.117019.423339.306597.540358.540358l2.27 4.574 5.082.733 1.00541e-07 1.46825e-08c.655786.0957675 1.10977.705022 1.014 1.36081 -.0378307.259052-.159341.498626-.346003.682192l-3.678 3.557 .868 5.023 2.1535e-08 1.2438e-07c.113064.653026-.324662 1.27406-.977688 1.38713 -.264187.045741-.536083.00168883-.772312-.125129l-4.544-2.369Z"></path></g></svg>');
+	background-size: 100%;
+	content: ' ';
+	width: 16px;
+	height: 15px;
+	display: inline-block;
+	right: 15px;
+	position: absolute;
+}
 .mailster-template-preview:hover,
 .template.active .mailster-template-preview {
-	filter: grayscale(0%);
+	_filter: grayscale(0%);
 	border: 1px solid #2bb3e7;
 	box-shadow: 0 1px 15px rgba(43, 179, 231, 0.65);
 }
 .theme-badge {
-	border: 1px solid;
+	border: 1px solid #c3c4c4;
 	font-size: 12px;
+	line-height: 1em;
 	font-weight: normal;
 	border-radius: 4px;
 	padding: 0.2em 0.4em;
 	margin-left: 0.6em;
 	display: none;
+	background-color: #fff;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
 .template.active .theme-badge {
 	display: inline;

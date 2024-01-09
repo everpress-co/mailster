@@ -179,10 +179,40 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.action-buttons a.edit-homepage', addFocus)
 		.on('click', '.template', function () {
-			$('.template.active').removeClass('active');
-			$(this).addClass('active');
-			$('#default_template').val($(this).data('slug'));
+			if (!$(this).hasClass('is-locked')) {
+				$('.template.active').removeClass('active');
+				$(this).addClass('active');
+				$('#default_template').val($(this).data('slug'));
+			}
+		})
+		.on('click', '.upgrade-plan', function () {
+			var plan_id = $(this).data('plan');
+			addCheckout(function (handler) {
+				handler.open({
+					checkout_style: 'next',
+					plan_id: plan_id,
+					purchaseCompleted: function (response) {
+						console.log('purchaseCompleted', response);
+						query_templates(true);
+					},
+				});
+			});
 		});
+
+	function addCheckout(cb) {
+		if (window.FS) {
+			var handler = FS.Checkout.configure(mailster_freemius);
+			cb && cb(handler);
+			return;
+		}
+		$.getScript(
+			'https://checkout.freemius.com/checkout.min.js',
+			function (data, textStatus, jqxhr) {
+				var handler = FS.Checkout.configure(mailster_freemius);
+				cb && cb(handler);
+			}
+		);
+	}
 
 	function addFocus() {
 		mailster.$.window.on('focus', reloadOnFocus);
@@ -265,8 +295,11 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	var busy = false;
-	function query_templates(cb) {
+	function query_templates(reload_license) {
 		busy = true;
+		var templates = $('.templates');
+
+		templates.addClass('loading');
 
 		mailster.util.ajax(
 			'query_templates',
@@ -275,16 +308,19 @@ mailster = (function (mailster, $, window, document) {
 				type: null,
 				browse: 'samples',
 				page: 1,
+				reload_license: reload_license,
 			},
 			function (response) {
 				busy = false;
+				templates.removeClass('loading');
 				if (response.success) {
 					$('.templates').html(response.data.html);
 				}
-
-				cb && cb();
 			},
-			function (jqXHR, textStatus, errorThrown) {}
+			function (jqXHR, textStatus, errorThrown) {
+				busy = false;
+				templates.removeClass('loading');
+			}
 		);
 	}
 

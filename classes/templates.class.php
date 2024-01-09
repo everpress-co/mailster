@@ -35,6 +35,7 @@ class MailsterTemplates {
 		'requires'         => '3.0',
 		'is_default'       => null,
 		'is_supported'     => null,
+		'is_premium'       => null,
 		'author_profile'   => null,
 		'download'         => null,
 		'download_url'     => null,
