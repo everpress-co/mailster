@@ -312,7 +312,7 @@ if ( $is_new ) {
 		</td>
 		<td class="user-meta">
 			<?php if ( ! $is_new ) : ?>
-				<?php $geo = explode( '|', $meta->geo ); ?>
+				<?php $geo = $meta->geo ? explode( '|', $meta->geo ) : null; ?>
 				<?php if ( $meta->coords ) : ?>
 					<?php if ( mailster_option( 'static_map' ) ) : ?>
 					<div class="map zoomable map-<?php echo esc_attr( mailster_option( 'static_map' ) ); ?>" data-missingkey="<?php esc_attr_e( 'Please enter a valid Google API key on the settings page if the map is missing!', 'mailster' ); ?>">

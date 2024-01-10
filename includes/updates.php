@@ -671,6 +671,11 @@ if ( $old_version ) {
 
 			}
 		case '3.3.9':
+		case '3.3.10':
+		case '3.3.11':
+		case '3.3.12':
+		
+
 		default:
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
