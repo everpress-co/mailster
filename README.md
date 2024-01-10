@@ -187,6 +187,13 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 3.3.12
+
+- fixed: deprecated notice on subscribers detail page for php 8.2+
+- fixed: warning on activation if update state is not clear
+- fixed: warnings when trying to resize SVG images in email
+- improved: subscribers detail page
+
 ### 3.3.11
 
 - fixed: deprecated method
