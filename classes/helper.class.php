@@ -155,6 +155,13 @@ class MailsterHelper {
 		$file_info = pathinfo( $actual_file_path );
 		$extension = $file_info['extension'];
 
+		// use the original if SVG is used
+		if ( $extension === 'svg' ) {
+			$original     = true;
+			$image_src[1] = $width;
+			$image_src[2] = $height;
+		}
+
 		$no_ext_path = trailingslashit( $file_info['dirname'] ) . $file_info['filename'];
 
 		if ( $original ) {
@@ -186,7 +193,7 @@ class MailsterHelper {
 			$new_img      = str_replace( basename( $image_src[0] ), basename( $new_img_path ), $image_src[0] );
 
 			$meta_data = wp_get_attachment_metadata( $attach_id );
-			if ( $meta_data && is_array( $meta_data ) ) {
+			if ( $new_img_size && $meta_data && is_array( $meta_data ) ) {
 				$size_id                        = '_mailster-' . $width . 'x' . $height . '|' . $crop;
 				$meta_data['sizes'][ $size_id ] = array(
 					'file'      => basename( $new_img_path ),

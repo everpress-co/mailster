@@ -41,7 +41,7 @@ $tabindex = 1;
 <div class="wrap<?php echo ( $is_new ) ? ' new' : ' status-' . $subscriber->status; ?>">
 <form id="subscriber_form" action="edit.php?post_type=newsletter&page=mailster_subscribers<?php echo ( $is_new ) ? '&new' : '&ID=' . $id; ?>" method="post">
 <input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo $subscriber->ID; ?>">
-<?php wp_nonce_field( 'mailster_nonce' ); ?>
+<?php wp_nonce_field( 'mailster_nonce' ); ?> 
 <div style="height:0px; width:0px; overflow:hidden;"><input type="submit" name="save" value="1"></div>
 <h1>
 <?php
@@ -192,8 +192,11 @@ if ( $is_new ) {
 			<div class="custom-field-wrap">
 			<?php if ( $customfields ) : ?>
 				<?php foreach ( $customfields as $field => $data ) : ?>
+
+					<?php $value = isset( $subscriber->{$field} ) && $subscriber->{$field} ? $subscriber->{$field} : ''; ?>
+
 				<div class="detail">
-					<label for="mailster_data_<?php echo $field; ?>" class="label-type-<?php echo $data['type']; ?>"><?php echo strip_tags( $data['name'] ); ?>:</label>
+					<label for="mailster_data_<?php echo esc_attr( $field ); ?>" class="label-type-<?php echo $data['type']; ?>"><?php echo strip_tags( $data['name'] ); ?>:</label>
 						<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{' . esc_attr( $field ) . '}', '&quot;' . esc_attr( $subscriber->{$field} ) . '&quot;' ); ?>">{<?php echo esc_attr( $field ); ?>}</code>
 					<ul class="click-to-edit type-<?php echo $data['type']; ?>">
 					<?php
@@ -201,10 +204,10 @@ if ( $is_new ) {
 
 						case 'dropdown':
 							?>
-							<li><?php echo $subscriber->{$field} ? esc_html( $subscriber->{$field} ) : esc_html__( 'nothing selected', 'mailster' ); ?></li>
-							<li><select id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]">
+							<li><?php echo esc_html( $value ) ? esc_html( $value ) : esc_html__( 'nothing selected', 'mailster' ); ?></li>
+							<li><select id="mailster_data_<?php echo esc_attr( $field ); ?>" name="mailster_data[<?php echo esc_attr( $field ); ?>]">
 							<?php foreach ( $data['values'] as $v ) : ?>
-								<option value="<?php echo esc_attr( $v ); ?>" <?php selected( ( ! empty( $subscriber->{$field} ) ) ? $subscriber->{$field} : ( isset( $data['default'] ) ? $data['default'] : null ), $v ); ?>><?php echo $v; ?></option>
+								<option value="<?php echo esc_attr( $v ); ?>" <?php selected( ( ! empty( $value ) ) ? $value : ( isset( $data['default'] ) ? $data['default'] : null ), $v ); ?>><?php echo $v; ?></option>
 							<?php endforeach; ?>
 						</select></li>
 							<?php
@@ -212,10 +215,10 @@ if ( $is_new ) {
 
 						case 'radio':
 							?>
-							<li><?php echo esc_html( $subscriber->{$field} ); ?></li>
+							<li><?php echo esc_html( $value ); ?></li>
 							<li><ul>
 							<?php foreach ( $data['values'] as $i => $v ) : ?>
-									<li><label for="mailster_data_<?php echo esc_attr( $field ); ?>_<?php echo $i; ?>"><input type="radio" id="mailster_data_<?php echo $field; ?>_<?php echo $i; ?>" name="mailster_data[<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $v ); ?>" <?php checked( $subscriber->{$field}, $v ); ?>> <?php echo $v; ?> </label></li>
+								<li><label for="mailster_data_<?php echo esc_attr( $field ); ?>_<?php echo $i; ?>"><input type="radio" id="mailster_data_<?php echo esc_attr( $field ); ?>_<?php echo $i; ?>" name="mailster_data[<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $v ); ?>" <?php checked( $value, $v ); ?>> <?php echo $v; ?> </label></li>
 							<?php endforeach; ?>
 							</ul>
 							</li>
@@ -224,30 +227,30 @@ if ( $is_new ) {
 
 						case 'checkbox':
 							?>
-							<li><?php echo $subscriber->{$field} ? esc_html__( 'yes', 'mailster' ) : esc_html__( 'no', 'mailster' ); ?></li>
-							<li><label for="mailster_data_<?php echo $field; ?>" class="label-type-checkbox"><input type="checkbox" id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]" value="1" <?php checked( $subscriber->{$field}, true ); ?>> <?php echo esc_html( $data['name'] ); ?> </label>
+							<li><?php echo esc_html( $value ) ? esc_html__( 'yes', 'mailster' ) : esc_html__( 'no', 'mailster' ); ?></li>
+							<li><label for="mailster_data_<?php echo esc_attr( $field ); ?>" class="label-type-checkbox"><input type="checkbox" id="mailster_data_<?php echo esc_attr( $field ); ?>" name="mailster_data[<?php echo esc_attr( $field ); ?>]" value="1" <?php checked( $value, true ); ?>> <?php echo esc_html( $data['name'] ); ?> </label>
 							</li>
 							<?php
 							break;
 
 						case 'date':
 							?>
-						<li><?php echo esc_html( $subscriber->{$field} ) ? '<p>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
-						<li><input type="text" id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]" value="<?php echo esc_attr( $subscriber->{$field} ); ?>" class="regular-text input datepicker"></li>
+						<li><?php echo esc_html( $value ) ? '<p>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $value ) ) . '</p>' : $value . '&nbsp;'; ?></li>
+						<li><input type="date" id="mailster_data_<?php echo esc_attr( $field ); ?>" name="mailster_data[<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $value ); ?>" class="regular-text input datepicker"></li>
 							<?php
 							break;
 
 						case 'textarea':
 							?>
-						<li><?php echo $subscriber->{$field} ? '<p>' . nl2br( strip_tags( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
-						<li><textarea id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]" class="regular-text input"><?php echo esc_textarea( $subscriber->{$field} ); ?></textarea></li>
+						<li><?php echo esc_html( $value ) ? '<p>' . nl2br( strip_tags( $value ) ) . '</p>' : esc_html( $value ) . '&nbsp;'; ?></li>
+						<li><textarea id="mailster_data_<?php echo esc_attr( $field ); ?>" name="mailster_data[<?php echo esc_attr( $field ); ?>]" class="regular-text input"><?php echo esc_textarea( $value ); ?></textarea></li>
 							<?php
 							break;
 
 						default:
 							?>
-						<li><?php echo $subscriber->{$field} ? '<p>' . $subscriber->{$field} . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
-						<li><input type="text" id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]" value="<?php echo esc_attr( $subscriber->{$field} ); ?>" class="regular-text input"></li>
+						<li><?php echo esc_html( $value ) ? '<p>' . $value . '</p>' : $value . '&nbsp;'; ?></li>
+						<li><input type="text" id="mailster_data_<?php echo esc_attr( $field ); ?>" name="mailster_data[<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $value ); ?>" class="regular-text input"></li>
 					<?php } ?>
 					</ul>
 				</div>
@@ -268,7 +271,7 @@ if ( $is_new ) {
 						if ( $list->confirmed ) {
 							$confirmed[ $list->ID ] = $list->confirmed;
 						}
-						echo '<span title="' . $list->description . '" class="' . ( $list->confirmed ? 'confirmed' : 'not-confirmed' ) . '">' . $list->name . '</span>';
+						echo '<span title="' . esc_attr( $list->description ) . '" class="' . ( $list->confirmed ? 'confirmed' : 'not-confirmed' ) . '">' . esc_html( $list->name ) . '</span>';
 					}
 				else :
 
@@ -307,17 +310,14 @@ if ( $is_new ) {
 				</select>
 			</div>
 		</td>
-		<td class="user-meta" align="right">
+		<td class="user-meta">
 			<?php if ( ! $is_new ) : ?>
-				<?php
-				if ( $meta->coords ) :
-					$geo = explode( '|', $meta->geo );
-					?>
+				<?php $geo = $meta->geo ? explode( '|', $meta->geo ) : null; ?>
+				<?php if ( $meta->coords ) : ?>
 					<?php if ( mailster_option( 'static_map' ) ) : ?>
 					<div class="map zoomable map-<?php echo esc_attr( mailster_option( 'static_map' ) ); ?>" data-missingkey="<?php esc_attr_e( 'Please enter a valid Google API key on the settings page if the map is missing!', 'mailster' ); ?>">
 
 						<?php
-
 						$coords = explode( ',', $meta->coords );
 
 						$args = array(
@@ -335,7 +335,7 @@ if ( $is_new ) {
 					<img src="<?php echo esc_url( $mapurl ); ?>" width="300" heigth="250" data-zoom="<?php echo esc_url( $mapurl_zoom ); ?>">
 					</div>
 				<?php endif; ?>
-					<p class="alignright">
+				<p class="alignright">
 						<?php
 						if ( $geo[1] ) :
 							esc_html_e( 'from', 'mailster' );
