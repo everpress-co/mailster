@@ -666,6 +666,9 @@ if ( $old_version ) {
 				mailster_notice( $msg, 'info', DAY_IN_SECONDS, 'mailster_beta_notice', true );
 			}
 		case '3.3.9':
+		case '3.3.10':
+		case '3.3.11':
+		case '3.3.12':
 			// do nothing
 
 
