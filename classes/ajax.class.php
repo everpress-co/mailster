@@ -2460,15 +2460,10 @@ class MailsterAjax {
 		$result = mailster( 'templates' )->query( $query );
 
 		if ( ! is_wp_error( $result ) ) {
-
 			$return['total']     = $result['total'];
 			$return['html']      = mailster( 'templates' )->result_to_html( $result, $query['browse'] );
 			$return['templates'] = $result['items'];
 			$return['error']     = $result['error'];
-			if ( $query['browse'] === 'premium' ) {
-				$return['html'] .= '<div id="templates-premium-only" class="notice inline"><h2>These template are not support with your current plan!</h2><p>Please upgrade your plan to unlock these templates.</p></div>';
-				wp_send_json_error( $return );
-			}
 		}
 
 		wp_send_json_success( $return );

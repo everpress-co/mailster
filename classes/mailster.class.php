@@ -1357,7 +1357,7 @@ class Mailster {
 				$plan    = mailster_freemius()->get_plan_name();
 				$license = mailster_freemius()->_get_license();
 
-				if ( $plan === 'legacy' && $license->expiration ) {
+				if ( $plan === 'legacy' && $license && $license->expiration ) {
 					echo mailster()->beacon( array( '640898cd16d5327537bcb740' ), true );
 				}
 

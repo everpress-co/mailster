@@ -13,7 +13,7 @@
 	<ul class="filter-links">
 		<li><a href="#" data-sort="installed"><?php _ex( 'Installed', 'templates', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="free"><?php _ex( 'Free', 'templates', 'mailster' ); ?></a></li>
-		<!-- <li><a href="#" data-sort="premium"><?php _ex( 'Premium', 'templates', 'mailster' ); ?></a></li> -->
+		<li><a href="#" data-sort="premium"><?php _ex( 'Premium', 'templates', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="featured"><?php _ex( 'Featured', 'templates', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="popular"><?php _ex( 'Popular', 'templates', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="new"><?php _ex( 'Latest', 'templates', 'mailster' ); ?></a></li>
