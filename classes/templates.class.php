@@ -35,6 +35,7 @@ class MailsterTemplates {
 		'requires'         => '3.0',
 		'is_default'       => null,
 		'is_supported'     => null,
+		'is_premium'       => null,
 		'author_profile'   => null,
 		'download'         => null,
 		'download_url'     => null,
@@ -85,6 +86,41 @@ class MailsterTemplates {
 	 */
 	public function get_url() {
 		return $this->url;
+	}
+
+
+
+	public function download_by_slug( $slug = null ) {
+
+		$templates = $this->get_templates( true );
+
+		if ( isset( $templates[ $slug ] ) ) {
+			return true;
+		}
+
+		$templates = $this->query(
+			array(
+				's'      => $slug,
+				'browse' => 'latest',
+				'type'   => 'slug',
+			)
+		);
+
+		if ( is_wp_error( $templates ) ) {
+			return $templates;
+		}
+
+		if ( empty( $templates['total'] ) ) {
+			return new WP_Error( 'not_found', esc_html__( 'Template not found', 'mailster' ) );
+		}
+
+		if ( isset( $templates['items'][ $slug ] ) ) {
+
+			return $this->download_template( $templates['items'][ $slug ]['download_url'], $slug );
+
+		}
+
+		return new WP_Error( 'not_found', esc_html__( 'Template not found', 'mailster' ) );
 	}
 
 
@@ -1187,7 +1223,7 @@ class MailsterTemplates {
 		return $result;
 	}
 
-	public function result_to_html( $result ) {
+	public function result_to_html( $result, $browse = null ) {
 
 		if ( empty( $result ) || empty( $result['items'] ) ) {
 			return '';
@@ -1196,7 +1232,12 @@ class MailsterTemplates {
 		ob_start();
 
 		foreach ( $result['items'] as $slug => $item ) {
-			include MAILSTER_DIR . 'views/templates/template.php';
+			if ( $browse === 'samples' ) {
+				add_filter( 'mailster_excerpt_length', array( $this, 'excerpt_length_for_sample' ), 999 );
+				include MAILSTER_DIR . 'views/templates/sample.php';
+			} else {
+				include MAILSTER_DIR . 'views/templates/template.php';
+			}
 		}
 
 		$html = ob_get_contents();
@@ -1205,6 +1246,11 @@ class MailsterTemplates {
 
 		return $html;
 	}
+
+	public function excerpt_length_for_sample() {
+		return 20;
+	}
+
 
 	public function get_template_data( $file ) {
 

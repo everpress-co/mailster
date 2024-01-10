@@ -31,6 +31,10 @@ if ( $block_editor ) {
 	<!-- /wp:mailster/homepage-context -->
 	
 	<!-- wp:mailster/homepage-context {"type":"profile"} -->
+	<!-- wp:heading {"level":3} -->
+	<h3 class="wp-block-heading">' . esc_html__( 'Update your preferences', 'mailster' ) . '</h3>
+	<!-- /wp:heading -->
+	
 	<!-- wp:mailster/form /-->
 	<!-- /wp:mailster/homepage-context -->
 	
@@ -61,7 +65,7 @@ if ( $block_editor ) {
 
 $mailster_homepage = array(
 	'post_title'   => esc_html__( 'Newsletter', 'mailster' ),
-	'post_status'  => 'publish',
+	'post_status'  => 'draft',
 	'post_type'    => 'page',
 	'post_name'    => esc_html_x( 'newsletter-signup', 'Newsletter Homepage page slug', 'mailster' ),
 	'post_content' => $content,

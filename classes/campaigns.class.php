@@ -1211,7 +1211,7 @@ class MailsterCampaigns {
 						}
 					} elseif ( ! in_array( $post->post_status, array( 'finished', 'notification', 'workflow' ) ) ) {
 
-							echo '<br><span class="mailster-icon warning"></span> ' . esc_html__( 'no lists selected', 'mailster' );
+						echo '<br><span class="mailster-icon warning"></span> ' . esc_html__( 'no lists selected', 'mailster' );
 					}
 					echo '<br>';
 				}

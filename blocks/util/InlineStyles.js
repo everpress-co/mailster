@@ -176,13 +176,13 @@ export default function InlineStyles() {
 	const style = HIDDEN
 		? {
 				pointerEvents: 'none',
-				width: screen.width,
+				width: window.innerWidth,
 				zIndex: -1,
 				position: 'absolute',
 				visibility: 'hidden',
 		  }
 		: {
-				width: screen.width,
+				width: window.innerWidth,
 				height: 400,
 				position: 'absolute',
 		  };

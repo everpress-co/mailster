@@ -124,6 +124,11 @@ class MailsterBlockForms {
 
 	public function maybe_preview() {
 
+		// use in setup wizard
+		if ( isset( $_GET['_mailster_setup'] ) && wp_verify_nonce( $_GET['_mailster_setup'], 'mailster_setup' ) ) {
+			add_filter( 'show_admin_bar', '__return_false' );
+		}
+
 		// enter preview mode
 		if ( ! isset( $_GET['mailster-block-preview'] ) ) {
 			return;

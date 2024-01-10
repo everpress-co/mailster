@@ -71,7 +71,8 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 	?>
 	
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
-		<?php if ( mailster()->is_bf2023() && ! mailster_freemius()->is_whitelabeled() ) : ?>
+
+	<?php if ( mailster()->is_bf2023() && ! mailster_freemius()->is_whitelabeled() ) : ?>
 			<?php
 				$discount      = '50%';
 				$checkout_args = array(
@@ -85,7 +86,8 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 				?>
 			<a class="panel-tab action" id="mailster-bf2023dash" href="<?php echo mailster()->checkout_url( $checkout_args ); ?>" data-offset=<?php echo absint( $offset ); ?> data-format="<?php echo esc_attr( $format ); ?>" title="<?php echo esc_attr( sprintf( __( 'Grab a new license for Mailster with %s off the first year!', 'mailster' ), $discount ) ); ?>"><?php printf( esc_html__( 'Get %s off for Black Friday!', 'mailster' ), $discount ); ?><?php echo '<span>' . esc_html( $display ) . '</span>'; ?></a>
 
-		<?php elseif ( mailster()->is_trial() ) : ?>
+		<?php elseif ( mailster()->is_trial() && get_option( 'mailster_setup' ) ) : ?>
+
 			<?php
 			$license = mailster_freemius()->_get_license();
 			$expires = $license ? strtotime( $license->expiration ) : 0;

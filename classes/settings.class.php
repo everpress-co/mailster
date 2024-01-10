@@ -39,19 +39,30 @@ class MailsterSettings {
 			mailster_redirect( 'post.php?post=' . absint( $homepage ) . '&action=edit' );
 			exit;
 
-		} else {
+		} elseif ( $id = $this->create_homepage() ) {
 
-			include MAILSTER_DIR . 'includes/static.php';
-
-			if ( $id = wp_insert_post( $mailster_homepage ) ) {
 				mailster_notice( esc_html__( 'Homepage created!', 'mailster' ), 'info', true );
-				mailster_update_option( 'homepage', $id );
-				mailster_remove_notice( 'no_homepage' );
-				mailster_remove_notice( 'wrong_homepage_status' );
 				mailster_redirect( 'post.php?post=' . absint( $id ) . '&action=edit&message=10' );
 				exit;
-			}
 		}
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function create_homepage() {
+		include MAILSTER_DIR . 'includes/static.php';
+
+		$id = wp_insert_post( $mailster_homepage );
+
+		mailster_update_option( 'homepage', $id );
+		mailster_remove_notice( 'no_homepage' );
+		mailster_remove_notice( 'wrong_homepage_status' );
+
+		return $id;
 	}
 
 
@@ -465,6 +476,7 @@ class MailsterSettings {
 	}
 
 
+
 	/**
 	 *
 	 *
@@ -816,6 +828,18 @@ class MailsterSettings {
 							mailster( 'geo' )->set_cron( 'weekly' );
 						} else {
 							mailster( 'geo' )->set_cron();
+						}
+					}
+
+					break;
+
+				case 'default_template':
+					if ( $value != $old ) {
+						// make sure to download the template if missing
+						$result = mailster( 'templates' )->download_by_slug( $value );
+						if ( is_wp_error( $result ) ) {
+							$this->add_settings_error( $result->get_error_message(), 'default_template' );
+							$value = $old;
 						}
 					}
 

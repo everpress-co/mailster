@@ -556,7 +556,9 @@ class MailsterMail {
 			$template_obj  = mailster( 'template', $template, $file );
 			$this->content = $template_obj->get( true, true );
 		} elseif ( $file ) {
+
 			$this->content = '{headline}<br>{content}';
+
 		} else {
 			$this->content = '{content}';
 		}

@@ -15,7 +15,7 @@
 			<br>&nbsp;&#x2514;&nbsp;<label><input type="hidden" name="mailster_options[track_location_update]" value=""><input type="checkbox" name="mailster_options[track_location_update]" value="1" <?php checked( mailster_option( 'track_location_update' ) ); ?>> <?php esc_html_e( 'Update location database automatically', 'mailster' ); ?></label>
 		</p>
 
-	<?php if ( ! mailster()->is( 'setup' ) && $geoip && file_exists( $geodb_file ) ) : ?>
+	<?php if ( $geoip && file_exists( $geodb_file ) ) : ?>
 		<?php
 		$ip = mailster_get_ip();
 		if ( mailster_is_local() ) {
