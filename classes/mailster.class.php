@@ -2910,7 +2910,7 @@ class Mailster {
 
 		$new_version = $this->plugin_info( 'new_version', $force );
 
-		return version_compare( $new_version, MAILSTER_VERSION, '>' );
+		return ! empty( $new_version ) ? version_compare( $new_version, MAILSTER_VERSION, '>' ) : false;
 	}
 
 	public function get_upgrade_url( $args = array() ) {
