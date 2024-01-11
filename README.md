@@ -187,6 +187,20 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.0 (Beta 8)
+
+- improved: welcome wizard
+- improved: automation triggers now running on the same process.
+- new: trigger "removed from list" and "tag removed".
+- new: option to convert autoresponder to automation.
+- new: offset for some time realted triggers.
+- change: page link triggers are now stored differently.
+- change: One Click unsubscribe (RFC 8058) now enabled by default (Gmail and Yahoo are releasing new email sender requirement in Feb 2024).
+- change: no longer use trigger post meta value for automation triggers.
+- added: premium templates are now aviailable to certain plans.
+- updated: Freemius SDK to 2.6.2.
+- updated: some general styles.
+
 ### 4.0.0 (Beta 7)
 
 - fixed: custom fields were not saved in some cases
@@ -268,6 +282,13 @@ Get professional development help from our expert support partner _Codeable_ for
 - improved: Autocompletion on conditions
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
+
+### 3.3.12
+
+- fixed: deprecated notice on subscribers detail page for php 8.2+
+- fixed: warning on activation if update state is not clear
+- fixed: warnings when trying to resize SVG images in email
+- improved: subscribers detail page
 
 ### 3.3.11
 

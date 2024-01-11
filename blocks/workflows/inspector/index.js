@@ -58,12 +58,6 @@ const selectBlockFromHash = () => {
 };
 
 function SettingsPanelPlugin() {
-	// const [meta, setMeta] = useEntityProp(
-	// 	'postType',
-	// 	'mailster-workflow',
-	// 	'meta'
-	// );
-
 	const {
 		selectBlock,
 		toggleBlockHighlight,

@@ -21,7 +21,6 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect, useRef, useState } from '@wordpress/element';
 
 import { useEntityProp } from '@wordpress/core-data';
-import * as Icons from '@wordpress/icons';
 import { BlockPreview } from '@wordpress/block-editor';
 
 /**
@@ -34,20 +33,8 @@ import { ExternalLink } from '@wordpress/components';
 export default function PatternModal(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 
-	const {
-		selectBlock,
-		toggleBlockHighlight,
-		flashBlock,
-		moveBlockToPosition,
-		removeBlocks,
-		resetBlocks,
-	} = useDispatch('core/block-editor');
-	const {
-		getBlockRootClientId,
-		getBlockIndex,
-		getBlocks,
-		__experimentalGetAllowedPatterns,
-	} = useSelect('core/block-editor');
+	const { resetBlocks } = useDispatch('core/block-editor');
+	const { __experimentalGetAllowedPatterns } = useSelect('core/block-editor');
 
 	const { isCleanNewPost } = useSelect('core/editor');
 
@@ -56,11 +43,6 @@ export default function PatternModal(props) {
 		'mailster-workflow',
 		'title'
 	);
-	// const [meta, setMeta] = useEntityProp(
-	// 	'postType',
-	// 	'mailster-workflow',
-	// 	'meta'
-	// );
 
 	const [patterns, setPatterns] = useState([]);
 
@@ -81,9 +63,6 @@ export default function PatternModal(props) {
 		const isScratchPattern = pattern.name == 'mailster-workflow/scratch';
 		resetBlocks(block);
 		!title && !isScratchPattern && setTitle(pattern.title || '');
-
-		//reset saved meta triggers
-		//setMeta({ trigger: [] });
 
 		showPatternModal(false);
 	};

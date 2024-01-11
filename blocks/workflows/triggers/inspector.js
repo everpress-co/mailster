@@ -23,12 +23,6 @@ import { useEntityProp } from '@wordpress/core-data';
 import { searchBlocks } from '../../util';
 
 export default function TriggersInspectorControls(props) {
-	// const [meta, setMeta] = useEntityProp(
-	// 	'postType',
-	// 	'mailster-workflow',
-	// 	'meta'
-	// );
-
 	const { selectBlock } = useDispatch('core/block-editor');
 
 	const allTriggers = useSelect((select) =>

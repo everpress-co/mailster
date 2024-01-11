@@ -23,30 +23,23 @@ import {
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 
-import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
+import { dateI18n } from '@wordpress/date';
 
 /**
  * Internal dependencies
  */
-import {
-	DELAY_OPTIONS,
-	IS_12_HOUR,
-	TIME_FORMAT,
-	DATE_FORMAT,
-} from './constants';
-import { set } from 'lodash';
+import { IS_12_HOUR, TIME_FORMAT, DATE_FORMAT } from './constants';
 import { Flex } from '@wordpress/components';
-import { FlexItem } from '@wordpress/components';
 
 export default function Selector(props) {
 	const { attributes, setAttributes, isAnniversary = false } = props;
-	const { date, field, offset = 0 } = attributes;
+	const { date, field, offset } = attributes;
 
 	const site = useSelect((select) => select('core').getSite());
 	const [popover, setPopover] = useState(false);
 	const [relative, setRelative] = useState('');
 	const [amount, setAmount] = useState(0);
-	const [unit, setUnit] = useState(0);
+	const [unit, setUnit] = useState(60);
 
 	const setDate = (newDate) => {
 		// store in UTC
@@ -79,8 +72,7 @@ export default function Selector(props) {
 	}, [offset]);
 	useEffect(() => {
 		if (field) return;
-
-		setUnit(0);
+		setUnit(60);
 		setAmount(0);
 	}, [field]);
 
@@ -275,7 +267,7 @@ export default function Selector(props) {
 									shiftStep={10}
 									value={amount}
 									onChange={(val) => {
-										setAmount(val);
+										setAmount(parseInt(val, 10));
 									}}
 								/>
 							</FlexBlock>
@@ -283,10 +275,9 @@ export default function Selector(props) {
 								<SelectControl
 									value={unit}
 									onChange={(val) => {
-										setUnit(val);
+										setUnit(parseInt(val, 10));
 									}}
 									options={[
-										{ value: 1, label: __('Seconds', 'mailster') },
 										{ value: 60, label: __('Minutes', 'mailster') },
 										{ value: 3600, label: __('Hours', 'mailster') },
 										{ value: 86400, label: __('Days', 'mailster') },

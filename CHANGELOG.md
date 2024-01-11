@@ -80,6 +80,13 @@
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
 
+### Version 3.3.12 (2024-01-10)
+
+- fixed: deprecated notice on subscribers detail page for php 8.2+
+- fixed: warning on activation if update state is not clear
+- fixed: warnings when trying to resize SVG images in email
+- improved: subscribers detail page
+
 ### Version 3.3.11 (2023-11-21)
 
 - fixed: deprecated method

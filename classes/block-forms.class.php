@@ -324,7 +324,19 @@ class MailsterBlockForms {
 	}
 
 
-	public function check_validity( $options = array() ) {
+	public function check_validity( $form_id, $options = array() ) {
+
+		/**
+		 * Pre-Filter the validity of the form. If false the form will not be displayed if true it will be displayed.
+		 *
+		 * @param bool $validity true if valid
+		 * @param int $form_id the form id
+		 * @param array $options the options
+		 */
+		$pre = apply_filters( 'mailster_block_form_pre_check_validity', null, $form_id, $options );
+		if ( null !== $pre ) {
+			return $pre;
+		}
 
 		$post_type = get_post_type();
 
@@ -399,7 +411,7 @@ class MailsterBlockForms {
 		}
 		foreach ( $this->forms['popup'] as $form_id => $options ) {
 
-			if ( ! $this->check_validity( $options ) ) {
+			if ( ! $this->check_validity( $form_id, $options ) ) {
 				continue;
 			}
 			// $options['id']      = $form_id;
@@ -1147,13 +1159,17 @@ class MailsterBlockForms {
 
 	public function render_form( $form, $options = array(), $check_validity = true ) {
 
-		if ( $check_validity && ! $this->check_validity( $options ) ) {
+		$form = get_post( $form );
+
+		if ( ! $form ) {
 			return '';
 		}
 
-		$form = get_post( $form );
-
 		if ( get_post_type( $form ) != 'mailster-form' ) {
+			return '';
+		}
+
+		if ( $check_validity && ! $this->check_validity( $form->ID, $options ) ) {
 			return '';
 		}
 
@@ -1419,6 +1435,8 @@ class MailsterBlockForms {
 			if ( isset( $blockattributes['align'] ) ) {
 				$args['classes'][] = 'align' . $blockattributes['align'];
 			}
+
+			// error_log( print_r( $form_block, true ) );
 
 			$embeded_style = '';
 			foreach ( $form_block['innerBlocks'] as $block ) {

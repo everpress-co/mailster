@@ -39,12 +39,6 @@ export default function TriggerInspectorControls(props) {
 	const { attributes, setAttributes, clientId } = props;
 	const { trigger, repeat } = attributes;
 
-	// const [meta, setMeta] = useEntityProp(
-	// 	'postType',
-	// 	'mailster-workflow',
-	// 	'meta'
-	// );
-
 	const rootClientId = useSelect((select) =>
 		select('core/block-editor').getBlockRootClientId(clientId)
 	);

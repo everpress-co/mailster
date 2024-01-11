@@ -33,11 +33,6 @@ export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const className = ['mailster-step-triggers', 'canvas-handle'];
 
-	// const [meta, setMeta] = useEntityProp(
-	// 	'postType',
-	// 	'mailster-workflow',
-	// 	'meta'
-	// );
 	const [triggerBlocks, setTriggerBlocks] = useState(0);
 
 	// const { trigger } = meta;
