@@ -843,6 +843,8 @@
 	border-bottom-color: #ddd;
 }
 .mailster-patterns-loader {
+	position: absolute;
+	height: 70%;
 }
 .mailster-patterns-explorer {
 	display: flex;

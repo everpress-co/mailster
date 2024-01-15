@@ -28,6 +28,7 @@ import Comment from '../inspector/Comment';
 import StepId from '../inspector/StepId';
 import EmailInspectorControls from './inspector';
 import { set } from 'lodash';
+import { searchBlocks } from '../../util';
 
 const ExampleEmail = () => {
 	return (
@@ -44,12 +45,12 @@ export default function Edit(props) {
 	const { id, campaign, subject, preheader, comment, isExample, name } =
 		attributes;
 	const className = [];
-
 	const ref = useRef();
+	const allEmails = searchBlocks('mailster-workflow/email');
 
-	const allEmails = useSelect((select) =>
-		select('mailster/automation').getEmails()
-	);
+	const currentEmailIndex = allEmails.findIndex((block) => {
+		return block.clientId === clientId;
+	});
 
 	const [preview_url, setPreviewUrl] = useState(false);
 
@@ -85,15 +86,13 @@ export default function Edit(props) {
 	useEffect(() => {
 		if (!name)
 			setAttributes({
-				name: sprintf(__('Email #%s', 'mailster'), allEmails.length + 1),
+				name: sprintf(__('Email #%s', 'mailster'), currentEmailIndex + 1),
 			});
 	}, [allEmails]);
 
-	//reset cache if one of the attributes changes
+	// reset cache if one of the attributes changes
 	useEffect(() => {
-		dispatch('mailster/automation').invalidateResolutionForStoreSelector(
-			'getEmails'
-		);
+		invalidateResolutionForStoreSelector('getEmails');
 	}, [campaign, name, id]);
 
 	!campaign && !isExample && className.push('mailster-step-incomplete');
@@ -125,6 +124,11 @@ export default function Edit(props) {
 	};
 
 	const displaySubject = subject || campaignObj?.subject;
+	const preview = preview_url ? (
+		<iframe src={preview_url} loading="lazy" />
+	) : (
+		<ExampleEmail />
+	);
 
 	return (
 		<>
@@ -147,8 +151,7 @@ export default function Edit(props) {
 							{displaySubject && (
 								<div className="email-preview-subject">{displaySubject}</div>
 							)}
-							{preview_url && <iframe src={preview_url} loading="lazy" />}
-							{!preview_url && <ExampleEmail />}
+							{preview}
 						</div>
 					</CardMedia>
 

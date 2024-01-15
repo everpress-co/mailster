@@ -42,6 +42,7 @@ import {
 } from '../../util';
 
 import { TIME_FORMAT, DATE_FORMAT } from './constants';
+import { Tooltip } from '@wordpress/components';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
@@ -146,10 +147,18 @@ export default function Edit(props) {
 				<Card className="mailster-step">
 					<QueueBadge {...props} />
 					<CardBody>
-						{repeat != 0 && (
-							<div className="mailster-trigger-repeats">
-								{repeat == -1 ? '∞' : sprintf('%d ×', repeat + 1)}
-							</div>
+						{repeat != 1 && (
+							<Tooltip
+								text={
+									repeat == -1
+										? __('repeat forever', 'mailster')
+										: sprintf(__('repeat %d times', 'mailster'), repeat)
+								}
+							>
+								<div className="mailster-trigger-repeats">
+									{repeat == -1 ? '∞' : sprintf('%d ×', repeat)}
+								</div>
+							</Tooltip>
 						)}
 						{trigger && <div className="mailster-step-label">{label}</div>}
 						<div

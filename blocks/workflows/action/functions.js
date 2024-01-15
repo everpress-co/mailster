@@ -6,8 +6,8 @@
  * WordPress dependencies
  */
 
-import { sprintf, __, _n } from '@wordpress/i18n';
-import { useSelect } from '@wordpress/data';
+import { __, _n } from '@wordpress/i18n';
+import { select } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -15,9 +15,7 @@ import { useSelect } from '@wordpress/data';
 import { formatLists, formatTags, formatField } from '../../util/index.js';
 
 export function getAction(id) {
-	const allActions = useSelect((select) =>
-		select('mailster/automation').getActions()
-	);
+	const allActions = select('mailster/automation').getActions();
 
 	if (!allActions) {
 		return null;

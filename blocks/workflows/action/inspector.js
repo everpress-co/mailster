@@ -33,6 +33,7 @@ import TagSelector from '../inspector/TagSelector';
 import FieldSelector from '../inspector/FieldSelector';
 import WebHookSelector from '../inspector/WebHookSelector';
 import { HelpBeacon } from '../../util';
+import { getAction } from './functions.js';
 
 export default function ActionInspectorControls(props) {
 	const { attributes, setAttributes } = props;
@@ -44,16 +45,6 @@ export default function ActionInspectorControls(props) {
 
 	const setAction = (action) => {
 		setAttributes({ action: action.id });
-	};
-
-	const getAction = (id) => {
-		if (!allActions) {
-			return null;
-		}
-		const action = allActions.filter((action) => {
-			return action.id == id;
-		});
-		return action.length ? action[0] : null;
 	};
 
 	const actionObj = getAction(action);

@@ -30,7 +30,7 @@
 		},
 		"repeat": {
 			"type": "number",
-			"default": 0
+			"default": 1
 		},
 		"lists": {
 			"type": "array"

@@ -31,13 +31,14 @@ import TriggerSelector from './TriggerSelector';
 import Conditions from '../inspector/Conditions.js';
 
 import { searchBlock, searchBlocks } from '../../util';
+import { Flex } from '@wordpress/components';
 
 const MIN_TRIGGER_COUNT = 1;
 const MAX_TRIGGER_COUNT = 5;
 
 export default function TriggerInspectorControls(props) {
 	const { attributes, setAttributes, clientId } = props;
-	const { trigger, repeat } = attributes;
+	const { trigger, repeat, run } = attributes;
 
 	const rootClientId = useSelect((select) =>
 		select('core/block-editor').getBlockRootClientId(clientId)
@@ -120,22 +121,13 @@ export default function TriggerInspectorControls(props) {
 							<PanelRow>
 								<h3>{__('Repeats', 'mailster')}</h3>
 							</PanelRow>
-
 							<BaseControl
 								help={__(
 									'Define how often this workflow with this trigger can get triggered for each subscriber.',
 									'mailster'
 								)}
-							>
-								<ToggleControl
-									onChange={(val) =>
-										setAttributes({
-											repeat: val ? -1 : 0,
-										})
-									}
-									checked={repeat != 0}
-									label={__('Subscribers can repeat workflow', 'mailster')}
-								/>
+							></BaseControl>
+							<BaseControl>
 								{repeat != 0 && (
 									<ToggleControl
 										onChange={(val) =>
@@ -144,7 +136,7 @@ export default function TriggerInspectorControls(props) {
 											})
 										}
 										checked={repeat && repeat == -1}
-										label={__('Unlimited', 'mailster')}
+										label={__('Run unlimited times', 'mailster')}
 									/>
 								)}
 								{repeat > 0 && (
@@ -154,12 +146,12 @@ export default function TriggerInspectorControls(props) {
 										}
 										value={repeat}
 										labelPosition="edge"
-										label={__('Times to repeat', 'mailster')}
-										min={-1}
+										label={__('Number of runs', 'mailster')}
+										min={1}
 									/>
 								)}
 							</BaseControl>
-							{repeat != 0 && (
+							{repeat != 1 && (
 								<BaseControl>
 									<Tip>
 										{__(
