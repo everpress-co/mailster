@@ -47,6 +47,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/helpmenu.class.php';
 		require_once MAILSTER_DIR . 'classes/geo.class.php';
 		require_once MAILSTER_DIR . 'classes/privacy.class.php';
+		require_once MAILSTER_DIR . 'classes/health.class.php';
 		require_once MAILSTER_DIR . 'classes/security.class.php';
 		require_once MAILSTER_DIR . 'classes/export.class.php';
 		require_once MAILSTER_DIR . 'classes/empty.class.php';
@@ -82,6 +83,7 @@ class Mailster {
 				'helpmenu'     => new MailsterHelpmenu(),
 				'geo'          => new MailsterGeo(),
 				'privacy'      => new MailsterPrivacy(),
+				'health'       => new MailsterHealth(),
 				'security'     => new MailsterSecurity(),
 				'export'       => new MailsterExport(),
 				'empty'        => new MailsterEmpty(),

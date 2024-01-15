@@ -1,3 +1,7 @@
+### Version 3.3.13 (2024-01-15)
+
+- new: Email Health Check: check your delivery method to comply with upcoming changes to Gmail and Yahoo
+
 ### Version 3.3.12 (2024-01-10)
 
 - fixed: deprecated notice on subscribers detail page for php 8.2+

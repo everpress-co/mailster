@@ -105,8 +105,9 @@
 		<td>
 		<div class="mailster-testmail">
 			<input type="text" value="<?php echo esc_attr( $test_email ); ?>" autocomplete="off" class="form-input-tip mailster-testmail-email">
-			<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest" data-role="basic">
+			<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest" data-role="basic">			
 			<div class="loading test-ajax-loading"></div>
+			<br><a href="<?php echo admin_url( 'admin.php?page=mailster_health' ); ?>" class="button button-link"><?php esc_html_e( 'Email Health Check', 'mailster' ); ?></a>
 		</div>
 		</td>
 	</tr>

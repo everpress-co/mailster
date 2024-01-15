@@ -64,7 +64,8 @@ if ( mailster()->is_verified() ) {
 		<a href="<?php echo mailster_url( 'https://docs.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co' ); ?>" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
 		<a href="<?php echo mailster_freemius()->contact_url(); ?>" class="mailster-support"><?php esc_html_e( 'Get Help', 'mailster' ); ?></a> |
-		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
+		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a> |
+		<a href="<?php echo admin_url( 'admin.php?page=mailster_health' ); ?>"><?php esc_html_e( 'Health Check', 'mailster' ); ?></a>
 	</dd>
 </dl>
 <?php if ( current_user_can( 'install_languages' ) && $set = mailster( 'translations' )->get_translation_set() ) : ?>
