@@ -372,6 +372,8 @@ class MailsterNotification {
 			$subscriber = null;
 		}
 
+		$return = null;
+
 		ob_start();
 
 		if ( method_exists( $this, 'template_' . $template ) ) {
@@ -656,6 +658,11 @@ class MailsterNotification {
 
 		</table>
 		<?php
+	}
+
+
+	private function template_health_check() {
+		esc_html_e( 'This is a health check email from Mailster', 'mailster' );
 	}
 
 

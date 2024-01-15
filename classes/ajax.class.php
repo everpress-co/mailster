@@ -17,6 +17,7 @@ class MailsterAjax {
 		'precheck_agree'              => 'edit_newsletters',
 		'search_subscribers'          => 'mailster_manage_subscribers',
 		'send_test'                   => 'edit_newsletters',
+		'health_check'                => 'edit_newsletters',
 		'get_list_counts'             => 'edit_newsletters',
 		'get_totals'                  => 'edit_newsletters',
 		'get_totals_list'             => 'edit_newsletters',
@@ -677,13 +678,13 @@ class MailsterAjax {
 				}
 			}
 
-			foreach ( $receivers as $to ) {
+			foreach ( $receivers as $receiver ) {
 
 				$names = null;
 
 				$mail = mailster( 'mail' );
 
-				$mail->to           = $to;
+				$mail->to           = $receiver;
 				$mail->subject      = $subject;
 				$mail->from         = $from;
 				$mail->from_name    = $from_name;
@@ -731,7 +732,7 @@ class MailsterAjax {
 
 				// check for subscriber by mail
 				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) ) {
-					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true, true );
+					$subscriber = mailster( 'subscribers' )->get_by_mail( $receiver, true, true );
 				}
 
 				if ( $subscriber ) {
@@ -833,6 +834,36 @@ class MailsterAjax {
 		if ( ! $success ) {
 			wp_send_json_error( $return );
 		}
+
+		wp_send_json_success( $return );
+	}
+
+
+
+	private function health_check() {
+
+		$this->ajax_nonce(
+			json_encode(
+				array(
+					'success' => false,
+					'msg'     => esc_html__( 'Nonce invalid! Please reload site.', 'mailster' ),
+				)
+			)
+		);
+
+		$return = array();
+
+		$success = mailster( 'health' )->send_test();
+
+		$return['msg'] = ! is_wp_error( $success )
+			? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
+			: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<br><strong>' . $success->get_error_message() . '</strong>';
+
+		if ( is_wp_error( $success ) ) {
+			wp_send_json_error( $return );
+		}
+
+		$return['id'] = $success;
 
 		wp_send_json_success( $return );
 	}
