@@ -15,7 +15,6 @@ mailster = (function (mailster, $, window, document) {
 		$iframebody,
 		$hx,
 		$hy,
-		started = 0,
 		images = true,
 		structure = false;
 
@@ -105,7 +104,6 @@ mailster = (function (mailster, $, window, document) {
 		loader(true);
 		status('sending');
 		runbtn.prop('disabled', true);
-		started = 0;
 		$('.precheck-status-icon').html('');
 
 		mailster.util.ajax(

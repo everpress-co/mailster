@@ -283,6 +283,10 @@ Get professional development help from our expert support partner _Codeable_ for
 - deprecated: legacy forms
 - The Newsletter Homepage is now based on blocks and block forms
 
+### 3.3.13
+
+- new: Email Health Check: check your delivery method to comply with upcoming changes to Gmail and Yahoo
+
 ### 3.3.12
 
 - fixed: deprecated notice on subscribers detail page for php 8.2+
