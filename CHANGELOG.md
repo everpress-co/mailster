@@ -1,3 +1,22 @@
+### Version 4.0.0 Beta 8 (2024-01-17)
+
+- improved: Welcome Wizard
+- improved: automation triggers now running on the same process.
+- new: Email Health Check: check your delivery method to comply with upcoming changes to Gmail and Yahoo
+- new: trigger "removed from list" and "tag removed".
+- new: option to convert autoresponder to automation.
+- new: offset for some time realted triggers.
+- change: page link triggers are now stored differently.
+- change: One Click unsubscribe (RFC 8058) now enabled by default (Gmail and Yahoo are releasing new email sender requirement in Feb 2024).
+- change: no longer use trigger post meta value for automation triggers.
+- added: premium templates are now aviailable to certain plans.
+- updated: Freemius SDK to 2.6.2.
+- updated: some general styles.
+- fixed: deprecated notice on subscribers detail page for php 8.2+
+- fixed: warning on activation if update state is not clear
+- fixed: warnings when trying to resize SVG images in email
+- improved: subscribers detail page
+
 ### Version 4.0.0 Beta 7 (2023-12-11)
 
 - fixed: custom fields were not saved in some cases

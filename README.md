@@ -189,8 +189,9 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### 4.0.0 (Beta 8)
 
-- improved: welcome wizard
+- improved: Welcome Wizard
 - improved: automation triggers now running on the same process.
+- new: Email Health Check: check your delivery method to comply with upcoming changes to Gmail and Yahoo
 - new: trigger "removed from list" and "tag removed".
 - new: option to convert autoresponder to automation.
 - new: offset for some time realted triggers.
@@ -200,6 +201,10 @@ Get professional development help from our expert support partner _Codeable_ for
 - added: premium templates are now aviailable to certain plans.
 - updated: Freemius SDK to 2.6.2.
 - updated: some general styles.
+- fixed: deprecated notice on subscribers detail page for php 8.2+
+- fixed: warning on activation if update state is not clear
+- fixed: warnings when trying to resize SVG images in email
+- improved: subscribers detail page
 
 ### 4.0.0 (Beta 7)
 
