@@ -673,17 +673,12 @@ if ( $old_version ) {
 		case '3.3.10':
 		case '3.3.11':
 		case '3.3.12':
-
-			
-
-
 		default:
-
 			// if date is before april 2023
 			if ( strtotime( '2023-04-01' ) < time() ) {
 				$msg  = '<h2>' . esc_html__( 'Check your Email Health now!', 'mailster' ) . '</h2>';
 				$msg .= '<p>' . esc_html__( 'The Email Health Check ensures your current delivery method is properly configured. It checks your server\'s authentication, including SPF, DKIM, and DMARC, to verify adherence to best practices in email delivery.', 'mailster' ) . '</p>';
-				$msg .= '<p><a href="' .admin_url( 'admin.php?page=mailster_health' ) . '" class="button button-primary">' . esc_html__( 'Run a Health Check', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://mailster.co/blog/navigating-the-new-bulk-sender-requirements-at-yahoo-and-gmail/', array( 'utm_term' => 'health check notice' ) ) . '" class="button button-link external">' . esc_html__( 'Read the Blog Post', 'mailster' ) . '</a></p>';
+				$msg .= '<p><a href="' . admin_url( 'admin.php?page=mailster_health' ) . '" class="button button-primary">' . esc_html__( 'Run a Health Check', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://mailster.co/blog/navigating-the-new-bulk-sender-requirements-at-yahoo-and-gmail/', array( 'utm_term' => 'health check notice' ) ) . '" class="button button-link external">' . esc_html__( 'Read the Blog Post', 'mailster' ) . '</a></p>';
 
 				mailster_notice( $msg, 'info', WEEK_IN_SECONDS, 'email_health_check', true );
 			}
