@@ -1192,7 +1192,7 @@ class MailsterCampaigns {
 					}
 				} else {
 					$status = get_post_status_object( $post->post_status );
-					echo $status->label;
+					echo esc_html( $status->label );
 				}
 
 				echo '<div class="campaign-conditions ' . $active . '">';
