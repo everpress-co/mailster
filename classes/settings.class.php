@@ -833,18 +833,6 @@ class MailsterSettings {
 
 					break;
 
-				case 'default_template':
-					if ( $value != $old ) {
-						// make sure to download the template if missing
-						$result = mailster( 'templates' )->download_by_slug( $value );
-						if ( is_wp_error( $result ) ) {
-							$this->add_settings_error( $result->get_error_message(), 'default_template' );
-							$value = $old;
-						}
-					}
-
-					break;
-
 				case 'homepage':
 					if ( $old != $value ) {
 						mailster_remove_notice( 'no_homepage' );

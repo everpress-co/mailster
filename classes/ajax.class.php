@@ -2835,6 +2835,17 @@ class MailsterAjax {
 				}
 
 				break;
+			case 'templates':
+				if ( isset( $data['mailster_options'] ) && isset( $data['mailster_options']['default_template'] ) ) {
+
+					$template = $data['mailster_options']['default_template'];
+					$result   = mailster( 'templates' )->download_by_slug( $template );
+					if ( ! is_wp_error( $result ) ) {
+						$mailster_options = wp_parse_args( $data['mailster_options'], $mailster_options );
+						update_option( 'mailster_options', $mailster_options );
+					}
+				}
+				break;
 
 			case 'finish':
 				// maybe
