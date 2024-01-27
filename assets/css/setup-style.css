@@ -149,6 +149,9 @@ div.fs-notice.promotion {
 #mailster-setup #step_start .mailster-setup-step-body {
 	padding-right: 20px;
 }
+.rtl #mailster-setup #step_start .mailster-setup-step-body {
+	padding-right: 40px;
+}
 
 #mailster-setup .mailster-setup-step-buttons {
 	text-align: right;
@@ -240,8 +243,12 @@ section {
 	border-radius: 5px;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
+.rtl #step_delivery section img {
+	float: left;
+}
 #step_delivery section.current img {
 	margin-right: 20px;
+	margin-left: 20px;
 }
 #step_delivery section {
 }
@@ -332,6 +339,9 @@ section {
 	scale: 0.4;
 	transform-origin: top left;
 	overflow: hidden;
+}
+.rtl .mailster-homepage-preview .mailster-homepage-preview-browser {
+	transform-origin: top right;
 }
 .mailster-homepage-preview-small .mailster-homepage-preview-browser {
 	width: 500%;
@@ -474,6 +484,9 @@ section {
 	margin-right: 20px;
 	margin: 0;
 }
+.rtl .mailster-template-preview .mailster-template-preview-browser {
+	transform-origin: top right;
+}
 .mailster-template-preview header {
 	font-size: 15px;
 	font-weight: 600;
@@ -504,6 +517,10 @@ section {
 	right: 15px;
 	position: absolute;
 }
+.rtl .template.is-premium .mailster-template-preview header:after {
+	right: auto;
+	left: 15px;
+}
 .mailster-template-preview:hover,
 .template.active .mailster-template-preview {
 	_filter: grayscale(0%);
@@ -523,7 +540,11 @@ section {
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
 .template.active .theme-badge {
-	display: inline;
+	float: right;
+	display: inline-block;
+}
+.rtl .template.active .theme-badge {
+	float: left;
 }
 #mailster-setup .subscribe iframe {
 	margin-left: -5px;
