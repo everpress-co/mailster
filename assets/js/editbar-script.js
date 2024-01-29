@@ -709,15 +709,33 @@ mailster = (function (mailster, $, window, document) {
 					label = buttonlabel.val();
 
 				if (!wrap.length) {
-					current.element.replaceWith(
-						'<table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' +
-							link +
-							'" editable label="' +
-							label +
-							'">' +
-							label +
-							'</a></td></tr></table>'
-					);
+					// TODO: content replace is maybe not working if the label of the button is also in the HTML comments
+					// maybe parese the content for commetns fist
+
+					// check if it's a textbutton or a a button
+					var a = $(current.element[0].outerHTML);
+					// get the button content
+					var buttoncontent = mailster.util.trim(current.element.text());
+					// the innerHTML of the button
+					var innerHTML = current.element[0].innerHTML;
+					// replace the button content with the label
+					var inner = innerHTML.replace(buttoncontent, label);
+					// build the link
+					var linkwrap = $(a.empty()[0].outerHTML)
+						.html(inner)
+						.attr('href', link);
+
+					current.element.replaceWith(linkwrap);
+
+					// current.element.replaceWith(
+					// 	'<table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' +
+					// 		link +
+					// 		'" editable label="' +
+					// 		label +
+					// 		'">' +
+					// 		label +
+					// 		'</a></td></tr></table>'
+					// );
 				} else {
 					if (current.element[0] == wrap[0]) {
 						current.element = wrap.find('a');
@@ -1048,7 +1066,7 @@ mailster = (function (mailster, $, window, document) {
 			var pos;
 			buttonlink.val(link);
 			if ((pos = (link + '').indexOf('USERNAME', 0)) != -1) {
-				buttonlink.focus();
+				buttonlink.trigger('focus');
 				selectRange(buttonlink[0], pos, pos + 8);
 			}
 		}
@@ -1310,7 +1328,10 @@ mailster = (function (mailster, $, window, document) {
 				});
 			} else {
 				$('#button-type-bar').find('a').eq(0).trigger('click');
-				buttonlabel.val(mailster.util.trim(el.text())).focus().select();
+				buttonlabel
+					.val(mailster.util.trim(el.text()))
+					.trigger('focus')
+					.trigger('select');
 				buttonlink.val(current.element.attr('href'));
 				bar.find('ul.buttons').hide();
 			}
@@ -1517,7 +1538,7 @@ mailster = (function (mailster, $, window, document) {
 
 				bar.show(0, function () {
 					if (type == 'single') {
-						bar.find('input').focus().select();
+						bar.find('input').trigger('focus').trigger('select');
 					} else if (type == 'img') {
 						imagewidth.val(Math.round(current.width));
 						imageheight.val(Math.round(current.height));
@@ -1649,7 +1670,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function loadSingleLink() {
 		$('#single-link').slideDown(200);
-		singlelink.focus().select();
+		singlelink.trigger('focus').trigger('select');
 		assetstype = 'link';
 		assetslist = base.find('.postlist').eq(0);
 		loadPosts();
@@ -1673,7 +1694,7 @@ mailster = (function (mailster, $, window, document) {
 		) {
 			imageurl.val(currentimage.src);
 		}
-		imageurl.focus().select();
+		imageurl.trigger('focus').trigger('select');
 		return false;
 	}
 

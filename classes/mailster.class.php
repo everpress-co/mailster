@@ -1199,15 +1199,13 @@ class Mailster {
 
 		$content = $pre_stuff . $content;
 
-		// en_US => en
-		$lang  = substr( get_bloginfo( 'language' ), 0, 2 );
 		$regex = '/<html([^>]*?)lang=(\\\\)?"(.*?)(\\\\)?" /';
 
 		// add language tag for accessibility
 		if ( preg_match( $regex, $content, $matches ) ) {
 			$content = preg_replace( $regex, '<html$1', $content );
 		}
-		$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
+		$content = str_replace( '<html ', '<html lang="{lang}" ', $content );
 		if ( $body_only ) {
 			preg_match( '#<body([^>]*)>(.*)<\/body>#is', $content, $matches );
 			if ( ! empty( $matches ) ) {

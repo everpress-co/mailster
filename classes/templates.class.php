@@ -860,7 +860,9 @@ class MailsterTemplates {
 		}
 
 		$hash = hash( 'crc32', md5_file( $filedir ) );
-
+		if ( is_rtl() ) {
+			$hash .= '-rtl';
+		}
 		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );
 
 		$screenshot_folder         = $screenshot_folder_base . $slug . '/';
@@ -910,7 +912,7 @@ class MailsterTemplates {
 			mailster( 'helper' )->mkdir( $screenshot_folder, true );
 		}
 
-		$request_url = 'https://api.mailster.co/module/v2/';
+		$request_url = 'https://api.mailster.co/module/v3/';
 
 		$file_size = strlen( $raw );
 		$hash      = md5( $raw );
@@ -921,14 +923,15 @@ class MailsterTemplates {
 		}
 
 		$headers = array(
-			'accept'             => 'application/json',
-			'x-mailster-length'  => $file_size,
-			'x-mailster-hash'    => $hash,
-			'x-mailster-version' => MAILSTER_VERSION,
-			'x-mailster-site'    => get_bloginfo( 'url' ),
-			'x-mailster-license' => mailster()->get_license(),
-			'x-mailster-url'     => $fileuri,
-			'x-mailster-custom'  => $custom_modules,
+			'accept'               => 'application/json',
+			'x-mailster-length'    => $file_size,
+			'x-mailster-hash'      => $hash,
+			'x-mailster-version'   => MAILSTER_VERSION,
+			'x-mailster-site'      => get_bloginfo( 'url' ),
+			'x-mailster-license'   => mailster()->get_license(),
+			'x-mailster-url'       => $fileuri,
+			'x-mailster-custom'    => $custom_modules,
+			'x-mailster-direction' => is_rtl() ? 'rtl' : 'ltr',
 		);
 
 		$response = wp_remote_get(
@@ -1323,8 +1326,6 @@ class MailsterTemplates {
 			$template_data['slug'] = basename( dirname( $file ) );
 		}
 
-		$template_data['label'] = str_replace( ' rtl', ' (RTL)', $template_data['label'] );
-
 		if ( isset( $template_data['uri'] ) ) {
 			unset( $template_data['uri'] );
 		}
@@ -1360,7 +1361,9 @@ class MailsterTemplates {
 			$file = $t->path . '/' . $t->slug . '/' . basename( $template['src'] );
 
 			$hash = hash( 'crc32', md5_file( $file ) );
-
+			if ( is_rtl() ) {
+				$hash .= '-rtl';
+			}
 			$screenshot_modules_folder = $screenshot_folder_base . $template['slug'] . '/modules/' . $hash . '/';
 			foreach ( $modules as $i => $modules ) {
 				if ( ! file_exists( $screenshot_modules_folder . $i . '.jpg' ) ) {

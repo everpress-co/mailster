@@ -29,6 +29,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.body = $('body');
 
 	$(window).on('load', function () {
+		$('[dir="{dir}"]').attr('dir', mailster.isrtl ? 'rtl' : 'ltr');
 		mailster.editor.updateElements();
 
 		mailster.editor.$.html.removeClass('mailster-loading');
@@ -37,16 +38,11 @@ mailster = (function (mailster, $, window, document) {
 				event.preventDefault();
 			})
 			.on('click', function (event) {
+				var closest = event.target.closest('module');
 				mailster.modules.selected &&
-					mailster.modules.selected.removeAttr('active');
-			})
-			.on('click', 'module', function (event) {
-				if ('MODULE' == event.target.nodeName) {
-					var module = $(this);
-					event.stopPropagation();
-					if (mailster.modules.selected[0] != module[0]) {
-						mailster.trigger('selectModule', module);
-					}
+					mailster.modules.selected.removeAttr('selected');
+				if (closest) {
+					mailster.trigger('selectModule', $(closest));
 				}
 			})
 			.on('click', 'button.addbutton', function () {
@@ -125,7 +121,9 @@ mailster = (function (mailster, $, window, document) {
 
 		clone
 			.find('single, multi, module, modules, buttons')
-			.removeAttr('contenteditable spellcheck id dir style class active');
+			.removeAttr(
+				'contenteditable spellcheck id dir style class active active selected'
+			);
 
 		return mailster.util.trim(
 			clone
@@ -709,10 +707,14 @@ mailster = (function (mailster, $, window, document) {
 						tmpl = $this.find('.textbutton').last();
 					} else if ($this.find('img').length) {
 						tmpl = $this.find('a[editable]').last();
+					} else if ($this.find('a[editable]').length) {
+						tmpl = $this.find('a[editable]').last();
 					} else {
 						tmpl = $('<a href="" editable label="Button"></a>');
 					}
-					tmpl = $('<div/>').text(encodeURIComponent(tmpl[0].outerHTML)).html();
+
+					//tmpl = $('<div/>').text(encodeURIComponent(tmpl[0].outerHTML)).html();
+					tmpl = encodeURIComponent(tmpl[0].outerHTML);
 				}
 
 				$this.attr('data-tmpl', tmpl).data('tmpl', tmpl);
@@ -777,10 +779,10 @@ mailster = (function (mailster, $, window, document) {
 			return;
 		}
 		if (mailster.modules.selected) {
-			mailster.modules.selected.removeAttr('active');
+			mailster.modules.selected.removeAttr('selected');
 		}
 		mailster.modules.selected = module;
-		mailster.modules.selected.attr('active', true);
+		mailster.modules.selected.attr('selected', true);
 	}
 
 	function upload() {

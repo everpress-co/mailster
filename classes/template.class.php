@@ -27,7 +27,6 @@ class MailsterTemplate {
 		'version'     => 'Version',
 	);
 
-	private $rtl;
 	private $custom_modules;
 
 	/**
@@ -38,7 +37,6 @@ class MailsterTemplate {
 	 */
 	public function __construct( $slug = null, $file = 'index.html', $custom_modules = false ) {
 
-		$this->rtl  = is_rtl();
 		$this->file = basename( $file );
 
 		$this->path = MAILSTER_UPLOAD_DIR . '/templates';
@@ -147,13 +145,6 @@ class MailsterTemplate {
 		$this->templateurl  = $this->url . '/' . $slug;
 
 		$file = $this->templatepath . '/' . $this->file;
-
-		if ( $this->rtl ) {
-			$rtlfile = str_replace( '.html', '-rtl.html', $file );
-			if ( file_exists( $rtlfile ) ) {
-				$file = $rtlfile;
-			}
-		}
 
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
@@ -531,7 +522,9 @@ class MailsterTemplate {
 		$content = $this->module_parser( $content );
 
 		$hash = hash( 'crc32', md5( $content ) );
-
+		if ( is_rtl() ) {
+			$hash .= '-rtl';
+		}
 		$filename = strtolower( sanitize_file_name( $name ) ) . '-' . $hash . '.html';
 
 		if ( mailster( 'helper' )->file_put_contents( $this->templatepath . '/modules/' . $filename, $content ) ) {
@@ -769,7 +762,9 @@ class MailsterTemplate {
 		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $this->slug . '/' . $this->file;
 
 		$hash = hash( 'crc32', md5_file( $filedir ) );
-
+		if ( is_rtl() ) {
+			$hash .= '-rtl';
+		}
 		$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/';
 
 		$file = $this->slug . '/modules/' . $hash . '/' . $id . '.jpg';
@@ -1267,7 +1262,9 @@ class MailsterTemplate {
 		$fileuri = MAILSTER_UPLOAD_URI . '/templates/' . $slug . '/' . $file;
 
 		$hash = hash( 'crc32', md5_file( $filedir ) );
-
+		if ( is_rtl() ) {
+			$hash .= '-rtl';
+		}
 		$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash;
 		$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/modules/' . $hash;
 

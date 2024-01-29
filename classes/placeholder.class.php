@@ -208,6 +208,9 @@ class MailsterPlaceholder {
 			'minute'  => $time[4],
 			'unsub'   => '<a href="{unsublink}">{unsublinktext}</a>',
 			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
+			'lang'    => substr( get_bloginfo( 'language' ), 0, 2 ),
+			'dir'     => is_rtl() ? 'rtl' : 'ltr',
+
 		);
 
 		if ( $campaign_id ) {
@@ -1166,10 +1169,12 @@ class MailsterPlaceholder {
 		$post_type    = $post->post_type;
 		$post_content = $post->post_content;
 
+		// author related tags
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
 			$extra  = $author;
 
+			// post meta related tags (e.g meta[meta_key])
 		} elseif ( 0 === strpos( $what, 'meta[' ) ) {
 			preg_match( '#meta\[(.*)\]#i', $what, $metakey );
 			if ( ! isset( $metakey[1] ) ) {
@@ -1185,27 +1190,43 @@ class MailsterPlaceholder {
 			$what  = 'meta';
 			$extra = $metakey;
 
-		} elseif ( 0 === strpos( $what, 'category' ) ) {
-			preg_match( '#category\[(.*)\]#i', $what, $category );
-			if ( isset( $category[1] ) ) {
-				$category = trim( $category[1] );
+			// categories related tags (e.g categories[taxonomy])
+		} elseif ( 0 === strpos( $what, 'categories' ) || 0 === strpos( $what, 'category' ) ) {
+
+			// if set in the post object use this
+			if ( is_string( $post->post_category ) ) {
+				$extra = is_string( $post->post_category ) ? array( $post->post_category ) : $post->post_category;
 			} else {
-				$category = 'category';
-			}
-			$categories = is_string( $post->post_category ) ? $post->post_category : get_the_term_list( $post->ID, $category, '', ', ' );
+				preg_match( '#(category|categories)(_strip)?\[(.*)\]#i', $what, $matches );
+				// check taxonomy type
+				if ( isset( $matches[2] ) ) {
+					$taxonomy = trim( $matches[3] );
+					$what     = $matches[1] . $matches[2];
+				} else {
+					$taxonomy = 'category';
+				}
 
-			if ( is_wp_error( $categories ) ) {
-				return null;
-			}
+				// get all terms of the taxonomy
+				$terms = get_the_term_list( $post->ID, $taxonomy, '', ', ' );
 
-			if ( 'category_strip' != $what ) {
-				$what = 'category';
-			}
-			if ( is_array( $categories ) ) {
-				$categories = implode( ', ', $categories );
-			}
-			$extra = $categories;
+				// no terms or error
+				if ( ! $terms || is_wp_error( $terms ) ) {
+					return null;
+				}
 
+				// convert to array
+				$extra = explode( ', ', $terms );
+
+				// only first
+				if ( 0 === strpos( $what, 'category' ) ) {
+					// get all terms of the taxonomy
+					$extra = array( $extra[0] );
+				}
+			}
+			// convert to string
+			$terms = implode( ', ', $extra );
+
+			// with format (e.g date[format])
 		} elseif ( false !== strpos( $what, '[' ) ) {
 			preg_match( '#(.*)\[(.*)\]#i', $what, $withformat );
 			if ( ! isset( $withformat[1] ) ) {
@@ -1305,10 +1326,12 @@ class MailsterPlaceholder {
 				$replace_to = maybe_unserialize( $metavalue );
 				break;
 			case 'category':
-				$replace_to = $categories;
+			case 'categories':
+				$replace_to = $terms;
 				break;
 			case 'category_strip':
-				$replace_to = strip_tags( $categories );
+			case 'categories_strip':
+				$replace_to = strip_tags( $terms );
 				break;
 			case 'twitter':
 			case 'facebook':
