@@ -32,7 +32,9 @@ if ( $item['envato_item_id'] ) {
 	<?php if ( ! $item['is_supported'] && ! $item['installed'] ) : ?>
 	<div class="notice inline update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
 	<?php endif; ?>
-	<?php if ( $item['update_available'] ) : ?>
+	<?php if ( ! $item['is_supported'] && $item['installed'] ) : ?>
+	<div class="notice inline update-message notice-error notice-alt"><p><?php printf( esc_html__( 'An update to this template is avilable but it requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
+	<?php elseif ( $item['update_available'] ) : ?>
 	<div class="notice inline update-message notice-warning notice-alt theme-has-update">
 		<p><?php esc_html_e( 'New version available.', 'mailster' ); ?>
 		<?php if ( $item['download_url'] ) : ?>
