@@ -1,0 +1,74 @@
+{
+	"schemas": [
+		{
+			"name": "Yoga",
+			"colors": {
+				"bg-color": "#F7F9FB",
+				"color-font": "#4A4B4D",
+				"color-links": "#49A6B2",
+				"footer-color-font": "#4A4B4D",
+				"subline-color": "#A3A5A8",
+				"hr-line-color": "#A3A5A8",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#49A6B2",
+				"button-bg-hover-color": "#5FBAC1"
+			}
+		},
+		{
+			"name": "Ocean Breeze",
+			"colors": {
+				"bg-color": "#E0F7FA",
+				"color-font": "#01579B",
+				"color-links": "#00ACC1",
+				"footer-color-font": "#0277BD",
+				"subline-color": "#B3E5FC",
+				"hr-line-color": "#81D4FA",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#00B8D4",
+				"button-bg-hover-color": "#0097A7"
+			}
+		},
+		{
+			"name": "Sunset Glow",
+			"colors": {
+				"bg-color": "#FFE0B2",
+				"color-font": "#5D4037",
+				"color-links": "#FB8C00",
+				"footer-color-font": "#6D4C41",
+				"subline-color": "#FFCCBC",
+				"hr-line-color": "#FFAB91",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#F4511E",
+				"button-bg-hover-color": "#E64A19"
+			}
+		},
+		{
+			"name": "Forest Retreat",
+			"colors": {
+				"bg-color": "#E8F5E9",
+				"color-font": "#1B5E20",
+				"color-links": "#66BB6A",
+				"footer-color-font": "#388E3C",
+				"subline-color": "#C8E6C9",
+				"hr-line-color": "#A5D6A7",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#43A047",
+				"button-bg-hover-color": "#388E3C"
+			}
+		},
+		{
+			"name": "Urban Chic",
+			"colors": {
+				"bg-color": "#FAFAFA",
+				"color-font": "#212121",
+				"color-links": "#757575",
+				"footer-color-font": "#616161",
+				"subline-color": "#E0E0E0",
+				"hr-line-color": "#BDBDBD",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#9E9E9E",
+				"button-bg-hover-color": "#757575"
+			}
+		}
+	]
+}

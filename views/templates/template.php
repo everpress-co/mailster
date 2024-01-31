@@ -16,13 +16,28 @@ if ( $item['update_available'] ) {
 if ( $item['envato_item_id'] && ! $item['is_premium'] ) {
 	$classes[] = 'envato-item';
 }
+
+if ( $item['installed'] ) {
+
+	$content = mailster( 'template' )->load_template( $item['slug'] );
+	$content = mailster()->sanitize_content( $content );
+
+	$placeholder = mailster( 'placeholder', $content );
+
+	// $content = $placeholder->get_content();
+	$content = mailster( 'helper' )->strip_structure_html( $content );
+	$content = mailster( 'helper' )->add_mailster_styles( $content );
+	$content = mailster( 'helper' )->handle_shortcodes( $content );
+
+
+}
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
 	<span class="spinner"></span>
 	<div class="theme-screenshot">
 		<img loading="lazy" alt="" class="theme-screenshot-bg" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 		<?php if ( $item['index'] ) : ?>
-		<iframe src="<?php echo esc_url( add_query_arg( array( 'nocache' => time() ), $item['index'] ) ); ?>" class="theme-screenshot-iframe" scrolling="no" allowTransparency="true" frameBorder="0" sandbox="allow-presentation allow-scripts" loading="lazy"></iframe>
+		<iframe src="data:text/html;base64,<?php echo base64_encode( $content ); ?>" class="theme-screenshot-iframe" scrolling="no" allowTransparency="true" frameBorder="0" sandbox="allow-presentation allow-scripts" loading="lazy"></iframe>
 		<?php endif; ?>
 		<img loading="lazy" alt="" class="theme-screenshot-img" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 	</div>

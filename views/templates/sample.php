@@ -72,7 +72,7 @@ if ( $slug !== 'mailster' ) {
 
 		</div>
 		<div class="mailster-template-preview-browser">
-			<iframe src="data:text/html;base64,<?php echo base64_encode( $content ); ?> " height="100%" width="100%"></iframe>
+			<iframe src="data:text/html;base64,<?php echo base64_encode( $content ); ?>" class="theme-screenshot-iframe" scrolling="no" allowTransparency="true" frameBorder="0" sandbox="allow-presentation allow-scripts" loading="lazy"></iframe>
 		</div>
 		<?php if ( ! $item['is_supported'] && ! $item['installed'] ) : ?>
 		<div class="notice inline update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>

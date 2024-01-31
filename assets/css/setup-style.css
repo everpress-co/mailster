@@ -394,7 +394,6 @@ section {
 	flex-wrap: wrap;
 }
 .templates .template {
-	box-sizing: border-box;
 	width: 33%;
 	box-sizing: border-box;
 }
@@ -438,14 +437,14 @@ section {
 	position: relative;
 	left: 0;
 	width: 300px;
+	width: 96%;
 	height: 400px;
 	transform-origin: top left;
 	border: 1px solid #c3c4c4;
 	border-radius: 5px;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 	margin-bottom: 8px;
-	padding: 20px;
-	padding-bottom: 0;
+	margin-right: 8px;
 	padding: 0;
 	background-color: #f6f6fc;
 
@@ -542,6 +541,10 @@ section {
 .template.active .theme-badge {
 	float: right;
 	display: inline-block;
+}
+.template.active.is-premium .theme-badge {
+	margin-right: 20px;
+	margin-left: 20px;
 }
 .rtl .template.active .theme-badge {
 	float: left;

@@ -94,7 +94,7 @@ class MailsterTemplates {
 
 		$templates = $this->get_templates( true );
 
-		if ( isset( $templates[ $slug ] ) ) {
+		if ( in_array( $slug, $templates ) ) {
 			return true;
 		}
 
@@ -250,7 +250,7 @@ class MailsterTemplates {
 					if ( $renamefolder == $folder ) {
 						$moved = true;
 					} elseif ( ! ( $moved = $wp_filesystem->move( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder, true ) ) ) {
-							$moved = rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
+						$moved = rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
 					}
 
 					if ( $moved ) {
@@ -352,10 +352,18 @@ class MailsterTemplates {
 										continue;
 									}
 
-									if ( ! $wp_filesystem->copy( $old_file, preg_replace( '#\.html$#', '-' . $old_data['version'] . '.html', $old_file ) ) ) {
-										copy( $old_file, preg_replace( '#\.html$#', '-' . $old_data['version'] . '.html', $old_file ) );
+									$new_file_name = preg_replace( '#\.html$#', '-' . $old_data['version'] . '.html', $old_file );
 
+									if ( ! $wp_filesystem->copy( $old_file, $new_file_name, $old_file ) ) {
+										copy( $old_file, $new_file_name, $old_file );
 									}
+
+									// replace the file in the post meta table
+									global $wpdb;
+									$sql = "UPDATE $wpdb->postmeta AS template_file JOIN $wpdb->postmeta AS template ON template.post_id = template_file.post_id AND template.meta_key = %s AND template.meta_value = %s SET template_file.meta_value = %s WHERE template_file.meta_key = %s AND template_file.meta_value = %s";
+									$sql = $wpdb->prepare( $sql, '_mailster_template', $templateslug, basename( $new_file_name ), '_mailster_file', basename( $old_file ) );
+									$wpdb->query( $sql );
+
 								}
 							}
 						}
@@ -411,6 +419,33 @@ class MailsterTemplates {
 		$this->process_colors( $slug );
 	}
 
+
+	private function get_colors_from_json( $slug ) {
+
+		$wp_filesystem = mailster_require_filesystem();
+
+		$path = mailster( 'helper' )->mkdir( 'templates' );
+
+		$folder = trailingslashit( $path ) . $slug;
+
+		if ( file_exists( $folder . '/template.json' ) ) {
+
+			$template_data = $wp_filesystem->get_contents( $folder . '/template.json' );
+
+			if ( $template_data ) {
+				$template_data = json_decode( $template_data );
+
+				if ( isset( $template_data->schemas ) ) {
+					return $template_data->schemas;
+				}
+
+				return false;
+
+			}
+		}
+
+		return false;
+	}
 
 	public function process_colors( $slug = null ) {
 
@@ -1109,20 +1144,35 @@ class MailsterTemplates {
 		$campaign_template = get_post_meta( $campaign->ID, '_mailster_template', true );
 		$campaign_file     = get_post_meta( $campaign->ID, '_mailster_file', true );
 
-		$temp            = mailster( 'template', $template, $file );
-		$template_colors = $this->parse_colors( $temp->raw, 'original' );
+		$templateobj     = mailster( 'template', $template, $file );
+		$template_colors = $this->parse_colors( $templateobj->raw, 'original' );
 
 		// if these are different a template change has happend or the campaign is new
 		if ( $campaign_template != $template || $campaign_file != $file ) {
-			return $template_colors;
+			$merged_colors = $template_colors;
+		} else {
+			// otherwise merge the ones defined in the current campaign
+			$campaign_colors = $this->parse_colors( $campaign->post_content );
+			$merged_colors   = array_replace_recursive( $template_colors, $campaign_colors );
+
 		}
 
-		// otherwise merge the ones defined in the current campaign
-		$campaign_colors = $this->parse_colors( $campaign->post_content );
+		$schemas = $this->get_colors_from_json( $template );
+		$legacy  = false;
 
-		$merged = array_replace_recursive( $template_colors, $campaign_colors );
+		// legacy color schmas < 4.0
+		if ( empty( $schemas ) ) {
+			$legacy = get_option( 'mailster_colors', array() );
+			if ( isset( $legacy[ $template ] ) ) {
+				$legacy = $legacy[ $template ];
+			}
+		}
 
-		return $merged;
+		return array(
+			'colors'  => $merged_colors,
+			'schemas' => $schemas,
+			'legacy'  => $legacy,
+		);
 	}
 
 
@@ -1154,10 +1204,10 @@ class MailsterTemplates {
 
 			foreach ( $original_colors as $i => $color ) {
 				preg_match( '/' . $color . '\/\*([^*]+)\*\//i', $html, $match );
-				$value                   = strtoupper( $color );
-				$id                      = strtolower( substr( $value, 1 ) );
-				$colors[ 'color_' . $i ] = array(
-					'id'        => $id,
+				$value        = strtoupper( $color );
+				$id           = strtolower( substr( $value, 1 ) );
+				$colors[ $i ] = array(
+					'id'        => $i,
 					'var'       => null,
 					'value'     => $value,
 					$value_name => $value,
@@ -1244,6 +1294,8 @@ class MailsterTemplates {
 				$response_body = wp_remote_retrieve_body( $response );
 
 				$response_result = json_decode( $response_body, true );
+
+				error_log( print_r( $response_result, true ) );
 
 				if ( json_last_error() === JSON_ERROR_NONE ) {
 					$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );

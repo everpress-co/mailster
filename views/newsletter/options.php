@@ -22,9 +22,11 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	<h4><?php esc_html_e( 'Colors', 'mailster' ); ?></h4>
 
 	<?php $colors = mailster( 'templates' )->colors( $post, $this->get_template(), $this->get_file() ); ?>
+
+	<?php // echo '<pre>' . print_r( $colors, true ) . '</pre>'; ?>
 	
 	<ul class="colors has-labels" data-original-colors='<?php echo json_encode( $colors ); ?>'>
-	<?php foreach ( $colors as $color ) : ?>
+	<?php foreach ( $colors['colors'] as $color ) : ?>
 		<?php
 			$color_value = substr( esc_attr( $color['value'] ), 1 );
 			$label       = $color['label'];
@@ -41,22 +43,25 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	</p>
 
 	<h4><?php esc_html_e( 'Colors Schemas', 'mailster' ); ?></h4>
-	<?php
-		$customcolors = get_option( 'mailster_colors', array() );
-	if ( isset( $customcolors[ $this->get_template() ] ) ) {
-		$customcolors = $customcolors[ $this->get_template() ];
-	} else {
-		$customcolors = array();
-	}
-	?>
+
 	<div class="colorschemas">
 	<ul class="colorschema" title="<?php esc_attr_e( 'original', 'mailster' ); ?>">
-	<?php foreach ( $colors as $id => $color ) : ?>
+	<?php foreach ( $colors['colors'] as $id => $color ) : ?>
 		<li class="colorschema-field" title="<?php echo esc_attr( $color['original'] ); ?>" data-id="<?php echo esc_attr( $id ); ?>"  data-hex="<?php echo esc_attr( $color['original'] ); ?>" style="background-color:<?php echo esc_attr( $color['original'] ); ?>"></li>
 	<?php endforeach; ?>
 	</ul>
-	<?php if ( ! empty( $customcolors ) ) : ?>
-		<?php foreach ( $customcolors as $hash => $colorschema ) : ?>
+	<?php if ( ! empty( $colors['schemas'] ) ) : ?>
+		<?php foreach ( $colors['schemas'] as $hash => $colorschema ) : ?>
+		<ul class="colorschema custom" title="<?php esc_html_e( 'Use this color schema', 'mailster' ); ?>">
+			<?php foreach ( $colorschema->colors as $id => $color ) { ?>
+			<li class="colorschema-field" title="<?php echo esc_attr( strtolower( $color ) ); ?>"  data-id="<?php echo esc_attr( $id ); ?>" data-hex="<?php echo esc_attr( strtolower( $color ) ); ?>" style="background-color:<?php echo esc_attr( $color ); ?>"></li>
+		<?php } ?>
+		<li class="colorschema-delete-field"><a class="colorschema-delete">&#10005;</a></li>
+		</ul>
+		<?php endforeach; ?>
+	<?php endif; ?>
+	<?php if ( ! empty( $colors['legacy'] ) ) : ?>
+		<?php foreach ( $colors['legacy'] as $hash => $colorschema ) : ?>
 		<ul class="colorschema custom" data-hash="<?php echo esc_attr( $hash ); ?>" title="<?php esc_html_e( 'Use this color schema', 'mailster' ); ?>">
 			<?php foreach ( $colorschema as $id => $color ) { ?>
 			<li class="colorschema-field" title="<?php echo esc_attr( strtolower( $color ) ); ?>"  data-id="<?php echo esc_attr( $id ); ?>" data-hex="<?php echo esc_attr( strtolower( $color ) ); ?>" style="background-color:<?php echo esc_attr( $color ); ?>"></li>

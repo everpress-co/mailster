@@ -1369,7 +1369,8 @@ class MailsterTemplate {
 		return $node->parentNode->replaceChild( $renamed, $node );
 	}
 
-	public function get_colors( $current = array() ) {
+	public function get_colors( $html = array() ) {
+
 		$html   = $this->raw ? $this->raw : $this->get( true );
 		$colors = array();
 
