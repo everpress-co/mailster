@@ -1023,6 +1023,9 @@ class MailsterHelper {
 		// handle shortcodes
 		$content = $this->handle_shortcodes( $content );
 
+		// convert CSS variables
+		$content = $this->convert_css_vars( $content );
+
 		return apply_filters( 'mailster_prepare_content', $content );
 	}
 
@@ -1138,6 +1141,21 @@ class MailsterHelper {
 		}
 
 		return $content;
+	}
+
+	public function convert_css_vars( $html ) {
+		// get all style blocks, search for variables and repalce them in the content
+		preg_match_all( '#<style(.*?)>(.*?)</style>#is', $html, $style_blocks );
+		foreach ( $style_blocks[2] as $style_block ) {
+			// get all variables
+			preg_match_all( '#--(.*?):([^;}]+)?#is', $style_block, $variables );
+			foreach ( $variables[1] as $key => $variable ) {
+				// replace all variables with their values
+				$html = str_replace( 'var(--' . $variable . ')', $variables[2][ $key ], $html );
+			}
+		}
+
+		return $html;
 	}
 
 

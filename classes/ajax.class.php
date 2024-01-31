@@ -996,14 +996,15 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		$colors = get_option( 'mailster_colors' );
-		$hash   = md5( implode( '', $_POST['colors'] ) );
+		$colors   = get_option( 'mailster_colors' );
+		$hash     = md5( implode( '', $_POST['colors'] ) );
+		$template = esc_attr( $_POST['template'] );
 
-		if ( ! isset( $colors[ $_POST['template'] ] ) ) {
-			$colors[ $_POST['template'] ] = array();
+		if ( ! isset( $colors[ $template ] ) ) {
+			$colors[ $template ] = array();
 		}
 
-		$colors[ $_POST['template'] ][ $hash ] = $_POST['colors'];
+		$colors[ $template ][ $hash ] = $_POST['colors'];
 
 		$return['html'] = '<ul class="colorschema custom" data-hash="' . $hash . '">';
 		foreach ( $_POST['colors'] as $color ) {

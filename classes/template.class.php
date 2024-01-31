@@ -1369,6 +1369,49 @@ class MailsterTemplate {
 		return $node->parentNode->replaceChild( $renamed, $node );
 	}
 
+	public function get_colors( $current = array() ) {
+		$html   = $this->raw ? $this->raw : $this->get( true );
+		$colors = array();
+
+		// get all style blocks, search for variables
+		preg_match_all( '#<style(.*?)>(.*?)</style>#is', $html, $style_blocks );
+		foreach ( $style_blocks[2] as $style_block ) {
+			// get all variables
+			preg_match_all( '/--mailster-([a-zA-z0-9-]+):([^;}]+)/', $style_block, $variables );
+			foreach ( $variables[1] as $i => $variable ) {
+				$colors[] = array(
+					'id'    => $variable,
+					'var'   => '--mailster-' . $variable,
+					'value' => trim( $variables[2][ $i ] ),
+					'label' => $this->color_label( $variable ),
+				);
+			}
+		}
+
+		// no colors => fallback to the legacy method < 4.0
+		if ( empty( $colors ) ) {
+			preg_match_all( '/#[a-fA-F0-9]{6}/', $html, $hits );
+			$original_colors = array_keys( array_count_values( $hits[0] ) );
+
+			foreach ( $original_colors as $i => $color ) {
+				preg_match( '/' . $color . '\/\*([^*]+)\*\//i', $html, $match );
+				$id       = strtoupper( $color );
+				$colors[] = array(
+					'id'    => $id,
+					'value' => $id,
+					'label' => isset( $match[1] ) ? $match[1] : $id,
+				);
+			}
+		}
+
+		return $colors;
+	}
+
+	private function color_label( $color ) {
+		$label = ucwords( str_replace( '-', ' ', $color ) );
+		return $label;
+	}
+
 
 	/**
 	 *

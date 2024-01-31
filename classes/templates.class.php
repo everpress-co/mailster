@@ -1102,6 +1102,82 @@ class MailsterTemplates {
 	}
 
 
+	public function colors( $campaign, $template, $file ) {
+
+		$campaign = mailster( 'campaigns' )->get( $campaign );
+
+		$campaign_template = get_post_meta( $campaign->ID, '_mailster_template', true );
+		$campaign_file     = get_post_meta( $campaign->ID, '_mailster_file', true );
+
+		$temp            = mailster( 'template', $template, $file );
+		$template_colors = $this->parse_colors( $temp->raw, 'original' );
+
+		// if these are different a template change has happend or the campaign is new
+		if ( $campaign_template != $template || $campaign_file != $file ) {
+			return $template_colors;
+		}
+
+		// otherwise merge the ones defined in the current campaign
+		$campaign_colors = $this->parse_colors( $campaign->post_content );
+
+		$merged = array_replace_recursive( $template_colors, $campaign_colors );
+
+		return $merged;
+	}
+
+
+	private function parse_colors( $html, $value_name = 'value' ) {
+		$colors = array();
+
+		// get all style blocks, search for variables
+		preg_match_all( '#<style(.*?)>(.*?)</style>#is', $html, $style_blocks );
+		foreach ( $style_blocks[2] as $style_block ) {
+			// get all variables
+			preg_match_all( '/--mailster-([a-zA-z0-9-]+):([^;}]+)/', $style_block, $variables );
+			foreach ( $variables[1] as $i => $id ) {
+				$value                        = trim( $variables[2][ $i ] );
+				$colors[ $id ]                = array(
+					'id'        => $id,
+					'var'       => '--mailster-' . $id,
+					'value'     => $value,
+					$value_name => $value,
+					'label'     => $this->color_label( $id ),
+				);
+				$colors[ $id ][ $value_name ] = $value;
+			}
+		}
+
+		// no colors => fallback to the legacy method < 4.0
+		if ( empty( $colors ) ) {
+			preg_match_all( '/#[a-fA-F0-9]{6}/', $html, $hits );
+			$original_colors = array_keys( array_count_values( $hits[0] ) );
+
+			foreach ( $original_colors as $i => $color ) {
+				preg_match( '/' . $color . '\/\*([^*]+)\*\//i', $html, $match );
+				$value                   = strtoupper( $color );
+				$id                      = strtolower( substr( $value, 1 ) );
+				$colors[ 'color_' . $i ] = array(
+					'id'        => $id,
+					'var'       => null,
+					'value'     => $value,
+					$value_name => $value,
+					'label'     => isset( $match[1] ) ? $match[1] : $value,
+				);
+			}
+		}
+
+		return $colors;
+	}
+
+	private function color_label( $raw_label ) {
+
+		$raw_label = str_replace( 'color', '', $raw_label );
+		$raw_label = str_replace( 'bg', 'Background', $raw_label );
+
+		$label = ucwords( str_replace( '-', ' ', $raw_label ) );
+		return $label;
+	}
+
 
 	public function reset_query_cache() {
 		global $wpdb;

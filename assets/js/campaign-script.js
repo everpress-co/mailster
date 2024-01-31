@@ -247,36 +247,6 @@ mailster = (function (mailster, $, window, document) {
 		return true;
 	};
 
-	mailster.util.changeColor = function (
-		color_from,
-		color_to,
-		element,
-		original
-	) {
-		if (!color_from) color_from = color_to;
-		if (!color_to) return false;
-		color_from = color_from.toUpperCase();
-		color_to = color_to.toUpperCase();
-		if (color_from == color_to) return false;
-		var raw = mailster.editor.getContent(),
-			reg = new RegExp(color_from, 'gi');
-
-		if (element) element.data('value', color_to);
-
-		$('#mailster-color-' + color_from.substr(1)).attr(
-			'id',
-			'mailster-color-' + color_to.substr(1)
-		);
-
-		if (reg.test(raw)) {
-			mailster.editor.setContent(raw.replace(reg, color_to), 0);
-		}
-
-		if (original) {
-			//mailster.editor.colors.map[original] = color_to;
-		}
-	};
-
 	mailster.util.replace = function (str, match, repl) {
 		if (match === repl) return str;
 		do {
@@ -2009,21 +1979,24 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 		.on('click', 'ul.colorschema', function () {
-			var colorfields = mailster.$.options.find('input.color'),
-				li = $(this).find('li.colorschema-field');
+			var li = $(this).find('li.colorschema-field');
 
 			mailster.trigger('disable');
 
 			$.each(li, function (i) {
-				var color = li.eq(i).data('hex');
-				colorfields.eq(i).wpColorPicker('color', color);
+				var _this = $(this);
+				var id = _this.data('id');
+				var color = _this.data('hex');
+
+				$('#mailster-color-' + id).wpColorPicker('color', color);
 			});
 
 			mailster.trigger('enable');
 		})
 		.on('click', 'a.savecolorschema', function () {
-			var colors = $.map(mailster.$.options.find('.color'), function (e) {
-				return $(e).val();
+			var colors = {};
+			$.each(mailster.$.options.find('.color'), function (i, e) {
+				colors[$(e).data('id')] = $(e).val();
 			});
 
 			loader(true);
@@ -2109,12 +2082,13 @@ mailster = (function (mailster, $, window, document) {
 		.on('change', 'input.color', function (event, ui) {
 			var _this = $(this);
 			var _val = Color(_this.val()).toString().toUpperCase();
+			var _var = _this.data('var');
 			var _from = _this.data('value');
 			var original = _this.data('default-color');
 
 			_this.val(_val);
 
-			mailster.util.changeColor(_from, _val, _this, original);
+			changeColor(_var, _from, _val, _this, original);
 		});
 
 	$.wp.wpColorPicker &&
@@ -2128,6 +2102,47 @@ mailster = (function (mailster, $, window, document) {
 			},
 			clear: function (event, ui) {},
 		});
+
+	function changeColor(_var, color_from, color_to, element, original) {
+		if (_var) {
+			mailster.editor.$.document.find('style').each(function () {
+				var inner = this.innerText;
+				var cssvars = inner.match(new RegExp(_var + ':\\s?([#a-fA-F0-9]+)'));
+				if (!cssvars) return;
+				var newvar = _var + ':' + color_to;
+				this.innerHTML = inner.replace(cssvars[0], newvar);
+				var thead = mailster.$.head.val();
+				mailster.$.head.val(thead.replace(cssvars[0], newvar));
+			});
+
+			// old method
+		} else {
+			if (!color_from) color_from = color_to;
+			if (!color_to) return false;
+			color_from = color_from.toUpperCase();
+			color_to = color_to.toUpperCase();
+			if (color_from == color_to) return false;
+			var raw = mailster.editor.getContent(),
+				reg = new RegExp(color_from, 'gi');
+
+			if (element) element.data('value', color_to);
+
+			$('#mailster-color-' + color_from.substr(1)).attr(
+				'id',
+				'mailster-color-' + color_to.substr(1)
+			);
+
+			if (reg.test(raw)) {
+				mailster.editor.setContent(raw.replace(reg, color_to), 0);
+			}
+
+			if (original) {
+				//mailster.editor.colors.map[original] = color_to;
+			}
+		}
+
+		return;
+	}
 
 	function loader(show) {
 		if (null == show || true === show) {
