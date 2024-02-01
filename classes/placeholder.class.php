@@ -783,10 +783,16 @@ class MailsterPlaceholder {
 						$is_post   = $post_type != $parts[0];
 						$is_random = null;
 						$org_src   = false;
+						$is_author = false;
 
 						// not on RSS
 						if ( $relative_to_absolute && 0 === strpos( $post_type, 'mailster_rss_' ) ) {
 							$relative_to_absolute = false;
+						}
+						// tag is [post_type]_author_image
+						if ( false !== strpos( $post_type, '_author' ) ) {
+							$is_author = true;
+							$post_type = str_replace( '_author', '', $post_type );
 						}
 						if ( $is_post ) {
 							// cropping requires height
@@ -837,12 +843,17 @@ class MailsterPlaceholder {
 
 								if ( is_numeric( $post->ID ) ) {
 
-									if ( 'attachment' == $post->post_type ) {
-										$thumb_id = $post->ID;
+									// tag is [post_type]_author_image
+									if ( $is_author ) {
+										$org_src = array( get_avatar_url( $post->post_author, array( 'width' => $width ) ), 0, 0, false );
 									} else {
-										$thumb_id = get_post_thumbnail_id( $post->ID );
+										if ( 'attachment' == $post->post_type ) {
+											$thumb_id = $post->ID;
+										} else {
+											$thumb_id = get_post_thumbnail_id( $post->ID );
+										}
+										$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 									}
-									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 								}
 
 								if ( empty( $org_src ) ) {
@@ -1291,6 +1302,12 @@ class MailsterPlaceholder {
 				break;
 			case 'author_url':
 				$replace_to = $author ? $author->data->user_url : '';
+				break;
+			case 'author_info':
+				$replace_to = $author ? get_the_author_meta( 'description', $author->ID ) : '';
+				break;
+			case 'author_image':
+				$replace_to = $author ? get_avatar_url( $author->ID ) : '';
 				break;
 			case 'date':
 			case 'date_gmt':

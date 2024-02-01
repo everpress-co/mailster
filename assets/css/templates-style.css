@@ -163,7 +163,7 @@
 	right: 50%;
 }
 .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
-	width: 700px;
+	width: 200%;
 	height: 1200px;
 	transform: translate(-50%, -25%) scale(0.5);
 	box-shadow: none;

@@ -794,7 +794,7 @@ mailster = (function (mailster, $, window, document) {
 							expected = _this.attr('expect') || 'title',
 							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if ($.isArray(content)) content = content[i];
+						if (Array.isArray(content).isArray) content = content[i];
 
 						if (content && !_this.is('[ignore]')) _this.html(content);
 					});
@@ -806,7 +806,7 @@ mailster = (function (mailster, $, window, document) {
 							expected = _this.attr('expect') || contenttype,
 							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if ($.isArray(content)) content = content[i];
+						if (Array.isArray(content)) content = content[i];
 
 						if (content && !_this.is('[ignore]')) _this.html(content);
 					});
@@ -841,83 +841,93 @@ mailster = (function (mailster, $, window, document) {
 
 					current.elements.images.each(function (i, e) {
 						var _this = $(this),
-							f = factor.val();
+							f = factor.val(),
+							expected = _this.attr('expect') || 'image',
+							obj = currenttext[expected];
 
 						if ('static' == insertmethod) {
-							currenttext.image.id &&
-								mailster.util.ajax(
-									'create_image',
-									{
-										id: currenttext.image.id,
-										original: original.is(':checked'),
-										width: _this.width() * f,
-										height: _this.height() * f,
-										crop: _this.data('crop'),
-									},
-									function (response) {
-										if (response.success) {
-											loader(false);
+							if (!obj) {
+								return false;
+							}
+							if (typeof obj == 'string') {
+								obj = {
+									id: null,
+									url: obj,
+								};
+							}
 
-											if (original.is(':checked')) {
-												_this
-													.attr('data-original', true)
-													.data('original', true);
-											}
-											if ('img' == _this.prop('tagName').toLowerCase()) {
-												_this
-													.attr({
-														'data-id': currenttext.image.id,
-														src: response.data.image.url,
-														width: Math.round(response.data.image.width / f),
-														alt: currenttext.alt || currenttext.title,
-													})
-													.data('id', currenttext.image.id);
-
-												if (
-													_this.attr('height') &&
-													_this.attr('height') != 'auto'
-												) {
-													_this.attr(
-														'height',
-														Math.round(response.data.image.height / f)
-													);
-												}
-
-												if (_this.parent().is('a')) {
-													_this.unwrap();
-												}
-
-												if (currenttext.link) {
-													_this.wrap('<a href="' + currenttext.link + '">');
-												}
-											} else {
-												var orgurl = _this.attr('background');
-												_this
-													.attr({
-														'data-id': currenttext.image.id,
-														background: response.data.image.url,
-													})
-													.data('id', currenttext.image.id);
-
-												current.element.html(
-													mailster.util.replace(
-														current.element.html(),
-														orgurl,
-														response.data.image.url
-													)
-												);
-
-												//remove id to re trigger tinymce
-												current.element.find('single, multi').removeAttr('id');
-												mailster.trigger('save');
-												mailster.trigger('refresh');
-											}
-										}
-									},
-									function (jqXHR, textStatus, errorThrown) {
+							mailster.util.ajax(
+								'create_image',
+								{
+									id: obj.id,
+									src: obj.url,
+									original: original.is(':checked'),
+									width: _this.width() * f,
+									height: _this.height() * f,
+									crop: _this.data('crop'),
+								},
+								function (response) {
+									if (response.success) {
 										loader(false);
+
+										if (original.is(':checked')) {
+											_this.attr('data-original', true).data('original', true);
+										}
+										if ('img' == _this.prop('tagName').toLowerCase()) {
+											_this
+												.attr({
+													'data-id': obj.id,
+													src: response.data.image.url,
+													width: Math.round(response.data.image.width / f),
+													alt: currenttext.alt || currenttext.title,
+												})
+												.data('id', obj.id);
+
+											if (
+												_this.attr('height') &&
+												_this.attr('height') != 'auto'
+											) {
+												_this.attr(
+													'height',
+													Math.round(response.data.image.height / f)
+												);
+											}
+
+											if (_this.parent().is('a')) {
+												_this.unwrap();
+											}
+
+											if (currenttext.link) {
+												_this.wrap('<a href="' + currenttext.link + '">');
+											}
+										} else {
+											var orgurl = _this.attr('background');
+											_this
+												.attr({
+													'data-id': obj.id,
+													background: response.data.image.url,
+												})
+												.data('id', currenttext[expected].id);
+
+											current.element.html(
+												mailster.util.replace(
+													current.element.html(),
+													orgurl,
+													response.data.image.url
+												)
+											);
+
+											//remove id to re trigger tinymce
+											current.element.find('single, multi').removeAttr('id');
+											mailster.trigger('save');
+											mailster.trigger('refresh');
+										}
 									}
-								);
+								},
+								function (jqXHR, textStatus, errorThrown) {
+									loader(false);
+								}
+							);
 
 							return false;
 
@@ -933,7 +943,7 @@ mailster = (function (mailster, $, window, document) {
 									.removeAttr('data-id')
 									.attr({
 										src: dynamicImage(
-											currenttext.image,
+											currenttext[expected],
 											width,
 											height,
 											crop,
@@ -951,14 +961,20 @@ mailster = (function (mailster, $, window, document) {
 								_this
 									.removeAttr('data-id')
 									.attr({
-										background: dynamicImage(currenttext.image, width),
+										background: dynamicImage(currenttext[expected], width),
 									})
 									.removeData('id');
 								current.element.html(
 									mailster.util.replace(
 										current.element.html(),
 										orgurl,
-										dynamicImage(currenttext.image, width, height, crop, org)
+										dynamicImage(
+											currenttext[expected],
+											width,
+											height,
+											crop,
+											org
+										)
 									)
 								);
 								//remove id to re trigger tinymce

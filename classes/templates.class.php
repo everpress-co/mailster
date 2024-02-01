@@ -550,7 +550,7 @@ class MailsterTemplates {
 
 			$cachetime = HOUR_IN_SECONDS * 6;
 
-			$result = mailster( 'templates' )->query( array( 'browse' => 'latest' ) );
+			$result = $this->query( array( 'browse' => 'latest' ) );
 
 			if ( is_wp_error( $result ) ) {
 				$available_templates = 400;
@@ -977,8 +977,7 @@ class MailsterTemplates {
 			)
 		);
 
-		$response_headers = wp_remote_retrieve_headers( $response );
-		$response_code    = wp_remote_retrieve_response_code( $response );
+		$response_code = wp_remote_retrieve_response_code( $response );
 
 		// file hasn't been generated yet
 		if ( 404 == $response_code ) {
@@ -1003,8 +1002,7 @@ class MailsterTemplates {
 				return;
 			}
 
-			$response_headers = wp_remote_retrieve_headers( $response );
-			$response_code    = wp_remote_retrieve_response_code( $response );
+			$response_code = wp_remote_retrieve_response_code( $response );
 
 		}
 
@@ -1024,7 +1022,7 @@ class MailsterTemplates {
 					}
 					$blocked[ $hash ] = time();
 					set_transient( '_mailster_screenshot_error', $blocked );
-					mailster_notice( sprintf( esc_html__( 'Not able to create module screen shots of %1$s. Read more about this %2$s.', 'mailster' ), $slug . '/' . $file, '<a href="https://kb.mailster.co/where-are-the-module-screen-shots/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'screenshot_error' );
+					mailster_notice( sprintf( esc_html__( 'Not able to create module screen shots of %1$s. Read more about this %2$s.', 'mailster' ), $slug . '/' . $file, '<a href="' . mailster_url( 'https://kb.mailster.co/611bb2b36ffe270af2a9990d' ) . '" data-article="611bb2b36ffe270af2a9990d">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'screenshot_error' );
 					break;
 			}
 
@@ -1294,8 +1292,6 @@ class MailsterTemplates {
 				$response_body = wp_remote_retrieve_body( $response );
 
 				$response_result = json_decode( $response_body, true );
-
-				error_log( print_r( $response_result, true ) );
 
 				if ( json_last_error() === JSON_ERROR_NONE ) {
 					$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );

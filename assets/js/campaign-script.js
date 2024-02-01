@@ -485,8 +485,9 @@ mailster = (function (mailster, $, window, document) {
 				? clone.hide().insertBefore(element)
 				: clone.hide().insertAfter(element);
 		} else {
-			if ('footer' == mailster.editor.$.modules.last().attr('type')) {
-				clone.hide().insertBefore(mailster.editor.$.modules.last());
+			var lastfooter = mailster.editor.$.modules.filter('[type=footer]');
+			if (lastfooter) {
+				clone.hide().insertBefore(lastfooter.first());
 			} else {
 				clone.hide().appendTo(mailster.editor.$.container);
 			}
@@ -2107,12 +2108,15 @@ mailster = (function (mailster, $, window, document) {
 		if (_var) {
 			mailster.editor.$.document.find('style').each(function () {
 				var inner = this.innerText;
-				var cssvars = inner.match(new RegExp(_var + ':\\s?([#a-fA-F0-9]+)'));
+				var cssvars = inner.match(
+					new RegExp(_var + ':\\s?([#a-fA-F0-9]+)', 'gi')
+				);
 				if (!cssvars) return;
+				cssvars = cssvars.pop();
 				var newvar = _var + ':' + color_to;
-				this.innerHTML = inner.replace(cssvars[0], newvar);
+				this.innerHTML = inner.replace(cssvars, newvar);
 				var thead = mailster.$.head.val();
-				mailster.$.head.val(thead.replace(cssvars[0], newvar));
+				mailster.$.head.val(thead.replace(cssvars, newvar));
 			});
 
 			// old method
@@ -2127,10 +2131,10 @@ mailster = (function (mailster, $, window, document) {
 
 			if (element) element.data('value', color_to);
 
-			$('#mailster-color-' + color_from.substr(1)).attr(
-				'id',
-				'mailster-color-' + color_to.substr(1)
-			);
+			// $('#mailster-color-' + color_from.substr(1)).attr(
+			// 	'id',
+			// 	'mailster-color-' + color_to.substr(1)
+			// );
 
 			if (reg.test(raw)) {
 				mailster.editor.setContent(raw.replace(reg, color_to), 0);
