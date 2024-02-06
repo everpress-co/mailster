@@ -701,6 +701,8 @@ if ( $old_version ) {
 			// since Beta 4 v5
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_workflows CHANGE `context` `context` longtext" );
 
+			// copy social icons to upload folder
+			mailster( 'templates' )->copy_social_icons();
 
 			mailster( 'templates' )->update_module_thumbnails();
 

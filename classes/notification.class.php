@@ -170,10 +170,11 @@ class MailsterNotification {
 
 			case 'new_subscriber_replace':
 			case 'new_subscriber_delayed_replace':
+				$message = sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for new subscribers %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' );
 				return array(
 					'preheader'    => $subscriber ? ( ( $subscriber->fullname ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email ) : '',
-					'notification' => sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for new subscribers %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' ),
-					'can-spam'     => '',
+					'notification' => $message,
+					'can-spam'     => $message,
 				);
 
 			// unsubscription
@@ -198,10 +199,12 @@ class MailsterNotification {
 
 			case 'unsubscribe_replace':
 			case 'unsubscribe_delayed_replace':
+				$message = sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for unsubscriptions %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' );
+
 				return array(
 					'preheader'    => $subscriber ? ( ( $subscriber->fullname ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email ) : '',
-					'notification' => sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for unsubscriptions %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' ),
-					'can-spam'     => '',
+					'notification' => $message,
+					'can-spam'     => $message,
 				);
 
 			// confirmation
@@ -222,8 +225,16 @@ class MailsterNotification {
 				return get_post_meta( $form_id, 'subject', true );
 
 			case 'confirmation_file':
-				$form = $this->get_form_options( $options['form'], $subscriber );
-				return $form->template;
+				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+				$form    = get_post( $form_id );
+
+				if ( ! $form || $form->post_type != 'mailster-form' ) {
+
+					// legacy
+					$form = $this->get_form_options( $options['form'], $subscriber );
+					return $form->template;
+				}
+				return false;
 
 			case 'confirmation_headline':
 				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
@@ -261,24 +272,34 @@ class MailsterNotification {
 				$list_ids = isset( $options['list_ids'] ) ? array_filter( $options['list_ids'] ) : null;
 				$link     = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
 
+				$message = esc_html__( 'If you received this email by mistake, simply delete it. You won\'t be subscribed if you don\'t click the confirmation link.', 'mailster' );
+
 				return wp_parse_args(
 					array(
 						'link'         => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
 						'linkaddress'  => $link,
 						'lists'        => implode( ', ', $list_names ),
-						'notification' => esc_html__( 'If you received this email by mistake, simply delete it. You won\'t be subscribed if you don\'t click the confirmation link.', 'mailster' ),
+						'notification' => $message,
+						'can-spam'     => $message,
 					),
 					$content
 				);
 
 			case 'confirmation_attachments':
-				$form = $this->get_form_options( $options['form'], $subscriber );
-				if ( $form->vcard ) {
+				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+				$form    = get_post( $form_id );
 
-					$wp_filesystem = mailster_require_filesystem();
+				if ( ! $form || $form->post_type != 'mailster-form' ) {
 
-					if ( $wp_filesystem && $wp_filesystem->put_contents( MAILSTER_UPLOAD_DIR . '/vCard.vcf', $form->vcard_content, FS_CHMOD_FILE ) ) {
-						$content[] = MAILSTER_UPLOAD_DIR . '/vCard.vcf';
+					// legacy
+					$form = $this->get_form_options( $options['form'], $subscriber );
+					if ( $form->vcard ) {
+
+						$wp_filesystem = mailster_require_filesystem();
+
+						if ( $wp_filesystem && $wp_filesystem->put_contents( MAILSTER_UPLOAD_DIR . '/vCard.vcf', $form->vcard_content, FS_CHMOD_FILE ) ) {
+							$content[] = MAILSTER_UPLOAD_DIR . '/vCard.vcf';
+						}
 					}
 				}
 				return $content;
@@ -288,9 +309,11 @@ class MailsterNotification {
 				return esc_html__( 'Mailster Test Email', 'mailster' );
 
 			case 'test_replace':
+				$message = sprintf( esc_html__( 'This is a test mail sent from %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '">' . esc_html__( 'from your settings page', 'mailster' ) . '</a>' );
 				return array(
-					'notification' => sprintf( esc_html__( 'This is a test mail sent from %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '">' . esc_html__( 'from your settings page', 'mailster' ) . '</a>' ),
-					'can-spam'     => '',
+					'headline'     => esc_html__( 'Mailster Test Email', 'mailster' ),
+					'notification' => $message,
+					'can-spam'     => $message,
 				);
 
 			default:
@@ -661,38 +684,12 @@ class MailsterNotification {
 	 * @param unknown $options
 	 */
 	private function template_test( $subscriber, $options ) {
-
-		$options = mailster_options();
 		?>
+		<p><?php esc_html_e( 'This email is a test to ensure the integrity and functionality of your current delivery method. If you\'re receiving this message, it indicates that your email system is operating correctly.', 'mailster' ); ?></p>
+		<p><?php esc_html_e( 'Consider this message as a confirmation of the effective operation of you email delivery system.', 'mailster' ); ?></p>
+		<p><?php printf( esc_html__( 'You can also run %s to check your deliverbilty.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_health' ) . '">' . esc_html__( 'an Email Health Check', 'mailster' ) . '</a>' ); ?></p>
+		<p><?php esc_html_e( 'There is no action required on your part; feel free to delete this email.', 'mailster' ); ?></p>
 
-		<style>
-		.mailster-settings td{border-top:1px solid #ccc;}
-		pre{line-height:16px;word-wrap:break-word;word-break:break-all;white-space:pre-wrap;font-size:11px;}
-		</style>
-		<table width="100%" cellpadding="0" cellspacing="0" class="mailster-settings">
-
-		<?php foreach ( $options as $key => $option ) : ?>
-
-			<?php
-			if ( $option == '' ) {
-				continue;
-			}
-
-			if ( $key && preg_match( '#_pwd|_key|apikey|_secret|_token#', $key ) ) {
-				$option = '******';
-			}
-
-			if ( is_bool( $option ) ) {
-				$option = $option ? 'true' : 'false';
-			}
-
-			?>
-			<tr><td width="20%" valign="top"><b><pre><?php echo esc_html( $key ); ?></pre></b></td><td width="5%">&nbsp;</td><td width="75%" valign=""><pre><?php echo trim( print_r( $option, true ) ); ?></pre></td></tr>
-
-		<?php endforeach; ?>
-
-
-		</table>
 		<?php
 	}
 

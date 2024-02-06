@@ -241,6 +241,9 @@ class MailsterPlaceholder {
 
 		$args = wp_parse_args( $args, $defaults );
 
+		$this->add( mailster_option( 'tags' ) );
+		$this->add( mailster_option( 'custom_tags' ) );
+
 		$this->add( apply_filters( 'mailster_placeholder_defaults', $args, $campaign_id ) );
 	}
 
@@ -329,8 +332,6 @@ class MailsterPlaceholder {
 		}
 
 		$this->add( $placeholders );
-		$this->add( mailster_option( 'custom_tags', array() ) );
-		$this->add( mailster_option( 'tags', array() ) );
 
 		$this->rss();
 		$this->conditions();

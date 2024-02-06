@@ -1,73 +1,227 @@
 {
 	"schemas": [
 		{
-			"name": "Yoga",
+			"name": "Original",
 			"colors": {
-				"bg-color": "#F7F9FB",
-				"color-font": "#4A4B4D",
-				"color-links": "#49A6B2",
-				"footer-color-font": "#4A4B4D",
-				"subline-color": "#A3A5A8",
-				"hr-line-color": "#A3A5A8",
+				"bg-color": "#FEFEFE",
+				"color-font": "#58595B",
+				"color-links": "#2BB3E7",
+				"footer-color-font": "#58595B",
+				"subline-color": "#9a9ca1",
+				"hr-line-color": "#9a9ca1",
 				"button-color-font": "#FFFFFF",
-				"button-bg-color": "#49A6B2",
-				"button-bg-hover-color": "#5FBAC1"
+				"button-bg-color": "#2BB3E7",
+				"button-bg-hover-color": "#3bb9eb"
 			}
 		},
 		{
-			"name": "Ocean Breeze",
+			"name": "Corporate Slate",
 			"colors": {
-				"bg-color": "#E0F7FA",
-				"color-font": "#01579B",
-				"color-links": "#00ACC1",
-				"footer-color-font": "#0277BD",
-				"subline-color": "#B3E5FC",
-				"hr-line-color": "#81D4FA",
+				"bg-color": "#F7F9FA",
+				"color-font": "#4A4D50",
+				"color-links": "#3498DB",
+				"footer-color-font": "#4A4D50",
+				"subline-color": "#7F8C8D",
+				"hr-line-color": "#7F8C8D",
 				"button-color-font": "#FFFFFF",
-				"button-bg-color": "#00B8D4",
-				"button-bg-hover-color": "#0097A7"
+				"button-bg-color": "#3498DB",
+				"button-bg-hover-color": "#2980B9"
+			}
+		},
+		{
+			"name": "Modern Edge",
+			"colors": {
+				"bg-color": "#FAFBFC",
+				"color-font": "#404345",
+				"color-links": "#E74C3C",
+				"footer-color-font": "#404345",
+				"subline-color": "#95A5A6",
+				"hr-line-color": "#95A5A6",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#E74C3C",
+				"button-bg-hover-color": "#C0392B"
+			}
+		},
+		{
+			"name": "Tech Blue",
+			"colors": {
+				"bg-color": "#F4F6F7",
+				"color-font": "#353839",
+				"color-links": "#2980B9",
+				"footer-color-font": "#353839",
+				"subline-color": "#7E8C8D",
+				"hr-line-color": "#7E8C8D",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#2980B9",
+				"button-bg-hover-color": "#2471A3"
+			}
+		},
+		{
+			"name": "Professional Contrast",
+			"colors": {
+				"bg-color": "#FBFCFC",
+				"color-font": "#5E5E60",
+				"color-links": "#16A085",
+				"footer-color-font": "#5E5E60",
+				"subline-color": "#BDC3C7",
+				"hr-line-color": "#BDC3C7",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#16A085",
+				"button-bg-hover-color": "#1ABC9C"
+			}
+		},
+		{
+			"name": "Executive Grey",
+			"colors": {
+				"bg-color": "#F2F3F4",
+				"color-font": "#515254",
+				"color-links": "#34495E",
+				"footer-color-font": "#515254",
+				"subline-color": "#99A3A4",
+				"hr-line-color": "#99A3A4",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#34495E",
+				"button-bg-hover-color": "#2C3E50"
 			}
 		},
 		{
 			"name": "Sunset Glow",
 			"colors": {
-				"bg-color": "#FFE0B2",
-				"color-font": "#5D4037",
-				"color-links": "#FB8C00",
+				"bg-color": "#FFF8E1",
+				"color-font": "#6E6658",
+				"color-links": "#FF7043",
+				"footer-color-font": "#6E6658",
+				"subline-color": "#A1887F",
+				"hr-line-color": "#A1887F",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#FF7043",
+				"button-bg-hover-color": "#FF5722"
+			}
+		},
+		{
+			"name": "Autumn Spice",
+			"colors": {
+				"bg-color": "#FEF5E7",
+				"color-font": "#795548",
+				"color-links": "#F9A825",
+				"footer-color-font": "#795548",
+				"subline-color": "#A98274",
+				"hr-line-color": "#A98274",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#F9A825",
+				"button-bg-hover-color": "#F57F17"
+			}
+		},
+		{
+			"name": "Cozy Latte",
+			"colors": {
+				"bg-color": "#FAF3E0",
+				"color-font": "#6D4C41",
+				"color-links": "#8D6E63",
 				"footer-color-font": "#6D4C41",
-				"subline-color": "#FFCCBC",
-				"hr-line-color": "#FFAB91",
+				"subline-color": "#BCAAA4",
+				"hr-line-color": "#BCAAA4",
 				"button-color-font": "#FFFFFF",
-				"button-bg-color": "#F4511E",
-				"button-bg-hover-color": "#E64A19"
+				"button-bg-color": "#8D6E63",
+				"button-bg-hover-color": "#795548"
 			}
 		},
 		{
-			"name": "Forest Retreat",
+			"name": "Warmth Radiance",
 			"colors": {
-				"bg-color": "#E8F5E9",
-				"color-font": "#1B5E20",
-				"color-links": "#66BB6A",
-				"footer-color-font": "#388E3C",
-				"subline-color": "#C8E6C9",
-				"hr-line-color": "#A5D6A7",
+				"bg-color": "#FFFDE7",
+				"color-font": "#8E7618",
+				"color-links": "#FFCA28",
+				"footer-color-font": "#8E7618",
+				"subline-color": "#C0A080",
+				"hr-line-color": "#C0A080",
 				"button-color-font": "#FFFFFF",
-				"button-bg-color": "#43A047",
-				"button-bg-hover-color": "#388E3C"
+				"button-bg-color": "#FFCA28",
+				"button-bg-hover-color": "#FFB300"
 			}
 		},
 		{
-			"name": "Urban Chic",
+			"name": "Golden Hour",
 			"colors": {
-				"bg-color": "#FAFAFA",
-				"color-font": "#212121",
-				"color-links": "#757575",
-				"footer-color-font": "#616161",
-				"subline-color": "#E0E0E0",
-				"hr-line-color": "#BDBDBD",
+				"bg-color": "#FFF3E0",
+				"color-font": "#7D6608",
+				"color-links": "#FFB74D",
+				"footer-color-font": "#7D6608",
+				"subline-color": "#AFB6B2",
+				"hr-line-color": "#AFB6B2",
 				"button-color-font": "#FFFFFF",
-				"button-bg-color": "#9E9E9E",
-				"button-bg-hover-color": "#757575"
+				"button-bg-color": "#FFB74D",
+				"button-bg-hover-color": "#FFA726"
+			}
+		},
+		{
+			"name": "Midnight Blue",
+			"colors": {
+				"bg-color": "#2C3E50",
+				"color-font": "#ECF0F1",
+				"color-links": "#3498DB",
+				"footer-color-font": "#ECF0F1",
+				"subline-color": "#546E7A",
+				"hr-line-color": "#546E7A",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#2980B9",
+				"button-bg-hover-color": "#3498DB"
+			}
+		},
+		{
+			"name": "Slate Grey",
+			"colors": {
+				"bg-color": "#34495E",
+				"color-font": "#BDC3C7",
+				"color-links": "#E74C3C",
+				"footer-color-font": "#BDC3C7",
+				"subline-color": "#7F8C8D",
+				"hr-line-color": "#7F8C8D",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#E74C3C",
+				"button-bg-hover-color": "#C0392B"
+			}
+		},
+		{
+			"name": "Deep Space",
+			"colors": {
+				"bg-color": "#212121",
+				"color-font": "#BDBDBD",
+				"color-links": "#78909C",
+				"footer-color-font": "#BDBDBD",
+				"subline-color": "#37474F",
+				"hr-line-color": "#37474F",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#607D8B",
+				"button-bg-hover-color": "#78909C"
+			}
+		},
+		{
+			"name": "Emerald Night",
+			"colors": {
+				"bg-color": "#1E272E",
+				"color-font": "#C8D6E5",
+				"color-links": "#00B894",
+				"footer-color-font": "#C8D6E5",
+				"subline-color": "#8395A7",
+				"hr-line-color": "#8395A7",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#00B894",
+				"button-bg-hover-color": "#1ABC9C"
+			}
+		},
+		{
+			"name": "Royal Purple",
+			"colors": {
+				"bg-color": "#4A148C",
+				"color-font": "#EDE7F6",
+				"color-links": "#7C4DFF",
+				"footer-color-font": "#EDE7F6",
+				"subline-color": "#9575CD",
+				"hr-line-color": "#9575CD",
+				"button-color-font": "#FFFFFF",
+				"button-bg-color": "#7C4DFF",
+				"button-bg-hover-color": "#673AB7"
 			}
 		}
 	]

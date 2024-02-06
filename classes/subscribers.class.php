@@ -1139,7 +1139,7 @@ class MailsterSubscribers {
 				mailster_cache_delete( 'subscriber_meta_' . $subscriber_id . '0' );
 			}
 
-			if ( isset( $meta['ip'] ) && $meta['ip'] && 'unknown' !== ( $geo = mailster_get_geo( $meta['ip'] ) ) ) {
+			if ( isset( $meta['ip'] ) && $meta['ip'] && $geo = mailster_get_geo( $meta['ip'] ) ) {
 
 				$meta['geo']        = $geo->country->isoCode . '|' . $geo->city->name;
 				$meta['coords']     = (float) $geo->location->latitude . ',' . (float) $geo->location->longitude;

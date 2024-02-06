@@ -125,12 +125,10 @@ mailster = (function (mailster, $, window, document) {
 				'contenteditable spellcheck id dir style class active active selected'
 			);
 
-		return mailster.util.trim(
-			clone
-				.html()
-				.replace(/\u200c/g, '&zwnj;')
-				.replace(/\u200d/g, '&zwj;')
-		);
+		return clone
+			.html()
+			.replace(/\u200c/g, '&zwnj;')
+			.replace(/\u200d/g, '&zwj;');
 	};
 
 	mailster.editor.getFrameContent = function () {

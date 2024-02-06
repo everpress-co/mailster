@@ -628,8 +628,9 @@ class MailsterFrontpage {
 						'ip'         => $ip,
 						'lang'       => mailster_get_lang(),
 					);
+					$geo       = mailster_get_geo();
 
-					if ( 'unknown' !== ( $geo = mailster_get_geo() ) ) {
+					if ( $geo && $geo !== 'unknown' ) {
 
 						$user_meta['geo']        = $geo->country->isoCode . '|' . $geo->city->name;
 						$user_meta['coords']     = (float) $geo->location->latitude . ',' . (float) $geo->location->longitude;

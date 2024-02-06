@@ -165,7 +165,9 @@ class MailsterTemplate {
 				$raw            = preg_replace( '#<modules>(.*)</modules>#s', '<modules>' . "\n" . $custom_modules . "\n" . '</modules>', $raw );
 			}
 		} else {
-			$raw = '{headline}<br>{content}';
+
+			$raw = $this->get_notification_template();
+
 		}
 
 		$this->slug   = $slug;
@@ -270,31 +272,37 @@ class MailsterTemplate {
 			}
 		}
 
-		$services = mailster_option(
-			'services',
-			array(
-				'twitter'  => '',
-				'facebook' => '',
-			)
-		);
+		$services = mailster_option( 'services', array() );
 
-		$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
+		$social = $xpath->query( '//*/buttons[@social]' );
+		if ( $social->length > 0 ) {
+			$buttons = $social->item( 0 )->getElementsByTagName( 'a' );
+		} else {
+			// legacy
+			$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
+		}
 
-		if ( $buttons->length ) {
+		if ( $buttons->length > 0 ) {
 
 			$base_path = $this->templatepath . '/img/social/';
 			$base_url  = $this->templateurl . '/img/social/';
 			if ( ! is_dir( $base_path ) ) {
-				$base_path = MAILSTER_DIR . 'assets/img/social/';
-				$base_url  = MAILSTER_URI . 'assets/img/social/';
+				$base_path = MAILSTER_UPLOAD_DIR . '/social/';
+				$base_url  = MAILSTER_UPLOAD_URI . '/social/';
+				if ( ! is_dir( $base_path ) ) {
+					mailster( 'templates' )->copy_social_icons();
+				}
 			}
 
 			$high_dpi = mailster_option( 'high_dpi' ) ? 2 : 1;
 
+			$base_link  = $buttons->item( 0 )->cloneNode( true );
+			$base_image = $base_link->firstChild;
+
 			$parent = $buttons->item( 0 )->parentNode;
 
-			foreach ( $buttons as $button ) {
-				$button->parentNode->removeChild( $button );
+			while ( $parent->hasChildNodes() ) {
+				$parent->removeChild( $parent->firstChild );
 			}
 
 			foreach ( $services as $service => $username ) {
@@ -317,21 +325,21 @@ class MailsterTemplate {
 					continue;
 				}
 
-				if ( ! ( $width = $buttons->item( 0 )->firstChild->getAttribute( 'width' ) ) ) {
+				if ( ! ( $width = $base_image->getAttribute( 'width' ) ) ) {
 					$width = round( $width / $high_dpi );
 				}
-				if ( ! ( $height = $buttons->item( 0 )->firstChild->getAttribute( 'height' ) ) ) {
+				if ( ! ( $height = $base_image->getAttribute( 'height' ) ) ) {
 					$height = round( $height / $high_dpi );
 				}
 
-				$img  = $doc->createElement( 'img' );
-				$link = $doc->createElement( 'a' );
+				$link = $base_link->cloneNode( false );
+				$img  = $base_image->cloneNode( false );
 
 				$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
-				$img->setAttribute( 'width', $width );
-				$img->setAttribute( 'height', $height );
-				$img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
-				$img->setAttribute( 'class', 'social' );
+				// $img->setAttribute( 'width', $width );
+				// $img->setAttribute( 'height', $height );
+				// $img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
+				// $img->setAttribute( 'class', 'social' );
 				$img->setAttribute( 'alt', esc_attr( sprintf( __( 'Share this on %s', 'mailster' ), ucwords( $service ) ) ) );
 
 				$link->setAttribute( 'href', $url );
@@ -465,7 +473,7 @@ class MailsterTemplate {
 
 		$pre .= "\n-->\n";
 
-		if ( $has_modules = preg_match( '#<modules[^>]*>(.*)</modules>#s', $content, $hits ) ) {
+		if ( preg_match( '#<modules[^>]*>(.*)</modules>#s', $content, $hits ) ) {
 
 			$original_modules_html = $modules ? $this->get_modules_html() : '';
 			$custom_modules        = $hits[1];
@@ -720,6 +728,21 @@ class MailsterTemplate {
 		}
 
 		return trim( $html );
+	}
+
+	private function get_notification_template() {
+
+		// try to get the content form the index.html
+		$raw = file_get_contents( $this->templatepath . '/index.html' );
+
+		if ( preg_match( '#<module[^>]*?type="notification"(.*?)".*?</module>#ms', $raw, $modules ) ) {
+			$module = $modules[0];
+			$raw    = preg_replace( '#<modules>(.*)</modules>#s', '<modules>' . "\n" . $module . "\n" . '</modules>', $raw );
+		} else {
+			$raw = '{headline}<br>{content}';
+		}
+
+		return $raw;
 	}
 
 	/**
@@ -1121,7 +1144,7 @@ class MailsterTemplate {
 		if ( ! is_dir( $basefolder ) ) {
 			$root = list_files( $this->path . '/' . $this->slug . '/' . $basefolder, 1 );
 		} else {
-			$root = list_files( $basefolder, 1 );
+			$root = list_files( MAILSTER_UPLOAD_DIR . '/social', 1 );
 		}
 
 		sort( $root );
@@ -1161,22 +1184,19 @@ class MailsterTemplate {
 
 				}
 			}
-
 			if ( $nav ) :
 				?>
-		<div id="button-nav-<?php echo $id; ?>" class="button-nav nav-tab-wrapper hide-if-no-js" data-folders="<?php echo implode( '-', $folders ); ?>"><?php echo $nav; ?></div>
+				<div id="button-nav-<?php echo esc_attr( $id ); ?>" class="button-nav nav-tab-wrapper hide-if-no-js" data-folders="<?php echo implode( '-', $folders ); ?>"><?php echo $nav; ?></div>
 				<?php
 			endif;
 			echo $btn;
 			?>
 		</div>
-
-
 			<?php if ( $rootbtn ) : ?>
-		<div class="button-nav-wrap button-nav-wrap-root"><?php echo $rootbtn; ?></div>
-				<?php
-		endif;
+				<div class="button-nav-wrap button-nav-wrap-root"><?php echo $rootbtn; ?></div>
+				<?php endif; ?>
 
+			<?php
 		}
 	}
 
@@ -1206,7 +1226,7 @@ class MailsterTemplate {
 
 			$filename = basename( $file );
 			$service  = substr( $filename, 0, strrpos( $filename, '.' ) );
-			$btn     .= '<li><a class="btnsrc" title="' . ucwords( esc_attr( $service ) ) . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( array( MAILSTER_DIR, $this->path ), array( MAILSTER_URI, $this->url ), $file ) . '" loading="lazy" width="32" height ="32"></a></li>';
+			$btn     .= '<li><a class="btnsrc" title="' . ucwords( esc_attr( $service ) ) . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( array( MAILSTER_DIR, MAILSTER_UPLOAD_DIR, $this->path ), array( MAILSTER_URI, MAILSTER_UPLOAD_URI, $this->url ), $file ) . '" loading="lazy" width="32" height ="32"></a></li>';
 
 		}
 

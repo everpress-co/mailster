@@ -486,7 +486,7 @@ mailster = (function (mailster, $, window, document) {
 				: clone.hide().insertAfter(element);
 		} else {
 			var lastfooter = mailster.editor.$.modules.filter('[type=footer]');
-			if (lastfooter) {
+			if (lastfooter.length > 0) {
 				clone.hide().insertBefore(lastfooter.first());
 			} else {
 				clone.hide().appendTo(mailster.editor.$.container);

@@ -303,7 +303,6 @@ class MailsterTemplates {
 				$files = list_files( $uploadfolder . '/' . $folder );
 
 				$removed_files = array();
-
 				$allowed_mimes = array( 'text/html', 'text/xml', 'text/plain', 'image/svg+xml', 'image/svg', 'image/png', 'image/gif', 'image/jpeg', 'image/tiff', 'image/x-icon' );
 				$safelist      = array( 'json', 'woff', 'woff2', 'ttf', 'eot' );
 				$blocklist     = array( 'php', 'bin', 'exe' );
@@ -338,38 +337,46 @@ class MailsterTemplates {
 
 				// with name value
 				if ( ! empty( $data['name'] ) ) {
-					wp_mkdir_p( $this->path . '/' . $templateslug );
 
-					if ( $backup_old ) {
-						$old_data  = $this->get_template_data( $this->path . '/' . $templateslug . '/index.html' );
-						$old_files = list_files( $this->path . '/' . $templateslug, 1 );
+					$path = $this->path . '/' . $templateslug;
+					wp_mkdir_p( $path );
+
+					if ( $backup_old && file_exists( $path . '/index.html' ) ) {
+						$old_data  = $this->get_template_data( $path . '/index.html' );
 						$new_files = list_files( $uploadfolder . '/' . $folder, 1 );
-						foreach ( $new_files as $file ) {
-							if ( is_file( $file ) && preg_match( '#\.html$#', $file ) ) {
-								$old_file = str_replace( $uploadfolder, $this->path, $file );
-								if ( file_exists( $old_file ) ) {
-									if ( md5_file( $file ) == md5_file( $old_file ) ) {
-										continue;
-									}
+						// add notification file so it get removed
+						if ( ! preg_grep( '#notification\.html$#', $new_files ) ) {
+							$new_files[] = $uploadfolder . '/' . $folder . '/notification.html';
+						}
 
-									$new_file_name = preg_replace( '#\.html$#', '-' . $old_data['version'] . '.html', $old_file );
-
-									if ( ! $wp_filesystem->copy( $old_file, $new_file_name, $old_file ) ) {
-										copy( $old_file, $new_file_name, $old_file );
-									}
-
-									// replace the file in the post meta table
-									global $wpdb;
-									$sql = "UPDATE $wpdb->postmeta AS template_file JOIN $wpdb->postmeta AS template ON template.post_id = template_file.post_id AND template.meta_key = %s AND template.meta_value = %s SET template_file.meta_value = %s WHERE template_file.meta_key = %s AND template_file.meta_value = %s";
-									$sql = $wpdb->prepare( $sql, '_mailster_template', $templateslug, basename( $new_file_name ), '_mailster_file', basename( $old_file ) );
-									$wpdb->query( $sql );
-
-								}
+						foreach ( $new_files as $new_file ) {
+							if ( ! preg_match( '#\.html$#', $new_file ) ) {
+								continue;
 							}
+
+							$old_file = $path . '/' . basename( $new_file );
+
+							// don't overwrite if it's the same file
+							if ( file_exists( $new_file ) && file_exists( $old_file ) && md5_file( $new_file ) === md5_file( $old_file ) ) {
+								continue;
+							}
+
+							// append version to old file
+							$old_file_name = preg_replace( '#\.html$#', '-' . $old_data['version'] . '.html', $old_file );
+							if ( ! $wp_filesystem->move( $old_file, $old_file_name, $old_file ) ) {
+								copy( $old_file, $old_file_name, $old_file );
+							}
+
+							// replace the file in the post meta table
+							global $wpdb;
+							$sql = "UPDATE $wpdb->postmeta AS template_file JOIN $wpdb->postmeta AS template ON template.post_id = template_file.post_id AND template.meta_key = %s AND template.meta_value = %s SET template_file.meta_value = %s WHERE template_file.meta_key = %s AND template_file.meta_value = %s";
+							$sql = $wpdb->prepare( $sql, '_mailster_template', $templateslug, basename( $old_file_name ), '_mailster_file', basename( $old_file ) );
+							$wpdb->query( $sql );
+
 						}
 					}
-
-					copy_dir( $uploadfolder . '/' . $folder, $this->path . '/' . $templateslug );
+					// copy the files
+					copy_dir( $uploadfolder . '/' . $folder, $path );
 				} else {
 					$wp_filesystem->delete( $uploadfolder, true );
 					return new WP_Error( 'wrong_header', esc_html__( 'The header of this template files is missing or corrupt', 'mailster' ) );
@@ -392,7 +399,6 @@ class MailsterTemplates {
 					$this->reset_query_cache();
 				}
 				$this->process_colors( $data['slug'] );
-
 			}
 
 			$wp_filesystem->delete( $uploadfolder, true );
@@ -904,7 +910,9 @@ class MailsterTemplates {
 		$screenshot_modules_folder = $screenshot_folder_base . $slug . '/modules/' . $hash . '/';
 		$screenshoturi             = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
-		$raw = file_get_contents( $filedir );
+		$raw      = file_get_contents( $filedir );
+		$template = mailster( 'template', $slug, $file, $custom_modules );
+		$raw      = $template->get();
 
 		if ( $custom_modules ) {
 
@@ -938,8 +946,7 @@ class MailsterTemplates {
 			return;
 		}
 
-		$template = mailster( 'template', $slug, $file, $custom_modules );
-		$modules  = $template->get_modules_list();
+		$modules = $template->get_modules_list();
 
 		$wp_filesystem = mailster_require_filesystem();
 
@@ -977,7 +984,8 @@ class MailsterTemplates {
 			)
 		);
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$http_response_headers = wp_remote_retrieve_headers( $response );
 
 		// file hasn't been generated yet
 		if ( 404 == $response_code ) {
@@ -1117,6 +1125,7 @@ class MailsterTemplates {
 
 			try {
 				$this->copy_template();
+				$this->copy_social_icons();
 			} catch ( Exception $e ) {
 				if ( ! wp_next_scheduled( 'mailster_copy_template' ) ) {
 					wp_schedule_single_event( time(), 'mailster_copy_template' );
@@ -1128,9 +1137,20 @@ class MailsterTemplates {
 
 	public function copy_template() {
 
+		$success = false;
+
 		if ( $path = mailster( 'helper' )->mkdir( 'templates' ) ) {
-			copy_dir( MAILSTER_DIR . 'templates', $path );
+			$success = copy_dir( MAILSTER_DIR . 'templates', $path );
 			$this->process_colors();
+		}
+
+		return $success;
+	}
+
+	public function copy_social_icons() {
+
+		if ( $path = mailster( 'helper' )->mkdir( 'social' ) ) {
+			copy_dir( MAILSTER_DIR . 'assets/img/social', $path );
 		}
 	}
 
@@ -1429,12 +1449,12 @@ class MailsterTemplates {
 
 		if ( preg_match( '#index(-([0-9.]+))?\.html?#', $basename, $hits ) ) {
 			$template_data['label'] = esc_html__( 'Base', 'mailster' ) . ( ! empty( $hits[2] )
-				? ' ' . $hits[2] : '' );
+			? ' ' . $hits[2] : '' );
 		}
 
 		if ( preg_match( '#notification(-([0-9.]+))?\.html?#', $basename, $hits ) ) {
 			$template_data['label'] = esc_html__( 'Notification', 'mailster' ) . ( ! empty( $hits[2] )
-				? ' ' . $hits[2] : '' );
+			? ' ' . $hits[2] : '' );
 		}
 
 		if ( empty( $template_data['label'] ) ) {
@@ -1603,7 +1623,7 @@ class MailsterTemplates {
 		<p id="async-upload-wrap">
 			<label class="screen-reader-text" for="async-upload"><?php esc_html_e( 'Upload', 'mailster' ); ?></label>
 			<input type="file" name="async-upload" id="async-upload" />
-			<?php submit_button( esc_html__( 'Upload', 'mailster' ), 'button', 'html-upload', false ); ?>
+		<?php submit_button( esc_html__( 'Upload', 'mailster' ), 'button', 'html-upload', false ); ?>
 			<a href="#" onclick="try{top.tb_remove();}catch(e){}; return false;"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
 		</p>
 		<div class="clear"></div>

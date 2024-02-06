@@ -1380,10 +1380,11 @@ mailster = (function (mailster, $, window, document) {
 			}
 		} else if (type == 'codeview') {
 			var textarea = base.find('textarea'),
-				clone = el.clone();
+				clone = el.clone(),
+				html = mailster.editor.cleanHTML(el.html());
 
 			current.modulebuttons = clone.find('modulebuttons');
-			textarea.show().html(mailster.editor.cleanHTML(el.html()));
+			textarea.show().html(html);
 			$('#module-name').val(name);
 		}
 
