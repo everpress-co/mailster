@@ -691,7 +691,7 @@ class MailsterHelper {
 		<select name="<?php echo esc_attr( $fieldname ); ?>" <?php echo $disabled ? 'disabled' : ''; ?>>
 				<option value="-1" <?php selected( -1 == $selected ); ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' ); ?></option>
 		<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
-				<option value="<?php echo $slug; ?>"<?php selected( $slug == $selected ); ?>><?php echo esc_attr( $filedata['label'] ); ?> (<?php echo esc_html( $slug ); ?>)</option>
+				<option value="<?php echo esc_attr( $slug ); ?>"<?php selected( $slug == $selected ); ?>><?php echo esc_attr( $filedata['label'] ); ?> (<?php echo esc_html( $slug ); ?>)</option>
 		<?php endforeach; ?>
 		</select>
 		<?php

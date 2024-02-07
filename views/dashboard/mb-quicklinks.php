@@ -25,14 +25,14 @@ $forms = count( mailster( 'block-forms' )->get_all() );
 		<a href="post-new.php?post_type=newsletter&post_status=autoresponder"><?php esc_html_e( 'Create Autoresponder', 'mailster' ); ?></a>
 	</dd>
 </dl>
-<dl class="mailster-icon mailster-automations">
+<!-- <dl class="mailster-icon mailster-automations">
 	<dt><a href="edit.php?post_type=mailster-workflow"><?php esc_html_e( 'Automations', 'mailster' ); ?></a></dt>
 	<dd><span class="version"><?php echo number_format_i18n( $automations ) . ' ' . esc_html__( _nx( 'Automation', 'Automations', $automations, 'number of', 'mailster' ) ); ?></span></dd>
 	<dd>
 		<a href="edit.php?post_type=mailster-workflow"><?php esc_html_e( 'View', 'mailster' ); ?></a> |
 		<a href="post-new.php?post_type=mailster-workflow"><?php esc_html_e( 'Create Automation', 'mailster' ); ?></a>
 	</dd>
-</dl>
+</dl> -->
 <dl class="mailster-icon mailster-subscribers">
 	<dt><a href="edit.php?post_type=newsletter&page=mailster_subscribers"><?php esc_html_e( 'Subscribers', 'mailster' ); ?></a></dt>
 	<dd><span class="version"><?php echo number_format_i18n( $subscribers ) . ' ' . esc_html__( _nx( 'Subscriber', 'Subscribers', $subscribers, 'number of', 'mailster' ) ); ?></span></dd>

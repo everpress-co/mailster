@@ -178,8 +178,8 @@ class MailsterSettings {
 
 			'tweet_cache_time'                   => 60,
 
-			'interval'                           => 2,
-			'send_at_once'                       => 20,
+			'interval'                           => 1,
+			'send_at_once'                       => 50,
 			'auto_send_at_once'                  => false,
 			'send_limit'                         => 10000,
 			'send_period'                        => 24,
@@ -1196,7 +1196,7 @@ class MailsterSettings {
 
 				case 'dkim':
 					if ( ! isset( $options['dkim_private_key'] ) || ! isset( $options['dkim_public_key'] ) ) {
-						$this->add_settings_error( esc_html__( 'You have to generate DKIM Keys to use DKIM signed mails!', 'mailster' ), 'dkim' );
+						// $this->add_settings_error( esc_html__( 'You have to generate DKIM Keys to use DKIM signed mails!', 'mailster' ), 'dkim' );
 					}
 
 					break;

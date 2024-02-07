@@ -173,50 +173,6 @@ export default function WelcomeGuide(props) {
 						</>
 					),
 				},
-				{
-					content: (
-						<>
-							<h1 className="edit-post-welcome-guide__heading">
-								{__('Mailster Forms are currently in Beta', 'mailster')}
-							</h1>
-							<p className="edit-post-welcome-guide__text">
-								{__(
-									'Please keep in mind while block forms have been tested thoroughly this feature is still in beta and changes expected to happen.',
-									'mailster'
-								)}
-							</p>
-							<p className="edit-post-welcome-guide__text">
-								{__(
-									"We're going to ship regular updates to this plugin before we'll merge it into the core plugin. If you are spot a bug or like to have a feature request please open a ticket at Github or post on the WordPress support forum.",
-									'mailster'
-								)}
-							</p>
-							<p className="edit-post-welcome-guide__text">
-								<Button
-									variant="primary"
-									onClick={() => {
-										window.open(
-											'https://github.com/everpress-co/mailster-block-forms/issues'
-										);
-									}}
-								>
-									{__('Github Issue Tracker', 'mailster')}
-								</Button>
-								<Button
-									variant="secondary"
-									style={{ float: 'right' }}
-									onClick={() => {
-										window.open(
-											'https://wordpress.org/support/plugin/mailster-block-forms'
-										);
-									}}
-								>
-									{__('WordPress.org Support Forum', 'mailster')}
-								</Button>
-							</p>
-						</>
-					),
-				},
 			]}
 			finishButtonText={__('Get started', 'mailster')}
 			contentLabel={__('Mailster Forms Welcome Guide', 'mailster')}

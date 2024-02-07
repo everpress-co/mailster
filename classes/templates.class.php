@@ -1416,9 +1416,7 @@ class MailsterTemplates {
 			return false;
 		} else {
 			$basename  = basename( $file );
-			$fp        = fopen( $file, 'r' );
-			$file_data = fread( $fp, 2048 );
-			fclose( $fp );
+			$file_data = file_get_contents( $file );
 		}
 
 		// no header
@@ -1456,6 +1454,8 @@ class MailsterTemplates {
 			$template_data['label'] = esc_html__( 'Notification', 'mailster' ) . ( ! empty( $hits[2] )
 			? ' ' . $hits[2] : '' );
 		}
+
+		$template_data['notification_module'] = preg_match( '#<module[^>]*?type="notification"(.*?)".*?</module>#ms', $file_data );
 
 		if ( empty( $template_data['label'] ) ) {
 			$template_data['label'] = substr( $basename, 0, strrpos( $basename, '.' ) );

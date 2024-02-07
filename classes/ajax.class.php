@@ -2841,6 +2841,7 @@ class MailsterAjax {
 
 					$template = $data['mailster_options']['default_template'];
 					$result   = mailster( 'templates' )->download_by_slug( $template );
+					mailster( 'templates' )->schedule_screenshot( $template, 'index.html', true, 1 );
 					if ( ! is_wp_error( $result ) ) {
 						$mailster_options = wp_parse_args( $data['mailster_options'], $mailster_options );
 						update_option( 'mailster_options', $mailster_options );
@@ -2850,7 +2851,6 @@ class MailsterAjax {
 
 			case 'finish':
 				// maybe
-				mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
 				mailster( 'geo' )->maybe_update();
 				update_option( 'mailster_setup', time() );
 				// check for updates
