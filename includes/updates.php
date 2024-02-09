@@ -706,6 +706,9 @@ if ( $old_version ) {
 
 			mailster( 'templates' )->update_module_thumbnails();
 
+			// force an update of the templates
+			mailster( 'templates' )->check_for_updates(true);			
+
 
 			mailster( 'convert' )->notice();
 

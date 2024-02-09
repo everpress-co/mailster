@@ -29,7 +29,7 @@ if ( false && $item['installed'] ) {
 	$content     = mailster( 'helper' )->handle_shortcodes( $content );
 	$iframe_src  = 'data:text/html;base64,' . base64_encode( $content );
 } else {
-	$iframe_src = $item['index'];
+	$iframe_src = add_query_arg( '_nocache', time(), $item['index'] );
 }
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>

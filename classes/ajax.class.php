@@ -1888,7 +1888,12 @@ class MailsterAjax {
 		$url  = esc_url( $_POST['url'] );
 		$slug = basename( $_POST['slug'] );
 
-		$result = mailster( 'templates' )->download_template( $url, $slug );
+		$result = mailster( 'templates' )->update_locally( $slug );
+
+		// if this fails try to download it
+		if ( ! $result ) {
+			$result = mailster( 'templates' )->download_template( $url, $slug );
+		}
 
 		if ( is_wp_error( $result ) ) {
 			switch ( $result->get_error_code() ) {

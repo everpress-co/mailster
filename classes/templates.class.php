@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Runner\Version;
+
 class MailsterTemplates {
 
 	public $path;
@@ -125,6 +127,56 @@ class MailsterTemplates {
 
 
 
+	public function update_locally( $slug ) {
+
+		$local_folder = MAILSTER_DIR . 'templates/' . $slug;
+		if ( ! file_exists( $local_folder . '/index.html' ) ) {
+			return false;
+		}
+
+		$templates = $this->get_templates();
+		if ( ! isset( $templates[ $slug ] ) ) {
+			return false;
+		}
+
+		$local_template_data = $this->get_template_data( $local_folder . '/index.html' );
+
+		if ( ! $local_template_data ) {
+			return false;
+		}
+
+		if ( version_compare( $templates[ $slug ]['version'], $local_template_data['version'], '>=' ) ) {
+			return false;
+		}
+
+		$wp_filesystem = mailster_require_filesystem();
+
+		if ( ! $wp_filesystem ) {
+			return new WP_Error( 'wp_filesystem', esc_html__( 'The content folder is not writeable', 'mailster' ) );
+		}
+
+		$temp_folder = mailster( 'helper' )->mkdir( 'uploads/' . uniqid(), false );
+		if ( ! wp_is_writable( $temp_folder ) ) {
+			$wp_filesystem->delete( $temp_folder, true );
+			return new WP_Error( 'not_writeable', esc_html__( 'The content folder is not writeable', 'mailster' ) );
+		}
+
+		// copy local folder to temp folder
+		$result = copy_dir( $local_folder, $temp_folder . '/' . $slug );
+
+		if ( is_wp_error( $result ) ) {
+			$wp_filesystem->delete( $temp_folder, true );
+			return $result;
+		}
+
+		$renamefolder = null;
+		$overwrite    = true;
+		$backup_old   = true;
+		return $this->install_template( $temp_folder, $renamefolder, $overwrite, $backup_old );
+	}
+
+
+
 	public function download_template( $url, $slug = null ) {
 
 		$download_url = rawurldecode( $url );
@@ -199,38 +251,61 @@ class MailsterTemplates {
 
 	/**
 	 *
+	 * Unzips a template file and saves it to a temp folder
 	 *
-	 * @param unknown $templatefile
-	 * @param unknown $renamefolder (optional)
-	 * @param unknown $overwrite    (optional)
-	 * @param unknown $backup_old   (optional)
-	 * @return unknown
+	 * @param string $zipfile
+	 * @param string $renamefolder (optional)
+	 * @param bool   $overwrite    (optional)
+	 * @param bool   $backup_old   (optional)
+	 * @return string|WP_Error
 	 */
-	public function unzip_template( $templatefile, $renamefolder = null, $overwrite = false, $backup_old = false ) {
+	public function unzip_template( $zipfile, $renamefolder = null, $overwrite = false, $backup_old = false ) {
 
 		$wp_filesystem = mailster_require_filesystem();
 
-		$uploadfolder = mailster( 'helper' )->mkdir( 'uploads' );
-
-		$uploadfolder = $uploadfolder . uniqid();
-
-		if ( ! is_dir( $uploadfolder ) ) {
-			wp_mkdir_p( $uploadfolder );
-		}
+		$temp_folder = mailster( 'helper' )->mkdir( 'uploads/' . uniqid(), false );
 
 		if ( ! $wp_filesystem ) {
 			return new WP_Error( 'wp_filesystem', esc_html__( 'The content folder is not writeable', 'mailster' ) );
 		}
 
-		if ( ! wp_is_writable( $uploadfolder ) ) {
+		if ( ! wp_is_writable( $temp_folder ) ) {
 			return new WP_Error( 'not_writeable', esc_html__( 'The content folder is not writeable', 'mailster' ) );
 		}
 
-		if ( is_wp_error( unzip_file( $templatefile, $uploadfolder ) ) ) {
-			$wp_filesystem->delete( $uploadfolder, true );
-			return new WP_Error( 'unzip', esc_html__( 'Unable to unzip template', 'mailster' ) );
+		$result = unzip_file( $zipfile, $temp_folder );
+
+		if ( is_wp_error( $result ) ) {
+			$wp_filesystem->delete( $temp_folder, true );
+			return $result;
 		}
 
+		$result = $this->install_template( $temp_folder, $renamefolder, $overwrite, $backup_old );
+
+		if ( is_wp_error( $result ) ) {
+			$wp_filesystem->delete( $temp_folder, true );
+		}
+
+		return $result;
+	}
+
+
+	/**
+	 * Moves template files to the template folder and checks the files, santized them.
+	 *
+	 * @param unknown $uploadfolder
+	 * @param unknown $renamefolder (optional)
+	 * @param unknown $overwrite    (optional)
+	 * @param unknown $backup_old   (optional)
+	 * @return unknown
+	 */
+	public function install_template( $uploadfolder, $renamefolder = null, $overwrite = false, $backup_old = false ) {
+
+		$wp_filesystem = mailster_require_filesystem();
+
+		$uploadfolder = trailingslashit( $uploadfolder );
+
+		// get installed templates
 		$templates = $this->get_templates();
 
 		$template_slugs = array_keys( $templates );
@@ -249,19 +324,19 @@ class MailsterTemplates {
 
 					if ( $renamefolder == $folder ) {
 						$moved = true;
-					} elseif ( ! ( $moved = $wp_filesystem->move( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder, true ) ) ) {
-						$moved = rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
+					} elseif ( ! ( $moved = $wp_filesystem->move( $uploadfolder . $folder, $uploadfolder . $renamefolder, true ) ) ) {
+						$moved = rename( $uploadfolder . $folder, $uploadfolder . $renamefolder );
 					}
 
 					if ( $moved ) {
 						$folder = $renamefolder;
 					} else {
-						$wp_filesystem->delete( $uploadfolder, true );
+
 						return new WP_Error( 'not_writeable', esc_html__( 'Unable to save template', 'mailster' ) );
 					}
 				}
 
-				$data = $this->get_template_data( $uploadfolder . '/' . $folder . '/index.html' );
+				$data = $this->get_template_data( $uploadfolder . $folder . '/index.html' );
 
 				// need index.html file
 				if ( ! $data ) {
@@ -280,12 +355,11 @@ class MailsterTemplates {
 
 						$result = $this->unzip_template( trailingslashit( $uploadfolder ) . $zip, $renamefolder, $overwrite, $backup_old );
 						if ( ! is_wp_error( $result ) ) {
-							$wp_filesystem->delete( $uploadfolder, true );
+
 							return $result;
 						}
 					}
 
-					$wp_filesystem->delete( $uploadfolder, true );
 					return new WP_Error( 'wrong_file', esc_html__( 'This is not a valid Mailster template ZIP', 'mailster' ) );
 
 				}
@@ -294,13 +368,11 @@ class MailsterTemplates {
 
 				if ( ! $overwrite && in_array( $templateslug, $template_slugs ) ) {
 
-					$wp_filesystem->delete( $uploadfolder, true );
-
 					return new WP_Error( 'template_exists', sprintf( esc_html__( 'Template %s already exists!', 'mailster' ), '"' . $data['name'] . '"' ) );
 
 				}
 
-				$files = list_files( $uploadfolder . '/' . $folder );
+				$files = list_files( $uploadfolder . $folder );
 
 				$removed_files = array();
 				$allowed_mimes = array( 'text/html', 'text/xml', 'text/plain', 'image/svg+xml', 'image/svg', 'image/png', 'image/gif', 'image/jpeg', 'image/tiff', 'image/x-icon' );
@@ -343,10 +415,10 @@ class MailsterTemplates {
 
 					if ( $backup_old && file_exists( $path . '/index.html' ) ) {
 						$old_data  = $this->get_template_data( $path . '/index.html' );
-						$new_files = list_files( $uploadfolder . '/' . $folder, 1 );
+						$new_files = list_files( $uploadfolder . $folder, 1 );
 						// add notification file so it get removed
 						if ( ! preg_grep( '#notification\.html$#', $new_files ) ) {
-							$new_files[] = $uploadfolder . '/' . $folder . '/notification.html';
+							$new_files[] = $uploadfolder . $folder . '/notification.html';
 						}
 
 						foreach ( $new_files as $new_file ) {
@@ -363,8 +435,9 @@ class MailsterTemplates {
 
 							// append version to old file
 							$old_file_name = preg_replace( '#\.html$#', '-' . $old_data['version'] . '.html', $old_file );
+							// move old file
 							if ( ! $wp_filesystem->move( $old_file, $old_file_name, $old_file ) ) {
-								copy( $old_file, $old_file_name, $old_file );
+								rename( $old_file, $old_file_name );
 							}
 
 							// replace the file in the post meta table
@@ -388,9 +461,9 @@ class MailsterTemplates {
 						}
 					}
 					// copy the files
-					copy_dir( $uploadfolder . '/' . $folder, $path );
+					copy_dir( $uploadfolder . $folder, $path );
 				} else {
-					$wp_filesystem->delete( $uploadfolder, true );
+
 					return new WP_Error( 'wrong_header', esc_html__( 'The header of this template files is missing or corrupt', 'mailster' ) );
 				}
 
@@ -413,8 +486,6 @@ class MailsterTemplates {
 				$this->process_colors( $data['slug'] );
 			}
 
-			$wp_filesystem->delete( $uploadfolder, true );
-
 			if ( isset( $templateslug ) && $templateslug ) {
 
 				return $data;
@@ -423,6 +494,8 @@ class MailsterTemplates {
 
 		return new WP_Error( 'file_error', esc_html__( 'There was a problem progressing the file', 'mailster' ) );
 	}
+
+
 
 
 	/**
@@ -1378,6 +1451,14 @@ class MailsterTemplates {
 
 			if ( $result['items'][ $slug ]['installed'] = isset( $templates[ $slug ] ) ) {
 				$result['items'][ $slug ] = array_merge( $templates[ $slug ], array_filter( $result['items'][ $slug ] ) );
+
+				// check if the template included in the plugin package has a new version
+				if ( file_exists( MAILSTER_DIR . 'templates/' . $slug . '/index.html' ) ) {
+					$local_template_data = $this->get_template_data( MAILSTER_DIR . 'templates/' . $slug . '/index.html' );
+					if ( version_compare( $result['items'][ $slug ]['version'], $local_template_data['version'], '<' ) ) {
+						$result['items'][ $slug ]['new_version'] = $local_template_data['version'];
+					}
+				}
 
 				$result['items'][ $slug ]['update_available'] = isset( $result['items'][ $slug ]['new_version'] ) && version_compare( $result['items'][ $slug ]['new_version'], $result['items'][ $slug ]['version'], '>' );
 				$result['items'][ $slug ]['files']            = $this->get_files( $slug );

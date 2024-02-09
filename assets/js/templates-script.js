@@ -625,6 +625,12 @@ mailster = (function (mailster, $, window, document) {
 							updatebadge.remove();
 						}
 					}
+					template
+						.find('iframe')
+						.attr(
+							'src',
+							template.find('iframe').attr('src') + '?_nocache=' + +new Date()
+						);
 				} else {
 					template
 						.find('.notice-error')
