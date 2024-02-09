@@ -996,21 +996,24 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		$colors   = get_option( 'mailster_colors' );
-		$hash     = md5( implode( '', $_POST['colors'] ) );
-		$template = esc_attr( $_POST['template'] );
+		$colors     = get_option( 'mailster_colors', array() );
+		$hash       = md5( implode( '', $_POST['colors'] ) );
+		$template   = esc_attr( $_POST['template'] );
+		$new_colors = (array) $_POST['colors'];
 
 		if ( ! isset( $colors[ $template ] ) ) {
 			$colors[ $template ] = array();
 		}
 
-		$colors[ $template ][ $hash ] = $_POST['colors'];
+		$colors[ $template ][ $hash ] = $new_colors;
 
-		$return['html'] = '<ul class="colorschema custom" data-hash="' . $hash . '">';
-		foreach ( $_POST['colors'] as $color ) {
-			$return['html'] .= '<li class="colorschema-field" data-hex="' . $color . '" style="background-color:' . $color . '"></li>';
+		$return['html']  = '<div class="colorschema">';
+		$return['html'] .= '<span class="colorschema-title">' . esc_html__( 'Custom', 'mailster' ) . '</span>';
+		foreach ( $new_colors as $id => $color ) {
+			$return['html'] .= '<span class="colorschema-field" data-id="' . esc_attr( $id ) . '" data-hex="' . esc_attr( $color ) . '" style="background-color:' . esc_attr( $color ) . '"></span>';
 		}
-		$return['html'] .= '<li class="colorschema-delete-field"><a class="colorschema-delete">&#10005;</a></li></ul>';
+		$return['html'] .= '<a class="colorschema-delete" data-hash="' . esc_attr( $hash ) . '">&#10005;</a>';
+		$return['html'] .= '</div>';
 
 		if ( ! update_option( 'mailster_colors', $colors ) ) {
 			wp_send_json_error( $return );

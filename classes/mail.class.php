@@ -553,8 +553,10 @@ class MailsterMail {
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
 		if ( $template && $file ) {
-			$template_obj  = mailster( 'template', $template, $file );
+			$template_obj = mailster( 'template', $template, $file );
+			$template_obj->use_notification();
 			$this->content = $template_obj->get( true, true );
+
 		} elseif ( $file ) {
 
 			$this->content = '{headline}<br>{content}';
@@ -569,10 +571,12 @@ class MailsterMail {
 
 		$placeholder->add(
 			array(
-				'subject'   => $this->subject,
-				'preheader' => $headline,
-				'headline'  => $headline,
-				'content'   => $content,
+				'subject'      => $this->subject,
+				'preheader'    => $headline,
+				'headline'     => $headline,
+				'content'      => $content,
+				'can-spam'     => '',
+				'notification' => '',
 			)
 		);
 

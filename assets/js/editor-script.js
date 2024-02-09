@@ -122,7 +122,7 @@ mailster = (function (mailster, $, window, document) {
 		clone
 			.find('single, multi, module, modules, buttons')
 			.removeAttr(
-				'contenteditable spellcheck id dir style class active active selected'
+				'contenteditable spellcheck id dir style class active selected'
 			);
 
 		return clone
@@ -166,9 +166,9 @@ mailster = (function (mailster, $, window, document) {
 			mailster.$.head.val() +
 			'\n<body' +
 			(s ? ' ' + s : '') +
-			'>\n' +
+			'>' +
 			content +
-			'\n</body>\n</html>'
+			'</body>\n</html>'
 		);
 	};
 

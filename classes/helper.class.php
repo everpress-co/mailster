@@ -683,7 +683,7 @@ class MailsterHelper {
 
 		$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
 
-		if ( isset( $templatefiles['index.html'] ) ) {
+		if ( isset( $templatefiles['index.html'] ) && ! $templatefiles['index.html']['notification_module'] ) {
 			unset( $templatefiles['index.html'] );
 		}
 

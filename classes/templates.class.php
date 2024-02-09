@@ -373,6 +373,18 @@ class MailsterTemplates {
 							$sql = $wpdb->prepare( $sql, '_mailster_template', $templateslug, basename( $old_file_name ), '_mailster_file', basename( $old_file ) );
 							$wpdb->query( $sql );
 
+							// update these if it's the current used template
+							if ( $templateslug == mailster_option( 'default_template' ) ) {
+								if ( mailster_option( 'system_mail_template' ) == basename( $old_file ) ) {
+									mailster_update_option( 'system_mail_template', basename( $old_file_name ) );
+								}
+								if ( mailster_option( 'subscriber_notification_template' ) == basename( $old_file ) ) {
+									mailster_update_option( 'subscriber_notification_template', basename( $old_file_name ) );
+								}
+								if ( mailster_option( 'unsubscribe_notification_template' ) == basename( $old_file ) ) {
+									mailster_update_option( 'unsubscribe_notification_template', basename( $old_file_name ) );
+								}
+							}
 						}
 					}
 					// copy the files
@@ -439,18 +451,15 @@ class MailsterTemplates {
 			$template_data = $wp_filesystem->get_contents( $folder . '/template.json' );
 
 			if ( $template_data ) {
-				$template_data = json_decode( $template_data );
+				$template_data = json_decode( $template_data, true );
 
-				if ( isset( $template_data->schemas ) ) {
-					return $template_data->schemas;
+				if ( isset( $template_data['schemas'] ) ) {
+					return $template_data['schemas'];
 				}
-
-				return false;
-
 			}
 		}
 
-		return false;
+		return array();
 	}
 
 	public function process_colors( $slug = null ) {
@@ -474,6 +483,7 @@ class MailsterTemplates {
 
 		$folder = trailingslashit( $path ) . $slug;
 
+		// legacy
 		if ( file_exists( $folder . '/colors.json' ) ) {
 
 			$colors = $wp_filesystem->get_contents( $folder . '/colors.json' );
@@ -1164,6 +1174,7 @@ class MailsterTemplates {
 
 		$templateobj     = mailster( 'template', $template, $file );
 		$template_colors = $this->parse_colors( $templateobj->raw, 'original' );
+		$current         = null;
 
 		// if these are different a template change has happend or the campaign is new
 		if ( $campaign_template != $template || $campaign_file != $file ) {
@@ -1172,24 +1183,31 @@ class MailsterTemplates {
 			// otherwise merge the ones defined in the current campaign
 			$campaign_colors = $this->parse_colors( $campaign->post_content );
 			$merged_colors   = array_replace_recursive( $template_colors, $campaign_colors );
+			$current         = wp_list_pluck( $campaign_colors, 'value', 'id' );
 
 		}
 
-		$schemas = $this->get_colors_from_json( $template );
-		$legacy  = false;
-
-		// legacy color schmas < 4.0
-		if ( empty( $schemas ) ) {
-			$legacy = get_option( 'mailster_colors', array() );
-			if ( isset( $legacy[ $template ] ) ) {
-				$legacy = $legacy[ $template ];
+		$schemas        = $this->get_colors_from_json( $template );
+		$stored         = get_option( 'mailster_colors', array() );
+		$custom_schemas = array();
+		if ( isset( $stored[ $template ] ) ) {
+			$stored = $stored[ $template ];
+			$i      = 1;
+			foreach ( $stored as $hash => $colors ) {
+				$custom_schemas[] = array(
+					'name'   => sprintf( __( 'Custom %s', 'mailster' ), '#' . $i++ ),
+					'hash'   => $hash,
+					'colors' => $colors,
+				);
 			}
 		}
+		// prepend to schemas
+		$schemas = array_merge( $custom_schemas, $schemas );
 
 		return array(
 			'colors'  => $merged_colors,
+			'current' => $current,
 			'schemas' => $schemas,
-			'legacy'  => $legacy,
 		);
 	}
 

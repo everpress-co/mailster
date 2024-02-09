@@ -1979,12 +1979,12 @@ mailster = (function (mailster, $, window, document) {
 			el.wpColorPicker('color', color);
 			return false;
 		})
-		.on('click', 'ul.colorschema', function () {
-			var li = $(this).find('li.colorschema-field');
+		.on('click', '.colorschema', function () {
+			var colors = $(this).find('.colorschema-field');
 
 			mailster.trigger('disable');
 
-			$.each(li, function (i) {
+			$.each(colors, function (i) {
 				var _this = $(this);
 				var id = _this.data('id');
 				var color = _this.data('hex');
@@ -1994,8 +1994,14 @@ mailster = (function (mailster, $, window, document) {
 
 			mailster.trigger('enable');
 		})
+		.on('click', 'a.select-schema', function () {
+			$('.colorschemas').toggle();
+			return false;
+		})
 		.on('click', 'a.savecolorschema', function () {
-			var colors = {};
+			var colors = {},
+				template = $('#mailster_template_name').val();
+
 			$.each(mailster.$.options.find('.color'), function (i, e) {
 				colors[$(e).data('id')] = $(e).val();
 			});
@@ -2004,16 +2010,13 @@ mailster = (function (mailster, $, window, document) {
 
 			mailster.util.ajax(
 				'save_color_schema',
-				{
-					template: $('#mailster_template_name').val(),
-					colors: colors,
-				},
+				{ template: template, colors: colors },
 				function (response) {
 					loader(false);
 					if (response.success) {
 						$('.colorschema')
-							.last()
-							.after($(response.data.html).hide().fadeIn());
+							.first()
+							.before($(response.data.html).hide().fadeIn());
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -2023,16 +2026,15 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.colorschema-delete', function () {
 			if (confirm(mailster.l10n.campaigns.delete_colorschema)) {
-				var schema = $(this).parent().parent();
+				var schema = $(this).parent(),
+					template = $('#mailster_template_name').val(),
+					hash = $(this).data('hash');
 
 				loader(true);
 
 				mailster.util.ajax(
 					'delete_color_schema',
-					{
-						template: $('#mailster_template_name').val(),
-						hash: schema.data('hash'),
-					},
+					{ template: template, hash: hash },
 					function (response) {
 						loader(false);
 						if (response.success) {
@@ -2051,15 +2053,14 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.colorschema-delete-all', function () {
 			if (confirm(mailster.l10n.campaigns.delete_colorschema_all)) {
-				var schema = $('.colorschema.custom');
+				var schema = $('.colorschema-delete').closest('.colorschema'),
+					template = $('#mailster_template_name').val();
 
 				loader(true);
 
 				mailster.util.ajax(
 					'delete_color_schema_all',
-					{
-						template: $('#mailster_template_name').val(),
-					},
+					{ template: template },
 					function (response) {
 						loader(false);
 						if (response.success) {
@@ -2075,10 +2076,6 @@ mailster = (function (mailster, $, window, document) {
 			}
 
 			return false;
-		})
-		.on('change', '#mailster_version', function () {
-			var val = $(this).val();
-			_changeElements(val);
 		})
 		.on('change', 'input.color', function (event, ui) {
 			var _this = $(this);

@@ -92,7 +92,8 @@
 			a {color:var(--mailster-color-links)}
 			a:hover {text-decoration-line:underline}
 			p,ul,ol {margin-top:6px;margin-bottom:5px}
-			.m_block {background-color:var(--mailster-block-bg-color);color:var(--mailster-block-color-font);box-shadow:0 4px 4px -2px rgba(0, 0, 0, 0.15)}
+			.m_block {background-color:var(--mailster-block-bg-color);color:var(--mailster-block-color-font)}
+			.m_shadow {box-shadow:0 12px 2px -8px rgba(58, 58, 58, 0.25)}
 			.m_paddingx {padding-left:12px;padding-right:12px}
 			@media (max-width:640px) {			
 					.m_paddingx {padding-left:8px !important;padding-right:8px !important}
@@ -212,7 +213,10 @@
 															<tr>
 																<td class="m_padding sm-block sm-w-full pt-8 text-xl">
 																	<h2><single label="Headline">Headline goes here.</single></h2>
-																	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+																	<p>
+																		<a href="#">Lorem</a>
+																		ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+																	</p>
 																</td>
 															</tr>
 														</table>
@@ -226,27 +230,27 @@
 								<!--[if mso]></td></tr></table><![endif]-->
 							</div>
 						</module>
-						<div role="none" style="line-height: 24px; font-size: 24px">&nbsp;</div>
-						<module label="Empty Spacer" auto>
+						<module label="Seperator" auto>
 							<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
 							<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
 								<tr>
-									<td class="sm-block" align="center">
+									<td class="sm-block m_block m_shadow" align="center">
 										<table class="w-full" cellpadding="0" cellspacing="0" role="none">
 											<tr>
-												<td><div role="none" style="line-height: 24px; font-size: 24px">&nbsp;</div></td>
+												<td><div role="none" style="line-height: 20px; font-size: 20px">&nbsp;</div></td>
 											</tr>
 										</table>
 									</td>
 								</tr>
 							</table>
 							<!--[if mso]></td></tr></table><![endif]-->
+							<div role="none" style="line-height: 24px; font-size: 24px">&nbsp;</div>
 						</module>
-						<module label="Seperator" auto>
+						<module label="Empty Spacer" auto>
 							<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
 							<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
 								<tr>
-									<td class="sm-block m_block" align="center">
+									<td class="sm-block" align="center">
 										<table class="w-full" cellpadding="0" cellspacing="0" role="none">
 											<tr>
 												<td><div role="none" style="line-height: 24px; font-size: 24px">&nbsp;</div></td>
@@ -293,19 +297,26 @@
 														<img class="mr-8 sm-float-none sm-mx-0" src="https://dummy.mailster.co/320x180.jpg" width="320" height="180" align="left" label="Image max width 320 pixel" editable data-crop="true" alt="">
 														<div>
 															<multi label="Body">
-																<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.</p>
-																<p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p>
 																<p>
-																	Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum
-																	<a href="#">non,</a>
-																	consectetur a erat.
+																	Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec,
+																	<a href="#">vulputate</a>
+																	sit amet felis. Vestibulum at eros cras amet.
 																</p>
 																<p>
-																	Curabitur arcu erat, accumsan id imperdiet et, porttitor at
-																	<a href="#">sem.</a>
-																	Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.
+																	Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas volutpat
+																	<a href="#">blandit</a>
+																	aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.
 																</p>
-																<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+																<p>Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.</p>
+																<p>
+																	Curabitur arcu erat,
+																	<a href="#">accumsan</a>
+																	id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.
+																</p>
+																<p>
+																	<a href="#">Vivamus</a>
+																	lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.
+																</p>
 															</multi>
 															<div class="btn">
 																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
@@ -337,19 +348,23 @@
 														<img class="ml-8 sm-float-none sm-mx-0" src="https://dummy.mailster.co/320x180.jpg" width="320" height="180" align="right" label="Image max width 320 pixel" editable data-crop="true" alt="">
 														<div>
 															<multi label="Body">
-																<p>Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.</p>
+																<p>
+																	Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies
+																	<a href="#">ligula</a>
+																	sed magna dictum porta.
+																</p>
+																<p>
+																	Vivamus lacinia odio vitae
+																	<a href="#">vestibulum.</a>
+																	Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.
+																</p>
+																<p>
+																	Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at
+																	<a href="#">nibh</a>
+																	elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.
+																</p>
+																<p>Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.</p>
 																<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-																<p>
-																	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-																	<a href="#">commodo</a>
-																	consequat.
-																</p>
-																<p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p>
-																<p>
-																	Pellentesque in
-																	<a href="#">ipsum</a>
-																	id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.
-																</p>
 															</multi>
 															<div class="btn">
 																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
@@ -379,7 +394,13 @@
 													<td class="m_padding sm-block sm-w-full">
 														<h2><single label="Headline">Headline goes here</single></h2>
 														<img src="https://dummy.mailster.co/592x333.jpg" width="592" height="333" label="Image max width 592 pixel" editable data-crop="true" alt="">
-														<multi label="Body"><p>Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.</p></multi>
+														<multi label="Body">
+															<p>
+																Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+																<a href="#">do</a>
+																eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+															</p>
+														</multi>
 														<div class="btn">
 															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
 																<tr>
@@ -406,170 +427,6 @@
 												<tr>
 													<td class="m_padding sm-block sm-w-full">
 														<h2><single label="Headline">Headline goes here</single></h2>
-														<multi label="Body">
-															<p>
-																Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit
-																<a href="#">amet</a>
-																felis. Vestibulum at eros cras amet.
-															</p>
-														</multi>
-														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
-														</div>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<!--[if mso]></td></tr></table><![endif]-->
-							</div>
-						</module>
-						<module label="Two Columns Image left" auto>
-							<div role="region">
-								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
-								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
-									<tr>
-										<td class="sm-block m_block m_padding" align="center">
-											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
-												<tr>
-													<td width="50%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/320x256.jpg" width="320" height="256" label="Image max width 320 pixel" editable data-crop="true" alt=""></td>
-													<td width="50%" class="m_padding sm-block sm-w-full">
-														<h2><single label="Headline">Headline goes here</single></h2>
-														<multi label="Body">
-															<p>
-																Donec sollicitudin molestie malesuada. Phasellus nec
-																<a href="#">erat</a>
-																sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.
-															</p>
-														</multi>
-														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
-														</div>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<!--[if mso]></td></tr></table><![endif]-->
-							</div>
-						</module>
-						<module label="Two Columns Image right" auto>
-							<div role="region">
-								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
-								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
-									<tr>
-										<td class="sm-block m_block m_padding" align="center">
-											<table class="w-full reverse" cellpadding="0" cellspacing="0" role="none">
-												<tr>
-													<td width="50%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/320x256.jpg" width="320" height="256" label="Image max width 320 pixel" editable data-crop="true" alt=""></td>
-													<td width="50%" class="m_padding sm-block sm-w-full">
-														<h2><single label="Headline">Headline goes here</single></h2>
-														<multi label="Body">
-															<p>
-																Vivamus lacinia odio vitae vestibulum. Sed
-																<a href="#">cursus</a>
-																ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.
-															</p>
-														</multi>
-														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
-														</div>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<!--[if mso]></td></tr></table><![endif]-->
-							</div>
-						</module>
-						<module label="Two Columns Image left" auto>
-							<div role="region">
-								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
-								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
-									<tr>
-										<td class="sm-block m_block m_padding" align="center">
-											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
-												<tr>
-													<td width="33%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/211x211.jpg" width="211" height="211" label="Image max width 211 pixel" editable data-crop="true" alt=""></td>
-													<td width="66%" class="m_padding sm-block sm-w-full">
-														<h2><single label="Headline">Headline goes here</single></h2>
-														<multi label="Body">
-															<p>
-																Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque
-																<a href="#">congue.</a>
-																Cras ultricies ligula sed magna dictum porta.
-															</p>
-														</multi>
-														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
-														</div>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<!--[if mso]></td></tr></table><![endif]-->
-							</div>
-						</module>
-						<module label="Two Columns Image right" auto>
-							<div role="region">
-								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
-								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
-									<tr>
-										<td class="sm-block m_block m_padding" align="center">
-											<table class="w-full reverse" cellpadding="0" cellspacing="0" role="none">
-												<tr>
-													<td width="33%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/211x211.jpg" width="211" height="211" label="Image max width 211 pixel" editable data-crop="true" alt=""></td>
-													<td width="66%" class="m_padding sm-block sm-w-full">
-														<h2><single label="Headline">Headline goes here</single></h2>
-														<multi label="Body"><p>Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.</p></multi>
-														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
-														</div>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<!--[if mso]></td></tr></table><![endif]-->
-							</div>
-						</module>
-						<module label="Two Columns Image left" auto>
-							<div role="region">
-								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
-								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
-									<tr>
-										<td class="sm-block m_block m_padding" align="center">
-											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
-												<tr>
-													<td width="25%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/160x160.jpg" width="160" height="160" label="Image max width 160 pixel" editable data-crop="true" alt=""></td>
-													<td width="75%" class="m_padding sm-block sm-w-full">
-														<h2><single label="Headline">Headline goes here</single></h2>
 														<multi label="Body"><p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p></multi>
 														<div class="btn">
 															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
@@ -587,6 +444,163 @@
 								<!--[if mso]></td></tr></table><![endif]-->
 							</div>
 						</module>
+						<module label="Two Columns Image left" auto>
+							<div role="region">
+								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
+								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
+									<tr>
+										<td class="sm-block m_block m_padding" align="center">
+											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
+												<tr>
+													<td width="50%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/320x256.jpg" width="320" height="256" label="Image max width 320 pixel" editable data-crop="true" alt=""></td>
+													<td width="50%" class="m_padding sm-block sm-w-full">
+														<h2><single label="Headline">Headline goes here</single></h2>
+														<multi label="Body"><p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.</p></multi>
+														<div class="btn">
+															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																<tr>
+																	<td><a href="#" editable>Read More</a></td>
+																</tr>
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<!--[if mso]></td></tr></table><![endif]-->
+							</div>
+						</module>
+						<module label="Two Columns Image right" auto>
+							<div role="region">
+								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
+								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
+									<tr>
+										<td class="sm-block m_block m_padding" align="center">
+											<table class="w-full reverse" cellpadding="0" cellspacing="0" role="none">
+												<tr>
+													<td width="50%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/320x256.jpg" width="320" height="256" label="Image max width 320 pixel" editable data-crop="true" alt=""></td>
+													<td width="50%" class="m_padding sm-block sm-w-full">
+														<h2><single label="Headline">Headline goes here</single></h2>
+														<multi label="Body"><p>Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.</p></multi>
+														<div class="btn">
+															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																<tr>
+																	<td><a href="#" editable>Read More</a></td>
+																</tr>
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<!--[if mso]></td></tr></table><![endif]-->
+							</div>
+						</module>
+						<module label="Two Columns Image left" auto>
+							<div role="region">
+								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
+								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
+									<tr>
+										<td class="sm-block m_block m_padding" align="center">
+											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
+												<tr>
+													<td width="33%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/211x211.jpg" width="211" height="211" label="Image max width 211 pixel" editable data-crop="true" alt=""></td>
+													<td width="66%" class="m_padding sm-block sm-w-full">
+														<h2><single label="Headline">Headline goes here</single></h2>
+														<multi label="Body">
+															<p>
+																Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper
+																<a href="#">porta.</a>
+															</p>
+														</multi>
+														<div class="btn">
+															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																<tr>
+																	<td><a href="#" editable>Read More</a></td>
+																</tr>
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<!--[if mso]></td></tr></table><![endif]-->
+							</div>
+						</module>
+						<module label="Two Columns Image right" auto>
+							<div role="region">
+								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
+								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
+									<tr>
+										<td class="sm-block m_block m_padding" align="center">
+											<table class="w-full reverse" cellpadding="0" cellspacing="0" role="none">
+												<tr>
+													<td width="33%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/211x211.jpg" width="211" height="211" label="Image max width 211 pixel" editable data-crop="true" alt=""></td>
+													<td width="66%" class="m_padding sm-block sm-w-full">
+														<h2><single label="Headline">Headline goes here</single></h2>
+														<multi label="Body">
+															<p>
+																Pellentesque in ipsum id orci porta dapibus. Proin felis
+																<a href="#">lacus,</a>
+																luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.
+															</p>
+														</multi>
+														<div class="btn">
+															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																<tr>
+																	<td><a href="#" editable>Read More</a></td>
+																</tr>
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<!--[if mso]></td></tr></table><![endif]-->
+							</div>
+						</module>
+						<module label="Two Columns Image left" auto>
+							<div role="region">
+								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
+								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
+									<tr>
+										<td class="sm-block m_block m_padding" align="center">
+											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
+												<tr>
+													<td width="25%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/160x160.jpg" width="160" height="160" label="Image max width 160 pixel" editable data-crop="true" alt=""></td>
+													<td width="75%" class="m_padding sm-block sm-w-full">
+														<h2><single label="Headline">Headline goes here</single></h2>
+														<multi label="Body">
+															<p>
+																Lorem ipsum dolor sit amet,
+																<a href="#">consectetur</a>
+																adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+															</p>
+														</multi>
+														<div class="btn">
+															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																<tr>
+																	<td><a href="#" editable>Read More</a></td>
+																</tr>
+															</table>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<!--[if mso]></td></tr></table><![endif]-->
+							</div>
+						</module>
 						<module label="Two Columns Image right" auto>
 							<div role="region">
 								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
@@ -598,7 +612,13 @@
 													<td width="25%" class="m_padding sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/160x160.jpg" width="160" height="160" label="Image max width 160 pixel" editable data-crop="true" alt=""></td>
 													<td width="75%" class="m_padding sm-block sm-w-full">
 														<h2><single label="Headline">Headline goes here</single></h2>
-														<multi label="Body"><p>Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.</p></multi>
+														<multi label="Body">
+															<p>
+																Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit
+																<a href="#">amet</a>
+																felis. Vestibulum at eros cras amet.
+															</p>
+														</multi>
 														<div class="btn">
 															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
 																<tr>
@@ -640,7 +660,7 @@
 						<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
 						<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
 							<tr>
-								<td class="sm-block m_block m_padding footer" align="center">
+								<td class="sm-block m_block m_shadow m_padding footer" align="center">
 									<table class="w-full" cellpadding="0" cellspacing="0" role="none">
 										<tr>
 											<td width="70%" class="m_padding sm-block sm-w-full sm-m-auto">

@@ -61,7 +61,10 @@ class MailsterNotification {
 		$this->headline    = null;
 		$this->preheader   = null;
 		$this->attachments = array();
-		$this->replace     = array();
+		$this->replace     = array(
+			'notification' => '',
+			'can-spam'     => '',
+		);
 		$this->requeue     = true;
 		$this->debug       = false;
 	}
@@ -482,7 +485,8 @@ class MailsterNotification {
 		$this->mail->bouncemail  = mailster_option( 'bounce' );
 		$this->mail->attachments = apply_filters( 'mailster_notification_attachments', $this->attachments, $template, $subscriber, $options );
 
-		$t   = mailster( 'template', null, $this->file );
+		$t = mailster( 'template', mailster_option( 'default_template' ), $this->file );
+		$t->use_notification();
 		$raw = $t->get( true, true );
 
 		$placeholder = mailster( 'placeholder', $raw );

@@ -2671,14 +2671,20 @@ class Mailster {
 
 		if ( $template && $file ) {
 			$template = mailster( 'template', $template, $file );
-			$content  = $template->get( true, true );
+			$template->use_notification();
+			$content = $template->get( true, true );
 		} elseif ( $file ) {
-				$content = $headline . '<br>' . $content;
+			$content = $headline . '<br>' . $content;
 		} else {
 			$content = '{content}';
 		}
 
-		$replace  = apply_filters( 'mailster_send_replace', array( 'notification' => '' ), $caller, $current_filter );
+		$replace = array(
+			'notification' => '',
+			'can-spam'     => '',
+		);
+
+		$replace  = apply_filters( 'mailster_send_replace', $replace, $caller, $current_filter );
 		$message  = apply_filters( 'mailster_send_message', $args['message'], $caller, $current_filter );
 		$subject  = apply_filters( 'mailster_send_subject', $args['subject'], $caller, $current_filter );
 		$headline = apply_filters( 'mailster_send_headline', $args['subject'], $caller, $current_filter );

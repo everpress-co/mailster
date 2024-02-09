@@ -101,6 +101,10 @@ class MailsterTemplate {
 		return $html;
 	}
 
+	public function use_notification() {
+		$this->raw = $this->get_notification_template( $this->raw );
+	}
+
 
 	/**
 	 *
@@ -135,7 +139,7 @@ class MailsterTemplate {
 	 *
 	 *
 	 * @param unknown $html
-	 * @return unknown
+	 * @return string
 	 */
 	public function load_template( $slug = '' ) {
 
@@ -143,14 +147,20 @@ class MailsterTemplate {
 
 		$this->templatepath = $this->path . '/' . $slug;
 		$this->templateurl  = $this->url . '/' . $slug;
+		$this->slug         = $slug;
+
+		// plain text
+		if ( $this->file == '-1' ) {
+			$this->raw = '{headline}<br>{content}';
+			return $this->raw;
+		}
 
 		$file = $this->templatepath . '/' . $this->file;
 
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}
-
-		if ( file_exists( $file ) ) {
+		if ( $this->exists = file_exists( $file ) ) {
 
 			$raw           = file_get_contents( $file );
 			$raw           = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
@@ -166,12 +176,11 @@ class MailsterTemplate {
 			}
 		} else {
 
-			$raw = $this->get_notification_template();
+			// fallback to base template
+			$base_html = file_get_contents( $this->templatepath . '/index.html' );
+			$raw       = $this->get_notification_template( $base_html );
 
 		}
-
-		$this->slug   = $slug;
-		$this->exists = file_exists( $file );
 
 		return $this->load_template_html( $raw );
 	}
@@ -730,19 +739,24 @@ class MailsterTemplate {
 		return trim( $html );
 	}
 
-	private function get_notification_template() {
+	private function get_notification_template( $html ) {
 
-		// try to get the content form the index.html
-		$raw = file_get_contents( $this->templatepath . '/index.html' );
-
-		if ( preg_match( '#<module[^>]*?type="notification"(.*?)".*?</module>#ms', $raw, $modules ) ) {
+		// extract notification module
+		if ( preg_match( '#<module[^>]*?type="notification"(.*?)".*?</module>#ms', $html, $modules ) ) {
 			$module = $modules[0];
-			$raw    = preg_replace( '#<modules>(.*)</modules>#s', '<modules>' . "\n" . $module . "\n" . '</modules>', $raw );
+			$html   = preg_replace( '#<modules>(.*)</modules>#s', '<modules>' . "\n" . $module . "\n" . '</modules>', $html );
+
+			// fallback to notification.html
+		} elseif ( file_exists( $this->templatepath . '/notification.html' ) ) {
+			$html = file_get_contents( $this->templatepath . '/notification.html' );
+
+			// last resort
 		} else {
-			$raw = '{headline}<br>{content}';
+			$html = $html;
+			// $html = '{headline}<br>{content}';
 		}
 
-		return $raw;
+		return $html;
 	}
 
 	/**
