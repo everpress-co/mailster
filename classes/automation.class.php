@@ -19,7 +19,6 @@ class MailsterAutomations {
 		add_action( 'rest_api_init', array( &$this, 'register_conditions_block' ) );
 
 		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
-		add_action( 'admin_enqueue_scripts', array( &$this, 'beta_badge' ) );
 
 		add_action( 'enqueue_block_assets', array( &$this, 'block_script_styles' ), 1 );
 
@@ -27,8 +26,6 @@ class MailsterAutomations {
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
 		add_filter( 'use_block_editor_for_post_type', array( &$this, 'force_block_editor' ), PHP_INT_MAX, 2 );
-		// add_action( 'register_block_type_args', array( &$this, 'register_variations' ), 10, 2 );
-		// add_action( 'register_block_type_args', array( &$this, 'register_conditions_variations' ), 10, 2 );
 
 		add_filter( 'manage_mailster-workflow_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_mailster-workflow_posts_custom_column', array( &$this, 'columns_content' ), 10, 2 );
@@ -595,30 +592,6 @@ class MailsterAutomations {
 		$msg .= '<p><strong>Automations are currently in beta version. Some features are subject to change before the stable release.</strong></p>';
 		$msg .= '<p><a href="' . admin_url( 'post-new.php?post_type=mailster-workflow' ) . '" class="button button-primary">' . esc_html__( 'Create Automation' ) . '</a> <a href="https://docs.mailster.co/#/automations-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-automations/issues" class="button button-link external">Submit feedback on Github</a></p>';
 		mailster_notice( $msg, 'info', true, 'mailster-workflow_beta_notice', true, 'edit-mailster-workflow' );
-	}
-
-	public function beta_badge() {
-		wp_add_inline_style(
-			'admin-menu',
-			"#menu-posts-newsletter
-				a[href='edit.php?post_type=mailster-workflow']::after {
-					content: 'Beta';
-					display: inline-block;
-					vertical-align: top;
-					box-sizing: border-box;
-					margin: 1px 5px -1px 5px;
-					padding: 0 5px;
-					min-width: 18px;
-					height: 18px;
-					border-radius: 9px;
-					background-color: #d63638;
-					color: #fff;
-					font-size: 11px;
-					line-height: 1.6;
-					text-align: center;
-					z-index: 26;
-				}"
-		);
 	}
 
 
