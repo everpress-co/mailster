@@ -673,7 +673,6 @@ if ( $old_version ) {
 		case '3.3.10':
 		case '3.3.11':
 		case '3.3.12':
-		default:
 			// if date is before april 2023
 			if ( strtotime( '2023-04-01' ) < time() ) {
 				$msg  = '<h2>' . esc_html__( 'Check your Email Health now!', 'mailster' ) . '</h2>';
@@ -683,6 +682,9 @@ if ( $old_version ) {
 				mailster_notice( $msg, 'info', WEEK_IN_SECONDS, 'email_health_check', true );
 			}
 
+
+		case '3.3.13':
+		default:
 
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
@@ -716,9 +718,6 @@ if ( $old_version ) {
 			update_option( 'mailster_translation', '' );
 
 			$texts = wp_parse_args( $texts, $default_texts );
-
-			// Beta Feedback
-			mailster_beacon_message( '8b1d5a1d-6aad-4243-a1c5-73f53407637a', MONTH_IN_SECONDS );
 
 			// NPS if setup is older than 3 month
 			if ( get_option( 'mailster_setup' ) < strtotime( '-3 month' ) ) {
