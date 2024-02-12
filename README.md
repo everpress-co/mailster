@@ -187,8 +187,6 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
-# Changelog
-
 ### 4.0.0
 
 #### New Features

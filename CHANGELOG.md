@@ -1,12 +1,8 @@
-### 4.0.0
+### Version 4.0.0 (2024-02-12)
 
 #### New Features
 
 - **Email Health Check**: Check your delivery method to comply with upcoming changes to Gmail and Yahoo.
-- **Automation Enhancements**:
-  - New trigger "removed from list" and "tag removed".
-  - Option to convert autoresponder to automation.
-  - Offset for some time-related triggers.
 - **Block Forms**: Create forms and popups with the built-in editor.
 - **Automations**: Bring automations to the next stage with customer journeys.
 - **One Click Unsubscribe**: Now enabled by default for Gmail and Yahoo, complying with RFC 8058.
@@ -91,7 +87,7 @@
 - **Miscellaneous**:
   - Option to convert certain autoresponders to workflows.
   - Legacy forms menu entry is hidden by default.
-  
+
 ### Version 3.3.13 (2024-01-15)
 
 - new: Email Health Check: check your delivery method to comply with upcoming changes to Gmail and Yahoo
