@@ -10,11 +10,9 @@ class MailsterLogs {
 	 */
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-	}
-
-
-	public function init() {
+		if ( ! mailster_option( 'logging' ) ) {
+			return;
+		}
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 55 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ), 100 );
@@ -23,10 +21,6 @@ class MailsterLogs {
 
 
 	public function admin_menu() {
-
-		if ( ! mailster_option( 'logging' ) ) {
-			return;
-		}
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Logs', 'mailster' ), esc_html__( 'Logs', 'mailster' ), 'mailster_view_logs', 'mailster_logs', array( &$this, 'view_logs' ) );
 
@@ -160,25 +154,6 @@ class MailsterLogs {
 		$wpdb->insert( "{$wpdb->prefix}mailster_logs", $data );
 	}
 
-	public function cleanup() {
-
-		if ( ! mailster_option( 'logging' ) ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$max_entries = mailster_option( 'logging_max' );
-		$max_days    = mailster_option( 'logging_days' );
-
-		if ( $max_entries ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE ID NOT IN ( SELECT ID FROM ( SELECT ID FROM {$wpdb->prefix}mailster_logs ORDER BY ID DESC LIMIT %d  ) x ) ", $max_entries ) );
-		}
-		if ( $max_days ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs WHERE timestamp < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL %d DAY ) ) ", $max_days ) );
-		}
-	}
-
 	public function get( $id ) {
 
 		global $wpdb;
@@ -195,6 +170,7 @@ class MailsterLogs {
 
 		$html = $log->html;
 
+		// replace custom tracking links
 		foreach ( $links[3] as $link ) {
 			$replace = preg_replace( '/\/([0-9a-f]{32})\//', '/' . str_repeat( '0', 32 ) . '/', $link );
 			$html    = str_replace( $link, $replace, $html );
@@ -203,5 +179,41 @@ class MailsterLogs {
 		$html = str_replace( '<a ', '<a target="mailster_preview" ', $html );
 
 		return sprintf( '<iframe class="html-preview" src="data:text/html;base64,%s" scrolling="auto" frameborder="0"></iframe>', base64_encode( $html ) );
+	}
+
+	public function cleanup() {
+
+		if ( ! mailster_option( 'logging' ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$max_entries = (int) mailster_option( 'logging_max' );
+		$max_days    = (int) mailster_option( 'logging_days' );
+		$count       = 0;
+
+		if ( $max_entries ) {
+			// quickly count the entries
+			$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs" );
+
+			// bail out if we are below the limit
+			if ( ! $count ) {
+				return;
+			}
+
+			// get maximum the entries we need to delete
+			$count = max( 0, $count - $max_entries );
+
+		}
+
+		if ( $max_days ) {
+			// quickly count the entries
+			$count = max( $count, $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_logs WHERE `timestamp` < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL $max_days DAY ) )" ) );
+		}
+
+		if ( $count ) {
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_logs ORDER BY ID ASC LIMIT %d ", $count ) );
+		}
 	}
 }

@@ -101,7 +101,7 @@ class MailsterUpgrade {
 		} elseif ( ! $version_match ) {
 
 			// update db structure
-			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
+			if ( get_option( 'mailster_dbversion' ) && MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
 				mailster()->dbstructure();
 			}
 
@@ -112,13 +112,6 @@ class MailsterUpgrade {
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_setup' != $_GET['page'] ) ) {
 				mailster_redirect( 'admin.php?page=mailster_setup', 302 );
-				exit;
-			}
-		} elseif ( mailster_option( 'welcome' ) ) {
-
-			if ( ! is_network_admin() &&
-				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_welcome' != $_GET['page'] ) ) {
-				mailster_redirect( 'admin.php?page=mailster_welcome', 302 );
 				exit;
 			}
 		}

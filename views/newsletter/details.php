@@ -75,7 +75,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	?>
 
 <table>
-	<tr><th width="16.666%"><?php esc_html_e( 'Subject', 'mailster' ); ?></th><td><strong><?php echo $this->post_data['subject']; ?></strong></td></tr>
+	<tr><th width="16.666%"><?php esc_html_e( 'Subject', 'mailster' ); ?></th><td><strong><?php echo esc_html( $this->post_data['subject'] ); ?></strong></td></tr>
 	<?php if ( 'autoresponder' != $post->post_status ) : ?>
 	<tr><th><?php esc_html_e( 'Date', 'mailster' ); ?></th><td>
 		<?php echo date( $timeformat, $this->post_data['timestamp'] + $timeoffset ); ?>

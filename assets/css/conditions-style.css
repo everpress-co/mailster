@@ -166,7 +166,13 @@
 	text-transform: uppercase;
 }
 .mailster-conditions-wrap .datepicker.condition-value {
-	width: 100px;
+	width: 140px;
+}
+.mailster-conditions-wrap input.ui-autocomplete-loading {
+	background-position: 99% center;
+	background-repeat: no-repeat;
+	background-size: 20px 20px;
+	background-image: url(../img/loading_2x.gif) !important;
 }
 .mailster-condition .mailster-conditions-value-field p,
 .mailster-condition .mailster-conditions-value-field ul {
@@ -313,4 +319,30 @@ _.mailster-conditions .mailster-conditions-wrap:empty:before {
 }
 .mailster-condition-render .mailster-condition-operators {
 	font-size: 10px;
+}
+.mailster-condition-autocomplete {
+	font-size: 1em;
+	line-height: 1.5em;
+	z-index: 1000000;
+	border-radius: 4px;
+	border: 1px solid #8c8f94;
+	background-color: #fff;
+	color: #2c3338;
+	box-shadow: none;
+	margin-top: 1px;
+	padding: 2px;
+	max-height: 240px;
+	overflow: auto;
+}
+.mailster-condition-autocomplete .ui-menu-item {
+	padding: 0;
+}
+.mailster-condition-autocomplete .ui-menu-item .ui-menu-item-wrapper {
+	padding: 4px 6px;
+}
+.mailster-condition-autocomplete .ui-menu-item:hover,
+.mailster-condition-autocomplete .ui-menu-item-wrapper.ui-state-active {
+	outline: 1px solid #ccd0d4;
+	background-color: #fafafa;
+	border-radius: 4px;
 }

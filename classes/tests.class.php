@@ -493,17 +493,8 @@ class MailsterTests {
 
 			$geo = mailster( 'geo' );
 
-			$warnings = array();
-
-			if ( ! file_exists( $path = $geo->get_file_path( 'country' ) ) ) {
-				$warnings[] = sprintf( 'The Country Database was not found in %s', $path );
-			}
-			if ( ! file_exists( $path = $geo->get_file_path( 'city' ) ) ) {
-				$warnings[] = sprintf( 'The City Database was not found in %s', $path );
-			}
-
-			if ( ! empty( $warnings ) ) {
-				$this->warning( implode( '<br>', $warnings ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#privacy' ) );
+			if ( ! file_exists( $path = $geo->get_file_path() ) ) {
+				$this->warning( sprintf( 'The Geo Database was not found in %s', '<strong>' . dirname( $path ) . '</strong>' ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#privacy' ) );
 			}
 		}
 	}
@@ -624,10 +615,12 @@ class MailsterTests {
 	}
 	private function test_form_exist() {
 
-		$forms = mailster( 'forms' )->get_all();
+		$legacy_forms = mailster( 'forms' )->get_all();
 
-		if ( ! count( $forms ) ) {
-			$this->error( sprintf( esc_html__( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . esc_html__( 'Create a new form now', 'mailster' ) . '</a>' ) );
+		$block_forms = mailster( 'block-forms' )->get_all();
+
+		if ( ! count( $block_forms ) && ! count( $legacy_forms ) ) {
+			$this->error( sprintf( esc_html__( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="post-new.php?post_type=mailster-form">' . esc_html__( 'Create a new form now', 'mailster' ) . '</a>' ) );
 		}
 	}
 	private function test_update_server_connection() {

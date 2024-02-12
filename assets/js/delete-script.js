@@ -25,6 +25,7 @@ mailster = (function (mailster, $, window, document) {
 					'delete_contacts',
 					{
 						data: data,
+						conditions: mailster.conditions.serialize(),
 					},
 					function (response) {
 						if (response.success) {
@@ -36,9 +37,7 @@ mailster = (function (mailster, $, window, document) {
 						update_delete_count();
 					},
 					function (jqXHR, textStatus, errorThrown) {
-						deletestatus.html(
-							'[' + jqXHR.status + '] ' + errorThrown
-						);
+						deletestatus.html('[' + jqXHR.status + '] ' + errorThrown);
 					}
 				);
 			}
@@ -97,6 +96,7 @@ mailster = (function (mailster, $, window, document) {
 					schedule: true,
 					name: name,
 					data: data,
+					conditions: mailster.conditions.serialize(),
 				},
 				function (response) {
 					deletestatus.removeClass('spinner');
@@ -115,6 +115,8 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		});
 
+	mailster.events.push('updateConditions', update_delete_count);
+
 	function update_delete_count() {
 		setTimeout(function () {
 			var data = $('#delete-subscribers').serialize();
@@ -124,6 +126,7 @@ mailster = (function (mailster, $, window, document) {
 				'get_subscriber_count',
 				{
 					data: data,
+					conditions: mailster.conditions.serialize(),
 				},
 				function (response) {
 					if (response.success) {

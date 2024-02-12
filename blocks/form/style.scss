@@ -1,0 +1,969 @@
+html.mailster-form-active {
+	overflow: hidden;
+	body {
+		overflow: hidden;
+	}
+}
+body.single-mailster-form #wpadminbar,
+body.single-mailster-form #wpadminbar * {
+	_visibility: visible;
+}
+body.single-mailster-form::after,
+body.single-mailster-form::before {
+	display: none;
+}
+body.single-mailster-form > * {
+	display: none !important;
+}
+
+body.single-mailster-form {
+	background: none;
+	overflow: hidden;
+	.mailster-block-form-type-content:not(.foo) {
+		inset: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		margin: 0 !important;
+		width: 100% !important;
+		height: 100% !important;
+		max-width: 100% !important;
+		max-height: 100% !important;
+		z-index: 99998;
+		position: fixed;
+		visibility: visible;
+		overflow: auto;
+		display: flex !important;
+		justify-items: center;
+		align-items: center;
+		form {
+			background-color: #fff;
+		}
+	}
+	.mailster-block-form-type-content * {
+		visibility: visible;
+	}
+}
+
+.mailster-block-form-type-popup,
+.mailster-block-form-type-bar,
+.mailster-block-form-type-side {
+	position: fixed;
+	display: none;
+	pointer-events: none;
+	justify-content: center;
+	inset: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	max-width: 100% !important;
+	max-height: 100% !important;
+	z-index: 99998;
+	visibility: visible;
+	overflow: auto;
+	.mailster-block-form {
+		width: 50vw;
+		max-width: 98vw;
+		background-color: #fff;
+	}
+}
+.mailster-block-form-type-popup {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+.mailster-block-form-type-bar {
+	bottom: unset;
+	background-color: #fff;
+	.mailster-block-form {
+	}
+}
+@media only screen and (min-width: 1400px) {
+	.mailster-block-form-type-popup,
+	.mailster-block-form-type-bar {
+		.mailster-block-form {
+			max-width: 900px;
+		}
+	}
+}
+@media only screen and (max-width: 800px) {
+	.mailster-block-form-type-popup,
+	.mailster-block-form-type-bar {
+		.mailster-block-form {
+			width: 70vw;
+			max-height: 100%;
+			max-height: -webkit-fill-available; /* for Chrome iOS not showing the close button */
+		}
+	}
+	.wp-block-mailster-form-outside-wrapper
+		form.wp-block-mailster-form-wrapper.mailster-block-form {
+		flex-basis: 100%;
+		max-width: 98vw;
+		max-width: min(98vw, 560px);
+	}
+}
+@media only screen and (max-width: 400px) {
+	.mailster-block-form-type-popup,
+	.mailster-block-form-type-bar {
+		.mailster-block-form {
+			width: 95vw;
+		}
+	}
+}
+.mailster-block-form-type-popup {
+	justify-content: center;
+	align-items: center;
+}
+.mailster-block-form-type-popup.active {
+	pointer-events: inherit;
+	display: flex;
+}
+.mailster-block-form-type-bar.active {
+	pointer-events: inherit;
+	visibility: visible;
+	opacity: 1;
+	right: 0;
+	left: 0;
+	top: 0;
+	display: flex;
+}
+.mailster-block-form-type-side.active {
+	pointer-events: inherit;
+	visibility: visible;
+	opacity: 1;
+	align-items: flex-end;
+	justify-content: flex-end;
+	position: fixed;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	display: flex;
+	pointer-events: none;
+}
+.mailster-block-form-type-bar {
+	.mailster-block-form {
+		width: 100vw;
+	}
+}
+.mailster-block-form-type-popup {
+	outline: none;
+	background-color: rgba(0, 0, 0, 0.6);
+}
+@supports (backdrop-filter: blur(6px)) {
+	.mailster-block-form-type-popup {
+		-webkit-backdrop-filter: blur(6px);
+		backdrop-filter: blur(6px);
+	}
+}
+.mailster-block-form-type-content .mailster-block-form-close,
+.mailster-block-form-type-content .mailster-block-form-inner-close,
+.mailster-block-form-type-other .mailster-block-form-close,
+.mailster-block-form-type-other .mailster-block-form-inner-close {
+	display: none;
+}
+.mailster-block-form-type-popup .mailster-block-form-close {
+	transform: translate(100%, 0%) scale(0.8);
+}
+.mailster-block-form-type-bar .mailster-block-form-close {
+	transform: translate(150%, 120%);
+}
+.mailster-block-form-type-side .mailster-block-form-close {
+	left: 0;
+	right: auto;
+	transform: translate(-50%, -50%);
+}
+@media only screen and (max-width: 800px) {
+	.mailster-block-form-type-popup .mailster-block-form-close {
+		transform: translate(-20%, 20%) scale(0.8);
+		opacity: 1;
+		svg path {
+			stroke-width: 10px;
+			fill: #ffffff;
+			stroke: rgba(0, 0, 0, 0.8);
+		}
+	}
+	.is-light-bg.mailster-block-form-type-popup .mailster-block-form-close {
+		svg path {
+			fill: #000000;
+			stroke: rgba(255, 255, 255, 0.8);
+		}
+	}
+}
+@media only screen and (max-width: 400px) {
+	.mailster-block-form-type-popup .mailster-block-form-close {
+		width: 30px;
+		height: 30px;
+	}
+}
+.wp-block-mailster-form-outside-wrapper-placeholder form::before {
+	_background-color: #fff !important;
+}
+.wp-block-mailster-form-outside-wrapper.mailster-block-form-type-content {
+	margin-bottom: 1em;
+}
+.wp-block-mailster-form-outside-wrapper.active,
+.wp-block-mailster-form-outside-wrapper.mailster-block-form-type-content,
+.wp-block-mailster-form-outside-wrapper.mailster-block-form-type-other {
+	display: flex;
+}
+.wp-block-mailster-form-wrapper::before {
+	position: absolute;
+	background-repeat: no-repeat;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: -1;
+}
+.mailster-block-form.wp-block-mailster-form-wrapper {
+	position: relative;
+	flex-basis: 100%;
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	ol,
+	ul {
+		margin: 0;
+		padding: 0;
+		font-weight: normal;
+		overflow-wrap: break-word;
+		width: 100%;
+	}
+
+	ol,
+	ul {
+		list-style: none;
+	}
+}
+.wp-block-mailster-form-outside-wrapper:not(.mailster-block-form-type-content) {
+	.mailster-block-form-inner {
+		max-height: 98vh;
+		max-width: 98vw;
+		overflow-y: auto;
+		scrollbar-width: none;
+	}
+	.wp-block-mailster-form-wrapper.loading .mailster-block-form-inner {
+		overflow: unset;
+	}
+	.mailster-block-form-inner::-webkit-scrollbar {
+		display: none;
+	}
+}
+.mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner,
+.mailster-block-form.wp-block-mailster-form-wrapper
+	.mailster-block-form-inner
+	.wp-block-column,
+.mailster-block-form.wp-block-mailster-form-wrapper
+	.mailster-block-form-inner
+	.wp-block-group__inner-container {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	flex-grow: 0;
+	_flex-shrink: 0;
+	flex-basis: 100%;
+	text-align: left;
+	pointer-events: all;
+}
+.mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner {
+	> * {
+		width: 100%;
+	}
+	> div {
+		position: relative;
+	}
+	fieldset {
+		border: 0;
+		padding: 0;
+		margin: 0;
+		min-width: 0;
+		legend {
+			display: none;
+		}
+	}
+	.wp-block-spacer {
+		min-width: 1px;
+	}
+	.mailster-show-label legend {
+		display: block;
+	}
+	.wp-block.wp-block.wp-block.wp-block.wp-block:not(.mailster-wrapper) {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 0;
+		width: 100%;
+		max-width: 100%;
+	}
+	.mailster-block-form-inner-close {
+		cursor: pointer;
+	}
+	.submit-button {
+		width: 100%;
+		display: inline-block;
+		text-decoration: none;
+		cursor: pointer;
+	}
+	.mailster-block-form-info > div {
+		padding: 0.5rem 1rem;
+		margin-bottom: 0.5rem;
+		margin-bottom: 0;
+		box-sizing: border-box;
+	}
+	.wp-block-columns {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 0;
+		padding: 0;
+		gap: 0;
+		.wp-block-column {
+			gap: 0;
+			align-items: inherit;
+		}
+		.wp-block-column.is-vertically-aligned-top {
+			align-self: flex-start;
+		}
+		.wp-block-column.is-vertically-aligned-center {
+			align-self: center;
+		}
+		.wp-block-column.is-vertically-aligned-bottom {
+			align-self: flex-end;
+		}
+		.wp-block-cover {
+			min-height: 430px;
+			flex-basis: 100%;
+		}
+	}
+	.wp-block-group {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 0;
+		padding: 0;
+		gap: 0;
+		align-content: space-around;
+		.wp-block-group__inner-container {
+			gap: 0;
+		}
+		.wp-block-cover {
+			min-height: 430px;
+		}
+	}
+
+	.mailster-wrapper {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 1rem;
+		margin-bottom: 0.5em;
+		margin-bottom: 0;
+		max-width: 100%;
+		width: 100%;
+		display: flex;
+		display: inline-flex;
+		flex-wrap: wrap;
+		position: relative;
+		align-self: baseline;
+
+		input.input,
+		textarea.input,
+		select.input,
+		input[type='submit'] {
+			width: 120%;
+			width: 100%;
+			max-width: 100%;
+			margin: 0;
+			box-sizing: content-box;
+			box-sizing: border-box;
+			text-overflow: ellipsis;
+			//min-height: 2.4rem; //for date field
+			// add some default style here
+		}
+
+		input[type='submit'] {
+			_appearance: none;
+			font: inherit;
+			//border: unset;
+		}
+
+		::-webkit-datetime-edit {
+			line-height: 0.9em; //fix date fields are higher
+			line-height: 155%; //fix date fields are higher
+			overflow: visible;
+		}
+		.mailster-wrapper-options {
+			display: block;
+		}
+
+		// more specificity
+		&._mailster-wrapper-type-submit {
+			margin-top: 0;
+			margin-left: 0;
+			margin-right: 0;
+			margin-bottom: 1rem;
+			margin-bottom: 0;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+}
+.mailster-block-form-close {
+	position: absolute;
+	top: 0;
+	right: 0;
+	transition: all 0.2s;
+	text-decoration: none;
+	padding: 0;
+	opacity: 0.5;
+	z-index: 1000;
+	animation: mailster-showlate 1.5s 1 linear;
+	cursor: pointer;
+	user-select: none;
+	background: none !important;
+	border: none;
+	width: 25px;
+	height: 25px;
+	svg {
+		width: 100%;
+		height: 100%;
+		paint-order: stroke;
+		overflow: visible;
+	}
+	svg path {
+		fill: #000;
+	}
+}
+.is-dark-bg .mailster-block-form-close {
+	svg path {
+		fill: #fff;
+	}
+}
+.is-light-bg .mailster-block-form-close {
+	svg path {
+		fill: #000;
+	}
+}
+.mailster-block-form-close:hover,
+.mailster-block-form-close:focus {
+	opacity: 1;
+	outline-offset: unset;
+}
+.mailster-block-form {
+	position: relative;
+	max-width: 100vw;
+	z-index: 1;
+
+	.mailster-block-form-info {
+		max-width: 100%;
+		flex-basis: 100%;
+		display: none;
+		transition: all 2.2s;
+		.mailster-block-form-info-extra span {
+			display: block;
+		}
+	}
+	.mailster-block-form-info.is-error,
+	.mailster-block-form-info.is-success {
+		display: block;
+		animation: mailster-info 0.2s 1 ease-in-out;
+	}
+
+	.mailster-block-form-info .mailster-block-form-info-error,
+	.mailster-block-form-info .mailster-block-form-info-success {
+		display: none;
+	}
+	.mailster-block-form-info.is-error .mailster-block-form-info-error,
+	.mailster-block-form-info.is-success .mailster-block-form-info-success {
+		display: block;
+	}
+
+	.mailster-block-form-info-success {
+		color: #fff;
+		color: var(--mailster--color--success, #fff);
+		background-color: #6fbf4d;
+		background-color: var(--mailster--color--success-background, #6fbf4d);
+	}
+	.mailster-block-form-info-error {
+		color: #fff;
+		color: var(--mailster--color--error, #fff);
+		background-color: #bf4d4d;
+		background-color: var(--mailster--color--error-background, #bf4d4d);
+	}
+
+	.mailster-wrapper.is-error {
+		input,
+		select,
+		textarea {
+			outline: 2px solid var(--mailster--color--error-background, #bf4d4d);
+			outline-offset: -2px;
+			border-color: var(--mailster--color--error-background, #bf4d4d);
+		}
+	}
+
+	.mailster-wrapper-required.mailster-wrapper-asterisk
+		label.mailster-label::after {
+		content: '*';
+		display: inline-block;
+		padding-left: 0.2rem;
+		padding-right: 0.2rem;
+		color: #bf4d4d;
+		color: var(--wp--preset--color--vivid-red, #bf4d4d);
+	}
+	.mailster-wrapper-required.mailster-wrapper-asterisk
+		.mailster-group-radio
+		label.mailster-label::after {
+		_content: '';
+		display: none;
+	}
+
+	label.mailster-label {
+		display: flex;
+		align-items: center;
+		margin: initial;
+	}
+	.mailster-wrapper-inline.mailster-wrapper-type-textarea {
+		label.mailster-label {
+			align-items: baseline;
+			top: 0.6em;
+		}
+	}
+	.mailster-wrapper.mailster-wrapper-type-textarea {
+		textarea {
+			resize: vertical;
+			min-height: 4em;
+			max-height: 100vh;
+		}
+	}
+	.mailster-wrapper-inline {
+		label.mailster-label {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			pointer-events: none;
+			align-items: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		input.input:focus + label.mailster-label,
+		input.input:not(:placeholder-shown) + label.mailster-label,
+		textarea.input:focus + label.mailster-label,
+		textarea.input:not(:placeholder-shown) + label.mailster-label {
+			display: none;
+		}
+		textarea.input input.input::placeholder,
+		textarea.input::placeholder {
+			visibility: hidden;
+		}
+		input.input::placeholder,
+		textarea.input::placeholder {
+			/* Chrome/Opera/Safari */
+			color: transparent;
+		}
+	}
+	.mailster-wrapper-inline.mailster-wrapper-type-radio {
+		label.mailster-label {
+			display: none;
+		}
+	}
+	.mailster-wrapper-type-radio {
+		label {
+			_white-space: nowrap;
+		}
+	}
+	.mailster-wrapper-inline.mailster-wrapper-type-dropdown {
+		label.mailster-label {
+			display: none;
+		}
+	}
+	.mailster-group {
+		display: flex;
+		_flex-wrap: wrap;
+	}
+	.mailster-group .mailster-label {
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+		display: initial;
+		vertical-align: baseline;
+		margin: 0;
+		cursor: pointer;
+	}
+	.mailster-label + .mailster-group {
+		_padding-left: 1rem;
+		_padding-right: 1rem;
+	}
+	.mailster-wrapper .mailster-group {
+		_padding-right: 0.5em;
+		_display: block;
+		align-items: center;
+		input {
+			flex-shrink: 0;
+		}
+	}
+
+	.mailster-wrapper-is-vertical .mailster-group {
+		padding-left: inherit;
+		padding-right: inherit;
+		align-items: center;
+		_width: 100%;
+	}
+	.mailster-wrapper-is-vertical > fieldset {
+		display: flex;
+	}
+
+	.mailster-block-form-inner {
+		.mailster-wrapper-label-align-left {
+			justify-content: flex-start;
+			label.mailster-label {
+				justify-content: flex-start;
+			}
+			.submit-button {
+				text-align: left;
+			}
+		}
+		.mailster-wrapper-label-align-center {
+			justify-content: center;
+			label.mailster-label {
+				justify-content: center;
+			}
+			.submit-button {
+				text-align: center;
+			}
+		}
+		.mailster-wrapper-label-align-right {
+			justify-content: flex-end;
+			label.mailster-label {
+				justify-content: flex-end;
+			}
+			.submit-button {
+				text-align: right;
+			}
+		}
+		.mailster-wrapper.mailster-wrapper-justify-left {
+			margin-right: auto;
+		}
+		.mailster-wrapper.mailster-wrapper-justify-center {
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.mailster-wrapper.mailster-wrapper-justify-right {
+			margin-left: auto;
+		}
+
+		.mailster-wrapper-align-left {
+			.input {
+				text-align: left;
+			}
+			.mailster-group {
+				justify-content: flex-start;
+			}
+			.submit-button {
+				text-align: left;
+			}
+		}
+		.mailster-wrapper-align-center {
+			.input {
+				text-align: center;
+			}
+			.mailster-group {
+				justify-content: center;
+			}
+			.submit-button {
+				text-align: center;
+			}
+		}
+		.mailster-wrapper-align-right {
+			.input {
+				text-align: right;
+			}
+			.mailster-group {
+				justify-content: flex-end;
+			}
+
+			.submit-button {
+				text-align: right;
+			}
+		}
+	}
+	.mailster-wrapper-is-vertical {
+		.mailster-label {
+			_width: 100%;
+		}
+		.mailster-group > label {
+			_width: 100%;
+		}
+	}
+
+	.mailster-wrapper {
+		input[type='checkbox'],
+		input[type='radio'] {
+			margin: initial;
+			vertical-align: middle;
+		}
+		span {
+			_vertical-align: middle;
+			_padding-left: 0.5rem;
+			_padding-right: 0.5rem;
+		}
+	}
+	.mailster-wrapper.wp-block-mailster-gdpr {
+		align-items: center;
+	}
+	.mailster-wrapper-type-radio label.mailster-label {
+		width: 100%;
+	}
+}
+@media only screen and (max-width: 400px) {
+	.mailster-block-form.wp-block-mailster-form-wrapper {
+		.mailster-wrapper {
+			min-width: 100%;
+		}
+	}
+}
+.mailster-block-form.has-errors .mailster-block-form-inner {
+	.mailster-block-form-info {
+		height: auto;
+		transform: scale(1);
+		.mailster-block-form-info-error {
+			display: block;
+		}
+	}
+}
+.mailster-block-form.has-errors .mailster-block-form-inner .is-error {
+	animation: mailster-shake 0.3s 1 linear;
+}
+@media (prefers-reduced-motion) {
+	.mailster-block-form.has-errors .mailster-block-form-inner .is-error {
+		animation: none;
+	}
+}
+
+.mailster-block-form.has-success .mailster-block-form-inner {
+	.mailster-block-form-info {
+		height: auto;
+		transform: scale(1);
+		.mailster-block-form-info-success {
+			display: block;
+		}
+	}
+}
+.mailster-block-form.completed .mailster-block-form-inner {
+	.mailster-wrapper:not(.wp-block-mailster-messages) {
+		opacity: 0.8;
+		pointer-events: none;
+	}
+}
+.mailster-block-form.wp-block-mailster-form-wrapper {
+	transition: transform 0.1s;
+}
+.mailster-block-form.wp-block-mailster-form-wrapper.loading:not(.silent) {
+	__transform: scale(0.98);
+	_opacity: 0.8;
+}
+.mailster-block-form.wp-block-mailster-form-wrapper.loading
+	.wp-block-mailster-field-submit::before {
+	content: '';
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	pointer-events: none;
+	z-index: 1;
+	animation: mailster-loading 5.5s linear infinite;
+	background-image: linear-gradient(
+		45deg,
+		#fafafa00 25%,
+		#e0e0e025 25%,
+		#e0e0e025 50%,
+		#fafafa00 50%,
+		#fafafa00 75%,
+		#e0e0e025 75%,
+		#e0e0e025 100%
+	);
+	background-size: 56.57px 56.57px;
+}
+@keyframes mailster-loading {
+	0% {
+		background-position: 800px 0;
+	}
+}
+.wp-block-mailster-form-outside-wrapper.closing {
+	pointer-events: none;
+	transition: opacity 1s;
+	opacity: 0;
+}
+.wp-block-mailster-form-outside-wrapper.closing .mailster-block-form {
+	transition: opacity 0.1s;
+	opacity: 0;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation {
+	animation: mailster-fadein 0.2s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-fadein
+	.mailster-block-form {
+	animation: mailster-fadein 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-shake
+	.mailster-block-form {
+	animation: mailster-shake 0.5s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-heartbeat
+	.mailster-block-form {
+	animation: mailster-heartbeat 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-swing
+	.mailster-block-form {
+	transform-origin: top center;
+	animation: mailster-swing 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-tada
+	.mailster-block-form {
+	animation: mailster-tada 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-wobble
+	.mailster-block-form {
+	animation: mailster-wobble 0.8s 1 ease-in-out;
+}
+@media (prefers-reduced-motion) {
+	.wp-block-mailster-form-outside-wrapper.has-animation .mailster-block-form {
+		animation: none !important;
+	}
+}
+
+@keyframes mailster-info {
+	0% {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes mailster-fadein {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes mailster-showlate {
+	0%,
+	90% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0.5;
+	}
+}
+
+@keyframes mailster-shake {
+	from,
+	to {
+		transform: translate3d(0, 0, 0);
+	}
+	10%,
+	50%,
+	90% {
+		transform: translate3d(-6px, 0, 0);
+	}
+	30%,
+	70% {
+		transform: translate3d(6px, 0, 0);
+	}
+}
+
+@keyframes mailster-swing {
+	20% {
+		transform: rotate3d(0, 0, 1, 15deg);
+	}
+	40% {
+		transform: rotate3d(0, 0, 1, -10deg);
+	}
+	60% {
+		transform: rotate3d(0, 0, 1, 5deg);
+	}
+	80% {
+		transform: rotate3d(0, 0, 1, -5deg);
+	}
+	to {
+		transform: rotate3d(0, 0, 1, 0deg);
+	}
+}
+@keyframes mailster-heartbeat {
+	0%,
+	28%,
+	70% {
+		transform: scale(1);
+	}
+	14%,
+	42% {
+		transform: scale(1.1);
+	}
+}
+@keyframes mailster-tada {
+	from {
+		transform: scale3d(1, 1, 1);
+	}
+	10%,
+	20% {
+		transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+	}
+	30%,
+	50%,
+	70%,
+	90% {
+		transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+	}
+	40%,
+	60%,
+	80% {
+		transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+	}
+	to {
+		transform: scale3d(1, 1, 1);
+	}
+}
+@keyframes mailster-wobble {
+	from {
+		transform: translate3d(0, 0, 0);
+	}
+	15% {
+		transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+	}
+	30% {
+		transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+	}
+	45% {
+		transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+	}
+	60% {
+		transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+	}
+	75% {
+		transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+	}
+	to {
+		transform: translate3d(0, 0, 0);
+	}
+}

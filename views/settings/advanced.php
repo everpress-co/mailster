@@ -38,6 +38,11 @@
 		<td><label><input type="checkbox" name="mailster_options[legacy_hooks]" value="1" <?php checked( mailster_option( 'legacy_hooks' ) ); ?>> <?php esc_html_e( 'Enable legacy hooks', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you still use deprecated MyMail hooks and filters you can keep them working by enabling this option.', 'mailster' ); ?></p>
 		</td>
 	</tr>
+	<tr valign="top" class="settings-row settings-row-legacy-forms">
+		<th scope="row"><?php esc_html_e( 'Legacy Forms', 'mailster' ); ?></th>
+		<td><label><input type="checkbox" name="mailster_options[legacy_forms]" value="1" <?php checked( mailster_option( 'legacy_forms' ) ); ?>> <?php esc_html_e( 'Enable legacy forms', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you still like to use leagcy forms you can keep them working by enabling this option.', 'mailster' ); ?></p>
+		</td>
+	</tr>
 	<tr valign="top" class="settings-row settings-row-send-test">
 		<th scope="row"><?php esc_html_e( 'Send Test', 'mailster' ); ?></th>
 		<td>

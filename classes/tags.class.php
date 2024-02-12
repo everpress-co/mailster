@@ -2,14 +2,9 @@
 
 class MailsterTags {
 
-	public function __construct() {
-
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-	}
+	public function __construct() {}
 
 
-	public function init() {
-	}
 
 
 	/**
@@ -83,7 +78,7 @@ class MailsterTags {
 			}
 		}
 
-		$wpdb->suppress_errors();
+		$errors = $wpdb->suppress_errors( true );
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
@@ -95,10 +90,12 @@ class MailsterTags {
 
 			do_action( 'mailster_update_tag', $tag_id );
 
+			$wpdb->suppress_errors( $errors );
 			return $tag_id;
 
 		} else {
 
+			$wpdb->suppress_errors( $errors );
 			return new WP_Error( 'tag_exists', $wpdb->last_error );
 		}
 	}
@@ -244,8 +241,8 @@ class MailsterTags {
 			'added'         => time(),
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
 
 			$name = $this->get_name_by_id( $tag_id );
@@ -255,7 +252,7 @@ class MailsterTags {
 		} else {
 			$success = false;
 		}
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 	}
@@ -316,8 +313,8 @@ class MailsterTags {
 			'subscriber_id' => $subscriber_id,
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
 
 			$name = $this->get_name_by_id( $tag_id );
@@ -327,7 +324,7 @@ class MailsterTags {
 		} else {
 			$success = false;
 		}
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 	}
@@ -356,14 +353,14 @@ class MailsterTags {
 			'subscriber_id' => $subscriber_id,
 		);
 
-		$errors                = $wpdb->suppress_errors;
-		$wpdb->suppress_errors = true;
+		$errors = $wpdb->suppress_errors( true );
+
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_tags_subscribers", $args ) ) {
 
 		} else {
 			$success = false;
 		}
-		$wpdb->suppress_errors = $errors;
+		$wpdb->suppress_errors( $errors );
 
 		return $success;
 	}
@@ -546,8 +543,9 @@ class MailsterTags {
 				}
 			}
 
-			mailster_cache_add( $key, $result );
-
+			if ( ! empty( $result ) ) {
+				mailster_cache_add( $key, $result );
+			}
 		}
 
 		return $result;
@@ -742,6 +740,5 @@ class MailsterTags {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_activate( $new ) {
-	}
+	public function on_install( $new ) {}
 }

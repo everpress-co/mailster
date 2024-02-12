@@ -549,7 +549,6 @@ class MailsterForm {
 			$position = array_search( 'email', array_keys( $fields ) ) + 1;
 			$fields   = array_slice( $fields, 0, $position, true ) +
 				array( '_honeypot' => '<div style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="_n_hp_mail" type="email" tabindex="-1" autocomplete="noton" autofill="off"></div>' ) +
-
 				array_slice( $fields, $position, null, true );
 		}
 
@@ -1032,7 +1031,7 @@ class MailsterForm {
 							unset( $entry['form'] );
 						}
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true );
 						$message       = $entry['status'] == 0 ? 'confirmation' : 'success';
 						$message       = $double_opt_in ? 'confirmation' : 'success';
 
@@ -1151,7 +1150,7 @@ class MailsterForm {
 							unset( $entry['form'] );
 						}
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true, $subscriber_notification );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, null, $subscriber_notification );
 						if ( is_wp_error( $subscriber_id ) ) {
 							$subscriber_id = $subscriber->ID;
 						}

@@ -12,7 +12,9 @@ mailster = (function (mailster, $, window, document) {
 			}, 3000);
 		});
 
-		clipboard.on('error', function (e) {});
+		clipboard.on('error', function (e) {
+			console.error('Clipboard Error:', e);
+		});
 	});
 
 	return mailster;

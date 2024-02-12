@@ -289,8 +289,10 @@ class MailsterPrivacy {
 				$link      = get_permalink( $post_id );
 				$gdpr_link = mailster_option( 'gdpr_link' );
 				if ( $gdpr_link && $link != $gdpr_link ) {
-					if ( mailster_update_option( 'gdpr_link', $link ) && mailster_option( 'gdpr_forms' ) ) {
-						mailster_notice( '[Mailster] ' . sprintf( esc_html__( 'The Privacy page link has been changed to %s', 'mailster' ), '<em>' . $link . '</em>' ), 'info', true );
+					if ( mailster_update_option( 'gdpr_link', esc_url( $link ) ) && mailster_option( 'gdpr_forms' ) ) {
+						if ( mailster_option( 'legacy_forms' ) ) {
+							mailster_notice( '[Mailster] ' . sprintf( esc_html__( 'The Privacy page link has been changed to %s', 'mailster' ), '<em>' . esc_url( $link ) . '</em>' ), 'info', true );
+						}
 					}
 				}
 			}

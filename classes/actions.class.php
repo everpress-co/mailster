@@ -226,13 +226,12 @@ class MailsterActions {
 
 		$user_meta = wp_parse_args( $user_meta, array( 'ip' => mailster_get_ip() ) );
 
-		if ( $geo_tracking && 'unknown' !== ( $geo = mailster_ip2City() ) ) {
+		if ( $geo_tracking && 'unknown' !== ( $geo = mailster_get_geo() ) ) {
 
-			$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
-			if ( $geo->city ) {
-				$user_meta['coords']     = (float) $geo->latitude . ',' . (float) $geo->longitude;
-				$user_meta['timeoffset'] = (int) $geo->timeoffset;
-			}
+			$user_meta['geo']        = $geo->country->isoCode . '|' . $geo->city->name;
+			$user_meta['coords']     = (float) $geo->location->latitude . ',' . (float) $geo->location->longitude;
+			$user_meta['timeoffset'] = (int) mailster( 'helper' )->get_timezone_offset_by_string( $geo->location->timeZone );
+
 		}
 
 		mailster( 'subscribers' )->update_meta( $args['subscriber_id'], $args['campaign_id'], $user_meta );
@@ -530,34 +529,49 @@ class MailsterActions {
 
 		}
 
-		$sql = "SELECT a.post_id AS ID, a.meta_value AS parent_id FROM {$wpdb->postmeta} AS a WHERE a.meta_key = '_mailster_parent_id'";
+		$campaign_id_md5 = md5( serialize( $campaign_ids ) );
 
-		if ( isset( $campaign_ids ) ) {
-			$sql .= ' AND a.meta_value IN (' . implode( ',', $campaign_ids ) . ')';
+		if ( false === ( $parent_ids = mailster_cache_get( 'campaign_parents_' . $campaign_id_md5 ) ) ) {
+			$sql = "SELECT a.post_id AS ID, a.meta_value AS parent_id FROM {$wpdb->postmeta} AS a WHERE a.meta_key = '_mailster_parent_id'";
+
+			if ( isset( $campaign_ids ) ) {
+				$sql .= ' AND a.meta_value IN (' . implode( ',', $campaign_ids ) . ')';
+			}
+
+			$parent_ids = array();
+			$parents    = $wpdb->get_results( $sql );
+			foreach ( $parents as $parent ) {
+				$parent_ids[ $parent->ID ] = $parent->parent_id;
+			}
+
+			mailster_cache_set( 'campaign_parents_' . $campaign_id_md5, $parent_ids );
 		}
 
-		$parent_ids = array();
-		$parents    = $wpdb->get_results( $sql );
-		foreach ( $parents as $parent ) {
-			$parent_ids[ $parent->ID ] = $parent->parent_id;
+		$mod_action = str_replace( array( '_total', '_deleted' ), '', $action );
+		$table      = $mod_action;
+		$table      = str_replace( array( 'soft' ), '', $table );
+
+		$inner_cache_key = 'action_' . $table . $campaign_id_md5;
+
+		if ( false === ( $result = mailster_cache_get( $inner_cache_key ) ) ) {
+
+			$sql = "SELECT a.campaign_id AS ID, COUNT( DISTINCT COALESCE( a.subscriber_id, 1) ) AS count, COUNT(DISTINCT a.subscriber_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a";
+
+			if ( isset( $campaign_ids ) ) {
+				$sql .= ' WHERE a.campaign_id IN (' . implode( ',', $campaign_ids ) . ')';
+			}
+
+			if ( ! empty( $parent_ids ) ) {
+				$sql .= ' OR a.campaign_id IN (' . implode( ',', array_keys( $parent_ids ) ) . ')';
+			}
+
+			$sql .= ' GROUP BY a.campaign_id';
+
+			$result = $wpdb->get_results( $sql );
+
+			mailster_cache_set( $inner_cache_key, $result );
+
 		}
-
-		$table = $mod_action = str_replace( array( '_total', '_deleted' ), '', $action );
-		$table = str_replace( array( 'soft' ), '', $table );
-
-		$sql = "SELECT a.campaign_id AS ID, COUNT( DISTINCT COALESCE( a.subscriber_id, 1) ) AS count, COUNT(DISTINCT a.subscriber_id) AS count_cleard, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a";
-
-		if ( isset( $campaign_ids ) ) {
-			$sql .= ' WHERE a.campaign_id IN (' . implode( ',', $campaign_ids ) . ')';
-		}
-
-		if ( ! empty( $parent_ids ) ) {
-			$sql .= ' OR a.campaign_id IN (' . implode( ',', array_keys( $parent_ids ) ) . ')';
-		}
-
-		$sql .= ' GROUP BY a.campaign_id';
-
-		$result = $wpdb->get_results( $sql );
 
 		foreach ( $campaign_ids as $id ) {
 			if ( ! isset( $action_counts[ $id ] ) ) {
@@ -816,7 +830,7 @@ class MailsterActions {
 					return $action_counts[ $list_id ];
 				}
 
-				return isset( $action_counts[ $list_id ][ $action ] ) ? $action_counts[ $list_id ][ $action ] : 0;
+				return isset( $action_counts[ $list_id ][ $action ] ) ? (int) $action_counts[ $list_id ][ $action ] : 0;
 			}
 
 			$list_ids = array( $list_id );
@@ -836,15 +850,15 @@ class MailsterActions {
 
 		$default = $this->get_default_action_counts();
 
-		$sql = "SELECT b.list_id AS ID, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_action_$table AS a";
+		$sql = "SELECT lists_subscriber.list_id AS ID, COUNT(DISTINCT action_table.subscriber_id) AS count, SUM(action_table.count) AS total FROM {$wpdb->prefix}mailster_action_$table AS action_table";
 
-		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS b ON a.subscriber_id = b.subscriber_id WHERE a.campaign_id != 0";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscriber ON action_table.subscriber_id = lists_subscriber.subscriber_id WHERE action_table.campaign_id != 0";
 
-			$sql .= ' AND b.list_id = ' . (int) $list_id;
+		$sql .= ' AND lists_subscriber.list_id = %d';
 
-		$sql .= ' GROUP BY b.list_id, a.campaign_id';
+		$sql .= ' GROUP BY lists_subscriber.list_id, action_table.campaign_id';
 
-		$result = $wpdb->get_results( $sql );
+		$result = $wpdb->get_results( $wpdb->prepare( $sql, $list_id ) );
 
 		foreach ( $list_ids as $id ) {
 			if ( ! isset( $action_counts[ $id ] ) ) {
@@ -889,7 +903,7 @@ class MailsterActions {
 			return isset( $action_counts[ $list_id ] ) ? $action_counts[ $list_id ] : $default;
 		}
 
-		return isset( $action_counts[ $list_id ] ) && isset( $action_counts[ $list_id ][ $action ] ) ? $action_counts[ $list_id ][ $action ] : 0;
+		return isset( $action_counts[ $list_id ] ) && isset( $action_counts[ $list_id ][ $action ] ) ? (int) $action_counts[ $list_id ][ $action ] : 0;
 	}
 
 

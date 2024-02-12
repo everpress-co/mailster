@@ -33,8 +33,10 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			}
 
+			var mode = event.altKey ? 'modal' : $(this).data('mode') || 'sidebar';
+
 			beacon('article', $(this).data('article'), {
-				type: event.altKey ? 'modal' : 'sidebar',
+				type: mode,
 			});
 			return false;
 		})
@@ -51,8 +53,33 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	mailster.events.push('documentReady', function () {
-		requireConsent(false);
+		beacondata = getBeaconData();
+		// no beacon data
+		if (!beacondata) {
+			requireConsent(false);
+			return;
+		}
+
+		// init if we have messages
+		if (beacondata.messages) {
+			requireConsent(false);
+		}
 	});
+
+	function getBeaconData() {
+		beacondata = mailster.session.get('beacon');
+
+		// if exists and not older than one hour and version is the same
+		if (
+			beacondata &&
+			new Date() / 1000 - beacondata.timestamp < 3600 &&
+			beacondata.version === mailster.version
+		) {
+			return beacondata;
+		}
+
+		return false;
+	}
 
 	beacon('on', 'ready', function () {
 		if (beacon('info').status.isOpened) {
@@ -80,10 +107,7 @@ mailster = (function (mailster, $, window, document) {
 			document.head.appendChild(script);
 		}
 
-		beacondata = mailster.session.get('beacon');
-
-		// reload at least every hour
-		if (beacondata && new Date() / 1000 - beacondata.timestamp < 3600) {
+		if (getBeaconData()) {
 			initBeacon();
 			return;
 		}
@@ -96,12 +120,15 @@ mailster = (function (mailster, $, window, document) {
 				mailster.session.set('beacon', beacondata);
 				!loaded && initBeacon();
 			},
-			function (jqXHR, textStatus, errorThrown) {}
+			function (jqXHR, textStatus, errorThrown) {
+				console.error(textStatus, errorThrown);
+			}
 		);
 	}
 
 	function initBeacon() {
 		beacon = function (method, options, data) {
+			data = data || {};
 			switch (method) {
 				case 'init':
 					Beacon('reset');
@@ -123,10 +150,11 @@ mailster = (function (mailster, $, window, document) {
 						},
 					});
 					return Beacon('init', beacondata.id);
-					break;
 				case 'suggest':
 					return Beacon('suggest', options, data);
-					break;
+				case 'show-message':
+					data.force = true;
+					return Beacon('show-message', options, data);
 				default:
 					return Beacon(method, options, data);
 			}
@@ -151,23 +179,10 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		if (beacondata.messages) {
-			Object.keys(beacondata.messages).forEach((messageId, index) => {
-				if (
-					!beacondata.messages[messageId].screen ||
-					mailster.dom.body.classList.contains(
-						beacondata.messages[messageId].screen
-					)
-				) {
-					beacon(
-						'show-message',
-						messageId,
-						beacondata.messages[messageId].args
-					);
-				}
-			});
+			for (var i in beacondata.messages) {
+				beacon('show-message', beacondata.messages[i]);
+			}
 		}
-
-		mailster.beacon = beacon;
 
 		loaded = true;
 		helpbtn.removeClass('is-loading');
@@ -218,6 +233,10 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	countdowns();
+
+	mailster.beacon = beacon;
+	mailster.requireConsent = requireConsent;
+	mailster.loadBeaconData = loadBeaconData;
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);

@@ -11,12 +11,6 @@ class MailsterBounce {
 	 */
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-	}
-
-
-	public function init() {
-
 		add_action( 'mailster_cron_bounce', array( &$this, 'check' ), 1 );
 		add_action( 'mailster_check_bounces', array( &$this, 'check' ), 99 );
 	}

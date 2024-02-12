@@ -4,15 +4,15 @@ class MailsterConvert {
 
 	public function __construct() {
 
+		if ( get_option( 'mailster_freemius' ) ) {
+			return;
+		}
+
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 100 );
 		add_action( 'wp_version_check', array( &$this, 'notice' ) );
 	}
 
 	public function admin_menu() {
-
-		if ( get_option( 'mailster_freemius' ) ) {
-			return;
-		}
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert License', 'mailster' ), esc_html__( 'Convert License', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
@@ -27,7 +27,7 @@ class MailsterConvert {
 	public function script_styles() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-convert', MAILSTER_URI . 'assets/css/convert-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-convert', MAILSTER_URI . 'assets/js/convert-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 	}
 
@@ -40,7 +40,7 @@ class MailsterConvert {
 		$msg  = '<h2>' . esc_html__( '[Action Required] We need to transfer your Mailster license!', 'mailster' ) . '</h2>';
 		$msg .= '<p>' . esc_html__( 'Hey there! Just wanted to give you a heads up that we\'re changing our license provider.', 'mailster' ) . '</p>';
 		$msg .= '<p>' . esc_html__( 'As part of the process, we\'ll need your consent for a quick manual step. Thanks for your help in advance!', 'mailster' ) . '</p>';
-		$msg .= '<p><a class="button button-primary button-hero" href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'Convert now', 'mailster' ) . '</a> or <a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" data-article="63fe029de6d6615225474599">' . esc_html__( 'read more about it', 'mailster' ) . '</a></p>';
+		$msg .= '<p><a class="button button-primary button-hero" href="' . admin_url( 'admin.php?page=mailster_convert' ) . '">' . esc_html__( 'Convert now', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/63fe029de6d6615225474599' ) . '" data-article="63fe029de6d6615225474599">' . esc_html__( 'read more about it', 'mailster' ) . '</a></p>';
 
 		mailster_notice( $msg, 'info', false, 'mailster_freemius' );
 	}

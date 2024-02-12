@@ -29,12 +29,6 @@ class MailsterAddons {
 
 	public function __construct() {
 
-		add_action( 'init', array( &$this, 'init' ) );
-	}
-
-
-	public function init() {
-
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 50 );
 	}
 
@@ -317,15 +311,6 @@ class MailsterAddons {
 
 		mailster_redirect( $redirect );
 		exit;
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $new
-	 */
-	public function on_activate( $new ) {
 	}
 
 

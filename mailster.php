@@ -3,7 +3,7 @@
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
 Description: Send Beautiful Email Newsletters in WordPress.
-Version: 3.3.13
+Version: 4.0.0
 Author: EverPress
 Author URI: https://everpress.co
 Text Domain: mailster
@@ -13,10 +13,10 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '3.3.13' );
+define( 'MAILSTER_VERSION', '4.0.0' );
 define( 'MAILSTER_BUILT', 0000000000 );
 define( 'MAILSTER_ENVATO', false );
-define( 'MAILSTER_DBVERSION', 20220727 );
+define( 'MAILSTER_DBVERSION', 20230517 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
 define( 'MAILSTER_FILE', __FILE__ );
@@ -25,10 +25,10 @@ define( 'MAILSTER_SLUG', basename( MAILSTER_DIR ) . '/' . basename( __FILE__ ) )
 $upload_folder = wp_upload_dir();
 
 if ( ! defined( 'MAILSTER_UPLOAD_DIR' ) ) {
-	define( 'MAILSTER_UPLOAD_DIR', trailingslashit( $upload_folder['basedir'] ) . 'mailster' );
+	define( 'MAILSTER_UPLOAD_DIR', $upload_folder['basedir'] . '/mailster' );
 }
 if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
-	define( 'MAILSTER_UPLOAD_URI', trailingslashit( $upload_folder['baseurl'] ) . 'mailster' );
+	define( 'MAILSTER_UPLOAD_URI', $upload_folder['baseurl'] . '/mailster' );
 }
 
 require_once MAILSTER_DIR . 'vendor/autoload.php';

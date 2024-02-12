@@ -4,11 +4,13 @@ $autoresponder = count( mailster_get_autoresponder_campaigns() );
 
 $campaigns = count( mailster_get_campaigns() ) - $autoresponder;
 
+$automations = 123;
+
 $subscribers = mailster( 'subscribers' )->get_totals( 1 );
 
 $lists = count( mailster( 'lists' )->get() );
 
-$forms = count( mailster( 'forms' )->get_all() );
+$forms = count( mailster( 'block-forms' )->get_all() );
 
 ?>
 <dl class="mailster-icon mailster-campaigns">
@@ -23,6 +25,14 @@ $forms = count( mailster( 'forms' )->get_all() );
 		<a href="post-new.php?post_type=newsletter&post_status=autoresponder"><?php esc_html_e( 'Create Autoresponder', 'mailster' ); ?></a>
 	</dd>
 </dl>
+<!-- <dl class="mailster-icon mailster-automations">
+	<dt><a href="edit.php?post_type=mailster-workflow"><?php esc_html_e( 'Automations', 'mailster' ); ?></a></dt>
+	<dd><span class="version"><?php echo number_format_i18n( $automations ) . ' ' . esc_html__( _nx( 'Automation', 'Automations', $automations, 'number of', 'mailster' ) ); ?></span></dd>
+	<dd>
+		<a href="edit.php?post_type=mailster-workflow"><?php esc_html_e( 'View', 'mailster' ); ?></a> |
+		<a href="post-new.php?post_type=mailster-workflow"><?php esc_html_e( 'Create Automation', 'mailster' ); ?></a>
+	</dd>
+</dl> -->
 <dl class="mailster-icon mailster-subscribers">
 	<dt><a href="edit.php?post_type=newsletter&page=mailster_subscribers"><?php esc_html_e( 'Subscribers', 'mailster' ); ?></a></dt>
 	<dd><span class="version"><?php echo number_format_i18n( $subscribers ) . ' ' . esc_html__( _nx( 'Subscriber', 'Subscribers', $subscribers, 'number of', 'mailster' ) ); ?></span></dd>
@@ -42,10 +52,10 @@ $forms = count( mailster( 'forms' )->get_all() );
 	</dd>
 </dl>
 <dl class="mailster-icon mailster-forms">
-	<dt><a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'Forms', 'mailster' ); ?></a></dt>
+	<dt><a href="edit.php?post_type=mailster-form"><?php esc_html_e( 'Forms', 'mailster' ); ?></a></dt>
 	<dd><span class="version"><?php echo number_format_i18n( $forms ) . ' ' . esc_html__( _nx( 'Form', 'Forms', $forms, 'number of', 'mailster' ) ); ?></span></dd>
 	<dd>
-		<a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'View', 'mailster' ); ?></a> |
-		<a href="edit.php?post_type=newsletter&page=mailster_forms&new"><?php esc_html_e( 'Add Form', 'mailster' ); ?></a>
+		<a href="edit.php?post_type=mailster-form"><?php esc_html_e( 'View', 'mailster' ); ?></a> |
+		<a href="post-new.php?post_type=mailster-form"><?php esc_html_e( 'Add Form', 'mailster' ); ?></a>
 	</dd>
 </dl>

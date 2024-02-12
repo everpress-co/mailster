@@ -34,12 +34,14 @@
 }
 .wrap > .notice.inline.theme-notice-installed,
 .wrap > .notice.inline.theme-notice-free,
+.wrap > .notice.inline.theme-notice-premium,
 .wrap > .notice.inline.theme-notice-updated,
 .wrap > .notice.inline.theme-notice-popular {
 	display: none;
 }
 .browse-installed .wrap > .notice.inline.theme-notice-installed,
 .browse-free .wrap > .notice.inline.theme-notice-free,
+.browse-premium .wrap > .notice.inline.theme-notice-premium,
 .browse-updated .wrap > .notice.inline.theme-notice-updated,
 .browse-popular .wrap > .notice.inline.theme-notice-popular {
 	display: block;
@@ -96,9 +98,8 @@
 }
 .theme-browser .theme-actions .create-campaign,
 .browse-installed .theme-browser .theme-actions .request-download,
-.browse-installed .theme-browser .theme-actions .download {
-	display: none;
-}
+.browse-installed .theme-browser .theme-actions .download,
+.browse-premium .theme-browser .theme-actions .buy,
 .theme-browser .theme.is-installed .theme-actions .buy {
 	display: none;
 }
@@ -162,9 +163,9 @@
 	right: 50%;
 }
 .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
-	width: 700px;
+	width: 200%;
 	height: 1200px;
-	transform: translate(-50%, -22%) scale(0.5);
+	transform: translate(-50%, -25%) scale(0.5);
 	box-shadow: none;
 }
 .theme-browser .theme .theme-screenshot .theme-screenshot-bg {
@@ -335,4 +336,20 @@
 .theme-browser .theme.envato-item .theme-name:after {
 	content: '';
 	background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 42 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-391.000000, -503.000000)" fill="%2381B636"><path d="M426.607261,503.263091 C428.756617,504.31759 437.503037,523.192068 430.04151,539.630549 C424.049276,552.830534 409.006732,552.832034 401.381459,548.180539 C394.868482,544.205544 384.91978,531.682058 395.933571,516.389576 C396.399732,515.809077 397.517929,515.861577 397.265671,517.615075 C397.087172,518.860073 395.489538,527.798563 398.538762,531.682058 C399.931344,533.624556 400.257362,532.285058 400.257362,532.285058 C400.257362,532.285058 400.019856,519.278573 409.908075,509.404084 C416.185022,503.383091 424.890136,502.420092 426.607261,503.263091" id="Envato"></path></g></g></svg>');
+}
+
+#templates-premium-only {
+	z-index: 1000;
+	min-width: 400px;
+	min-height: 300px;
+	max-width: 90vw;
+	max-height: 90vh;
+	width: 50vw;
+	height: 50vh;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
 }

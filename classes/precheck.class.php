@@ -2,14 +2,7 @@
 
 class MailsterPrecheck {
 
-	public function __construct() {
-
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-	}
-
-
-	public function init() {}
-
+	public function __construct() { }
 
 	/**
 	 *
@@ -115,6 +108,12 @@ class MailsterPrecheck {
 				if ( $response->count ) {
 					$html .= '<table class="wp-list-table widefat striped assets-table">';
 					foreach ( $response->links as $i => $link ) {
+						// exclude links to the newsletter itself
+						if ( strpos( $link->href, home_url( '?post_type=newsletter' ) ) !== false ) {
+							$link->code    = 200;
+							$link->status  = 'success';
+							$link->message = __( 'This link is pointing to the newsletter itself', 'mailster' );
+						}
 						$html .= '<tr class="asset is-' . esc_attr( $link->status ) . '" data-url="' . esc_attr( $link->href ) . '" data-tag="a" data-attr="href" data-index="' . esc_attr( $link->index ) . '">';
 						$html .= '<td><span class="asset-type asset-type-' . $link->type . ' mailster-icon"></span></td>';
 						$html .= '<td title="' . esc_attr( $link->message ) . '">' . $link->code . '</td>';
@@ -246,11 +245,14 @@ class MailsterPrecheck {
 			$authorization = mailster()->get_license();
 		}
 
+		$license = mailster_freemius()->_get_license();
+
 		$args = array(
 			'timeout' => (int) $timeout,
 			'headers' => array(
 				'Authorization' => $authorization,
 				'X-Domain'      => parse_url( is_multisite() ? network_site_url() : site_url(), PHP_URL_HOST ),
+				'X-Plugin'      => $license->plugin_id,
 			),
 		);
 

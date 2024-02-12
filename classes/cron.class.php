@@ -121,6 +121,11 @@ class MailsterCron {
 	 */
 	public function update( $hourly_only = false ) {
 
+		// not installed yet
+		if ( ! get_option( 'mailster' ) ) {
+			return;
+		}
+
 		if ( ! wp_next_scheduled( 'mailster_cron' ) ) {
 
 			// main schedule always 5 minutes before full hour
@@ -145,6 +150,11 @@ class MailsterCron {
 
 	public function schedule( $unschedule = false ) {
 
+		// not installed yet
+		if ( ! get_option( 'mailster' ) ) {
+			return;
+		}
+
 		if ( $unschedule ) {
 			$this->unschedule();
 		}
@@ -155,6 +165,9 @@ class MailsterCron {
 		}
 		if ( ! wp_next_scheduled( 'mailster_cron_bounce' ) ) {
 			wp_schedule_event( floor( time() / 300 ) * 300 - 30, 'mailster_cron_interval', 'mailster_cron_bounce' );
+		}
+		if ( ! wp_next_scheduled( 'mailster_cron_workflow' ) ) {
+			wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_workflow' );
 		}
 		if ( ! wp_next_scheduled( 'mailster_cron_worker' ) ) {
 			wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_worker' );
@@ -168,6 +181,7 @@ class MailsterCron {
 	public function unschedule() {
 		wp_clear_scheduled_hook( 'mailster_cron_autoresponder' );
 		wp_clear_scheduled_hook( 'mailster_cron_bounce' );
+		wp_clear_scheduled_hook( 'mailster_cron_workflow' );
 		wp_clear_scheduled_hook( 'mailster_cron_worker' );
 		wp_clear_scheduled_hook( 'mailster_cron_cleanup' );
 	}
@@ -456,7 +470,7 @@ class MailsterCron {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_activate( $new ) {
+	public function on_install( $new ) {
 
 		$this->update();
 

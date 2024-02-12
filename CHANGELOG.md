@@ -1,3 +1,93 @@
+### Version 4.0.0 (2024-02-12)
+
+#### New Features
+
+- **Email Health Check**: Check your delivery method to comply with upcoming changes to Gmail and Yahoo.
+- **Block Forms**: Create forms and popups with the built-in editor.
+- **Automations**: Bring automations to the next stage with customer journeys.
+- **One Click Unsubscribe**: Now enabled by default for Gmail and Yahoo, complying with RFC 8058.
+- **Save Custom Modules**: Allows for saving and reusing custom modules within the platform.
+- **Native Support**:
+  - For DIVI.
+  - Improved native support forms for Elementor, including a change in the slug of the Elementor module to prevent conflicts.
+
+#### Improvements
+
+- **General**:
+  - Welcome Wizard.
+  - Automation triggers now run on the same process.
+  - List view labels are more descriptive.
+  - Newsletter homepage block.
+  - Standardized rendering of campaigns.
+  - Performance improvements on querying action data from campaigns and on data in the wp_options table.
+  - Rendered of admin screens.
+  - Subscribers detail page.
+  - Allow any type of hook in hook triggers.
+- **Forms and Popups**:
+  - Block form preview.
+  - Animations on forms are now reduced if clients use "prefer-reduced-motion".
+  - Honeypot mechanism to prevent false positives on heavily cached sites and improved to prevent false positives more broadly.
+- **Compatibility and Standards**:
+  - PHP 8.2 compatibility.
+  - Updated WP Coding Standards to 3.0.
+  - Fully tested for PHP 8.1 and partially tested with PHP 8.2.
+- **UI/UX**:
+  - Improved preview of forms from the block form overview.
+  - Improved rewrite rules for newsletter homepage.
+  - Improved placeholder image tags algorithm.
+  - Improved beacon message loader.
+  - CSS improvements on the form editor.
+  - General style updates.
+
+#### Changes
+
+- **Technical and Structural**:
+  - Page link triggers are now stored differently.
+  - No longer use trigger post meta value for automation triggers.
+  - Moved form padding to style section.
+  - Hide "Show form" option if used in content.
+- **Deprecated**:
+  - Legacy forms.
+
+#### Updates
+
+- **SDKs and Libraries**:
+  - Freemius SDK updated to 2.6.2.
+- **Geo API**: Updated to use preferred single mmdb file instead of multiple data files.
+- **Admin Screens**: Improved rendering.
+
+#### Fixes
+
+- **General Fixes**:
+  - Deprecated notice on subscribers detail page for PHP 8.2+.
+  - Warning on activation if update state is not clear.
+  - Warnings when trying to resize SVG images in email.
+  - Custom fields were not saved in some cases.
+  - Warning on PHP 8.2 if subscriber count is 0.
+  - CodeMirror editor not responding.
+  - `mailster_ip2Country` didn't return country codes.
+  - Forms popup appear in wrong places.
+  - Conditions were sometimes wrongly not fulfilled.
+  - Automations don't get triggered due to a wrong db column.
+  - Inline style attribute got removed in some edge cases.
+  - Scroll percentage trigger was not working.
+  - Align property hasn't been stored if forms are used out of context.
+  - Prevent step ID be the same if multiple blocks are duplicated.
+
+#### Added
+
+- **Premium Templates**: Now available to certain plans.
+- **Specific Date and Anniversary Triggers**: Can now have an offset.
+- **Support and Cleanup**:
+  - Improved log cleanup algorithm.
+  - New filter 'mailster_cron_simple_output' to change the output of the cron page.
+  - Run KSES filter on form output via shortcode.
+  - Smaller fixes and improvements, cleanup.
+  - Support block form preview in the site editor.
+- **Miscellaneous**:
+  - Option to convert certain autoresponders to workflows.
+  - Legacy forms menu entry is hidden by default.
+
 ### Version 3.3.13 (2024-01-15)
 
 - new: Email Health Check: check your delivery method to comply with upcoming changes to Gmail and Yahoo

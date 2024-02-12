@@ -27,7 +27,7 @@ class MailsterTemplate {
 		'version'     => 'Version',
 	);
 
-	private $rtl;
+	private $custom_modules;
 
 	/**
 	 *
@@ -35,13 +35,14 @@ class MailsterTemplate {
 	 * @param unknown $slug (optional)
 	 * @param unknown $file (optional)
 	 */
-	public function __construct( $slug = null, $file = 'index.html' ) {
+	public function __construct( $slug = null, $file = 'index.html', $custom_modules = false ) {
 
-		$this->rtl  = is_rtl();
 		$this->file = basename( $file );
 
 		$this->path = MAILSTER_UPLOAD_DIR . '/templates';
 		$this->url  = MAILSTER_UPLOAD_URI . '/templates';
+
+		$this->custom_modules = $custom_modules;
 
 		if ( ! is_null( $slug ) ) {
 			$this->load_template( $slug );
@@ -100,6 +101,10 @@ class MailsterTemplate {
 		return $html;
 	}
 
+	public function use_notification() {
+		$this->raw = $this->get_notification_template( $this->raw );
+	}
+
 
 	/**
 	 *
@@ -133,8 +138,8 @@ class MailsterTemplate {
 	/**
 	 *
 	 *
-	 * @param unknown $slug (optional)
-	 * @return unknown
+	 * @param unknown $html
+	 * @return string
 	 */
 	public function load_template( $slug = '' ) {
 
@@ -142,33 +147,59 @@ class MailsterTemplate {
 
 		$this->templatepath = $this->path . '/' . $slug;
 		$this->templateurl  = $this->url . '/' . $slug;
+		$this->slug         = $slug;
+
+		// plain text
+		if ( $this->file == '-1' ) {
+			$this->raw = '{headline}<br>{content}';
+			return $this->raw;
+		}
 
 		$file = $this->templatepath . '/' . $this->file;
-
-		if ( $this->rtl ) {
-			$rtlfile = str_replace( '.html', '-rtl.html', $file );
-			if ( file_exists( $rtlfile ) ) {
-				$file = $rtlfile;
-			}
-		}
 
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}
+		if ( $this->exists = file_exists( $file ) ) {
+
+			$raw           = file_get_contents( $file );
+			$raw           = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
+			$template_data = $this->get_template_data( $file );
+			if ( $template_data && $template_data['name'] ) {
+				$this->data = $template_data;
+
+			}
+			// use custom custom modules
+			if ( $this->custom_modules ) {
+				$custom_modules = $this->get_custom_modules();
+				$raw            = preg_replace( '#<modules>(.*)</modules>#s', '<modules>' . "\n" . $custom_modules . "\n" . '</modules>', $raw );
+			}
+		} else {
+
+			// fallback to base template
+			$base_html = file_get_contents( $this->templatepath . '/index.html' );
+			$raw       = $this->get_notification_template( $base_html );
+
+		}
+
+		return $this->load_template_html( $raw );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $html (optional)
+	 * @return unknown
+	 */
+	public function load_template_html( $html ) {
 
 		$doc                  = new DOMDocument();
 		$doc->validateOnParse = true;
 		$doc->formatOutput    = true;
 
-		if ( file_exists( $file ) ) {
-			$raw = file_get_contents( $file );
-			$raw = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
-		} else {
-			$raw = '{headline}<br>{content}';
-		}
-
 		$i_error = libxml_use_internal_errors( true );
-		$doc->loadHTML( $raw );
+		$doc->loadHTML( $html );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -250,31 +281,37 @@ class MailsterTemplate {
 			}
 		}
 
-		$services = mailster_option(
-			'services',
-			array(
-				'twitter'  => '',
-				'facebook' => '',
-			)
-		);
+		$services = mailster_option( 'services', array() );
 
-		$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
+		$social = $xpath->query( '//*/buttons[@social]' );
+		if ( $social->length > 0 ) {
+			$buttons = $social->item( 0 )->getElementsByTagName( 'a' );
+		} else {
+			// legacy
+			$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
+		}
 
-		if ( $buttons->length ) {
+		if ( $buttons->length > 0 ) {
 
 			$base_path = $this->templatepath . '/img/social/';
 			$base_url  = $this->templateurl . '/img/social/';
 			if ( ! is_dir( $base_path ) ) {
-				$base_path = MAILSTER_DIR . 'assets/img/social/';
-				$base_url  = MAILSTER_URI . 'assets/img/social/';
+				$base_path = MAILSTER_UPLOAD_DIR . '/social/';
+				$base_url  = MAILSTER_UPLOAD_URI . '/social/';
+				if ( ! is_dir( $base_path ) ) {
+					mailster( 'templates' )->copy_social_icons();
+				}
 			}
 
 			$high_dpi = mailster_option( 'high_dpi' ) ? 2 : 1;
 
+			$base_link  = $buttons->item( 0 )->cloneNode( true );
+			$base_image = $base_link->firstChild;
+
 			$parent = $buttons->item( 0 )->parentNode;
 
-			foreach ( $buttons as $button ) {
-				$button->parentNode->removeChild( $button );
+			while ( $parent->hasChildNodes() ) {
+				$parent->removeChild( $parent->firstChild );
 			}
 
 			foreach ( $services as $service => $username ) {
@@ -297,21 +334,21 @@ class MailsterTemplate {
 					continue;
 				}
 
-				if ( ! ( $width = $buttons->item( 0 )->firstChild->getAttribute( 'width' ) ) ) {
+				if ( ! ( $width = $base_image->getAttribute( 'width' ) ) ) {
 					$width = round( $width / $high_dpi );
 				}
-				if ( ! ( $height = $buttons->item( 0 )->firstChild->getAttribute( 'height' ) ) ) {
+				if ( ! ( $height = $base_image->getAttribute( 'height' ) ) ) {
 					$height = round( $height / $high_dpi );
 				}
 
-				$img  = $doc->createElement( 'img' );
-				$link = $doc->createElement( 'a' );
+				$link = $base_link->cloneNode( false );
+				$img  = $base_image->cloneNode( false );
 
 				$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
-				$img->setAttribute( 'width', $width );
-				$img->setAttribute( 'height', $height );
-				$img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
-				$img->setAttribute( 'class', 'social' );
+				// $img->setAttribute( 'width', $width );
+				// $img->setAttribute( 'height', $height );
+				// $img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
+				// $img->setAttribute( 'class', 'social' );
 				$img->setAttribute( 'alt', esc_attr( sprintf( __( 'Share this on %s', 'mailster' ), ucwords( $service ) ) ) );
 
 				$link->setAttribute( 'href', $url );
@@ -323,21 +360,30 @@ class MailsterTemplate {
 			}
 		}
 
-		$template_data = $this->get_template_data( $file );
-		if ( $template_data && $template_data['name'] ) {
-			$this->data = $template_data;
-		}
-
-		$raw = $doc->saveHTML();
-		if ( preg_match( '#<!--(.*?)-->#s', $raw, $match ) ) {
+		$html = $doc->saveHTML();
+		if ( preg_match( '#<!--(.*?)-->#s', $html, $match ) ) {
 			$header = $match[0];
-			$raw    = $header . "\n" . str_replace( $header, '', $raw );
+			$html   = $header . "\n" . str_replace( $header, '', $html );
 		}
 
-		$this->slug   = $slug;
-		$this->doc    = $doc;
-		$this->raw    = $raw;
-		$this->exists = file_exists( $file );
+		$this->doc = $doc;
+		$this->raw = $html;
+
+		return $html;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function reload( $custom_modules = false ) {
+		$this->custom_modules = $custom_modules;
+
+		if ( ! is_null( $this->slug ) ) {
+			$this->load_template( $this->slug );
+		}
 	}
 
 
@@ -436,7 +482,7 @@ class MailsterTemplate {
 
 		$pre .= "\n-->\n";
 
-		if ( $has_modules = preg_match( '#<modules[^>]*>(.*)</modules>#s', $content, $hits ) ) {
+		if ( preg_match( '#<modules[^>]*>(.*)</modules>#s', $content, $hits ) ) {
 
 			$original_modules_html = $modules ? $this->get_modules_html() : '';
 			$custom_modules        = $hits[1];
@@ -469,6 +515,73 @@ class MailsterTemplate {
 		}
 
 		return false;
+	}   /**
+		 *
+		 *
+		 * @param unknown $name
+		 * @param unknown $content (optional)
+		 * @param unknown $auto    (optional)
+		 * @return unknown
+		 */
+	public function add_module( $name, $content = '', $auto = false ) {
+
+		// remove absolute path to images from the template
+		$content = str_replace( 'src="' . $this->url . '/' . $this->slug . '/', 'src="', $content );
+
+		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
+
+		$content = '<module label="' . esc_attr( $name ) . '"' . ( $auto ? ' auto' : '' ) . '>' . "\n" . $content . "\n" . '</module>';
+
+		// sanitize content
+		$content = mailster()->sanitize_content( $content, null, false, true );
+
+		// fixes potential HTML issues
+		$content = $this->module_parser( $content );
+
+		$hash = hash( 'crc32', md5( $content ) );
+		if ( is_rtl() ) {
+			$hash .= '-rtl';
+		}
+		$filename = strtolower( sanitize_file_name( $name ) ) . '-' . $hash . '.html';
+
+		if ( mailster( 'helper' )->file_put_contents( $this->templatepath . '/modules/' . $filename, $content ) ) {
+			mailster( 'templates' )->reset_query_cache();
+			mailster( 'templates' )->schedule_screenshot( $this->slug, 'index.html', true, 0, true );
+			return $filename;
+		}
+
+		return false;
+	}
+
+
+	/**
+	 *
+	 * Delete a custom module
+	 *
+	 * @param mixed $id
+	 * @return bool
+	 */
+	public function delete_module( $id ) {
+
+		// find module file
+		$modules = glob( $this->templatepath . '/modules/*-' . $id . '.html' );
+
+		if ( ! $modules ) {
+			return false;
+		}
+		$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/';
+
+		$wp_filesystem = mailster_require_filesystem();
+		if ( ! $wp_filesystem ) {
+			return false;
+		}
+		foreach ( $modules as $file ) {
+			if ( $wp_filesystem->delete( $file, true ) ) {
+				$screenshot = $this->get_module_image( $id );
+				$wp_filesystem->delete( $screenshot_modules_folder . $screenshot, true );
+			}
+		}
+		return true;
 	}
 
 
@@ -478,15 +591,41 @@ class MailsterTemplate {
 	 * @param unknown $activeonly (optional)
 	 * @return unknown
 	 */
-	public function get_module_list( $activeonly = false ) {
+	private function module_parser( $html ) {
+
+		$i_error              = libxml_use_internal_errors( true );
+		$doc                  = new DOMDocument();
+		$doc->validateOnParse = true;
+		$doc->formatOutput    = true;
+
+		$doc->loadHTML( $html );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $i_error );
+
+		$xpath = new DOMXpath( $doc );
+
+		$module = $xpath->query( '//*/module' );
+
+		$html = $this->get_html_from_nodes( $module );
+
+		return $html;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $activeonly (optional)
+	 * @return unknown
+	 */
+	public function get_modules_list( $activeonly = false ) {
 
 		$modules = $this->get_modules( $activeonly );
-		$count   = $modules->length;
-		$list    = array();
 
-		if ( ! $count ) {
-			return $list;
-		}
+		$return = array();
+
+		$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/';
+		$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/';
 
 		$labels = array(
 			'full size image'          => esc_html_x( 'Full Size Image', 'common module name', 'mailster' ),
@@ -530,24 +669,95 @@ class MailsterTemplate {
 			'1/4 column'               => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBC;' ),
 		);
 
-		$screenshots = $this->get_module_screenshots();
+		$schedule_screenshots = false;
 
-		for ( $i = 0; $i < $count; $i++ ) {
+		foreach ( $modules as $i => $module ) {
+			$html  = $this->get_html_from_node( $module );
+			$id    = hash( 'crc32', md5( $html ) );
 			$label = $modules->item( $i )->getAttribute( 'label' );
+
 			if ( isset( $labels[ strtolower( $label ) ] ) ) {
 				$label = $labels[ strtolower( $label ) ];
 			} elseif ( empty( $label ) ) {
 				$label = sprintf( esc_html__( 'Module %s', 'mailster' ), '#' . ( $i + 1 ) );
 			}
-			$list[] = array(
-				'name' => $label,
-				'html' => $this->make_paths_absolute( $this->get_html_from_node( $modules->item( $i ) ) ),
+			$image = $this->get_module_image( $id );
+			if ( $image ) {
+				$image_size = getimagesize( $screenshot_modules_folder . $image );
+				$factor     = round( $image_size[0] / 150 );
+			} else {
+				$schedule_screenshots = true;
+			}
+
+			$module_html  = '<li data-id="' . $id . '" draggable="true">';
+			$module_html .= '<script type="text/html">' . $html . '</script>';
+			if ( $image ) {
+				$module_html .= '<a class="mailster-btn addmodule has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $image . '\');height:' . ( ceil( $image_size[1] / $factor ) + 6 ) . 'px;" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $label . '"' ) ) . '" data-id="' . $id . '" tabindex="0"><span>' . esc_html( $label ) . '</span><span class="hidden">' . esc_html( strtolower( $label ) ) . '</span></a>';
+			} else {
+				$module_html .= '<a class="mailster-btn addmodule" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $label . '"' ) ) . '" data-id="' . $id . '" tabindex="0"><span>' . esc_html( $label ) . '</span><span class="hidden">' . esc_html( strtolower( $label ) ) . '</span></a>';
+			}
+			if ( $this->custom_modules ) {
+				$module_html .= '<a class="deletemodule" title="' . esc_attr( sprintf( esc_html__( 'Delete Module %s', 'mailster' ), '"' . $label . '"' ) ) . '" data-id="' . esc_attr( $id ) . '" tabindex="-1">✕</a>';
+			}
+			$module_html .= '</li>';
+
+			$return[] = array(
+				'id'     => $id,
+				'name'   => $label,
+				'html'   => $html,
+				'image'  => $image,
+				'module' => $module_html,
 			);
 		}
 
-		return $list;
+		if ( $schedule_screenshots ) {
+			mailster( 'templates' )->schedule_screenshot( $this->slug, $this->file, true, 0, $this->custom_modules );
+		}
+
+		return $return;
 	}
 
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function get_custom_modules() {
+
+		$modules = glob( $this->templatepath . '/modules/*.html' );
+
+		$html = '';
+
+		foreach ( $modules as $module ) {
+
+			$module = basename( $module );
+
+			$html .= file_get_contents( $this->templatepath . '/modules/' . $module ) . "\n";
+		}
+
+		return trim( $html );
+	}
+
+	private function get_notification_template( $html ) {
+
+		// extract notification module
+		if ( preg_match( '#<module[^>]*?type="notification"(.*?)".*?</module>#ms', $html, $modules ) ) {
+			$module = $modules[0];
+			$html   = preg_replace( '#<modules>(.*)</modules>#s', '<modules>' . "\n" . $module . "\n" . '</modules>', $html );
+
+			// fallback to notification.html
+		} elseif ( file_exists( $this->templatepath . '/notification.html' ) ) {
+			$html = file_get_contents( $this->templatepath . '/notification.html' );
+
+			// last resort
+		} else {
+			$html = $html;
+			// $html = '{headline}<br>{content}';
+		}
+
+		return $html;
+	}
 
 	/**
 	 *
@@ -581,6 +791,25 @@ class MailsterTemplate {
 			: $xpath->query( '//*/module' );
 
 		return $modules;
+	}
+
+
+	private function get_module_image( $id ) {
+
+		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $this->slug . '/' . $this->file;
+
+		$hash = hash( 'crc32', md5_file( $filedir ) );
+		if ( is_rtl() ) {
+			$hash .= '-rtl';
+		}
+		$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/';
+
+		$file = $this->slug . '/modules/' . $hash . '/' . $id . '.jpg';
+
+		if ( file_exists( $screenshot_modules_folder . '/' . $file ) ) {
+			return $file;
+		}
+		return false;
 	}
 
 
@@ -929,7 +1158,7 @@ class MailsterTemplate {
 		if ( ! is_dir( $basefolder ) ) {
 			$root = list_files( $this->path . '/' . $this->slug . '/' . $basefolder, 1 );
 		} else {
-			$root = list_files( $basefolder, 1 );
+			$root = list_files( MAILSTER_UPLOAD_DIR . '/social', 1 );
 		}
 
 		sort( $root );
@@ -969,22 +1198,19 @@ class MailsterTemplate {
 
 				}
 			}
-
 			if ( $nav ) :
 				?>
-		<div id="button-nav-<?php echo $id; ?>" class="button-nav nav-tab-wrapper hide-if-no-js" data-folders="<?php echo implode( '-', $folders ); ?>"><?php echo $nav; ?></div>
+				<div id="button-nav-<?php echo esc_attr( $id ); ?>" class="button-nav nav-tab-wrapper hide-if-no-js" data-folders="<?php echo implode( '-', $folders ); ?>"><?php echo $nav; ?></div>
 				<?php
 			endif;
 			echo $btn;
 			?>
 		</div>
-
-
 			<?php if ( $rootbtn ) : ?>
-		<div class="button-nav-wrap button-nav-wrap-root"><?php echo $rootbtn; ?></div>
-				<?php
-		endif;
+				<div class="button-nav-wrap button-nav-wrap-root"><?php echo $rootbtn; ?></div>
+				<?php endif; ?>
 
+			<?php
 		}
 	}
 
@@ -1014,7 +1240,7 @@ class MailsterTemplate {
 
 			$filename = basename( $file );
 			$service  = substr( $filename, 0, strrpos( $filename, '.' ) );
-			$btn     .= '<li><a class="btnsrc" title="' . ucwords( esc_attr( $service ) ) . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( array( MAILSTER_DIR, $this->path ), array( MAILSTER_URI, $this->url ), $file ) . '" loading="lazy" width="32" height ="32"></a></li>';
+			$btn     .= '<li><a class="btnsrc" title="' . ucwords( esc_attr( $service ) ) . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( array( MAILSTER_DIR, MAILSTER_UPLOAD_DIR, $this->path ), array( MAILSTER_URI, MAILSTER_UPLOAD_URI, $this->url ), $file ) . '" loading="lazy" width="32" height ="32"></a></li>';
 
 		}
 
@@ -1070,7 +1296,9 @@ class MailsterTemplate {
 		$fileuri = MAILSTER_UPLOAD_URI . '/templates/' . $slug . '/' . $file;
 
 		$hash = hash( 'crc32', md5_file( $filedir ) );
-
+		if ( is_rtl() ) {
+			$hash .= '-rtl';
+		}
 		$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash;
 		$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/modules/' . $hash;
 
@@ -1082,16 +1310,28 @@ class MailsterTemplate {
 
 		}
 
-		$files = list_files( $screenshot_modules_folder, 1 );
+		$return = array();
+
+		// add custom modules first
+		if ( is_dir( $screenshot_modules_folder . '/custom' ) ) {
+			$files = glob( $screenshot_modules_folder . '/custom/*.jpg' );
+			natsort( $files );
+			$files = array_values( $files );
+
+			foreach ( $files as $screenshotfile ) {
+				$return[ 'c' . basename( $screenshotfile ) ] = $hash . '/custom/' . basename( $screenshotfile );
+			}
+		}
+
+		$files = glob( $screenshot_modules_folder . '/*.jpg' );
 		natsort( $files );
 		$files = array_values( $files );
 
-		$return = array();
-
 		foreach ( $files as $screenshotfile ) {
-			$return[] = $hash . '/' . basename( $screenshotfile );
+			$return[ basename( $screenshotfile ) ] = $hash . '/' . basename( $screenshotfile );
 		}
 
+		// reschedule if not all modules are there
 		if ( count( $return ) < $modules->length ) {
 			mailster( 'templates' )->schedule_screenshot( $slug, $file, true, 10, false );
 		}
@@ -1131,11 +1371,11 @@ class MailsterTemplate {
 	 */
 	private function get_html_from_node( $node ) {
 
-		$html = $node->ownerDocument->saveXML( $node );
+		$html = $node->ownerDocument->saveHTML( $node );
 
 		// remove CDATA elements (keep content)
 		$html = preg_replace( '~<!\[CDATA\[\s*|\s*\]\]>~', '', $html );
-		return $html;
+		return trim( $html );
 	}
 
 
@@ -1161,6 +1401,50 @@ class MailsterTemplate {
 		}
 
 		return $node->parentNode->replaceChild( $renamed, $node );
+	}
+
+	public function get_colors( $html = array() ) {
+
+		$html   = $this->raw ? $this->raw : $this->get( true );
+		$colors = array();
+
+		// get all style blocks, search for variables
+		preg_match_all( '#<style(.*?)>(.*?)</style>#is', $html, $style_blocks );
+		foreach ( $style_blocks[2] as $style_block ) {
+			// get all variables
+			preg_match_all( '/--mailster-([a-zA-z0-9-]+):([^;}]+)/', $style_block, $variables );
+			foreach ( $variables[1] as $i => $variable ) {
+				$colors[] = array(
+					'id'    => $variable,
+					'var'   => '--mailster-' . $variable,
+					'value' => trim( $variables[2][ $i ] ),
+					'label' => $this->color_label( $variable ),
+				);
+			}
+		}
+
+		// no colors => fallback to the legacy method < 4.0
+		if ( empty( $colors ) ) {
+			preg_match_all( '/#[a-fA-F0-9]{6}/', $html, $hits );
+			$original_colors = array_keys( array_count_values( $hits[0] ) );
+
+			foreach ( $original_colors as $i => $color ) {
+				preg_match( '/' . $color . '\/\*([^*]+)\*\//i', $html, $match );
+				$id       = strtoupper( $color );
+				$colors[] = array(
+					'id'    => $id,
+					'value' => $id,
+					'label' => isset( $match[1] ) ? $match[1] : $id,
+				);
+			}
+		}
+
+		return $colors;
+	}
+
+	private function color_label( $color ) {
+		$label = ucwords( str_replace( '-', ' ', $color ) );
+		return $label;
 	}
 
 

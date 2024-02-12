@@ -13,6 +13,7 @@ $timestamp = ( ! empty( $this->post_data['timestamp'] ) ) ? $this->post_data['ti
 
 $timestamp = ( ! $this->post_data['active'] ) ? max( $now + ( 60 * mailster_option( 'send_offset' ) ), $timestamp ) : $timestamp;
 
+$dateformat = mailster( 'helper' )->dateformat();
 $timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
@@ -34,12 +35,12 @@ $sent = $this->get_sent( $post->ID );
 		</ul>
 		<div id="regular-campaign" class="tabs-panel" <?php echo ( $is_autoresponder ) ? ' style="display:none"' : ''; ?>>
 	<?php endif; ?>
-	<p class="howto" title="<?php echo date( $timeformat, $now ); ?>">
+	<p class="howto" title="<?php echo date( $timeformat, $now + $timeoffset ); ?>">
 	<?php
 		printf(
 			esc_html__( 'Server time: %1$s %2$s', 'mailster' ),
-			'<span title="' . date( $timeformat, $now + $timeoffset ) . '">' . date( 'Y-m-d', $now + $timeoffset ) . '</span>',
-			'<span class="time" data-timestamp="' . ( $now + $timeoffset ) . '">' . date( 'H:i', $now + $timeoffset ) . '</span>'
+			'<span title="' . date( $timeformat, $now + $timeoffset ) . '">' . date( $dateformat, $now + $timeoffset ) . '</span>',
+			'<span class="time" data-timestamp="' . ( $now + $timeoffset ) . '"></span>'
 		);
 
 	elseif ( 'finished' == $post->post_status ) :
@@ -57,19 +58,17 @@ $sent = $this->get_sent( $post->ID );
 	<input name="mailster_data[active]" id="mailster_data_active" value="1" type="checkbox" <?php echo ( $this->post_data['active'] && ! $is_autoresponder ) ? 'checked' : ''; ?> <?php echo ( ! $editable ) ? ' disabled' : ''; ?>>
 	<?php esc_html_e( 'send this campaign', 'mailster' ); ?>
 </label>
-	<div class="active_wrap<?php echo $this->post_data['timezone'] ? ' timezone-enabled' : ''; ?><?php echo $this->post_data['active'] && ! $is_autoresponder ? ' disabled' : ''; ?>">
+	<div class="active_wrap<?php echo $this->post_data['active'] && ! $is_autoresponder ? ' disabled' : ''; ?>">
 		<div class="active_overlay"></div>
 		<?php
-		printf(
-			esc_html_x( 'on %1$s @ %2$s', 'send campaign "on" (date) "at" (time)', 'mailster' ),
-			'<input name="mailster_data[date]" class="datepicker deliverydate inactive" type="text" value="' . date( 'Y-m-d', $timestamp + $timeoffset ) . '" maxlength="10" readonly' . ( ( ( ! $this->post_data['active'] && ! $is_autoresponder ) || ! $editable ) ? ' disabled' : '' ) . '>',
-			'<input name="mailster_data[time]" maxlength="5" class="deliverytime inactive" type="text" value="' . date( 'H:i', $timestamp + $timeoffset ) . '" ' . ( ( ( ! $this->post_data['active'] && ! $is_autoresponder ) || ! $editable ) ? ' disabled' : '' ) . '> <span class="utcoffset">' . ( ( $timeoffset > 0 ) ? 'UTC + ' . ( $timeoffset / 3600 ) : '' ) . '</span>'
-		);
+			esc_html_e( 'on', 'mailster' );
+			echo ' <input name="mailster_data[date]" class="datepicker deliverydate inactive" type="datetime-local" value="' . date( 'Y-m-d H:i', $timestamp + $timeoffset ) . '" _min="' . date( 'Y-m-d\TH:i', time() + $timeoffset ) . '" maxlength="10" readonly' . ( ( ( ! $this->post_data['active'] && ! $is_autoresponder ) || ! $editable ) ? ' disabled' : '' ) . '>';
 		?>
 		<?php if ( mailster_option( 'track_location' ) ) : ?>
-			<br><label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
+			<p><label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 			<input type="checkbox" class="timezone" name="mailster_data[timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 			</label><?php echo mailster()->beacon( array( '63fb2e7c52af714471a1738a' ) ); ?>
+			</p>
 		<?php endif; ?>
 	</div>
 	<?php
@@ -170,16 +169,14 @@ $sent = $this->get_sent( $post->ID );
 			esc_html_e( 'after', 'mailster' );
 			$timestamp = $this->post_data['timestamp'] ? $this->post_data['timestamp'] : $now;
 
-			printf(
-				esc_html_x( '%1$s @ %2$s', 'send campaign "on" (date) "at" (time)', 'mailster' ),
-				'<input name="mailster_data[autoresponder_signup_date]" class="datepicker deliverydate inactive nolimit" type="text" value="' . date( 'Y-m-d', $timestamp + $timeoffset ) . '" maxlength="10" readonly>',
-				'<input name="mailster_data[autoresponder_signup_time]" maxlength="5" class="deliverytime inactive" type="text" value="' . date( 'H:i', $timestamp + $timeoffset ) . '"> <span class="utcoffset">UTC ' . ( $timeoffset ? '+' : '' ) . ( $timeoffset / 3600 ) . '</span>'
-			);
+			esc_html_e( 'on', 'mailster' );
+			echo ' <input name="mailster_data[autoresponder_signup_date]" class="datepicker deliverydate inactive nolimit" type="datetime-local" value="' . date( 'Y-m-d H:i', $timestamp + $timeoffset ) . '" maxlength="10" readonly>';
+
 			?>
 			</p>
 		</div>
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_subscriber_unsubscribed">
-			<p class="description">
+			<p class="howto">
 				<?php esc_html_e( 'Keep in mind it is bad practice to send campaigns after subscribers opt-out so use this option for "Thank you" messages or surveys.', 'mailster' ); ?>
 			</p>
 		</div>
@@ -200,13 +197,13 @@ $sent = $this->get_sent( $post->ID );
 				printf( esc_html__( 'create a new campaign every time a new %s has been published', 'mailster' ), $type );
 				?>
 			</p>
-			<p>
 			<?php if ( mailster_option( 'track_location' ) ) : ?>
+			<p>
 				<label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 				<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][post_published_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 				</label><?php echo mailster()->beacon( array( '63fb2e7c52af714471a1738a' ) ); ?>
-			<?php endif; ?>
 			</p>
+			<?php endif; ?>
 			<div id="autoresponderfield-mailster_post_published_advanced">
 				<div id="autoresponder-taxonomies"></div>
 				<p>
@@ -217,7 +214,7 @@ $sent = $this->get_sent( $post->ID );
 			</div>
 		</div>
 
-		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_timebased<?php echo $this->post_data['timezone'] ? ' timezone-enabled' : ''; ?>">
+		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_timebased">
 			<?php echo mailster()->beacon( array( '611bb8ccf886c9486f8d9921' ) ); ?>
 			<p>
 				<?php
@@ -243,40 +240,35 @@ $sent = $this->get_sent( $post->ID );
 				?>
 			<p>
 			<?php
-				printf(
-					esc_html_x( 'on %1$s @ %2$s', 'send campaign "on" (date) "at" (time)', 'mailster' ),
-					'<input name="mailster_data[autoresponder_date]" class="datepicker deliverydate inactive" type="text" value="' . date( 'Y-m-d', $timestamp + $timeoffset ) . '" maxlength="10" readonly>',
-					'<input name="mailster_data[autoresponder_time]" maxlength="5" class="deliverytime inactive" type="text" value="' . date( 'H:i', $timestamp + $timeoffset ) . '"> <span class="utcoffset">UTC ' . ( $timeoffset ? '+' : '' ) . ( $timeoffset / 3600 ) . '</span>'
-				);
+				esc_html_e( 'on', 'mailster' );
+				echo ' <input name="mailster_data[autoresponder_date]" class="datepicker deliverydate inactive" type="datetime-local" value="' . date( 'Y-m-d H:i', $timestamp + $timeoffset ) . '" maxlength="10" readonly>';
 
 				$autoresponderdata['endschedule'] = isset( $autoresponderdata['endschedule'] );
 			?>
+			</p>
 			<?php if ( mailster_option( 'track_location' ) ) : ?>
+			<p>
 				<label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 				<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][timebased_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 				</label><?php echo mailster()->beacon( array( '63fb2e7c52af714471a1738a' ) ); ?>
-			<?php endif; ?>
 			</p>
-			<p>
+			<?php endif; ?>
+			<div>
 			<label><input type="checkbox" name="mailster_data[autoresponder][endschedule]" class="mailster_autoresponder_timebased-end-schedule" <?php checked( $autoresponderdata['endschedule'] ); ?> value="1"> <?php esc_html_e( 'end schedule', 'mailster' ); ?></label>
 				<div class="mailster_autoresponder_timebased-end-schedule-field"<?php echo ! $autoresponderdata['endschedule'] ? ' style="display:none"' : ''; ?>>
 					<?php
 					$timestamp = max( $timestamp, $autoresponderdata['endtimestamp'] );
-
-					printf(
-						esc_html_x( 'on %1$s @ %2$s', 'send campaign "on" (date) "at" (time)', 'mailster' ),
-						'<input name="mailster_data[autoresponder_enddate]" class="datepicker deliverydate inactive" type="text" value="' . date( 'Y-m-d', $timestamp + $timeoffset ) . '" maxlength="10" readonly>',
-						'<input name="mailster_data[autoresponder_endtime]" maxlength="5" class="deliverytime inactive" type="text" value="' . date( 'H:i', $timestamp + $timeoffset ) . '"> <span class="utcoffset">UTC ' . ( $timeoffset ? '+' : '' ) . ( $timeoffset / 3600 ) . '</span>'
-					);
+					esc_html_e( 'on', 'mailster' );
+					echo ' <input name="mailster_data[autoresponder_enddate]" class="datepicker deliverydate inactive" type="datetime-local" value="' . date( 'Y-m-d H:i', $timestamp + $timeoffset ) . '" maxlength="10" readonly>';
 					?>
-					<span class="description"><?php esc_html_e( 'set an end date for your campaign', 'mailster' ); ?></span>
+					<p class="howto"><?php esc_html_e( 'set an end date for your campaign', 'mailster' ); ?></p>
 				</div>
+			</div>
+			<p class="howto">
+				<?php esc_html_e( 'send campaigns only on these weekdays', 'mailster' ); ?>
 			</p>
 			<p>
 				<?php
-
-				esc_html_e( 'send campaigns only on these weekdays', 'mailster' );
-				echo '<br>';
 				$start_at = get_option( 'start_of_week' );
 
 				for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
@@ -284,7 +276,6 @@ $sent = $this->get_sent( $post->ID );
 					if ( $j >= 7 ) {
 						$j = $j - 7;
 					}
-
 					echo '<label title="' . date_i18n( 'l', strtotime( 'sunday +' . $j . ' days' ) ) . '" class="weekday"><input name="mailster_data[autoresponder][weekdays][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $autoresponderdata['weekdays'] ) || ! $autoresponderdata['weekdays'] ), true, false ) . '>' . date_i18n( 'D', strtotime( 'sunday +' . $j . ' days' ) ) . '&nbsp;</label> ';
 				}
 				?>
@@ -317,7 +308,7 @@ $sent = $this->get_sent( $post->ID );
 				printf( esc_html__( 'Next issue: %s', 'mailster' ), $issue );
 				?>
 				</p>
-				<p class="description">
+				<p class="howto">
 				<?php printf( esc_html__( 'Use the %s tag to display the current issue in the campaign', 'mailster' ), '<code>{issue}</code>' ); ?>
 				</p>
 		</div>
@@ -348,7 +339,9 @@ $sent = $this->get_sent( $post->ID );
 					);
 				}
 				?>
-				<br><label><input type="checkbox" name="post_count_status_reset" value="1"> <?php esc_html_e( 'reset counter', 'mailster' ); ?></label>
+			</p>
+			<p>
+				<label><input type="checkbox" name="post_count_status_reset" value="1"> <?php esc_html_e( 'reset counter', 'mailster' ); ?></label>
 			</p>
 			<input type="hidden" name="mailster_data[autoresponder][post_count_status]" value="<?php echo $autoresponderdata['post_count_status']; ?>">
 
@@ -403,14 +396,15 @@ $sent = $this->get_sent( $post->ID );
 					}
 				endif;
 				?>
-			</p>
+			</p>			
+			<?php if ( mailster_option( 'track_location' ) ) : ?>
 			<p>
-				<?php if ( mailster_option( 'track_location' ) ) : ?>
 				<label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 					<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][usertime_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 				</label><?php echo mailster()->beacon( array( '63fb2e7c52af714471a1738a' ) ); ?>
-				<?php endif; ?>
 			</p>
+			<?php endif; ?>
+
 			<p>
 				<label>
 					<input type="checkbox" name="mailster_data[autoresponder][usertime_once]" value="1" <?php checked( $autoresponderdata['once'] ); ?>> <?php esc_html_e( 'send campaign only once', 'mailster' ); ?>
@@ -516,7 +510,7 @@ $sent = $this->get_sent( $post->ID );
 				<label>
 					<input type="checkbox" name="mailster_data[autoresponder][multiple]" value="1" <?php checked( $autoresponderdata['multiple'] ); ?>> <?php esc_html_e( 'allow multiple triggers', 'mailster' ); ?>
 				</label>
-				<p class="description"><?php esc_html_e( 'Hooks can get triggered multiple times and cause multiple emails.', 'mailster' ); ?></p>
+				<p class="howto"><?php esc_html_e( 'Hooks can get triggered multiple times and cause multiple emails.', 'mailster' ); ?></p>
 			</div>
 		</div>
 
@@ -527,16 +521,9 @@ $sent = $this->get_sent( $post->ID );
 	</div>
 	<?php endif; ?>
 	<div>
-		<?php
-		if ( ! ( $test_email = get_user_meta( $current_user->ID, '_mailster_test_email', true ) ) ) {
-			$test_email = $current_user->user_email;
-		}
-		$test_email = apply_filters( 'mailster_test_email', $test_email );
-		?>
-		<input type="text" value="<?php echo esc_attr( $test_email ); ?>" placeholder="<?php echo esc_attr( $current_user->user_email ); ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>">
-		<span class="spinner" id="delivery-ajax-loading"></span>
-		<input type="button" value="<?php esc_attr_e( 'Run Precheck', 'mailster' ); ?>" class="button mailster_precheck">
-		<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest">
+	<?php	include_once MAILSTER_DIR . 'views/newsletter/test.php'; ?>
+
+		
 		<div class="clear"></div>
 
 	</div>

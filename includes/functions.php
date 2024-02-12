@@ -251,6 +251,13 @@ function mailster_get_current_user_id() {
 
 	return mailster( 'subscribers' )->get_current_user_id();
 }
+
+
+function mailster_trigger( string $hook, $subscriber_id, $workflow_id = null, $step = null ) {
+	return mailster( 'trigger' )->hook( $hook, $subscriber_id, $workflow_id, $step );
+}
+
+
 /**
  *
  *
@@ -522,37 +529,30 @@ function mailster_list_newsletter( $args = '' ) {
 /**
  *
  *
- * @param unknown $ip  (optional)
- * @param unknown $get (optional)
+ * @param unknown $ip     (optional)
+ * @param unknown $get    (optional)
+ * @param unknown $locale (optional)
  * @return unknown
  */
-function mailster_ip2Country( $ip = '', $get = 'code' ) {
+function mailster_ip2Country( $ip = '', $get = 'code', $local = null ) {
 
 	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
-	try {
-
-		if ( empty( $ip ) ) {
-			$ip = mailster_get_ip();
-		}
-
-		if ( mailster_is_local( $ip ) ) {
-			return 'unknown';
-		}
-		$ip2Country = mailster( 'geo' )->Ip2Country();
-
-		$code = $ip2Country->get( $ip, $get );
-
-		if ( ! $code ) {
-			$code = mailster_ip2City( $ip, $get ? 'country_' . $get : null );
-		}
-		return ( $code ) ? $code : 'unknown';
-
-	} catch ( Exception $e ) {
-		return 'error';
+	if ( empty( $ip ) ) {
+		$ip = mailster_get_ip();
 	}
+
+	if ( $get === 'code' ) {
+		return mailster( 'geo' )->get_country_code_for_ip( $ip );
+	}
+
+	if ( empty( $local ) ) {
+		$local = get_locale();
+	}
+
+	return mailster( 'geo' )->get_country_for_ip( $ip, $local );
 }
 
 
@@ -563,17 +563,31 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
  * @param unknown $get (optional)
  * @return unknown
  */
-function mailster_ip2City( $ip = '', $get = null ) {
+function mailster_ip2City( $ip = '', $get = null, $local = null ) {
 
-	if ( ! mailster_option( 'track_location' ) ) {
-		return 'unknown';
+	if ( empty( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
+	if ( empty( $local ) ) {
+		$local = get_locale();
 	}
 
-	$geo = mailster( 'geo' );
+	return mailster( 'geo' )->get_city_for_ip( $ip, $local );
+}
 
-	$code = $geo->get_city_by_ip( $ip, $get );
+/**
+ *
+ *
+ * @param unknown $ip  (optional)
+ * @return unknown
+ */
+function mailster_get_geo( $ip = '' ) {
 
-	return ( $code ) ? $code : 'unknown';
+	if ( empty( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
+
+	return mailster( 'geo' )->get_record( $ip );
 }
 
 
@@ -601,9 +615,30 @@ function mailster_get_ip() {
 			}
 		}
 	}
+
 	return $ip;
 }
 
+function mailster_get_public_ip() {
+	$endpoint = 'https://api.redirect.li/v1/ip/';
+
+	if ( false === ( $result = get_transient( '_mailster_public_ip' ) ) ) {
+		$response = wp_remote_get( $endpoint, array( 'user-agent' => 'Mozilla/5.0' ) );
+		$code     = wp_remote_retrieve_response_code( $response );
+		if ( $code !== 200 ) {
+			return mailster_get_ip();
+		}
+		$response = wp_remote_retrieve_body( $response );
+		$result   = json_decode( $response );
+		set_transient( '_mailster_public_ip', $result, WEEK_IN_SECONDS );
+	}
+
+	if ( isset( $result->ip ) ) {
+		return $result->ip;
+	}
+
+	return mailster_get_ip();
+}
 
 /**
  *
@@ -630,7 +665,7 @@ function mailster_is_local( $ip = null ) {
 		$ip = mailster_get_ip();
 	}
 
-	return ! filter_var( mailster_get_ip(), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+	return ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
 }
 
 
@@ -916,7 +951,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		$args['key'] = uniqid();
 	}
 
-	if ( is_numeric( $args['once'] ) && $args['once'] < 1500000000 ) {
+	if ( is_numeric( $args['once'] ) && $args['once'] < 1600000000 ) {
 		$args['once'] = time() + $args['once'];
 	}
 
@@ -938,9 +973,10 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'screen' => $args['screen'],
 	);
 
-	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
-
 	update_option( 'mailster_notices', $mailster_notices );
+	update_option( 'mailster_notices_count', count( $mailster_notices ) );
+
+	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
 
 	return $args['key'];
 }
@@ -963,28 +999,127 @@ function mailster_remove_notice( $key ) {
 
 		unset( $mailster_notices[ $key ] );
 
+		update_option( 'mailster_notices', $mailster_notices );
+		update_option( 'mailster_notices_count', count( $mailster_notices ) );
+
 		do_action( 'mailster_remove_notice', $key );
 		do_action( 'mailster_remove_notice_' . $key );
 
-		return update_option( 'mailster_notices', $mailster_notices );
 	}
 
 	return true;
 }
 
+/**
+ * get all notices
+ *
+ * @param mixed $id
+ * @param mixed $expire
+ * @return void
+ */
+function mailster_beacon_message( $id, $expire = null ) {
 
-function mailster_beacon_message( $id, $screen = null, $args = array() ) {
-	$mailster_beacon_message = get_option( 'mailster_beacon_message' );
-	if ( ! is_array( $mailster_beacon_message ) ) {
-		$mailster_beacon_message = array();
+	// check if we have a relative timestamp and make it absolute
+	if ( $expire && $expire < 1600000000 ) {
+		$expire = time() + $expire;
 	}
 
-	$mailster_beacon_message[ $id ] = array(
-		'screen' => $screen,
-		'args'   => wp_parse_args( $args ),
-	);
+	if ( $expire ) {
+		$option_name = '_mailster_beacon_messages_expire';
+	} else {
+		$option_name = '_mailster_beacon_messages';
+	}
 
-	update_option( 'mailster_beacon_message', $mailster_beacon_message, false );
+	$beacon_messages = get_transient( $option_name );
+	if ( ! $beacon_messages ) {
+		$beacon_messages = array();
+	}
+	$beacon_messages[ $id ] = $expire ? $expire : true;
+
+	$expires = 0;
+	if ( $expire ) {
+		// expire with the long latest message
+		$expires = array_values( $beacon_messages );
+		$expires = max( $expires ) - time();
+	}
+
+	set_transient( $option_name, $beacon_messages, $expires );
+}
+
+/**
+ * get all beacon messages
+ *
+ * @return array
+ */
+function mailster_get_beacon_message() {
+
+	// get expired messages
+	$expire_beacon_messages = get_transient( '_mailster_beacon_messages_expire' );
+	if ( ! $expire_beacon_messages ) {
+		$expire_beacon_messages = array();
+	}
+	foreach ( $expire_beacon_messages as $id => $expire ) {
+		if ( $expire < time() ) {
+			unset( $expire_beacon_messages[ $id ] );
+		}
+	}
+
+	$beacon_messages = get_transient( '_mailster_beacon_messages' );
+	if ( ! $beacon_messages ) {
+		$beacon_messages = array();
+	}
+
+	$messages = array_merge( array_keys( $expire_beacon_messages ), array_keys( $beacon_messages ) );
+
+	if ( empty( $messages ) ) {
+		return false;
+	}
+
+	return $messages;
+}
+
+/**
+ * delete a beacon message
+ *
+ * @param mixed $id
+ * @return bool
+ */
+function mailster_delete_beacon_message( $id = null ) {
+
+	if ( is_null( $id ) ) {
+		delete_transient( '_mailster_beacon_messages_expire' );
+		delete_transient( '_mailster_beacon_messages' );
+		return true;
+	}
+
+	$expire_beacon_messages = get_transient( '_mailster_beacon_messages_expire' );
+	if ( ! $expire_beacon_messages ) {
+		$expire_beacon_messages = array();
+	}
+	if ( isset( $expire_beacon_messages[ $id ] ) ) {
+		unset( $expire_beacon_messages[ $id ] );
+		if ( empty( $expire_beacon_messages ) ) {
+			delete_transient( '_mailster_beacon_messages_expire' );
+		} else {
+			set_transient( '_mailster_beacon_messages_expire', $expire_beacon_messages, get_option( '_transient_timeout__mailster_beacon_messages_expire', 1 ) );
+		}
+		return true;
+	}
+	$beacon_messages = get_transient( '_mailster_beacon_messages' );
+	if ( ! $beacon_messages ) {
+		$beacon_messages = array();
+	}
+	if ( isset( $beacon_messages[ $id ] ) ) {
+		unset( $beacon_messages[ $id ] );
+		if ( empty( $beacon_messages ) ) {
+			delete_transient( '_mailster_beacon_messages' );
+		} else {
+			set_transient( '_mailster_beacon_messages', $beacon_messages );
+		}
+		return true;
+	}
+
+	return false;
 }
 
 /**
@@ -1329,6 +1464,19 @@ function mailster_remove_block_comments( $content ) {
 	return $content;
 }
 
+
+function mailster_add_condition( $id, $label, $args = array() ) {
+
+	global $mailster_custom_conditions;
+
+	$mailster_custom_conditions = (array) $mailster_custom_conditions;
+
+	$mailster_custom_conditions[ $id ] = array(
+		'label' => $label,
+		'args'  => $args,
+	);
+}
+
 /**
  *
  *
@@ -1395,111 +1543,5 @@ if ( ! function_exists( 'get_user_locale' ) ) :
 	function get_user_locale() {
 		return get_locale();
 	}
-
-endif;
-
-
-if ( ! function_exists( 'http_negotiate_language' ) ) :
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $supported
-	 * @param unknown $http_accept_language (optional)
-	 * @return unknown
-	 */
-	function http_negotiate_language( $supported, $http_accept_language = 'auto' ) {
-
-		if ( $http_accept_language == 'auto' ) {
-			$http_accept_language = isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '';
-		}
-
-		preg_match_all(
-			'/([[:alpha:]]{1,8})(-([[:alpha:]|-]{1,8}))?' .
-			'(\s*;\s*q\s*=\s*(1\.0{0,3}|0\.\d{0,3}))?\s*(,|$)/i',
-			$http_accept_language,
-			$hits,
-			PREG_SET_ORDER
-		);
-
-		// default language (in case of no hits) is the first in the array
-		$bestlang = $supported[0];
-		$bestqval = 0;
-
-		foreach ( $hits as $arr ) {
-			// read data from the array of this hit
-			$langprefix = strtolower( $arr[1] );
-			if ( ! empty( $arr[3] ) ) {
-				$langrange = strtolower( $arr[3] );
-				$language  = $langprefix . '-' . $langrange;
-			} else {
-				$language = $langprefix;
-			}
-
-			$qvalue = 1.0;
-			if ( ! empty( $arr[5] ) ) {
-				$qvalue = (float) $arr[5];
-			}
-
-			// find q-maximal language
-			if ( in_array( $language, $supported ) && ( $qvalue > $bestqval ) ) {
-				$bestlang = $language;
-				$bestqval = $qvalue;
-			} // if no direct hit, try the prefix only but decrease q-value by 10% (as http_negotiate_language does)
-			elseif ( in_array( $langprefix, $supported ) && ( ( $qvalue * 0.9 ) > $bestqval ) ) {
-				$bestlang = $langprefix;
-				$bestqval = $qvalue * 0.9;
-			}
-		}
-
-		return $bestlang;
-	}
-
-
-endif;
-
-if ( ! function_exists( 'inet_pton' ) ) :
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $ip
-	 * @return unknown
-	 */
-	function inet_pton( $ip ) {
-		// ipv4
-		if ( strpos( $ip, '.' ) !== false ) {
-			if ( strpos( $ip, ':' ) === false ) {
-				$ip = pack( 'N', ip2long( $ip ) );
-			} else {
-				$ip = explode( ':', $ip );
-				$ip = pack( 'N', ip2long( $ip[ count( $ip ) - 1 ] ) );
-			}
-		} // ipv6
-		elseif ( strpos( $ip, ':' ) !== false ) {
-			$ip       = explode( ':', $ip );
-			$parts    = 8 - count( $ip );
-			$res      = '';
-			$replaced = 0;
-			foreach ( $ip as $seg ) {
-				if ( $seg != '' ) {
-					$res .= str_pad( $seg, 4, '0', STR_PAD_LEFT );
-				} elseif ( $replaced == 0 ) {
-					for ( $i = 0; $i <= $parts; $i++ ) {
-						$res .= '0000';
-					}
-
-					$replaced = 1;
-				} elseif ( $replaced == 1 ) {
-					$res .= '0000';
-				}
-			}
-			$ip = pack( 'H' . strlen( $res ), $res );
-		}
-		return $ip;
-	}
-
 
 endif;

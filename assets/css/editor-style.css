@@ -68,6 +68,12 @@ button.mailster-btn.codeview {
 button.mailster-btn.codeview:hover {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.78 4l-3.56 16"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 8l4 4 -4 4"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 16l-4-4 4-4"></path></g></svg>');
 }
+button.mailster-btn.save {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path d="M16.164 3h-11.157c-1.11 0-2.008.904-2 2.015l.104 14c.008 1.099.901 1.985 2 1.985h13.881c1.105 0 2-.895 2-2v-11.172c0-.53-.211-1.039-.586-1.414l-2.828-2.828c-.375-.375-.883-.586-1.414-.586Z"></path><path d="M15.993 3v3.909c0 .552-.448 1-1 1h-6c-.552 0-1-.448-1-1v-3.909"></path><path d="M7 21v-7.714c0-.71.576-1.286 1.286-1.286h7.429c.709 0 1.285.576 1.285 1.286v7.714"></path></g><path fill="none" d="M0 0h24v24h-24v-24Z"></path></svg>');
+}
+button.mailster-btn.save:hover {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path d="M16.164 3h-11.157c-1.11 0-2.008.904-2 2.015l.104 14c.008 1.099.901 1.985 2 1.985h13.881c1.105 0 2-.895 2-2v-11.172c0-.53-.211-1.039-.586-1.414l-2.828-2.828c-.375-.375-.883-.586-1.414-.586Z"></path><path d="M15.993 3v3.909c0 .552-.448 1-1 1h-6c-.552 0-1-.448-1-1v-3.909"></path><path d="M7 21v-7.714c0-.71.576-1.286 1.286-1.286h7.429c.709 0 1.285.576 1.285 1.286v7.714"></path></g><path fill="none" d="M0 0h24v24h-24v-24Z"></path></svg>');
+}
 button.mailster-btn.auto {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path fill-rule="evenodd" d="M4.205,21.207l-1.412,-1.413c-0.391,-0.391 -0.391,-1.024 0,-1.415l9.577,-9.581c0.391,-0.391 1.024,-0.391 1.414,0l1.412,1.413c0.391,0.391 0.391,1.024 0,1.415l-9.577,9.581c-0.39,0.391 -1.023,0.391 -1.414,0Z"></path><path fill-rule="evenodd" d="M13.2,13.62l-2.83,-2.82"></path></g><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
 	background-position: center 4px;
@@ -183,8 +189,11 @@ modulebuttons {
 module.ui-sortable-fly-over modulebuttons button {
 	pointer-events: none;
 }
-module[active] modulebuttons {
+module[selected] modulebuttons {
 	transform: translateY(-35px);
+}
+module[label][selected]:before {
+	transform: translateY(-17px);
 }
 [mailster-is-rtl] modulebuttons {
 	right: inherit;
@@ -214,33 +223,7 @@ modulebuttons:hover button.mailster-btn {
 }
 [mailster-is-rtl] modulebuttons button.mailster-btn {
 }
-modulebuttons input.modulelabel {
-	display: inline-block;
-	width: 110px;
-	height: 25px;
-	border: 0;
-	background: none;
-	padding: 5px;
-	outline: none;
-	color: #aaa;
-	margin: 0;
-	text-align: right;
-}
-module[active] input.modulelabel {
-}
-[mailster-is-rtl] modulebuttons input.modulelabel {
-	float: right;
-	text-align: left;
-}
-modulebuttons input.modulelabel:hover,
-modulebuttons input.modulelabel:focus {
-	color: #333;
-}
-[mailster-is-rtl] modulebuttons input.modulelabel:hover,
-[mailster-is-rtl] modulebuttons input.modulelabel:focus {
-	right: inherit;
-	left: 0;
-}
+
 modules,
 module,
 multi {
@@ -266,19 +249,18 @@ else {
 	color: #ccc;
 }
 module:hover,
-module[active] {
+module[selected] {
 	background-color: rgba(43, 179, 231, 0.1);
 	box-shadow: 0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	z-index: 9100;
 }
-module[active] {
+module[selected] {
 	background-color: rgba(43, 179, 231, 0.2);
 }
 module:hover [area] {
 	outline: 1px dotted #2bb3e7;
 }
 module[label]:before,
-module[label][active]:before,
 multi[label]:before,
 single[label]:before,
 img[editable][label]:before,
@@ -286,7 +268,7 @@ a[editable][label]:before,
 td[background][label]:before,
 th[background][label]:before,
 module[data-rss]:after,
-module[data-rss][active]:after {
+module[data-rss][selected]:after {
 	content: attr(label);
 	display: block;
 	opacity: 0;
@@ -319,7 +301,6 @@ th[background][label]:before {
 	display: inline-block;
 }
 [mailster-is-rtl] module[label]:before,
-[mailster-is-rtl] module[label][active]:before,
 [mailster-is-rtl] multi[label]:before,
 [mailster-is-rtl] single[label]:before,
 [mailster-is-rtl] img[editable][label]:before,
@@ -327,7 +308,7 @@ th[background][label]:before {
 [mailster-is-rtl] td[background][label]:before,
 [mailster-is-rtl] th[background][label]:before,
 [mailster-is-rtl] module[data-rss]:before,
-[mailster-is-rtl] module[data-rss][active]:before,
+[mailster-is-rtl] module[data-rss][selected]:before,
 [mailster-is-rtl] multi[data-rss]:before,
 [mailster-is-rtl] single[data-rss]:before,
 [mailster-is-rtl] img[editable][data-rss]:before,
@@ -340,13 +321,13 @@ th[background][label]:before {
 	right: 0;
 }
 module[data-rss]:after,
-module[data-rss][active]:after {
+module[data-rss][selected]:after {
 	content: 'RSS: ' attr(data-rss);
 	top: 18px;
 	z-index: 100;
 }
 module[label]:hover:before,
-module[label][active]:before,
+module[label][selected]:before,
 multi[label]:hover:before,
 single[label]:hover:before,
 img[editable][label]:hover:before,
@@ -354,14 +335,15 @@ a[editable][label]:hover:before,
 td[background][label]:hover:before,
 th[background][label]:hover:before,
 module[data-rss]:hover:after,
-module[data-rss][active]:after {
+module[data-rss][selected]:after {
 	-webkit-transform: translate(-2px, -17px);
 	-ms-transform: translate(-2px, -17px);
 	transform: translate(-2px, -17px);
 	opacity: 1;
 }
+
 [mailster-is-rtl] module[label]:hover:before,
-[mailster-is-rtl] module[label][active]:before,
+[mailster-is-rtl] module[label][selected]:before,
 [mailster-is-rtl] multi[label]:hover:before,
 [mailster-is-rtl] single[label]:hover:before,
 [mailster-is-rtl] img[editable][label]:hover:before,
@@ -369,7 +351,7 @@ module[data-rss][active]:after {
 [mailster-is-rtl] td[background][label]:hover:before,
 [mailster-is-rtl] th[background][label]:hover:before,
 [mailster-is-rtl] module[data-rss]:hover:after,
-[mailster-is-rtl] module[data-rss][active]:after {
+[mailster-is-rtl] module[data-rss][selected]:after {
 	-webkit-transform: translate(2px, -17px);
 	-ms-transform: translate(2px, -17px);
 	transform: translate(2px, -17px);
@@ -387,29 +369,31 @@ module[data-rss]:after {
 	transform: translate(6px, -1px);
 }
 module[label]:hover:before,
-module[label][active]:before,
 module[data-rss]:hover:after,
-module[data-rss][active]:after {
+module[data-rss][selected]:after {
 	opacity: 0.9;
 	-webkit-transform: translate(-1px, -1px);
 	-ms-transform: translate(-1px, -1px);
 	transform: translate(-1px, -1px);
 }
+module[label][selected]:before {
+	transform: translate(-2px, -17px);
+}
 [mailster-is-rtl] module[label]:hover:before,
-[mailster-is-rtl] module[label][active]:before,
+[mailster-is-rtl] module[label][selected]:before,
 [mailster-is-rtl] module[data-rss]:hover:after,
-[mailster-is-rtl] module[data-rss][active]:after {
+[mailster-is-rtl] module[data-rss][selected]:after {
 	-webkit-transform: translate(1px, -1px);
 	-ms-transform: translate(1px, -1px);
 	transform: translate(1px, -1px);
 }
 module:hover modulebuttons,
-module[active] modulebuttons,
+module[selected] modulebuttons,
 .ie module modulebuttons {
 	opacity: 1;
 }
 [mailster-is-rtl] module:hover modulebuttons,
-[mailster-is-rtl] module[active] modulebuttons {
+[mailster-is-rtl] module[selected] modulebuttons {
 	right: inherit;
 }
 module:first-child modulebuttons button.up,
@@ -600,12 +584,12 @@ body.drag-active modules dropzone.visible {
 	opacity: 0.6;
 }
 body.drag-active modules module:hover,
-body.drag-active modules module[active] {
+body.drag-active modules module[selected] {
 	box-shadow: none;
 	background-image: none;
 }
 body.drag-active modules module:hover modulebuttons,
-body.drag-active modules module[active] modulebuttons,
+body.drag-active modules module[selected] modulebuttons,
 body.drag-active.ie modules module modulebuttons {
 	display: none;
 }

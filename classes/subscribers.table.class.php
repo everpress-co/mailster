@@ -275,7 +275,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				$custom_fields = mailster()->get_custom_fields();
 				if ( in_array( $column_name, array_keys( $custom_fields ) ) ) {
 
-					$value = mailster( 'subscribers' )->get_custom_fields( $item->ID, $column_name );
+					$value = mailster( 'subscribers' )->get_custom_field( $item->ID, $column_name );
 
 					switch ( $custom_fields[ $column_name ]['type'] ) {
 						case 'checkbox':
@@ -482,19 +482,19 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				break;
 		}
 
-		$items = mailster( 'subscribers' )->query(
-			wp_parse_args(
-				$args,
-				array(
-					'calc_found_rows' => true,
-					'orderby'         => $orderby,
-					'order'           => $order,
-					'fields'          => $fields,
-					'limit'           => $this->per_page,
-					'offset'          => $offset,
-				)
+		$args = wp_parse_args(
+			$args,
+			array(
+				'calc_found_rows' => true,
+				'orderby'         => $orderby,
+				'order'           => $order,
+				'fields'          => $fields,
+				'limit'           => $this->per_page,
+				'offset'          => $offset,
 			)
 		);
+
+		$items = mailster( 'subscribers' )->query( $args );
 
 		$this->items       = $items;
 		$this->total_items = $wpdb->get_var( 'SELECT FOUND_ROWS();' );

@@ -7,7 +7,7 @@ class MailsterTranslations {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'load' ), 1 );
+		add_action( 'init', array( &$this, 'load' ), 1 );
 		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
 		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
 		add_action( 'add_option_WPLANG', array( &$this, 're_check' ), 999 );
@@ -191,6 +191,7 @@ class MailsterTranslations {
 				$object['set']                = $translation_set;
 			}
 
+			// do this to make translation popup
 			if ( $translation_set && $lastmodified - $filemtime > 0 ) {
 				$object['data'] = array(
 					'type'       => 'plugin',

@@ -136,7 +136,7 @@ mailster = (function (mailster, $, window, document) {
 
 		var href = urlParams.get('redirect_to')
 			? urlParams.get('redirect_to')
-			: 'admin.php?page=mailster_welcome';
+			: 'admin.php?page=mailster_dashboard';
 
 		output(
 			'finished_button',
