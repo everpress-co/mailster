@@ -683,7 +683,7 @@ class MailsterHelper {
 
 		$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
 
-		if ( isset( $templatefiles['index.html'] ) ) {
+		if ( isset( $templatefiles['index.html'] ) && ! $templatefiles['index.html']['notification_module'] ) {
 			unset( $templatefiles['index.html'] );
 		}
 
@@ -691,7 +691,7 @@ class MailsterHelper {
 		<select name="<?php echo esc_attr( $fieldname ); ?>" <?php echo $disabled ? 'disabled' : ''; ?>>
 				<option value="-1" <?php selected( -1 == $selected ); ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' ); ?></option>
 		<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
-				<option value="<?php echo $slug; ?>"<?php selected( $slug == $selected ); ?>><?php echo esc_attr( $filedata['label'] ); ?> (<?php echo esc_html( $slug ); ?>)</option>
+				<option value="<?php echo esc_attr( $slug ); ?>"<?php selected( $slug == $selected ); ?>><?php echo esc_attr( $filedata['label'] ); ?> (<?php echo esc_html( $slug ); ?>)</option>
 		<?php endforeach; ?>
 		</select>
 		<?php
@@ -972,6 +972,9 @@ class MailsterHelper {
 			case 'profile_unsubscribe':
 			case 'profile_unsubscribe_list':
 				return esc_html__( 'The user updated the status via the profile page.', 'mailster' );
+			case 'list_unsubscribe_one_click':
+			case 'list_unsubscribe_one_click_list':
+				return esc_html__( 'The user uses one-click-unsubscribe (RFC 8058)', 'mailster' );
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
 				return esc_html__( 'The user clicked on the unsubscribe option in the Mail application.', 'mailster' );
@@ -1019,6 +1022,9 @@ class MailsterHelper {
 
 		// handle shortcodes
 		$content = $this->handle_shortcodes( $content );
+
+		// convert CSS variables
+		$content = $this->convert_css_vars( $content );
 
 		return apply_filters( 'mailster_prepare_content', $content );
 	}
@@ -1135,6 +1141,28 @@ class MailsterHelper {
 		}
 
 		return $content;
+	}
+
+	public function convert_css_vars( $html ) {
+
+		// get all style blocks, search for variables and replace them in the content
+		preg_match_all( '#<style(.*?)>(.*?)</style>#is', $html, $style_blocks );
+		foreach ( $style_blocks[2] as $style_block ) {
+			// get all variables
+			$found = preg_match_all( '#--([^;{}:]+):([^;}]+)#is', $style_block, $variables );
+
+			if ( ! $found ) {
+				continue;
+			}
+
+			// reverse foreach to respect priority
+			for ( $i = $found - 1; $i >= 0; $i-- ) {
+				// replace all variables with their values
+				$html = str_replace( 'var(--' . $variables[1][ $i ] . ')', $variables[2][ $i ], $html );
+			}
+		}
+
+		return $html;
 	}
 
 

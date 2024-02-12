@@ -23,6 +23,16 @@ function mailster_freemius_custom_icon() {
 	return MAILSTER_DIR . 'assets/img/opt-in.png';
 }
 
+add_action( 'load-toplevel_page_mailster', 'mailster_freemius_load_page' );
+function mailster_freemius_load_page() {
+	$suffix = SCRIPT_DEBUG ? '' : '.min';
+	wp_enqueue_style( 'freemius-style', MAILSTER_URI . 'assets/css/freemius-style' . $suffix . '.css', array(), MAILSTER_BUILT );
+}
+
+mailster_freemius()->add_action( 'after_account_connection', 'mailster_freemius_install' );
+function mailster_freemius_install() {
+	mailster()->install();
+}
 
 mailster_freemius()->add_action( 'after_uninstall', 'mailster_freemius_uninstall_cleanup' );
 function mailster_freemius_uninstall_cleanup() {
@@ -121,7 +131,6 @@ function mailster_update_permission( $permissions ) {
 }
 
 
-// change length of licenses keys to accept the one from Envato 36 but allow some whitespace
 mailster_freemius()->add_filter( 'opt_in_error_message', 'mailster_freemius_opt_in_error_message' );
 function mailster_freemius_opt_in_error_message( $error ) {
 
@@ -153,7 +162,6 @@ function mailster_freemius_checkout_url( $url ) {
 			'checkout'      => 'true',
 			'plan_id'       => 20734,
 			'billing_cycle' => 'annual',
-			// 'pricing_id'    => 23881,
 			'post_type'     => 'newsletter',
 		),
 		admin_url( 'edit.php' )

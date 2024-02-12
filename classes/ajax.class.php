@@ -9,6 +9,8 @@ class MailsterAjax {
 		'get_template'                => 'edit_newsletters',
 		'get_plaintext'               => 'edit_newsletters',
 		'create_new_template'         => 'mailster_edit_templates',
+		'create_new_module'           => 'mailster_edit_templates',
+		'delete_module'               => 'mailster_change_template',
 		'toggle_codeview'             => 'mailster_see_codeview',
 		'set_preview'                 => 'edit_newsletters',
 		'get_preview'                 => 'edit_newsletters',
@@ -90,6 +92,8 @@ class MailsterAjax {
 		'quick_install'               => 'mailster_dashboard',
 		'wizard_save'                 => 'mailster_dashboard',
 
+		'get_autocomplete_source'     => 'edit_newsletters',
+
 		'test'                        => 'manage_options',
 		'get_beacon_data'             => 'read',
 
@@ -109,18 +113,9 @@ class MailsterAjax {
 
 	public function __construct() {
 
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			add_action( 'plugins_loaded', array( &$this, 'init' ) );
+		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+			return;
 		}
-	}
-
-
-	public function add_ajax_nonce() {
-		wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false );
-	}
-
-
-	public function init() {
 
 		foreach ( $this->methods as $method => $cap ) {
 
@@ -134,6 +129,10 @@ class MailsterAjax {
 			add_action( 'wp_ajax_nopriv_mailster_' . $method, array( &$this, 'call_method' ) );
 
 		}
+	}
+
+	public function add_ajax_nonce() {
+		wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false );
 	}
 
 
@@ -334,6 +333,8 @@ class MailsterAjax {
 		$t        = mailster( 'template', $template );
 		$filename = $t->create_new( $name, $content, $modules, $activemodules, $overwrite );
 
+		$return = array();
+
 		if ( $filename !== false ) {
 			$return['url'] = add_query_arg(
 				array(
@@ -349,6 +350,57 @@ class MailsterAjax {
 		}
 
 		wp_send_json_success( $return );
+	}
+
+	private function create_new_module() {
+
+		$this->ajax_nonce();
+
+		$this->ajax_filesystem();
+
+		$name     = stripslashes( $_POST['name'] );
+		$template = stripslashes( $_POST['template'] );
+		$file     = stripslashes( $_POST['file'] );
+		$content  = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : null;
+		$auto     = $_POST['auto'] === 'false' ? false : true;
+
+		$t        = mailster( 'template', $template, $file );
+		$filename = $t->add_module( $name, $content, $auto );
+
+		$return = array();
+		if ( ! $filename ) {
+			$return['msg'] = esc_html__( 'Unable to save template!', 'mailster' );
+			wp_send_json_success( $return );
+			exit;
+		}
+
+		$t->reload( true );
+		$modules = $t->get_modules_list();
+		$html    = '';
+		foreach ( $modules as $module ) {
+			$html .= $module['module'];
+		}
+		$return['html'] = $html;
+		wp_send_json_success( $return );
+	}
+
+
+	private function delete_module() {
+
+		$this->ajax_nonce();
+
+		$this->ajax_filesystem();
+
+		$id       = stripslashes( $_POST['id'] );
+		$template = stripslashes( $_POST['template'] );
+		$file     = stripslashes( $_POST['file'] );
+
+		$t = mailster( 'template', $template, $file, true );
+		if ( $t->delete_module( $id ) ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
 	}
 
 
@@ -616,6 +668,8 @@ class MailsterAjax {
 
 			$return['log'] = $mail->get_error_log();
 
+			$receivers = explode( ',', $to );
+
 		} else {
 
 			$success = true;
@@ -700,36 +754,6 @@ class MailsterAjax {
 				$mail->set_campaign( $ID );
 				$placeholder->set_campaign( $ID );
 
-				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
-
-				$listunsubscribe = array();
-				if ( mailster_option( 'mail_opt_out' ) ) {
-					$listunsubscribe_mail    = $bouncemail ? $bouncemail : $from;
-					$listunsubscribe_subject = 'Please remove me from the list';
-					$listunsubscribe_link    = mailster()->get_unsubscribe_link( $ID, $mail->hash );
-					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID} Link: {$listunsubscribe_link}" );
-
-					$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
-				}
-				$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $mail->hash, $ID ) . '>';
-
-				$headers = array(
-					'X-Mailster'          => $mail->hash,
-					'X-Mailster-Campaign' => (string) $ID,
-					'X-Mailster-ID'       => $MID,
-					'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
-				);
-
-				if ( mailster_option( 'single_opt_out' ) ) {
-					$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
-				}
-
-				if ( 'autoresponder' != get_post_status( $ID ) ) {
-					$headers['Precedence'] = 'bulk';
-				}
-
-				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
-
 				// check for subscriber by mail
 				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true, true ) ) ) {
 					$subscriber = mailster( 'subscribers' )->get_by_mail( $receiver, true, true );
@@ -754,6 +778,8 @@ class MailsterAjax {
 					$mail->set_subscriber( $subscriber->ID );
 					$placeholder->set_subscriber( $subscriber->ID );
 
+					$mail->add_header( mailster( 'campaigns' )->get_headers( $ID, $subscriber->ID ) );
+
 				} elseif ( $current_user ) {
 
 					$profilelink = mailster()->get_profile_link( $ID, '' );
@@ -765,6 +791,9 @@ class MailsterAjax {
 						'fullname'     => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
 						'emailaddress' => $current_user->user_email,
 					);
+
+					$mail->add_header( mailster( 'campaigns' )->get_headers( $ID ) );
+
 				} else {
 					// no subscriber found for data
 					$names = null;
@@ -823,7 +852,7 @@ class MailsterAjax {
 
 		if ( ! isset( $return['msg'] ) ) {
 			$return['msg'] = ( $success )
-				? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
+				? sprintf( esc_html__( 'Message sent to %s. Check your inbox!', 'mailster' ), implode( ', ', $receivers ) )
 				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<br><strong>' . $mail->get_errors() . '</strong>';
 		}
 
@@ -967,20 +996,24 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		$colors = get_option( 'mailster_colors' );
-		$hash   = md5( implode( '', $_POST['colors'] ) );
+		$colors     = get_option( 'mailster_colors', array() );
+		$hash       = md5( implode( '', $_POST['colors'] ) );
+		$template   = esc_attr( $_POST['template'] );
+		$new_colors = (array) $_POST['colors'];
 
-		if ( ! isset( $colors[ $_POST['template'] ] ) ) {
-			$colors[ $_POST['template'] ] = array();
+		if ( ! isset( $colors[ $template ] ) ) {
+			$colors[ $template ] = array();
 		}
 
-		$colors[ $_POST['template'] ][ $hash ] = $_POST['colors'];
+		$colors[ $template ][ $hash ] = $new_colors;
 
-		$return['html'] = '<ul class="colorschema custom" data-hash="' . $hash . '">';
-		foreach ( $_POST['colors'] as $color ) {
-			$return['html'] .= '<li class="colorschema-field" data-hex="' . $color . '" style="background-color:' . $color . '"></li>';
+		$return['html']  = '<div class="colorschema">';
+		$return['html'] .= '<span class="colorschema-title">' . esc_html__( 'Custom', 'mailster' ) . '</span>';
+		foreach ( $new_colors as $id => $color ) {
+			$return['html'] .= '<span class="colorschema-field" data-id="' . esc_attr( $id ) . '" data-hex="' . esc_attr( $color ) . '" style="background-color:' . esc_attr( $color ) . '"></span>';
 		}
-		$return['html'] .= '<li class="colorschema-delete-field"><a class="colorschema-delete">&#10005;</a></li></ul>';
+		$return['html'] .= '<a class="colorschema-delete" data-hash="' . esc_attr( $hash ) . '">&#10005;</a>';
+		$return['html'] .= '</div>';
 
 		if ( ! update_option( 'mailster_colors', $colors ) ) {
 			wp_send_json_error( $return );
@@ -1665,7 +1698,9 @@ class MailsterAjax {
 			} elseif ( $is_dynmaic_post_type ) {
 					$return['title'] = $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' );
 			} else {
-					$return['title'] = '<a href="' . admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) . '" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) ) . '</a>';
+
+				$return['title'] = '<a href="' . admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) . '" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) ) . '</a>';
+
 			}
 		} else {
 			$return['title'] = esc_html__( 'There\'s currently no match for your selection!', 'mailster' );
@@ -1853,12 +1888,19 @@ class MailsterAjax {
 		$url  = esc_url( $_POST['url'] );
 		$slug = basename( $_POST['slug'] );
 
-		$result = mailster( 'templates' )->download_template( $url, $slug );
+		$result = mailster( 'templates' )->update_locally( $slug );
+
+		// if this fails try to download it
+		if ( ! $result ) {
+			$result = mailster( 'templates' )->download_template( $url, $slug );
+		}
 
 		if ( is_wp_error( $result ) ) {
 			switch ( $result->get_error_code() ) {
 				case 'http_404':
-					$return['msg'] = mailster()->get_update_error( 678, true );
+					$err_data = $result->get_error_data();
+
+					$return['msg'] = mailster()->get_update_error( $err_data['code'], true );
 					break;
 				default:
 					$return['msg'] = sprintf( esc_html__( 'There was an error loading the template: %s', 'mailster' ), $result->get_error_message() );
@@ -1924,8 +1966,10 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		if ( ! mailster( 'geo' )->update( true ) ) {
-			$return['msg'] = esc_html__( 'Couldn\'t load Location Database', 'mailster' );
+		$result = mailster( 'geo' )->update( true );
+
+		if ( is_wp_error( $result ) ) {
+			$return['msg'] = sprintf( '%s<br><strong>%s</strong>', esc_html__( 'Couldn\'t load Location Database', 'mailster' ), $result->get_error_message() );
 			wp_send_json_error( $return );
 		}
 
@@ -2221,12 +2265,18 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		parse_str( $_POST['data'], $data );
+		wp_parse_str( $_POST['data'], $data );
 
 		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : array();
 		$nolists    = isset( $data['nolists'] ) ? (bool) $data['nolists'] : null;
-		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
-		$status     = isset( $data['status'] ) ? (array) $data['status'] : -1;
+		$conditions = false;
+		if ( isset( $_POST['conditions'] ) ) {
+			wp_parse_str( $_POST['conditions'], $conditions );
+			if ( isset( $conditions['conditions'] ) ) {
+				$conditions = $conditions['conditions'];
+			}
+		}
+		$status = isset( $data['status'] ) ? (array) $data['status'] : -1;
 
 		$args = array(
 			'return_count' => true,
@@ -2443,17 +2493,20 @@ class MailsterAjax {
 			'page'   => absint( $_POST['page'] ),
 		);
 
+		if ( ( isset( $_POST['reload_license'] ) && $_POST['reload_license'] === 'true' ) ) {
+			mailster_freemius()->_sync_cron();
+		}
+
 		$result = mailster( 'templates' )->query( $query );
 
 		if ( ! is_wp_error( $result ) ) {
 			$return['total']     = $result['total'];
-			$return['html']      = mailster( 'templates' )->result_to_html( $result );
+			$return['html']      = mailster( 'templates' )->result_to_html( $result, $query['browse'] );
 			$return['templates'] = $result['items'];
 			$return['error']     = $result['error'];
-			wp_send_json_error( $return );
 		}
 
-		wp_send_json_success();
+		wp_send_json_success( $return );
 	}
 
 
@@ -2722,6 +2775,7 @@ class MailsterAjax {
 			case 'activate':
 				$success        = mailster( 'helper' )->activate_plugin( $plugin );
 				$return['next'] = 'content';
+				mailster_remove_notice( 'delivery_method' );
 				break;
 			case 'deactivate':
 				$success = mailster( 'helper' )->deactivate_plugin( $plugin );
@@ -2765,34 +2819,55 @@ class MailsterAjax {
 			case 'homepage':
 				// homepage exists => update
 				if ( $homepage = get_post( mailster_option( 'homepage' ) ) ) {
-					$homepage->post_title   = $data['post_title'];
-					$homepage->post_content = $data['post_content'];
+					$homepage->post_title  = $data['post_title'];
+					$homepage->post_status = 'publish';
 					if ( isset( $data['post_name'] ) ) {
-						$homepage->post_name = $data['post_name'];
+						$homepage->post_name = sanitize_title( $data['post_name'] );
 					}
+					$id = wp_insert_post( $homepage );
 
 					// create new one
 				} else {
 					include MAILSTER_DIR . 'includes/static.php';
 					$homepage                = wp_parse_args( $homepage, $mailster_homepage );
 					$homepage['post_status'] = 'publish';
+					$homepage['post_name']   = sanitize_title( $data['post_name'] );
 					$id                      = wp_insert_post( $homepage );
-					if ( $id && ! is_wp_error( $id ) ) {
-						mailster_remove_notice( 'no_homepage' );
-						mailster_remove_notice( 'wrong_homepage_status' );
-						mailster_update_option( 'homepage', $id );
-					}
+
 				}
 
+				if ( $id && ! is_wp_error( $id ) ) {
+					mailster_remove_notice( 'no_homepage' );
+					mailster_remove_notice( 'wrong_homepage_status' );
+					mailster_update_option( 'homepage', $id );
+					flush_rewrite_rules();
+				}
+
+				break;
+			case 'templates':
+				if ( isset( $data['mailster_options'] ) && isset( $data['mailster_options']['default_template'] ) ) {
+
+					$template = $data['mailster_options']['default_template'];
+					$result   = mailster( 'templates' )->download_by_slug( $template );
+					mailster( 'templates' )->schedule_screenshot( $template, 'index.html', true, 1 );
+					if ( ! is_wp_error( $result ) ) {
+						$mailster_options = wp_parse_args( $data['mailster_options'], $mailster_options );
+						update_option( 'mailster_options', $mailster_options );
+					}
+				}
 				break;
 
 			case 'finish':
 				// maybe
-				mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
+				mailster( 'geo' )->maybe_update();
 				update_option( 'mailster_setup', time() );
 				// check for updates
-				flush_rewrite_rules();
 				break;
+			case 'basics':
+			case 'sending':
+				if ( isset( $data['mailster_options']['tags'] ) ) {
+					$data['mailster_options']['tags'] = wp_parse_args( $data['mailster_options']['tags'], $mailster_options['tags'] );
+				}
 			case 'delivery':
 			default:
 				if ( isset( $data['mailster_options'] ) ) {
@@ -2803,6 +2878,17 @@ class MailsterAjax {
 		}
 
 		wp_send_json_success();
+	}
+
+	private function get_autocomplete_source() {
+
+		$this->ajax_nonce();
+
+		$field  = isset( $_POST['field'] ) ? (string) $_POST['field'] : null;
+		$search = isset( $_POST['search'] ) ? (string) $_POST['search'] : null;
+		$return = mailster( 'conditions' )->get_autocomplete_source( $field, $search );
+
+		wp_send_json_success( $return );
 	}
 
 	private function test() {
@@ -2843,9 +2929,10 @@ class MailsterAjax {
 		$return = array(
 			'name'     => $name,
 			'email'    => $email,
+			'version'  => MAILSTER_VERSION,
 			'avatar'   => get_avatar_url( $user->ID ),
 			'id'       => 'a32295c1-a002-4dcb-b097-d15532bb73d6',
-			'messages' => get_option( 'mailster_beacon_message' ),
+			'messages' => mailster_get_beacon_message(),
 		);
 
 		wp_send_json_success( $return );

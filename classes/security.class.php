@@ -111,13 +111,15 @@ class MailsterSecurity {
 
 			$country = mailster_ip2Country();
 
-			// it's blocked
-			if ( $this->match( $country, mailster_option( 'blocked_countries' ), ',' ) ) {
-				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
-			}
+			if ( 'unknown' !== $country ) {
+				// it's blocked
+				if ( $this->match( $country, mailster_option( 'blocked_countries' ), ',' ) ) {
+					return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
+				}
 
-			if ( mailster_option( 'allowed_countries' ) && ! $this->match( $country, mailster_option( 'allowed_countries' ), ',' ) ) {
-				return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
+				if ( mailster_option( 'allowed_countries' ) && ! $this->match( $country, mailster_option( 'allowed_countries' ), ',' ) ) {
+					return new WP_Error( 'error_blocked', mailster_text( 'blocked_country' ), 'blocked' );
+				}
 			}
 		}
 

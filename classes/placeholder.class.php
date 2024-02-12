@@ -208,6 +208,9 @@ class MailsterPlaceholder {
 			'minute'  => $time[4],
 			'unsub'   => '<a href="{unsublink}">{unsublinktext}</a>',
 			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
+			'lang'    => substr( get_bloginfo( 'language' ), 0, 2 ),
+			'dir'     => is_rtl() ? 'rtl' : 'ltr',
+
 		);
 
 		if ( $campaign_id ) {
@@ -237,6 +240,9 @@ class MailsterPlaceholder {
 		}
 
 		$args = wp_parse_args( $args, $defaults );
+
+		$this->add( mailster_option( 'tags' ) );
+		$this->add( mailster_option( 'custom_tags' ) );
 
 		$this->add( apply_filters( 'mailster_placeholder_defaults', $args, $campaign_id ) );
 	}
@@ -326,8 +332,6 @@ class MailsterPlaceholder {
 		}
 
 		$this->add( $placeholders );
-		$this->add( mailster_option( 'custom_tags', array() ) );
-		$this->add( mailster_option( 'tags', array() ) );
 
 		$this->rss();
 		$this->conditions();
@@ -780,10 +784,16 @@ class MailsterPlaceholder {
 						$is_post   = $post_type != $parts[0];
 						$is_random = null;
 						$org_src   = false;
+						$is_author = false;
 
 						// not on RSS
 						if ( $relative_to_absolute && 0 === strpos( $post_type, 'mailster_rss_' ) ) {
 							$relative_to_absolute = false;
+						}
+						// tag is [post_type]_author_image
+						if ( false !== strpos( $post_type, '_author' ) ) {
+							$is_author = true;
+							$post_type = str_replace( '_author', '', $post_type );
 						}
 						if ( $is_post ) {
 							// cropping requires height
@@ -834,12 +844,17 @@ class MailsterPlaceholder {
 
 								if ( is_numeric( $post->ID ) ) {
 
-									if ( 'attachment' == $post->post_type ) {
-										$thumb_id = $post->ID;
+									// tag is [post_type]_author_image
+									if ( $is_author ) {
+										$org_src = array( get_avatar_url( $post->post_author, array( 'width' => $width ) ), 0, 0, false );
 									} else {
-										$thumb_id = get_post_thumbnail_id( $post->ID );
+										if ( 'attachment' == $post->post_type ) {
+											$thumb_id = $post->ID;
+										} else {
+											$thumb_id = get_post_thumbnail_id( $post->ID );
+										}
+										$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 									}
-									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 								}
 
 								if ( empty( $org_src ) ) {
@@ -1086,11 +1101,12 @@ class MailsterPlaceholder {
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
 
-					if ( $replace && '{preheader}' == $search ) {
+					if ( $replace && '{preheader}' === $search ) {
 
 						/**
 						 * Adds invisible characters after the preheader text also known as "preview text hack"
 						 * Read more here: https://www.litmus.com/blog?p=4367
+						 * Updated in Sept. 2023 to use the new invisible characters
 						 *
 						 * defaults:
 						 * `true`
@@ -1100,10 +1116,10 @@ class MailsterPlaceholder {
 						$preview_text_fix = apply_filters( 'mailster_preview_text_fix', true );
 
 						if ( $preview_text_fix ) {
-							$preview_text_count = 300 - strlen( $replace );
+							$preview_text_count = 200 - strlen( $replace );
 							// PHP throws an error if $count = 0, preventing the campaign from being sent. This check patch this.
 							if ( $preview_text_count > 0 ) {
-								$replace .= str_repeat( ' &#847;', $preview_text_count );
+								$replace .= str_repeat( ' &#847; &zwnj; &nbsp; &#8199; &shy;', $preview_text_count );
 							}
 						}
 					}
@@ -1165,10 +1181,12 @@ class MailsterPlaceholder {
 		$post_type    = $post->post_type;
 		$post_content = $post->post_content;
 
+		// author related tags
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
 			$extra  = $author;
 
+			// post meta related tags (e.g meta[meta_key])
 		} elseif ( 0 === strpos( $what, 'meta[' ) ) {
 			preg_match( '#meta\[(.*)\]#i', $what, $metakey );
 			if ( ! isset( $metakey[1] ) ) {
@@ -1184,27 +1202,43 @@ class MailsterPlaceholder {
 			$what  = 'meta';
 			$extra = $metakey;
 
-		} elseif ( 0 === strpos( $what, 'category' ) ) {
-			preg_match( '#category\[(.*)\]#i', $what, $category );
-			if ( isset( $category[1] ) ) {
-				$category = trim( $category[1] );
+			// categories related tags (e.g categories[taxonomy])
+		} elseif ( 0 === strpos( $what, 'categories' ) || 0 === strpos( $what, 'category' ) ) {
+
+			// if set in the post object use this
+			if ( is_string( $post->post_category ) ) {
+				$extra = is_string( $post->post_category ) ? array( $post->post_category ) : $post->post_category;
 			} else {
-				$category = 'category';
-			}
-			$categories = is_string( $post->post_category ) ? $post->post_category : get_the_term_list( $post->ID, $category, '', ', ' );
+				preg_match( '#(category|categories)(_strip)?\[(.*)\]#i', $what, $matches );
+				// check taxonomy type
+				if ( isset( $matches[2] ) ) {
+					$taxonomy = trim( $matches[3] );
+					$what     = $matches[1] . $matches[2];
+				} else {
+					$taxonomy = 'category';
+				}
 
-			if ( is_wp_error( $categories ) ) {
-				return null;
-			}
+				// get all terms of the taxonomy
+				$terms = get_the_term_list( $post->ID, $taxonomy, '', ', ' );
 
-			if ( 'category_strip' != $what ) {
-				$what = 'category';
-			}
-			if ( is_array( $categories ) ) {
-				$categories = implode( ', ', $categories );
-			}
-			$extra = $categories;
+				// no terms or error
+				if ( ! $terms || is_wp_error( $terms ) ) {
+					return null;
+				}
 
+				// convert to array
+				$extra = explode( ', ', $terms );
+
+				// only first
+				if ( 0 === strpos( $what, 'category' ) ) {
+					// get all terms of the taxonomy
+					$extra = array( $extra[0] );
+				}
+			}
+			// convert to string
+			$terms = implode( ', ', $extra );
+
+			// with format (e.g date[format])
 		} elseif ( false !== strpos( $what, '[' ) ) {
 			preg_match( '#(.*)\[(.*)\]#i', $what, $withformat );
 			if ( ! isset( $withformat[1] ) ) {
@@ -1270,6 +1304,12 @@ class MailsterPlaceholder {
 			case 'author_url':
 				$replace_to = $author ? $author->data->user_url : '';
 				break;
+			case 'author_info':
+				$replace_to = $author ? get_the_author_meta( 'description', $author->ID ) : '';
+				break;
+			case 'author_image':
+				$replace_to = $author ? get_avatar_url( $author->ID ) : '';
+				break;
 			case 'date':
 			case 'date_gmt':
 			case 'modified':
@@ -1304,10 +1344,12 @@ class MailsterPlaceholder {
 				$replace_to = maybe_unserialize( $metavalue );
 				break;
 			case 'category':
-				$replace_to = $categories;
+			case 'categories':
+				$replace_to = $terms;
 				break;
 			case 'category_strip':
-				$replace_to = strip_tags( $categories );
+			case 'categories_strip':
+				$replace_to = strip_tags( $terms );
 				break;
 			case 'twitter':
 			case 'facebook':

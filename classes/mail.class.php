@@ -7,6 +7,7 @@ class MailsterMail {
 	public $headers      = array();
 	public $content      = '';
 	public $plaintext    = '';
+	public $preheader    = '';
 	public $subject      = '';
 	public $from;
 	public $from_name;
@@ -49,6 +50,10 @@ class MailsterMail {
 	private $hostname = '';
 
 	private $last_mail_duration;
+
+	private $subscriber_errors = array();
+	private $server_errors     = array();
+	private $system_errors     = array();
 
 	private static $_instance = null;
 
@@ -229,13 +234,8 @@ class MailsterMail {
 
 		if ( $this->mailer && 'smtp' == $this->mailer->Mailer ) {
 
-			if ( version_compare( $this->mailer->Version, '5.2.7' ) <= 0 ) {
-				$this->mailer->Debugoutput = 'error_log';
-			} else {
-				$this->mailer->Debugoutput = is_null( $output ) ? array( &$this, 'debugger' ) : $output;
-			}
-
-			$this->mailer->SMTPDebug = $level; // 0 = off, 1 = commands, 2 = commands and data
+			$this->mailer->Debugoutput = is_null( $output ) ? array( &$this, 'debugger' ) : $output;
+			$this->mailer->SMTPDebug   = $level; // 0 = off, 1 = commands, 2 = commands and data
 		}
 	}
 
@@ -553,10 +553,14 @@ class MailsterMail {
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
 		if ( $template && $file ) {
-			$template_obj  = mailster( 'template', $template, $file );
+			$template_obj = mailster( 'template', $template, $file );
+			$template_obj->use_notification();
 			$this->content = $template_obj->get( true, true );
+
 		} elseif ( $file ) {
+
 			$this->content = '{headline}<br>{content}';
+
 		} else {
 			$this->content = '{content}';
 		}
@@ -567,10 +571,12 @@ class MailsterMail {
 
 		$placeholder->add(
 			array(
-				'subject'   => $this->subject,
-				'preheader' => $headline,
-				'headline'  => $headline,
-				'content'   => $content,
+				'subject'      => $this->subject,
+				'preheader'    => $headline,
+				'headline'     => $headline,
+				'content'      => $content,
+				'can-spam'     => '',
+				'notification' => '',
 			)
 		);
 
@@ -789,14 +795,13 @@ class MailsterMail {
 
 			}
 
-			$this->messageID         = uniqid();
-			$this->mailer->messageID = sprintf(
+			$this->messageID = sprintf(
 				'<%s@%s>',
-				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '|' . $this->index . '-' . mailster_option( 'ID' ),
+				uniqid() . '-' . $this->hash . '-' . $this->campaignID . '|' . $this->index . '-' . mailster_option( 'ID' ),
 				$this->hostname
 			);
 
-			$this->add_header( 'X-Message-ID', $this->mailer->messageID );
+			$this->add_header( 'X-Message-ID', $this->messageID );
 
 			$this->set_headers();
 

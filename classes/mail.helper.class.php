@@ -40,14 +40,15 @@ endif;
 // this class extends PHPMailer and offers some fixes
 class mailster_mail_helper extends _mailster_mail_helper {
 
+
+
 	/**
 	 *
 	 *
 	 * @param unknown $exceptions (optional)
 	 */
 	public function __construct( $exceptions = false ) {
-		$this->Version     = defined( 'self::VERSION' ) ? self::VERSION : $this->Version;
-		$this->XMailer     = 'Mailster ' . MAILSTER_VERSION . ' (' . $this->Version . ')';
+		$this->XMailer     = 'Mailster ' . MAILSTER_VERSION . ' (' . MAILSTER_VERSION . ')';
 		$this->CharSet     = mailster_option( 'charset', 'UTF-8' );
 		$this->Encoding    = mailster_option( 'encoding', '8bit' );
 		$this->Ical        = apply_filters( 'mailster_ical', '' );

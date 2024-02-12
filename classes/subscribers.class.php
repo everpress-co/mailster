@@ -4,12 +4,6 @@ class MailsterSubscribers {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-	}
-
-
-	public function init() {
-
 		add_action( 'mailster_cron', array( &$this, 'maybe_update_rating' ), 99 );
 		add_action( 'mailster_cron_worker', array( &$this, 'send_confirmations' ), 99 );
 		add_action( 'mailster_cron_worker', array( &$this, 'maybe_update_rating' ), 99 );
@@ -37,15 +31,9 @@ class MailsterSubscribers {
 
 		add_action( 'mailster_update_rating', array( &$this, 'update_rating' ) );
 
-		if ( is_admin() ) {
-
-			add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
-			add_action( 'show_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
-			add_action( 'edit_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
-
-		} else {
-
-		}
+		add_filter( 'set-screen-option', array( &$this, 'save_screen_options' ), 10, 3 );
+		add_action( 'show_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
+		add_action( 'edit_user_profile', array( &$this, 'edit_user_profile' ), 9, 1 );
 	}
 
 
@@ -84,12 +72,6 @@ class MailsterSubscribers {
 			wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array( 'mailster-select2' ), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
-			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_style( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/css/subscriber-style' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -111,12 +93,6 @@ class MailsterSubscribers {
 			);
 
 		else :
-
-			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
 
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
@@ -600,7 +576,29 @@ class MailsterSubscribers {
 				}
 			}
 		}
+		if ( isset( $_POST['delete'] ) || isset( $_POST['delete_actions'] ) ) {
 
+			if ( ! current_user_can( 'mailster_delete_subscribers' ) ) {
+				wp_die( esc_html__( 'You are not allowed to delete subscribers!', 'mailster' ) );
+			}
+
+			$remove_actions = isset( $_POST['delete_actions'] );
+
+			if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true, true ) ) {
+				$success = $this->remove( $subscriber->ID, null, $remove_actions );
+				if ( ! $success ) {
+					mailster_notice( esc_html__( 'There was an error while deleting subscribers!', 'mailster' ), 'error', true );
+
+				} else {
+					mailster_notice( sprintf( esc_html__( 'Subscriber %s has been removed', 'mailster' ), '<strong>&quot;' . $subscriber->email . '&quot;</strong>' ), 'error', true, true );
+					do_action( 'mailster_subscriber_delete', $subscriber->ID, $subscriber->email );
+				}
+
+				mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
+				exit;
+
+			}
+		}
 		if ( isset( $_GET['resendcampaign'] ) ) {
 			if ( ! current_user_can( 'publish_newsletters' ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'mailster-resend-campaign' ) ) {
 				wp_die( esc_html__( 'You are not allowed to publish campaigns!', 'mailster' ) );
@@ -672,7 +670,7 @@ class MailsterSubscribers {
 		}
 
 		// delete cache
-		mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+		// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 		$subscriber = $this->get( $subscriber_id, true, true );
 
 		if ( ! $subscriber->wp_id ) {
@@ -817,7 +815,7 @@ class MailsterSubscribers {
 			$meta_value = end( $meta_value );
 		}
 
-		$this->add_custom_value( $subscriber->ID, $key, (string) $meta_value );
+		return $this->add_custom_field( $subscriber->ID, $key, (string) $meta_key );
 	}
 
 
@@ -978,6 +976,7 @@ class MailsterSubscribers {
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_fields AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
+		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_workflows AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_lists_subscribers AS a {$wpdb->prefix}mailster_subscribers AS s ON a.subscriber_id = s.ID WHERE s.ID IS NULL" );
 	}
 
@@ -1136,18 +1135,18 @@ class MailsterSubscribers {
 
 			if ( ! $bulkimport ) {
 				mailster_cache_delete( 'subscriber_' . $subscriber_id );
-				mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+				// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 				mailster_cache_delete( 'subscriber_meta_' . $subscriber_id . '0' );
 			}
 
-			if ( isset( $meta['ip'] ) && $meta['ip'] && 'unknown' !== ( $geo = mailster_ip2City( $meta['ip'] ) ) ) {
+			if ( isset( $meta['ip'] ) && $meta['ip'] && $geo = mailster_get_geo( $meta['ip'] ) ) {
 
-				$meta['geo'] = $geo->country_code . '|' . $geo->city;
-				if ( $geo->city ) {
-					$meta['coords']     = (float) $geo->latitude . ',' . (float) $geo->longitude;
-					$meta['timeoffset'] = (int) $geo->timeoffset;
-				}
+				$meta['geo']        = $geo->country->isoCode . '|' . $geo->city->name;
+				$meta['coords']     = (float) $geo->location->latitude . ',' . (float) $geo->location->longitude;
+				$meta['timeoffset'] = (int) mailster( 'helper' )->get_timezone_offset_by_string( $geo->location->timeZone );
+
 			}
+
 			if ( isset( $meta['form'] ) ) {
 				$form = mailster( 'forms' )->get( $meta['form'], false );
 				// if form exists and is not a user choice and has lists
@@ -1162,7 +1161,14 @@ class MailsterSubscribers {
 				$this->assign_tags( $subscriber_id, $tags );
 			}
 
-			$this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
+			// $this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
+			// if ( ! $merge ) {
+			// $this->remove_custom_value( $subscriber_id );
+			// }
+			foreach ( $customfields as $meta_key => $meta_value ) {
+				$this->add_custom_field( $subscriber_id, $meta_key, $meta_value );
+			}
+
 			$this->update_meta( $subscriber_id, 0, $meta );
 
 			// not on bulk import
@@ -1202,7 +1208,7 @@ class MailsterSubscribers {
 				// handle deleted accounts
 				if ( $exists = $this->get_by_mail( $entry['email'], false, true ) ) {
 					if ( $exists->status === 5 ) {
-						return $this->update( $original_entry, true, $merge, $subscriber_notification );
+						return $this->update( $original_entry, true, null, $subscriber_notification );
 					}
 				}
 
@@ -1222,7 +1228,7 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add( $entry, $overwrite = false, $merge = false, $subscriber_notification = true ) {
+	public function add( $entry, $overwrite = false, $merge = null, $subscriber_notification = true ) {
 
 		$now = time();
 
@@ -1376,48 +1382,13 @@ class MailsterSubscribers {
 	 */
 	public function add_custom_value( $subscriber_id, $key, $value = null, $clear = false ) {
 
-		global $wpdb;
-
-		$fields = ! is_array( $key ) ? array( $key => $value ) : $key;
-
-		if ( ! ( $count = count( $fields ) ) ) {
-			return true;
-		}
+		_deprecated_function( __FUNCTION__, '4.0', 'add_custom_field( $subscriber_id, $key, $value, $update = true )' );
 
 		if ( $clear ) {
-			$this->remove_custom_value( $subscriber_id );
+			$this->clear_custom_fields( $subscriber_id );
 		}
 
-		$sql = "INSERT INTO {$wpdb->prefix}mailster_subscriber_fields
-        (subscriber_id, meta_key, meta_value) VALUES ";
-
-		$inserts             = array();
-		$british_date_format = mailster( 'helper' )->dateformat() == 'd/m/Y';
-
-		$customfields = mailster()->get_custom_fields();
-
-		foreach ( $fields as $key => $value ) {
-			if ( isset( $customfields[ $key ] ) && $customfields[ $key ]['type'] == 'date' && $value ) {
-				if ( $british_date_format ) {
-					if ( preg_match( '#(\d{1,2})/(\d{1,2})/(\d{2,4})#', $value, $d ) ) {
-						$value = $d[3] . '-' . $d[2] . '-' . $d[1];
-					}
-				}
-				$value = mailster( 'helper' )->do_timestamp( $value, 'Y-m-d' );
-			}
-
-			$inserts[] = $wpdb->prepare( '(%d, %s, %s)', $subscriber_id, $key, $value );
-		}
-
-		if ( empty( $inserts ) ) {
-			return true;
-		}
-
-		$sql .= implode( ', ', $inserts );
-
-		$sql .= ' ON DUPLICATE KEY UPDATE subscriber_id = values(subscriber_id), meta_key = values(meta_key), meta_value = values(meta_value)';
-
-		return false !== $wpdb->query( $sql );
+		return $this->add_custom_field( $subscriber_id, $key, $value );
 	}
 
 	/**
@@ -1429,6 +1400,14 @@ class MailsterSubscribers {
 	 */
 	public function remove_custom_value( $subscriber_id, $key = null ) {
 
+		if ( is_null( $key ) ) {
+			_deprecated_function( __FUNCTION__, '4.0', 'clear_custom_fields( $subscriber_id )' );
+			return $this->clear_custom_fields( $subscriber_id );
+		}
+
+		_deprecated_function( __FUNCTION__, '4.0', 'remove_custom_field( $subscriber_id, $key )' );
+		return $this->remove_custom_field( $subscriber_id, $key );
+
 		global $wpdb;
 
 		$sql = "DELETE FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d";
@@ -1436,7 +1415,254 @@ class MailsterSubscribers {
 			$sql .= $wpdb->prepare( ' AND meta_key = %s', (string) $key );
 		}
 
-		return false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) );
+		if ( false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) ) ) {
+			// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+			return true;
+		}
+
+		return false;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $list_ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added          (optional)
+	 * @return unknown
+	 */
+	public function add_custom_fields( $subscriber_ids, $keys, $value, $update = true ) {
+
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( (int) $subscriber_ids );
+		}
+		$subscriber_ids = array_filter( $subscriber_ids );
+
+		if ( ! is_array( $keys ) ) {
+			$keys = array( $keys );
+		}
+
+		$success = true;
+
+		foreach ( $subscriber_ids as $subscriber_id ) {
+			foreach ( $keys as $key ) {
+				if ( ! $this->add_custom_field( $subscriber_id, $key, $value, $update ) ) {
+					$success = false;
+				}
+			}
+		}
+
+		return $success;
+	}
+
+
+	/**
+	 *
+	 * @param int    $subscriber_id
+	 * @param string $key
+	 * @param string $value
+	 * @param bool   $update
+	 * @return bool
+	 */
+	public function add_custom_field( int $subscriber_id, string $key, string $value, bool $update = true ) {
+
+		global $wpdb;
+
+		$old_value = $this->get_custom_field( $subscriber_id, $key );
+
+		// value is the same => no update
+		if ( $old_value === $value ) {
+			return true;
+		}
+
+		// custom field exists => update
+		if ( ! is_null( $old_value ) ) {
+			if ( ! $update ) {
+				return false;
+			}
+			return $this->update_custom_field( $subscriber_id, $key, $value );
+		}
+
+		// maybe sanitize the value
+		$value = $this->sanitize_custom_date_field( $key, $value );
+
+		// don't add to database if value is empty
+		if ( $value === '' ) {
+			return true;
+		}
+
+		$success = true;
+
+		$args = array(
+			'subscriber_id' => $subscriber_id,
+			'meta_key'      => $key,
+			'meta_value'    => $value,
+		);
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->insert( "{$wpdb->prefix}mailster_subscriber_fields", $args ) ) {
+
+			do_action( 'mailster_add_custom_field', $subscriber_id, $key, $value );
+
+			$this->update_updated( $subscriber_id );
+
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+	}
+
+
+	/**
+	 *
+	 * @param int    $subscriber_id
+	 * @param string $key
+	 * @param string $value
+	 * @return bool
+	 */
+	public function update_custom_field( int $subscriber_id, string $key, string $value ) {
+
+		global $wpdb;
+
+		$old_value = $this->get_custom_field( $subscriber_id, $key );
+
+		if ( $old_value === $value ) {
+			return true;
+		}
+
+		// maybe sanitize the value
+		$value = $this->sanitize_custom_date_field( $key, $value );
+
+		$success = true;
+
+		$args = array(
+			'meta_value' => $value,
+		);
+
+		$where = array(
+			'subscriber_id' => $subscriber_id,
+			'meta_key'      => $key,
+		);
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_subscriber_fields", $args, $where ) ) {
+
+			do_action( 'mailster_update_custom_field', $subscriber_id, $key, $value, $old_value );
+
+			// remove custom field if value is empty
+			if ( '' === $value ) {
+				$success = $this->remove_custom_field( $subscriber_id, $key );
+			} else {
+				$this->update_updated( $subscriber_id );
+			}
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+	}
+
+
+	public function remove_custom_field( int $subscriber_id, string $key ) {
+
+		global $wpdb;
+
+		$old_value = $this->get_custom_field( $subscriber_id, $key );
+
+		$success = true;
+
+		$where = array(
+			'subscriber_id' => $subscriber_id,
+			'meta_key'      => $key,
+		);
+
+		$errors = $wpdb->suppress_errors( true );
+
+		if ( $wpdb->delete( "{$wpdb->prefix}mailster_subscriber_fields", $where ) ) {
+
+			do_action( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value );
+
+			$this->update_updated( $subscriber_id );
+
+		} else {
+			$success = false;
+		}
+		$wpdb->suppress_errors( $errors );
+
+		return $success;
+	}
+
+
+
+	/**
+	 * clear all custom fields of a subscriber
+	 *
+	 * @param int $subscriber_id
+	 * @return bool
+	 */
+	public function clear_custom_fields( int $subscriber_id ) {
+
+		$fields = $this->get_custom_fields( $subscriber_id );
+
+		$success = true;
+		foreach ( $fields as $key => $value ) {
+			if ( ! $this->remove_custom_field( $subscriber_id, $key ) ) {
+				$success = false;
+			}
+		}
+
+		return $success;
+	}
+
+	/**
+	 * sanitize custom date fields to return a valid date in the $format
+	 *
+	 * @param string $key
+	 * @param string $value
+	 * @param string $format
+	 */
+	private function sanitize_custom_date_field( $key, $value, $format = 'Y-m-d' ) {
+
+		if ( ! $value ) {
+			return $value;
+		}
+
+		$date_fields = mailster()->get_custom_date_fields( true );
+
+		if ( ! in_array( $key, $date_fields ) ) {
+			return $value;
+		}
+
+		$british_date_format = mailster( 'helper' )->dateformat() == 'd/m/Y';
+
+		if ( $british_date_format ) {
+			if ( preg_match( '#(\d{1,2})/(\d{1,2})/(\d{2,4})#', $value, $d ) ) {
+				$value = $d[3] . '-' . $d[2] . '-' . $d[1];
+			}
+		}
+		$value = mailster( 'helper' )->do_timestamp( $value, $format );
+
+		return $value;
+	}
+
+	/**
+	 * update the updated field of the subscriber
+	 *
+	 * @param int $subscriber_id
+	 */
+	private function update_updated( $subscriber_id ) {
+
+		global $wpdb;
+		mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+
+		return false !== $wpdb->update( "{$wpdb->prefix}mailster_subscribers", array( 'updated' => time() ), array( 'ID' => $subscriber_id ) );
 	}
 
 
@@ -1564,8 +1790,8 @@ class MailsterSubscribers {
 
 		}
 
-		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue
-		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
+		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue, workflows
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,workflows,' . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_workflows AS workflows ON ( subscribers.ID = workflows.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
 
 		if ( $success = ( false !== $wpdb->query( $sql ) ) ) {
 			if ( $wpdb->last_error ) {
@@ -1579,12 +1805,14 @@ class MailsterSubscribers {
 				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_clicks AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_unsubs AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_bounces AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_workflows AS workflows SET subscriber_id = NULL WHERE workflows.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 			} else {
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_sent AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_opens AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_clicks AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 				$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "DELETE workflows FROM {$wpdb->prefix}mailster_workflows AS workflows WHERE workflows.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 			}
 			// anonymize subscriber_meta data
 			if ( ! $remove_meta ) {
@@ -2501,7 +2729,7 @@ class MailsterSubscribers {
 
 
 	/**
-	 *
+	 * compare time between two actions
 	 *
 	 * @param unknown $id
 	 * @param unknown $actionA
@@ -2814,12 +3042,7 @@ class MailsterSubscribers {
 			return false;
 		}
 
-		return mailster( 'notification' )->add(
-			time(),
-			array(
-				'template' => 'new_subscriber_delayed',
-			)
-		);
+		return mailster( 'notification' )->add( time(), array( 'template' => 'new_subscriber_delayed' ) );
 	}
 
 
@@ -2884,12 +3107,7 @@ class MailsterSubscribers {
 			return false;
 		}
 
-		return mailster( 'notification' )->add(
-			time(),
-			array(
-				'template' => 'unsubscribe_delayed',
-			)
-		);
+		return mailster( 'notification' )->add( time(), array( 'template' => 'unsubscribe_delayed' ) );
 	}
 
 
@@ -2955,6 +3173,7 @@ class MailsterSubscribers {
 			$subscribers[ $entry->ID ]->list_ids[] = $entry->list_id;
 		}
 
+		// TODO: this blocks sending multiple confimrations at once
 		if ( false && ! $force && $subscribers ) {
 			$total       = $this->get_totals();
 			$entry_count = count( $subscribers );
@@ -3045,6 +3264,8 @@ class MailsterSubscribers {
 		if ( is_numeric( $ID ) ) {
 			return $this->get_by_type( 'ID', $ID, $custom_fields, $include_deleted );
 		}
+
+		return false;
 	}
 
 
@@ -3060,7 +3281,7 @@ class MailsterSubscribers {
 
 		if ( isset( $_COOKIE ) && isset( $_COOKIE['mailster'] ) ) {
 			$hash       = $_COOKIE['mailster'];
-			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, $custom_fields );
+			$subscriber = $this->get_by_hash( $hash, $custom_fields );
 		}
 
 		if ( empty( $subscriber ) ) {
@@ -3248,21 +3469,32 @@ class MailsterSubscribers {
 	 *
 	 *
 	 * @param unknown $subscriber_id
-	 * @param unknown $field         (optional)
+	 * @param unknown $field
 	 * @return unknown
 	 */
-	public function get_custom_fields( $subscriber_id, $field = null ) {
+	public function get_custom_field( $subscriber_id, $field ) {
+
+		$custom_fields = $this->get_custom_fields( $subscriber_id );
+
+		return isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ] : null;
+	}
+
+	public function get_custom_fields( $subscriber_id, $deprecated = false ) {
+
+		if ( $deprecated !== false ) {
+			_deprecated_argument( __FUNCTION__, '4.0', 'MailsterSubscriber::get_custom_fields( $subscriber_id, $field ), use MailsterSubscriber::get_custom_field( $subscriber_id, $field ) instead.' );
+			return $this->get_custom_field( $subscriber_id, $deprecated );
+		}
 
 		global $wpdb;
 
-		if ( false === ( $custom_fields = mailster_cache_get( 'get_custom_fields_' . $subscriber_id ) ) ) {
+		if ( ! ( $custom_fields = mailster_cache_get( 'get_custom_fields_' . $subscriber_id ) ) ) {
 
 			$custom_field_names = mailster()->get_custom_fields( true );
 
 			$custom_fields              = array_fill_keys( $custom_field_names, null );
-			$custom_fields['firstname'] = '';
-			$custom_fields['lastname']  = '';
-			$custom_fields['fullname']  = '';
+			$custom_fields['firstname'] = null;
+			$custom_fields['lastname']  = null;
 
 			$sql = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id );
 
@@ -3278,15 +3510,11 @@ class MailsterSubscribers {
 				: $custom_fields['firstname'] . ' ' . $custom_fields['lastname']
 			);
 
-			if ( is_null( $field ) ) {
-				mailster_cache_set( 'get_custom_fields_' . $subscriber_id, $custom_fields );
-			}
-		}
-		if ( is_null( $field ) ) {
-			return $custom_fields;
+			mailster_cache_set( 'get_custom_fields_' . $subscriber_id, $custom_fields );
+
 		}
 
-		return isset( $custom_fields[ $field ] ) ? $custom_fields[ $field ] : null;
+		return $custom_fields;
 	}
 
 
@@ -3476,10 +3704,10 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $new
 	 */
-	public function on_activate( $new ) {
+	public function on_install( $new ) {
 
 		if ( $new ) {
-			$subscriber_id = $this->add_from_wp_user(
+			$this->add_from_wp_user(
 				get_current_user_id(),
 				array(
 					'status'  => 1,
@@ -3804,8 +4032,9 @@ class MailsterSubscribers {
 	 */
 	public function get_gravatar_uri( $email, $size = 120 ) {
 
-		if ( ! $email ) {
-			$email = '';
+		if ( empty( $email ) ) {
+			return '';
+
 		}
 
 		$email = strtolower( trim( $email ) );
@@ -4031,20 +4260,20 @@ class MailsterSubscribers {
 
 
 	/**
-	 *
+	 * calcuate the hash for a subscriber. This should NOT be simple md5
 	 *
 	 * @param unknown $email
 	 * @return unknown
 	 */
 	private function hash( $email ) {
 
-		$org_email = $email;
+		$hash = $email;
 
 		for ( $i = 0; $i < 10; $i++ ) {
-			$email = sha1( $email );
+			$hash = sha1( $hash );
 		}
 
-		$hash = md5( $email . mailster_option( 'ID', '' ) );
-		return apply_filters( 'mailster_subscriber_hash', $hash, $org_email );
+		$hash = md5( $hash . mailster_option( 'ID', '' ) );
+		return apply_filters( 'mailster_subscriber_hash', $hash, $email );
 	}
 }

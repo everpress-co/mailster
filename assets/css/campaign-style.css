@@ -614,10 +614,6 @@ textarea#head {
 	background-image: url(../img/inactive.png);
 	z-index: 1;
 }
-.timezone-enabled .utcoffset {
-	text-decoration: line-through;
-	color: #ccc;
-}
 .active_wrap.disabled .active_overlay,
 .autoresponder_active_wrap.disabled .autoresponder_active_overlay {
 	display: none;
@@ -714,9 +710,8 @@ textarea#head {
 }
 input.deliverydate,
 input.deliverytime {
-	width: 94px;
-	font-size: 16px;
-	padding: 3px 1px;
+	font-size: 1.1em;
+	width: 200px;
 	color: #333;
 	cursor: pointer;
 	text-align: center;
@@ -725,14 +720,6 @@ input.deliverydate.inactive,
 input.deliverytime.inactive {
 	color: #585858;
 	background: #fff;
-	padding: 4px 2px 3px;
-	border: 0;
-	border-bottom: 1px dotted #999;
-}
-.utcoffset {
-	white-space: nowrap;
-	font-size: 10px;
-	letter-spacing: -0.05em;
 }
 input.deliverytime {
 	width: 50px;
@@ -740,7 +727,6 @@ input.deliverytime {
 .deliverydate.inactive:hover,
 .deliverytime.inactive:hover {
 	color: #333;
-	border-bottom: 1px dotted #585858;
 }
 #ui-datepicker-div {
 	display: none;
@@ -994,70 +980,93 @@ input.color {
 	font-size: 10px;
 	text-transform: uppercase;
 }
-a.savecolorschema,
-a.colorschema-delete-all {
-	cursor: pointer;
-	font-size: 10px;
-}
-ul.colorschema {
-	margin: 5px 0;
+.colorschemas {
 	border: 1px solid #ccd0d4;
+	border-radius: 3px;
+	max-height: 350px;
+	overflow: auto;
+}
+.colorschema {
+	margin: 0;
 	overflow: hidden;
-	display: inline-block !important;
-	max-width: 234px;
-}
-ul.colorschema {
-	margin-right: 14px;
-}
-ul.colorschema.custom:hover {
-	margin-right: 1px;
-}
-ul.colorschema:hover {
-	border: 1px solid #606064;
-}
-ul.colorschema .colorschema-delete-field {
-	display: none;
-}
-ul.colorschema:hover .colorschema-delete-field {
-	display: block;
-}
-ul.colorschema.finished:hover {
-	border: 1px solid #ccd0d4;
-}
-ul.colorschema li {
-	cursor: pointer;
+	display: flex;
+	border-bottom: 1px solid #ccd0d4;
+	align-items: center;
 	position: relative;
-	height: 13px;
-	width: 13px;
-	float: left;
+	cursor: pointer;
+}
+.colorschema:nth-child(even) {
+	background: #f3f3f3;
+}
+.colorschema.current {
+	display: inline-flex;
+}
+.colorschema:hover {
+	background: #f9f9f9;
+}
+.colorschema.current:hover {
+	background: inherit;
+}
+.colorschema:last-child {
+	border-bottom: 0;
+}
+.colorschema .colorschema-title {
+	font-size: 12px;
+	width: 80px;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	border-right: 1px solid #ccd0d4;
+	white-space: nowrap;
+	padding: 1em 0.6em;
+	margin-right: 20px;
+}
+.rtl .colorschema .colorschema-title {
+	border-right: 0;
+	border-left: 1px solid #ccd0d4;
+	margin-right: 0;
+	margin-left: 20px;
+}
+.colorschema .colorschema-field {
+	align-items: center;
+	border-radius: 100%;
+	position: relative;
+	height: 20px;
+	width: 20px;
 	margin: 0;
 	text-align: center;
+	margin-left: -12px;
+	display: inline-block;
+	transition: margin-left 0.15s ease-in-out;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
-ul.colorschema.finished li {
+.colorschema:hover .colorschema-field {
+	margin-left: -8px;
+}
+.colorschema.current .colorschema-field {
+	height: 20px;
+	width: 20px;
+}
+.colorschema.current:hover .colorschema-field {
+	margin-left: -12px;
+}
+.colorschema.finished .colorschema-field {
 	cursor: default;
 }
-ul.colorschema li:first-child {
-	border-left: 0;
-	-webkit-border-top-left-radius: 2px;
-	-webkit-border-bottom-left-radius: 2px;
-	-moz-border-radius-topleft: 2px;
-	-moz-border-radius-bottomleft: 2px;
-	border-top-left-radius: 2px;
-	border-bottom-left-radius: 2px;
+.colorschema:hover a.colorschema-delete {
+	display: inline-block;
 }
-ul.colorschema li:last-child {
-	border-right: 0;
-	-webkit-border-top-right-radius: 2px;
-	-webkit-border-bottom-right-radius: 2px;
-	-moz-border-radius-topright: 2px;
-	-moz-border-radius-bottomright: 2px;
-	border-top-right-radius: 2px;
-	border-bottom-right-radius: 2px;
+.colorschema a.colorschema-delete {
+	font-size: 16px;
+	line-height: 1.3em;
+	display: inline-block;
+	cursor: pointer;
+	position: absolute;
+	right: 12px;
 }
-ul.colorschema li a.colorschema-delete {
-	font-size: 13px;
-	line-height: 1em;
-	display: block;
+.rtl .colorschema a.colorschema-delete {
+	left: 12px;
+	right: auto;
 }
 
 /*----------------------------------------------------------------------*/
@@ -1229,6 +1238,9 @@ a.mailster-btn.editbutton {
 }
 #ui-datepicker-div {
 	width: 230px;
+}
+#new_module_name {
+	font-size: 1.8em;
 }
 .fixed-optionbar #iframe-wrap {
 	margin-top: 42px;
@@ -1431,6 +1443,7 @@ a.mailster-btn.editbutton {
 #module-selector ul {
 	margin: 0;
 	padding: 0;
+	overflow: hidden;
 }
 #mailster_template #template-wrap.load #module-selector {
 	opacity: 0.2;
@@ -1438,7 +1451,9 @@ a.mailster-btn.editbutton {
 #module-selector ul li {
 	display: block;
 	margin: 0;
+	overflow: hidden;
 	float: none;
+	position: relative;
 }
 #module-selector ul li a.mailster-btn {
 	border: 1px solid #ccd0d4;
@@ -1457,9 +1472,42 @@ a.mailster-btn.editbutton {
 	width: 160px;
 	text-align: center;
 	border-radius: 4px;
+	transition: all 0.25s ease;
+	overflow: hidden;
 }
 .dark-mode #module-selector ul li a.mailster-btn {
 	border-color: #32373c;
+}
+
+#module-selector ul.custom-modules {
+	margin-bottom: 18px;
+}
+#module-selector ul.custom-modules:empty {
+	margin-bottom: 0px;
+}
+#module-selector ul.custom-modules li a.mailster-btn {
+	border-color: #2bb3e7;
+}
+#module-selector ul li a.deletemodule {
+	position: absolute;
+	top: 5px;
+	right: 13px;
+	font-size: 16px;
+	display: none;
+	width: 20px;
+	height: 20px;
+	background: rgba(255, 255, 255, 0.8);
+
+	cursor: pointer;
+	justify-content: center;
+	align-items: center;
+	border-radius: 3px;
+}
+#module-selector ul li:hover a.deletemodule {
+	display: flex;
+}
+#module-selector ul li a.deletemodule:hover {
+	background: #fff;
 }
 
 #module-selector ul li a.mailster-btn.has-screenshot {
@@ -1489,6 +1537,10 @@ a.mailster-btn.editbutton {
 	border: 1px solid #999;
 	color: #23282d;
 	box-shadow: 0 2px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 5%);
+}
+#module-selector ul.custom-modules li a.mailster-btn,
+#module-selector ul.custom-modules li a.mailster-btn:focus {
+	border-color: #2bb3e7;
 }
 #module-selector ul li.ui-draggable-dragging {
 	background-color: red;

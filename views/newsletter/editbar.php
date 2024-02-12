@@ -21,30 +21,30 @@
 			$fields[ $field ] = $data['name'];
 		}
 		$operators = array(
-			'is'           => esc_html__( 'is', 'mailster' ),
-			'is_not'       => esc_html__( 'is not', 'mailster' ),
-			'contains'     => esc_html__( 'contains', 'mailster' ),
-			'contains_not' => esc_html__( 'contains not', 'mailster' ),
-			'begin_with'   => esc_html__( 'begins with', 'mailster' ),
-			'end_with'     => esc_html__( 'ends with', 'mailster' ),
-			'is_greater'   => esc_html__( 'is greater', 'mailster' ),
-			'is_smaller'   => esc_html__( 'is smaller', 'mailster' ),
-			'pattern'      => esc_html__( 'match regex pattern', 'mailster' ),
-			'not_pattern'  => esc_html__( 'does not match regex pattern', 'mailster' ),
+			'is'           => __( 'is', 'mailster' ),
+			'is_not'       => __( 'is not', 'mailster' ),
+			'contains'     => __( 'contains', 'mailster' ),
+			'contains_not' => __( 'contains not', 'mailster' ),
+			'begin_with'   => __( 'begins with', 'mailster' ),
+			'end_with'     => __( 'ends with', 'mailster' ),
+			'is_greater'   => __( 'is greater', 'mailster' ),
+			'is_smaller'   => __( 'is smaller', 'mailster' ),
+			'pattern'      => __( 'match regex pattern', 'mailster' ),
+			'not_pattern'  => __( 'does not match regex pattern', 'mailster' ),
 		);
 
 		?>
 		<select class="condition-fields">
 		<?php
 		foreach ( $fields as $key => $name ) {
-			echo '<option value="' . $key . '">' . $name . '</option>';
+			echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $name ) . '</option>';
 		}
 		?>
 		</select>
 		<select class="condition-operators">
 		<?php
 		foreach ( $operators as $key => $name ) {
-			echo '<option value="' . $key . '">' . $name . '</option>';
+			echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $name ) . '</option>';
 		}
 		?>
 		</select>
@@ -65,7 +65,7 @@
 			</div>
 			<div id="single-link">
 				<div class="clearfix">
-						<label class="block"><div class="left"><?php esc_html_e( 'Link', 'mailster' ); ?></div><div class="right"><input type="text" class="input singlelink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Link', 'mailster' ); ?></div><div class="right"><input type="text" class="input singlelink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
 				</div>
 				<div class="link-wrap">
 					<div class="postlist">
@@ -82,19 +82,19 @@
 			</div>
 			<div id="image_button" class="tab">
 			<?php $this->templateobj->buttons(); ?>
-			<?php $this->templateobj->buttons( MAILSTER_DIR . 'assets/img/social/' ); ?>
+			<?php $this->templateobj->buttons( MAILSTER_UPLOAD_DIR . '/social/' ); ?>
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
+				<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 			<div id="text_button" class="tab" style="display:none">
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_attr_e( 'button label', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Button Label', 'mailster' ); ?>"></div></label>
+				<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_attr_e( 'button label', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Button Label', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Link of the button', 'mailster' ); ?>"></div></label>
+				<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Link of the button', 'mailster' ); ?>"></div></label>
 			</div>
 			<div class="link-wrap">
 				<div class="postlist">
@@ -327,7 +327,12 @@
 
 		</div>
 			<div class="type codeview">
-				<textarea id="module-codeview-textarea" autocomplete="off"></textarea>
+				<p>
+					<label class="block"><div class="left"><?php esc_html_e( 'Module Name', 'mailster' ); ?></div><div class="right"><input type="text" id="module-name" class="widefat" value="" aria-label="<?php esc_attr_e( 'Module Name', 'mailster' ); ?>"></div></label>
+				</p>
+				<p>
+					<textarea id="module-codeview-textarea" autocomplete="off"></textarea>
+				</p>
 			</div>
 
 		</div>

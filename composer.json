@@ -4,10 +4,10 @@
 		"inlinestyle/inlinestyle": "1.*",
 		"freemius/wordpress-sdk": "^2.5.10",
 		"composer/installers": "^1.12.0",
+		"geoip2/geoip2": "~2.0",
 		"dantsu/php-osm-static-api": "^0.4.0"
 	},
 	"require-dev": {
-		"humbug/php-scoper": "^0.17.5",
 		"phpunit/phpunit": "^7.0",
 		"yoast/phpunit-polyfills": "^1.0.1",
 		"yoast/wp-test-utils": "^1.0.0",

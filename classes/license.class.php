@@ -66,7 +66,7 @@ class MailsterLicense {
 	public function _maybe_redirect_to_checkout() {
 
 		if ( ! isset( $_GET['checkout'] ) ) {
-			mailster_redirect( mailster_freemius()->checkout_url() );
+			// mailster_redirect( mailster_freemius()->checkout_url() );
 		}
 
 		// add this back as it will get remove from Freemius

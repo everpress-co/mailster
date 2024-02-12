@@ -1,0 +1,81 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "mailster-workflow/trigger",
+	"title": "Trigger",
+	"category": "mailster-automation-fields",
+	"parent": ["mailster-workflow/triggers"],
+	"description": "Define how this workflow gets triggered.",
+	"example": {},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"className": false,
+		"inserter": false,
+		"customClassName": false,
+		"lock": false
+	},
+	"attributes": {
+		"lock": {
+			"type": "object",
+			"default": {
+				"remove": true
+			}
+		},
+		"trigger": {
+			"type": "string"
+		},
+		"conditions": {
+			"type": "string"
+		},
+		"repeat": {
+			"type": "number",
+			"default": 1
+		},
+		"lists": {
+			"type": "array"
+		},
+		"forms": {
+			"type": "array"
+		},
+		"tags": {
+			"type": "array"
+		},
+		"links": {
+			"type": "array"
+		},
+		"pages": {
+			"type": "array"
+		},
+		"hook": {
+			"type": "string"
+		},
+		"date": {
+			"type": "string"
+		},
+		"field": {
+			"type": "string"
+		},
+		"postCount": {
+			"type": "number",
+			"default": 1
+		},
+		"offset": {
+			"type": "number",
+			"default": 0
+		},
+		"query": {
+			"type": "object",
+			"default": {
+				"postType": "post",
+				"author": "",
+				"exclude": [],
+				"taxQuery": null
+			}
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

@@ -167,3 +167,21 @@ function mailster_add_acf_tags( $tags ) {
 
 	return $tags;
 }
+
+
+function mailster_register_elementor_widget( $widgets_manager ) {
+
+	require_once MAILSTER_DIR . 'classes/elementor.class.php';
+
+	$widgets_manager->register( new Elementor_Mailster_Form() );
+}
+add_action( 'elementor/widgets/register', 'mailster_register_elementor_widget' );
+
+
+function mailster_register_divi_widget() {
+
+	require_once MAILSTER_DIR . 'classes/divi.class.php';
+
+	new ET_Builder_Module_Mailster_Block_Form();
+}
+add_action( 'et_builder_ready', 'mailster_register_divi_widget' );

@@ -80,12 +80,9 @@ mailster = (function (mailster, $, window, document) {
 					mailster.$.html.hide();
 					mailster.$.content.val(response.data.content);
 					if (wp.codeEditor) {
-						codeeditor = wp.codeEditor.initialize(
-							mailster.$.content,
-							{
-								codemirror: mailster.util.codemirrorargs,
-							}
-						);
+						codeeditor = wp.codeEditor.initialize(mailster.$.content, {
+							codemirror: mailster.util.codemirrorargs,
+						});
 					} else {
 						codeeditor = {
 							codemirror: window.CodeMirror.fromTextArea(

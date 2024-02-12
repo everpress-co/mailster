@@ -709,15 +709,33 @@ mailster = (function (mailster, $, window, document) {
 					label = buttonlabel.val();
 
 				if (!wrap.length) {
-					current.element.replaceWith(
-						'<table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' +
-							link +
-							'" editable label="' +
-							label +
-							'">' +
-							label +
-							'</a></td></tr></table>'
-					);
+					// TODO: content replace is maybe not working if the label of the button is also in the HTML comments
+					// maybe parese the content for commetns fist
+
+					// check if it's a textbutton or a a button
+					var a = $(current.element[0].outerHTML);
+					// get the button content
+					var buttoncontent = mailster.util.trim(current.element.text());
+					// the innerHTML of the button
+					var innerHTML = current.element[0].innerHTML;
+					// replace the button content with the label
+					var inner = innerHTML.replace(buttoncontent, label);
+					// build the link
+					var linkwrap = $(a.empty()[0].outerHTML)
+						.html(inner)
+						.attr('href', link);
+
+					current.element.replaceWith(linkwrap);
+
+					// current.element.replaceWith(
+					// 	'<table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' +
+					// 		link +
+					// 		'" editable label="' +
+					// 		label +
+					// 		'">' +
+					// 		label +
+					// 		'</a></td></tr></table>'
+					// );
 				} else {
 					if (current.element[0] == wrap[0]) {
 						current.element = wrap.find('a');
@@ -776,7 +794,7 @@ mailster = (function (mailster, $, window, document) {
 							expected = _this.attr('expect') || 'title',
 							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if ($.isArray(content)) content = content[i];
+						if (Array.isArray(content).isArray) content = content[i];
 
 						if (content && !_this.is('[ignore]')) _this.html(content);
 					});
@@ -788,7 +806,7 @@ mailster = (function (mailster, $, window, document) {
 							expected = _this.attr('expect') || contenttype,
 							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if ($.isArray(content)) content = content[i];
+						if (Array.isArray(content)) content = content[i];
 
 						if (content && !_this.is('[ignore]')) _this.html(content);
 					});
@@ -823,83 +841,93 @@ mailster = (function (mailster, $, window, document) {
 
 					current.elements.images.each(function (i, e) {
 						var _this = $(this),
-							f = factor.val();
+							f = factor.val(),
+							expected = _this.attr('expect') || 'image',
+							obj = currenttext[expected];
 
 						if ('static' == insertmethod) {
-							currenttext.image.id &&
-								mailster.util.ajax(
-									'create_image',
-									{
-										id: currenttext.image.id,
-										original: original.is(':checked'),
-										width: _this.width() * f,
-										height: _this.height() * f,
-										crop: _this.data('crop'),
-									},
-									function (response) {
-										if (response.success) {
-											loader(false);
+							if (!obj) {
+								return false;
+							}
+							if (typeof obj == 'string') {
+								obj = {
+									id: null,
+									url: obj,
+								};
+							}
 
-											if (original.is(':checked')) {
-												_this
-													.attr('data-original', true)
-													.data('original', true);
-											}
-											if ('img' == _this.prop('tagName').toLowerCase()) {
-												_this
-													.attr({
-														'data-id': currenttext.image.id,
-														src: response.data.image.url,
-														width: Math.round(response.data.image.width / f),
-														alt: currenttext.alt || currenttext.title,
-													})
-													.data('id', currenttext.image.id);
-
-												if (
-													_this.attr('height') &&
-													_this.attr('height') != 'auto'
-												) {
-													_this.attr(
-														'height',
-														Math.round(response.data.image.height / f)
-													);
-												}
-
-												if (_this.parent().is('a')) {
-													_this.unwrap();
-												}
-
-												if (currenttext.link) {
-													_this.wrap('<a href="' + currenttext.link + '">');
-												}
-											} else {
-												var orgurl = _this.attr('background');
-												_this
-													.attr({
-														'data-id': currenttext.image.id,
-														background: response.data.image.url,
-													})
-													.data('id', currenttext.image.id);
-
-												current.element.html(
-													mailster.util.replace(
-														current.element.html(),
-														orgurl,
-														response.data.image.url
-													)
-												);
-
-												//remove id to re trigger tinymce
-												current.element.find('single, multi').removeAttr('id');
-												mailster.trigger('save');
-												mailster.trigger('refresh');
-											}
-										}
-									},
-									function (jqXHR, textStatus, errorThrown) {
+							mailster.util.ajax(
+								'create_image',
+								{
+									id: obj.id,
+									src: obj.url,
+									original: original.is(':checked'),
+									width: _this.width() * f,
+									height: _this.height() * f,
+									crop: _this.data('crop'),
+								},
+								function (response) {
+									if (response.success) {
 										loader(false);
+
+										if (original.is(':checked')) {
+											_this.attr('data-original', true).data('original', true);
+										}
+										if ('img' == _this.prop('tagName').toLowerCase()) {
+											_this
+												.attr({
+													'data-id': obj.id,
+													src: response.data.image.url,
+													width: Math.round(response.data.image.width / f),
+													alt: currenttext.alt || currenttext.title,
+												})
+												.data('id', obj.id);
+
+											if (
+												_this.attr('height') &&
+												_this.attr('height') != 'auto'
+											) {
+												_this.attr(
+													'height',
+													Math.round(response.data.image.height / f)
+												);
+											}
+
+											if (_this.parent().is('a')) {
+												_this.unwrap();
+											}
+
+											if (currenttext.link) {
+												_this.wrap('<a href="' + currenttext.link + '">');
+											}
+										} else {
+											var orgurl = _this.attr('background');
+											_this
+												.attr({
+													'data-id': obj.id,
+													background: response.data.image.url,
+												})
+												.data('id', currenttext[expected].id);
+
+											current.element.html(
+												mailster.util.replace(
+													current.element.html(),
+													orgurl,
+													response.data.image.url
+												)
+											);
+
+											//remove id to re trigger tinymce
+											current.element.find('single, multi').removeAttr('id');
+											mailster.trigger('save');
+											mailster.trigger('refresh');
+										}
 									}
-								);
+								},
+								function (jqXHR, textStatus, errorThrown) {
+									loader(false);
+								}
+							);
 
 							return false;
 
@@ -915,7 +943,7 @@ mailster = (function (mailster, $, window, document) {
 									.removeAttr('data-id')
 									.attr({
 										src: dynamicImage(
-											currenttext.image,
+											currenttext[expected],
 											width,
 											height,
 											crop,
@@ -933,14 +961,20 @@ mailster = (function (mailster, $, window, document) {
 								_this
 									.removeAttr('data-id')
 									.attr({
-										background: dynamicImage(currenttext.image, width),
+										background: dynamicImage(currenttext[expected], width),
 									})
 									.removeData('id');
 								current.element.html(
 									mailster.util.replace(
 										current.element.html(),
 										orgurl,
-										dynamicImage(currenttext.image, width, height, crop, org)
+										dynamicImage(
+											currenttext[expected],
+											width,
+											height,
+											crop,
+											org
+										)
 									)
 								);
 								//remove id to re trigger tinymce
@@ -989,6 +1023,8 @@ mailster = (function (mailster, $, window, document) {
 			var html = codeeditor.codemirror.getValue();
 			current.element.html(html);
 			current.modulebuttons.prependTo(current.element);
+
+			current.element.attr('label', $('#module-name').val());
 		}
 
 		close();
@@ -1046,7 +1082,7 @@ mailster = (function (mailster, $, window, document) {
 			var pos;
 			buttonlink.val(link);
 			if ((pos = (link + '').indexOf('USERNAME', 0)) != -1) {
-				buttonlink.focus();
+				buttonlink.trigger('focus');
 				selectRange(buttonlink[0], pos, pos + 8);
 			}
 		}
@@ -1308,7 +1344,10 @@ mailster = (function (mailster, $, window, document) {
 				});
 			} else {
 				$('#button-type-bar').find('a').eq(0).trigger('click');
-				buttonlabel.val(mailster.util.trim(el.text())).focus().select();
+				buttonlabel
+					.val(mailster.util.trim(el.text()))
+					.trigger('focus')
+					.trigger('select');
 				buttonlink.val(current.element.attr('href'));
 				bar.find('ul.buttons').hide();
 			}
@@ -1341,22 +1380,12 @@ mailster = (function (mailster, $, window, document) {
 			}
 		} else if (type == 'codeview') {
 			var textarea = base.find('textarea'),
-				clone = el.clone();
+				clone = el.clone(),
+				html = mailster.editor.cleanHTML(el.html());
 
 			current.modulebuttons = clone.find('modulebuttons');
-
-			clone.find('modulebuttons').remove();
-			clone
-				.find('single, multi')
-				.removeAttr('contenteditable spellcheck id dir style class');
-
-			var html = mailster.util.trim(
-				clone
-					.html()
-					.replace(/\u200c/g, '&zwnj;')
-					.replace(/\u200d/g, '&zwj;')
-			);
 			textarea.show().html(html);
+			$('#module-name').val(name);
 		}
 
 		offset =
@@ -1526,7 +1555,7 @@ mailster = (function (mailster, $, window, document) {
 
 				bar.show(0, function () {
 					if (type == 'single') {
-						bar.find('input').focus().select();
+						bar.find('input').trigger('focus').trigger('select');
 					} else if (type == 'img') {
 						imagewidth.val(Math.round(current.width));
 						imageheight.val(Math.round(current.height));
@@ -1658,7 +1687,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function loadSingleLink() {
 		$('#single-link').slideDown(200);
-		singlelink.focus().select();
+		singlelink.trigger('focus').trigger('select');
 		assetstype = 'link';
 		assetslist = base.find('.postlist').eq(0);
 		loadPosts();
@@ -1682,7 +1711,7 @@ mailster = (function (mailster, $, window, document) {
 		) {
 			imageurl.val(currentimage.src);
 		}
-		imageurl.focus().select();
+		imageurl.trigger('focus').trigger('select');
 		return false;
 	}
 
