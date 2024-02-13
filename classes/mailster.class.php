@@ -2964,10 +2964,22 @@ class Mailster {
 			$plans = mailster_freemius()->_sync_plans();
 
 			set_transient( 'mailster_freemius_plans', $plans, DAY_IN_SECONDS );
-
 		}
 
 		return $plans;
+	}
+
+	public function get_plan_by_name( $name ) {
+
+		$plans = $this->get_plans();
+
+		foreach ( $plans as $plan ) {
+			if ( $plan->name == $name ) {
+				return $plan;
+			}
+		}
+
+		return false;
 	}
 
 	public function get_email( $fallback = '' ) {

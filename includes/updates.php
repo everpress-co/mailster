@@ -677,7 +677,7 @@ if ( $old_version ) {
 
 
 		case '3.3.13':
-		default:
+		case '4.0.0':
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
@@ -703,7 +703,7 @@ if ( $old_version ) {
 			// force an update of the templates
 			mailster( 'templates' )->check_for_updates( true );
 
-
+		default:
 			mailster( 'convert' )->notice();
 
 			// reset translations

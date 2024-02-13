@@ -237,9 +237,19 @@ class MailsterAutomations {
 			);
 			wp_update_post( $post );
 
+			$agency_plan = mailster()->get_plan_by_name( 'agency' );
+
+			$args = array(
+				'utm_medium' => 'workflow_limit_reached',
+				'plan_id'    => $agency_plan ? $agency_plan->id : null,
+			);
+
+			$checkout_url = add_query_arg( $args, mailster_freemius()->checkout_url() );
+			$pricing_url  = add_query_arg( $args, mailster_freemius()->pricing_url() );
+
 			$msg  = '<h2>' . sprintf( esc_html__( 'Workflow limit reached!', 'mailster' ) ) . '</h2>';
-			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of %1$d active workflows! Please upgrade %2$s to enable more workflows.', 'mailster' ), $this->get_limit(), '<a href="' . admin_url( '?page=mailster-pricing' ) . '">' . esc_html__( 'your plan', 'mailster' ) . '</a>' ) . '</p>';
-			$msg .= '<p><a href="' . admin_url( '?page=mailster-pricing' ) . '" class="button button-primary">' . esc_html__( 'Upgrade now', 'mailster' ) . '</a> <a href="https://docs.mailster.co/#/automations-overview" class="button button-secondary external">' . esc_html__( 'All Pro Features', 'mailster' ) . '</a></p>';
+			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of %1$d active workflows! Please upgrade %2$s to enable more workflows.', 'mailster' ), $this->get_limit(), '<a href="' . esc_url( $checkout_url ) . '">' . esc_html__( 'your plan', 'mailster' ) . '</a>' ) . '</p>';
+			$msg .= '<p><a href="' . esc_url( $checkout_url ) . '" class="button button-primary">' . esc_html__( 'Upgrade now', 'mailster' ) . '</a> <a href="' . esc_url( $pricing_url ) . '" class="button button-secondary">' . esc_html__( 'Compare Plans', 'mailster' ) . '</a></p>';
 			mailster_notice( $msg, 'warning', false, 'mailster-workflow-limit-reached', true );
 
 		} else {

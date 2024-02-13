@@ -160,12 +160,22 @@ function mailster_freemius_checkout_url( $url ) {
 		array(
 			'page'          => 'mailster-pricing',
 			'checkout'      => 'true',
-			'plan_id'       => 20734,
+			'plan_id'       => 22867,
 			'billing_cycle' => 'annual',
 			'post_type'     => 'newsletter',
 		),
 		admin_url( 'edit.php' )
 	);
+}
+
+mailster_freemius()->add_filter( 'pricing_url', 'mailster_freemius_pricing_url' );
+function mailster_freemius_pricing_url( $url ) {
+
+	if ( mailster_freemius()->is_whitelabeled() ) {
+		return mailster_url( 'https://mailster.co/go/buy' );
+	}
+
+	return $url;
 }
 
 mailster_freemius()->add_action( 'after_license_change', 'mailster_freemius_after_license_change_handler', 10, 2 );
@@ -174,6 +184,8 @@ function mailster_freemius_after_license_change_handler( $plan_change_desc, FS_P
 	if ( 'changed' !== $plan_change_desc ) {
 		return;
 	}
+
+	mailster_remove_notice( 'mailster-workflow-limit-reached' );
 
 	return;
 }

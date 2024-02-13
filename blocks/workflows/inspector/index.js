@@ -196,7 +196,7 @@ function SettingsPanelPlugin() {
 						{!!invalidSteps && (
 							<div>
 								<span className="number">{invalidSteps}</span>
-								<span className="label">{__('invalidSteps', 'mailster')}</span>
+								<span className="label">{__('Invalid Steps', 'mailster')}</span>
 							</div>
 						)}
 					</BaseControl>
