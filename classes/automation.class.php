@@ -368,10 +368,10 @@ class MailsterAutomations {
 
 		$now = time();
 
-		$sql       = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL)";
-		$queue_ids = array_map( 'absint', (array) $queue_ids );
+		$sql = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL)";
 		if ( ! empty( $queue_ids ) ) {
-			$sql .= ' AND ID IN (' . implode( ',', $queue_ids ) . ')';
+			$queue_ids = array_map( 'absint', (array) $queue_ids );
+			$sql      .= ' AND ID IN (' . implode( ',', $queue_ids ) . ')';
 		}
 		$sql .= ' AND finished = 0 AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` LIMIT %d';
 
