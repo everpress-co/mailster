@@ -47,6 +47,7 @@ export default function Edit(props) {
 	triggerBlocks && className.push('mailster-step-count-' + triggerBlocks);
 
 	// TODO Make this better
+	// scroll triggers in the view on load
 	useEffect(() => {
 		const triggers = document.querySelector(
 			'.wp-block-mailster-workflow-triggers'
