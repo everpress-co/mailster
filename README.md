@@ -187,6 +187,13 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.1
+
+- fixed some phpcbf issues
+- fixed: Newsletter homepage creation causes broken blocks
+- fixed: checkout links fixed: typo
+- fixed: some automations got stuck on the delay step under certain conditions
+
 ### 4.0.0
 
 #### New Features
