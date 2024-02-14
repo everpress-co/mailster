@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 6.2  
 Tested up to: 6.4  
-Stable tag: 4.0.0  
+Stable tag: 4.0.1  
 License: GPLv2 or later  
 Requires PHP: 7.4
 
@@ -187,15 +187,18 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.1
+
+- fixed some phpcbf issues
+- fixed: Newsletter homepage creation causes broken blocks
+- fixed: checkout links fixed: typo
+- fixed: some automations got stuck on the delay step under certain conditions
+
 ### 4.0.0
 
 #### New Features
 
 - **Email Health Check**: Check your delivery method to comply with upcoming changes to Gmail and Yahoo.
-- **Automation Enhancements**:
-  - New trigger "removed from list" and "tag removed".
-  - Option to convert autoresponder to automation.
-  - Offset for some time-related triggers.
 - **Block Forms**: Create forms and popups with the built-in editor.
 - **Automations**: Bring automations to the next stage with customer journeys.
 - **One Click Unsubscribe**: Now enabled by default for Gmail and Yahoo, complying with RFC 8058.

@@ -275,8 +275,6 @@ if ( $old_version ) {
 		case '1.6.6.1':
 		case '1.6.6.2':
 		case '1.6.6.3':
-		case '2.0 beta 1':
-		case '2.0 beta 1.1':
 			$campaigns = mailster( 'campaigns' )->get_autoresponder();
 
 			foreach ( $campaigns as $campaign ) {
@@ -293,13 +291,8 @@ if ( $old_version ) {
 
 
 
-		case '2.0 beta 2':
-		case '2.0 beta 2.1':
-		case '2.0 beta 3':
 			$mailster_options['autoupdate'] = 'minor';
 
-		case '2.0RC 1':
-		case '2.0RC 2':
 			delete_option( 'envato_plugins' );
 			delete_option( 'updatecenter_plugins' );
 
@@ -684,8 +677,7 @@ if ( $old_version ) {
 
 
 		case '3.3.13':
-		default:
-
+		case '4.0.0':
 			// change the post type of the forms
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_type` = replace(post_type, %s, %s) WHERE post_type = 'newsletter_form'", 'newsletter_form', 'mailster-form' ) );
 
@@ -709,9 +701,9 @@ if ( $old_version ) {
 			mailster( 'templates' )->update_module_thumbnails();
 
 			// force an update of the templates
-			mailster( 'templates' )->check_for_updates(true);			
+			mailster( 'templates' )->check_for_updates( true );
 
-
+		default:
 			mailster( 'convert' )->notice();
 
 			// reset translations

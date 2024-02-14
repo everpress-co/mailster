@@ -1,3 +1,10 @@
+### Version 4.0.1 (2024-02-14)
+
+- fixed some phpcbf issues
+- fixed: Newsletter homepage creation causes broken blocks
+- fixed: checkout links fixed: typo
+- fixed: some automations got stuck on the delay step under certain conditions
+
 ### Version 4.0.0 (2024-02-12)
 
 #### New Features
