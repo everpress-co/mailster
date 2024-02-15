@@ -71,11 +71,11 @@
 			.leading-7 {line-height:28px}
 			body,.body {background-color:var(--mailster-bg-color);font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;color:var(--mailster-color-font)}
 			h1,h2,h3,h4,h5,h6 {margin-top:4px;margin-bottom:8px;line-height:1.25;letter-spacing:-0.05em}
-			hr {color:var(--mailster-color-font)}
+			hr {border-style:none;background-color:var(--mailster-color-font)}
 			img {height:auto}
 			pre {white-space:pre-wrap;overflow-wrap:break-word;word-break:break-all}
 			.btn {margin-top:16px}
-			.textbutton td {margin-top:4px;max-width:100%;cursor:pointer;background-color:var(--mailster-button-bg-color);text-align:center;color:var(--mailster-button-color-font)}
+			.textbutton td {margin-top:4px;display:block;max-width:100%;cursor:pointer;background-color:var(--mailster-button-bg-color);text-align:center;color:var(--mailster-button-color-font)}
 			.textbutton td:hover {background-color:var(--mailster-button-bg-hover-color) !important}
 			.textbutton td a {max-width:100%;text-align:center;font-size:16px;line-height:24px;color:var(--mailster-button-color-font);text-decoration:none}
 			.textbutton td a:hover {text-decoration-line:none}
@@ -169,11 +169,13 @@
 															</p>
 														</multi>
 														<div class="btn">
-															<table class="textbutton cta" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Learn More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton cta" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Learn More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -241,13 +243,21 @@
 														<h2><single label="Headline">Headline goes here</single></h2>
 														<img src="https://dummy.mailster.co/640x360.jpg" width="640" height="360" label="Image max width 640 pixel" editable data-crop="true" alt="">
 														<div role="none" style="line-height: 24px; font-size: 24px">&nbsp;</div>
-														<multi label="Body"><p>Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.</p></multi>
+														<multi label="Body">
+															<p>
+																Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum
+																<a href="#">imperdiet.</a>
+																Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.
+															</p>
+														</multi>
 														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -270,13 +280,15 @@
 													<td class="sm-block sm-w-full">
 														<span class="badge"><single expect="category_strip">Subline</single></span>
 														<h2><single label="Headline">Headline goes here</single></h2>
-														<multi label="Body"><p>Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.</p></multi>
+														<multi label="Body"><p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p></multi>
 														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -298,11 +310,13 @@
 												<tr>
 													<td class="sm-block sm-w-full">
 														<div class="btn">
-															<table class="textbutton cta" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Learn More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton cta" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Learn More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -337,62 +351,72 @@
 									<tr>
 										<td class="sm-block" align="center">
 											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
+												<tr>
+													<td width="48%" class="sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/320x208.jpg" width="320" height="208" label="Image max width 320 pixel" editable data-crop="true" alt=""></td>
+													<td width class="w-6 h-6 sm-block sm-w-full">&zwj;</td>
+													<td width="48%" class="sm-block sm-w-full">
+														<multi label="Body">
+															<p>
+																Curabitur arcu
+																<a href="#">erat,</a>
+																accumsan id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.
+															</p>
+														</multi>
+														<div class="btn">
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<!--[if mso]></td></tr></table><![endif]-->
+							</div>
+						</module>
+						<div role="none" style="line-height: 48px; font-size: 48px">&nbsp;</div>
+						<module label="Two Columns with Image right" auto>
+							<div role="region">
+								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
+								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
+									<tr>
+										<td class="sm-block" align="center">
+											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
+												<tr>
+													<td class="sm-block sm-w-full">
+														<span class="badge"><single expect="category_strip">Subline</single></span>
+														<h2><single>Headline goes here</single></h2>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<!--[if mso]></td></tr></table><![endif]-->
+								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
+								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
+									<tr>
+										<td class="sm-block" align="center">
+											<table class="w-full reverse" cellpadding="0" cellspacing="0" role="none">
 												<tr>
 													<td width="48%" class="sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/320x208.jpg" width="320" height="208" label="Image max width 320 pixel" editable data-crop="true" alt=""></td>
 													<td width class="w-6 h-6 sm-block sm-w-full">&zwj;</td>
 													<td width="48%" class="sm-block sm-w-full">
 														<multi label="Body"><p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p></multi>
 														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
-														</div>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<!--[if mso]></td></tr></table><![endif]-->
-							</div>
-						</module>
-						<div role="none" style="line-height: 48px; font-size: 48px">&nbsp;</div>
-						<module label="Two Columns with Image right" auto>
-							<div role="region">
-								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
-								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
-									<tr>
-										<td class="sm-block" align="center">
-											<table class="w-full" cellpadding="0" cellspacing="0" role="none">
-												<tr>
-													<td class="sm-block sm-w-full">
-														<span class="badge"><single expect="category_strip">Subline</single></span>
-														<h2><single>Headline goes here</single></h2>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<!--[if mso]></td></tr></table><![endif]-->
-								<!--[if mso]><table cellpadding="0" cellspacing="0" role="none"><tr><td width="640"><![endif]-->
-								<table class="w-640px w-full max-w-640px sm-max-w-full" cellpadding="0" cellspacing="0" role="none">
-									<tr>
-										<td class="sm-block" align="center">
-											<table class="w-full reverse" cellpadding="0" cellspacing="0" role="none">
-												<tr>
-													<td width="48%" class="sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/320x208.jpg" width="320" height="208" label="Image max width 320 pixel" editable data-crop="true" alt=""></td>
-													<td width class="w-6 h-6 sm-block sm-w-full">&zwj;</td>
-													<td width="48%" class="sm-block sm-w-full">
-														<multi label="Body"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p></multi>
-														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -433,17 +457,19 @@
 													<td width="58%" class="sm-block sm-w-full">
 														<multi label="Body">
 															<p>
-																Donec sollicitudin molestie
-																<a href="#">malesuada.</a>
-																Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.
+																Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
+																<a href="#">magna</a>
+																aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 															</p>
 														</multi>
 														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -482,13 +508,15 @@
 													<td width="38%" class="sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/256x192.jpg" width="256" height="192" label="Image max width 256 pixel" editable data-crop="true" alt=""></td>
 													<td width class="w-6 h-6 sm-block sm-w-full">&zwj;</td>
 													<td width="58%" class="sm-block sm-w-full">
-														<multi label="Body"><p>Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.</p></multi>
+														<multi label="Body"><p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p></multi>
 														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -527,13 +555,21 @@
 													<td width="28%" class="sm-block sm-w-full align-top"><img src="https://dummy.mailster.co/192x163.jpg" width="192" height="163" label="Image max width 192 pixel" editable data-crop="true" alt=""></td>
 													<td width class="w-6 h-6 sm-block sm-w-full">&zwj;</td>
 													<td width="68%" class="sm-block sm-w-full">
-														<multi label="Body"><p>Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.</p></multi>
+														<multi label="Body">
+															<p>
+																Vivamus lacinia odio vitae vestibulum. Sed cursus ante
+																<a href="#">dapibus</a>
+																diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.
+															</p>
+														</multi>
 														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -574,17 +610,19 @@
 													<td width="68%" class="sm-block sm-w-full">
 														<multi label="Body">
 															<p>
-																Curabitur arcu erat, accumsan id imperdiet
-																<a href="#">et,</a>
-																porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.
+																Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+																<a href="#">Sed</a>
+																do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 															</p>
 														</multi>
 														<div class="btn">
-															<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																<tr>
-																	<td><a href="#" editable>Read More</a></td>
-																</tr>
-															</table>
+															<buttons>
+																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																	<tr>
+																		<td><a href="#" editable>Read More</a></td>
+																	</tr>
+																</table>
+															</buttons>
 														</div>
 													</td>
 												</tr>
@@ -610,9 +648,6 @@
 														<img class="mr-6 sm-float-none sm-mx-0" src="https://dummy.mailster.co/320x180.jpg" width="320" height="180" align="left" label="Image max width 320 pixel" editable data-crop="true" alt="">
 														<div>
 															<multi label="Body">
-																<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-																<p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p>
-																<p>Vivamus lacinia odio vitae vestibulum. Sed cursus ante dapibus diam. Sed nisi nulla, quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris fusce nec tellus sed augue semper porta.</p>
 																<p>
 																	Donec sollicitudin
 																	<a href="#">molestie</a>
@@ -623,13 +658,26 @@
 																	<a href="#">ligula</a>
 																	sed magna dictum porta.
 																</p>
+																<p>
+																	Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas
+																	<a href="#">volutpat</a>
+																	blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.
+																</p>
+																<p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p>
+																<p>
+																	Pellentesque in ipsum id orci porta
+																	<a href="#">dapibus.</a>
+																	Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.
+																</p>
 															</multi>
 															<div class="btn">
-																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																	<tr>
-																		<td><a href="#" editable>Read More</a></td>
-																	</tr>
-																</table>
+																<buttons>
+																	<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																		<tr>
+																			<td><a href="#" editable>Read More</a></td>
+																		</tr>
+																	</table>
+																</buttons>
 															</div>
 														</div>
 													</td>
@@ -657,21 +705,23 @@
 														<div>
 															<multi label="Body">
 																<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.</p>
-																<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-																<p>Pellentesque in ipsum id orci porta dapibus. Proin felis lacus, luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.</p>
+																<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.</p>
+																<p>Donec sollicitudin molestie malesuada. Phasellus nec erat sit amet nibh pellentesque congue. Cras ultricies ligula sed magna dictum porta.</p>
 																<p>
-																	Pellentesque in ipsum id orci porta dapibus. Proin felis
-																	<a href="#">lacus,</a>
-																	luctus non aliquam nec, vulputate sit amet felis. Vestibulum at eros cras amet.
+																	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+																	<a href="#">minim</a>
+																	veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 																</p>
 																<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Maecenas volutpat blandit aliquam etiam erat velit, scelerisque in dictum non, consectetur a erat.</p>
 															</multi>
 															<div class="btn">
-																<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
-																	<tr>
-																		<td><a href="#" editable>Read More</a></td>
-																	</tr>
-																</table>
+																<buttons>
+																	<table class="textbutton" cellpadding="0" cellspacing="0" role="none">
+																		<tr>
+																			<td><a href="#" editable>Read More</a></td>
+																		</tr>
+																	</table>
+																</buttons>
 															</div>
 														</div>
 													</td>
