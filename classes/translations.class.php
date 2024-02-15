@@ -10,19 +10,24 @@ class MailsterTranslations {
 		add_action( 'init', array( &$this, 'load' ), 1 );
 		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
 		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
+		add_action( 'wp_version_check', array( &$this, 're_check' ), 999 );
 		add_action( 'add_option_WPLANG', array( &$this, 're_check' ), 999 );
 		add_action( 'update_option_WPLANG', array( &$this, 're_check' ), 999 );
+		add_action( 'updated_user_meta', array( &$this, 'updated_user_meta' ), 999, 4 );
 	}
 
 
 	/**
+	 * Load the translations
 	 *
-	 *
-	 * @return unknown
+	 * @return void
 	 */
 	public function load() {
+
+		$locale = $this->get_locale();
+
 		if ( is_dir( MAILSTER_UPLOAD_DIR . '/languages' ) ) {
-			$custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo';
+			$custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . $locale . '.mo';
 			if ( file_exists( $custom ) ) {
 				load_textdomain( 'mailster', $custom );
 			} else {
@@ -35,10 +40,29 @@ class MailsterTranslations {
 
 
 	/**
+	 * Reload translations if "locale" option is changed
 	 *
+	 * @param object $meta_id
+	 * @param object $object_id
+	 * @param object $meta_key
+	 * @param object $_meta_value
+	 * @return void
+	 */
+	public function updated_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
+
+		error_log( print_r( func_get_args(), true ) );
+
+		if ( $meta_key == 'locale' ) {
+			$this->re_check();
+		}
+	}
+
+
+	/**
+	 * Filter the update_plugins transient and adds our translations
 	 *
-	 * @param unknown $value
-	 * @return unknown
+	 * @param object $value
+	 * @return object
 	 */
 	public function update_plugins_filter( $value ) {
 		// no translation support
@@ -46,10 +70,10 @@ class MailsterTranslations {
 			return $value;
 		}
 
-		$data = $this->get_translation_data();
+		$translation_data = $this->get_updates();
 
-		if ( ! empty( $data ) ) {
-			$value->translations[] = $data;
+		if ( ! empty( $translation_data ) ) {
+			$value->translations = array_merge( $value->translations, array_values( $translation_data ) );
 		}
 
 		return $value;
@@ -57,39 +81,37 @@ class MailsterTranslations {
 
 
 	/**
+	 * Check if a translation is installed
 	 *
-	 *
-	 * @param unknown $force (optional)
-	 * @return unknown
+	 * @return boolean
 	 */
-	public function translation_installed( $force = false ) {
-		$data = $this->get_translation_data( $force );
+	public function translation_installed() {
 
-		if ( ! $data ) {
-			return true;
-		}
-		if ( is_array( $data ) && isset( $data['current'] ) ) {
-			return (bool) $data['current'];
-		}
-
-		return false;
+		return is_textdomain_loaded( 'mailster' );
 	}
 
 	/**
+	 * Check if a translation is available
 	 *
-	 *
-	 * @param unknown $force (optional)
-	 * @return unknown
+	 * @param  boolean $force (optional)
+	 * @return boolean|object
 	 */
 	public function translation_available( $force = false ) {
-		$local = get_locale();
 
-		$data = $this->get_translation_data( $force );
-		if ( is_array( $data ) && isset( $data['updated'] ) ) {
-			return true;
+		if ( $force ) {
+			$this->get_translation_data();
 		}
 
-		return false;
+		$translation_data = $this->get_updates();
+		if ( empty( $translation_data ) ) {
+			return false;
+		}
+		$locale = $this->get_locale();
+		if ( ! isset( $translation_data[ $locale ] ) ) {
+			return false;
+		}
+
+		return $translation_data[ $locale ];
 	}
 
 
@@ -102,68 +124,89 @@ class MailsterTranslations {
 	public function get_translation_set( $force = false ) {
 
 		if ( $force ) {
-			$this->get_translation_data( true );
+			$this->get_translation_data();
 		}
 
-		$object = get_option( 'mailster_translation' );
+		$locale = $this->get_locale();
 
-		return isset( $object['set'] ) ? ( ! empty( $object['set'] ) ? $object['set'] : null ) : false;
+		return get_transient( '_mailster_translation_set_' . $locale );
+	}
+
+
+	/**
+	 * Get the locale of the site.
+	 */
+	public function get_locale() {
+
+		$locale = is_admin() && function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
+		$locale = apply_filters( 'plugin_locale', $locale, 'mailster' );
+
+		return $locale;
+	}
+
+
+	/**
+	 * Get the updates from the database
+	 *
+	 * @return array
+	 */
+	private function get_updates() {
+
+		return get_option( 'mailster_translation', array() );
 	}
 
 
 	/**
 	 *
+	 * Collect all translations we need to download
 	 *
-	 * @param unknown $force (optional)
-	 * @return unknown
+	 * @param boolean $force (optional)
+	 * @return array
 	 */
 	public function get_translation_data( $force = false ) {
 
-		$object = get_option( 'mailster_translation' );
-		$now    = time();
+		global $wpdb;
 
-		// if force, not set yet or expired
-		if ( $force || ! $object || $now - $object['expires'] >= 0 ) {
+		// site langguage
+		$site_language = get_locale();
 
-			$locale = get_locale();
+		// get all used translations on this site
+		$translations = $wpdb->get_col( "SELECT DISTINCT meta_value FROM $wpdb->usermeta WHERE meta_key = 'locale' AND meta_value != ''" );
 
-			if ( 'en_US' == $locale ) {
-				update_option( 'mailster_translation', array( 'expires' => $now + DAY_IN_SECONDS ) );
-				return false;
-			}
+		// merge with site language
+		$translations = array_unique( array_merge( array( $site_language ), $translations ) );
 
-			$object = array(
-				'expires' => $now + DAY_IN_SECONDS, // check if a newer version is available once a day
-				'data'    => false,
-				'set'     => null,
-			);
-
-			$file    = 'mailster-' . $locale;
-			$url     = $this->endpoint . '/api/projects/mailster';
-			$package = $this->endpoint . '/api/get/mailster/' . $locale;
-
-			$location  = WP_LANG_DIR . '/plugins';
-			$mo_file   = trailingslashit( $location ) . $file . '.mo';
-			$filemtime = file_exists( $mo_file ) ? filemtime( $mo_file ) : 0;
-
-			$base_locale = preg_replace( '/([a-z]+)_([A-Z]+)_(.*)/', '$1_$2', $locale );
-			$root_locale = preg_replace( '/([a-z]+)_([A-Z]+)/', '$1', $base_locale );
-
+		// get all availaable sets (via cache or API call)
+		if ( $force || false === ( $translation_sets = get_transient( 'mailster_translation_data' ) ) ) {
+			$url      = $this->endpoint . '/api/projects/mailster';
 			$response = wp_remote_get( $url );
-			$body     = wp_remote_retrieve_body( $response );
-
-			if ( empty( $body ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
-				$object['expires'] = $now + 3600;
-				update_option( 'mailster_translation', $object );
-				return false;
+			$code     = wp_remote_retrieve_response_code( $response );
+			if ( $code != 200 ) {
+				return array();
 			}
+			$body             = wp_remote_retrieve_body( $response );
+			$body             = json_decode( $body );
+			$translation_sets = $body->translation_sets;
+			set_transient( 'mailster_translation_data', $translation_sets, DAY_IN_SECONDS );
+		}
 
-			$body = json_decode( $body );
+		$updates = array();
 
+		foreach ( $translations as $locale ) {
+
+			$file            = 'mailster-' . $locale;
 			$translation_set = null;
 			$lastmodified    = 0;
+			$location        = WP_LANG_DIR . '/plugins';
+			$package         = $this->endpoint . '/api/get/mailster/' . $locale;
+			$mo_file         = trailingslashit( $location ) . $file . '.mo';
+			$filemtime       = file_exists( $mo_file ) ? filemtime( $mo_file ) : 0;
+			$base_locale     = preg_replace( '/([a-z]+)_([A-Z]+)_(.*)/', '$1_$2', $locale );
+			$root_locale     = preg_replace( '/([a-z]+)_([A-Z]+)/', '$1', $base_locale );
 
-			foreach ( $body->translation_sets as $set ) {
+			// get all the sets we need
+			foreach ( $translation_sets as $set ) {
+
 				if ( ! isset( $set->wp_locale ) ) {
 					$set->wp_locale = $set->locale;
 				}
@@ -182,33 +225,37 @@ class MailsterTranslations {
 				}
 			}
 
-			if ( $translation_set ) {
-				if ( ! function_exists( 'wp_get_available_translations' ) ) {
-					require ABSPATH . '/wp-admin/includes/translation-install.php';
-				}
-				$translations                 = wp_get_available_translations();
-				$translation_set->native_name = isset( $translations[ $translation_set->wp_locale ] ) ? $translations[ $translation_set->wp_locale ]['native_name'] : $translation_set->name;
-				$object['set']                = $translation_set;
+			// no translateion set found
+			if ( ! $translation_set ) {
+				continue;
 			}
 
-			// do this to make translation popup
-			if ( $translation_set && $lastmodified - $filemtime > 0 ) {
-				$object['data'] = array(
+			if ( ! function_exists( 'wp_get_available_translations' ) ) {
+				require ABSPATH . '/wp-admin/includes/translation-install.php';
+			}
+			$translations                 = wp_get_available_translations();
+			$translation_set->native_name = isset( $translations[ $translation_set->wp_locale ] ) ? $translations[ $translation_set->wp_locale ]['native_name'] : $translation_set->name;
+
+			set_transient( '_mailster_translation_set_' . $locale, $translation_set, DAY_IN_SECONDS );
+
+			// only add if we have a newer version
+			if ( $lastmodified - $filemtime > 0 ) {
+				$updates[ $locale ] = array(
 					'type'       => 'plugin',
 					'slug'       => 'mailster',
 					'language'   => $locale,
 					'version'    => MAILSTER_VERSION,
 					'updated'    => date( 'Y-m-d H:i:s', $lastmodified ),
-					'current'    => $filemtime,
+					'current'    => $filemtime ? date( 'Y-m-d H:i:s', $filemtime ) : false,
 					'package'    => $package,
-					'autoupdate' => (bool) mailster_option( 'autoupdate' ),
+					'autoupdate' => true,
 				);
 			}
-
-			update_option( 'mailster_translation', $object );
 		}
 
-		return isset( $object['data'] ) && is_array( $object['data'] ) ? ( ! empty( $object['data'] ) ? $object['data'] : null ) : false;
+		update_option( 'mailster_translation', $updates );
+
+		return $updates;
 	}
 
 
@@ -236,7 +283,7 @@ class MailsterTranslations {
 
 
 	public function re_check() {
-		update_option( 'mailster_translation', '' );
+		$this->get_translation_data();
 	}
 
 
@@ -276,20 +323,12 @@ class MailsterTranslations {
 	 */
 	public function site_transient_update_plugins( $value ) {
 
-		// no translation support
-		if ( ! isset( $value->translations ) ) {
-			return $value;
+		// clear so we only load Mailster translations
+		if ( isset( $value->translations ) ) {
+			$value->translations = array();
 		}
 
-		$value->translations = array();
-
-		$translation_data = $this->get_translation_data( true );
-
-		if ( ! empty( $translation_data ) ) {
-			$value->translations[] = $translation_data;
-		}
-
-		return $value;
+		return $this->update_plugins_filter( $value );
 	}
 
 	/**
@@ -300,11 +339,10 @@ class MailsterTranslations {
 	 */
 	public function site_transient_update_themes( $value ) {
 
-		// no translation support
-		if ( ! isset( $value->translations ) ) {
-			return $value;
+		// clear so we only load Mailster translations
+		if ( isset( $value->translations ) ) {
+			$value->translations = array();
 		}
-		$value->translations = array();
 		return $value;
 	}
 }

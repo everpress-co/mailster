@@ -703,11 +703,12 @@ if ( $old_version ) {
 			// force an update of the templates
 			mailster( 'templates' )->check_for_updates( true );
 
+		case '4.0.1':
 		default:
 			mailster( 'convert' )->notice();
 
 			// reset translations
-			update_option( 'mailster_translation', '' );
+			mailster( 'translations' )->re_check();
 
 			$texts = wp_parse_args( $texts, $default_texts );
 
