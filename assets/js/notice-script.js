@@ -25,9 +25,7 @@ mailster = (function (mailster, $, window, document) {
 							el.slideUp(100, function () {
 								el.remove();
 								if (!$('.mailster-notice').length) {
-									mailster.dom.body.classList.add(
-										'mailster-close-notices'
-									);
+									mailster.dom.body.classList.add('mailster-close-notices');
 								}
 							});
 						});

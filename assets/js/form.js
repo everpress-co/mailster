@@ -29,8 +29,7 @@
 				method: 'POST',
 				headers: {
 					'x-requested-with': 'XMLHttpRequest', // backwards compatibility
-					'Content-Type':
-						'application/x-www-form-urlencoded; charset=UTF-8',
+					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
 				},
 				body: data,
 			})
@@ -76,9 +75,7 @@
 				form.classList.remove('loading');
 				form.classList.remove('has-errors');
 				form.removeAttribute('disabled');
-				form.querySelector('.submit-button').removeAttribute(
-					'disabled'
-				);
+				form.querySelector('.submit-button').removeAttribute('disabled');
 
 				[].forEach.call(
 					document.querySelectorAll('div.mailster-wrapper'),
@@ -128,9 +125,7 @@
 				} else {
 					if (response.data.fields) {
 						form.classList.add('has-errors');
-						Object.keys(response.data.fields).forEach(function (
-							fieldid
-						) {
+						Object.keys(response.data.fields).forEach(function (fieldid) {
 							var field = form.querySelector(
 								'.mailster-' + fieldid + '-wrapper'
 							);

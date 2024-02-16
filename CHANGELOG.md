@@ -1,3 +1,10 @@
+### Version 4.0.2 (2024-02-16)
+
+- fixed: custom field creation during import if no custom fields are present
+- fixed: render error if first step in workflow is removed
+- improved: handling different translations for different users
+- updated: included templates
+
 ### Version 4.0.1 (2024-02-14)
 
 - fixed some phpcbf issues

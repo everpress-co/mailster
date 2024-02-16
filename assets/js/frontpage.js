@@ -49,9 +49,7 @@ jQuery(document).ready(function ($) {
 
 		var dimensions = $(this).data(),
 			dualScreenLeft =
-				window.screenLeft != undefined
-					? window.screenLeft
-					: screen.left,
+				window.screenLeft != undefined ? window.screenLeft : screen.left,
 			dualScreenTop =
 				window.screenTop != undefined ? window.screenTop : screen.top,
 			width = window.innerWidth

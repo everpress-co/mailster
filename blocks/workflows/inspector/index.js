@@ -86,21 +86,7 @@ function SettingsPanelPlugin() {
 	const total = allNumbers ? allNumbers['total'] : 0;
 
 	// TODO Make this better
-	useEffect(() => {
-		return;
-		const count = [
-			...document.querySelectorAll('.mailster-step-incomplete'),
-		].map((el) => el.dataset.block);
-		setinvalidBlocks(count);
-
-		if (count.length) {
-			//	dispatch('core/editor').lockPostSaving('invalidBlocks');
-		} else {
-			//	dispatch('core/editor').unlockPostSaving('invalidBlocks');
-		}
-	}, [blocks]);
-
-	// TODO Make this better
+	// Toolbar
 	useEffect(() => {
 		const editorToolbar = document.querySelector('.edit-post-header__toolbar');
 
@@ -166,16 +152,6 @@ function SettingsPanelPlugin() {
 			check();
 		});
 	});
-
-	/*
-
-	1 800
-	2 1600
-	3 2800
-	4 5300
-
-
-	*/
 
 	useEffect(() => {
 		whenEditorIsReady().then((w) => {

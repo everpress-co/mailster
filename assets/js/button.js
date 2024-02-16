@@ -59,10 +59,7 @@
 				var iframe = _getiframe(
 					'left:0px;top:0px;width:100%;height:100%;z-index:999999;position:fixed !important;',
 					function () {
-						buttons[req[4] - 1].iframe.contentWindow.postMessage(
-							'l',
-							req[2]
-						);
+						buttons[req[4] - 1].iframe.contentWindow.postMessage('l', req[2]);
 						_on(popstate, _close);
 						history.pushState(is_null, is_null, location.href);
 					}
@@ -112,15 +109,11 @@
 				var query = build_query(obj[val], is_null, key);
 				output_string.push(query);
 			} else {
-				var value = encodeURIComponent(
-					obj[val].replace(/[!'()*]/g, escape)
-				);
+				var value = encodeURIComponent(obj[val].replace(/[!'()*]/g, escape));
 				if (value == 'true') value = '1';
 				if (value == 'false') value = '0';
 				(o = val.match(/^user([A-Z].*)/))
-					? output_string.push(
-							'userdata[' + o[1].toLowerCase() + ']=' + value
-					  )
+					? output_string.push('userdata[' + o[1].toLowerCase() + ']=' + value)
 					: output_string.push(key + '=' + value);
 			}
 		});

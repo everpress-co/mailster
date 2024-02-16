@@ -303,17 +303,13 @@ class MailsterManage {
 				$select .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
-			if ( ! empty( $custom_fields ) ) {
-				$select .= '<optgroup label="' . esc_html__( 'Custom Fields', 'mailster' ) . '" class="custom-fields-select">';
-				foreach ( $custom_fields as $custom_field_key => $custom_fields_value ) {
-					$select .= '<option value="' . esc_attr( $custom_field_key ) . '">' . $custom_fields_value['name'] . '</option>';
-				}
-				$select .= '</optgroup>';
-			} else {
-				$select .= '<optgroup label="' . esc_html__( 'no Custom Fields defined!', 'mailster' ) . '">';
-				$select .= '<option value="_new">' . esc_html__( 'Create new Field', 'mailster' ) . '</option>';
-				$select .= '</optgroup>';
+
+			$select .= '<optgroup label="' . esc_html__( 'Custom Fields', 'mailster' ) . '" class="custom-fields-select">';
+			foreach ( $custom_fields as $custom_field_key => $custom_fields_value ) {
+				$select .= '<option value="' . esc_attr( $custom_field_key ) . '">' . $custom_fields_value['name'] . '</option>';
 			}
+			$select .= '</optgroup>';
+
 			$select .= '<optgroup label="' . esc_html__( 'Time Options', 'mailster' ) . '">';
 			foreach ( $meta_dates as $key => $value ) {
 				$is_selected = $map && $key === $map[ $i ];

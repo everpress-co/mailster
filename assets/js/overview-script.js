@@ -96,12 +96,12 @@ mailster = (function (mailster, $, window, document) {
 					if (!data['mailster'][id]) return;
 					rowdata = data['mailster'][id];
 
-					row.find('.column-status')[
-						rowdata.cron ? 'removeClass' : 'addClass'
-					]('cron-issue');
-					row.find('.campaign-status').html(
-						rowdata.cron ? '' : rowdata.status_title
-					);
+					row
+						.find('.column-status')
+						[rowdata.cron ? 'removeClass' : 'addClass']('cron-issue');
+					row
+						.find('.campaign-status')
+						.html(rowdata.cron ? '' : rowdata.status_title);
 
 					$.each(rowdata, function (key, value) {
 						if (!first && current[id][key] == value) return;
@@ -115,33 +115,21 @@ mailster = (function (mailster, $, window, document) {
 						switch (key) {
 							case 'status':
 								if (statuschange) {
-									row.removeClass(
-										'status-' + current[id].status
-									).addClass('status-' + rowdata.status);
+									row
+										.removeClass('status-' + current[id].status)
+										.addClass('status-' + rowdata.status);
 								}
 							case 'sent':
 							case 'total':
 							case 'sent_formatted':
 								break;
 							case 'column-status':
-								if (
-									rowdata.status == 'active' &&
-									!statuschange
-								) {
-									var progress =
-											row.find('.campaign-progress'),
-										p = Math.round(
-											(rowdata.sent / rowdata.total) * 100
-										);
+								if (rowdata.status == 'active' && !statuschange) {
+									var progress = row.find('.campaign-progress'),
+										p = Math.round((rowdata.sent / rowdata.total) * 100);
 									progress.find('.bar').width(p + '%');
-									progress
-										.find('span')
-										.eq(1)
-										.html(rowdata.sent_formatted);
-									progress
-										.find('span')
-										.eq(2)
-										.html(rowdata.sent_formatted);
+									progress.find('span').eq(1).html(rowdata.sent_formatted);
+									progress.find('span').eq(2).html(rowdata.sent_formatted);
 									progress.find('var').html(p + '%');
 								}
 								if (!statuschange) break;

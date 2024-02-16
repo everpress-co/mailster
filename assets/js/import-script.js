@@ -42,18 +42,12 @@ mailster = (function (mailster, $, window, document) {
 							get_import_data();
 						}
 					} else {
-						importstatus
-							.html(response.data.msg)
-							.removeClass('spinner');
+						importstatus.html(response.data.msg).removeClass('spinner');
 					}
-					form.prop('readonly', false)
-						.css('opacity', 1)
-						.removeClass('loading');
+					form.prop('readonly', false).css('opacity', 1).removeClass('loading');
 				},
 				function () {
-					form.prop('readonly', false)
-						.css('opacity', 1)
-						.removeClass('loading');
+					form.prop('readonly', false).css('opacity', 1).removeClass('loading');
 				}
 			);
 
@@ -191,22 +185,16 @@ mailster = (function (mailster, $, window, document) {
 			uploader.bind('Init', function (up) {
 				var uploaddiv = $('#plupload-upload-ui');
 
-				if (
-					up.features.dragdrop &&
-					!$(document.body).hasClass('mobile')
-				) {
+				if (up.features.dragdrop && !$(document.body).hasClass('mobile')) {
 					uploaddiv.addClass('drag-drop');
 					$('#drag-drop-area')
 						.bind('dragover.wp-uploader', function () {
 							// dragenter doesn't fire right :(
 							uploaddiv.addClass('drag-over');
 						})
-						.bind(
-							'dragleave.wp-uploader, drop.wp-uploader',
-							function () {
-								uploaddiv.removeClass('drag-over');
-							}
-						);
+						.bind('dragleave.wp-uploader, drop.wp-uploader', function () {
+							uploaddiv.removeClass('drag-over');
+						});
 				} else {
 					uploaddiv.removeClass('drag-drop');
 					$('#drag-drop-area').unbind('.wp-uploader');
@@ -297,8 +285,7 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				if (response.success) {
 					percentage = response.data.p_total * 100;
-					finished =
-						response.data.p_total >= 1 || response.data.canceled;
+					finished = response.data.p_total >= 1 || response.data.canceled;
 
 					p_diff = percentage - importpercentage;
 					p_delta = importpercentage;
@@ -327,9 +314,7 @@ mailster = (function (mailster, $, window, document) {
 							complete: function () {
 								if (finished) {
 									window.onbeforeunload = null;
-									$('.import-result').html(
-										response.data.html
-									);
+									$('.import-result').html(response.data.html);
 									scroll_to_content_top();
 									$('.import-process-wrap').hide();
 								}
@@ -412,10 +397,7 @@ mailster = (function (mailster, $, window, document) {
 			);
 		errors &&
 			$('.import-errors').html(
-				mailster.util.sprintf(
-					mailster.l10n.manage.import_errors,
-					errors
-				)
+				mailster.util.sprintf(mailster.l10n.manage.import_errors, errors)
 			);
 		imported && $('.import-memory').html(memoryusage);
 		imported && $('.import-time').html(o);
@@ -434,10 +416,7 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				if (response.success) {
 					if (response.data.next) {
-						quickInstall(id, slug, response.data.next, [
-							'import_method',
-							id,
-						]);
+						quickInstall(id, slug, response.data.next, ['import_method', id]);
 					} else if (response.data.content) {
 						el.html(response.data.content);
 					}
@@ -453,9 +432,7 @@ mailster = (function (mailster, $, window, document) {
 		$('#subscriber-table')
 			.find('.custom-fields-select')
 			.each(function () {
-				$('<option value="' + id + '">' + name + '</option>').appendTo(
-					$(this)
-				);
+				$('<option value="' + id + '">' + name + '</option>').appendTo($(this));
 			});
 
 		newCustomFields[id] = name;

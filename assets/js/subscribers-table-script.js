@@ -117,8 +117,7 @@ mailster = (function (mailster, $, window, document) {
 			},
 			function (response) {
 				bulk_update_info.html(response.data.message);
-				if (response.success_message)
-					mailster.log(response.success_message);
+				if (response.success_message) mailster.log(response.success_message);
 				if (response.data.error_message)
 					mailster.log(response.data.error_message, 'error');
 

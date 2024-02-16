@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 6.2  
 Tested up to: 6.4  
-Stable tag: 4.0.1  
+Stable tag: 4.0.2  
 License: GPLv2 or later  
 Requires PHP: 7.4
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 4.0.2
+
+- fixed: custom field creation during import if no custom fields are present
+- fixed: render error if first step in workflow is removed
+- improved: handling different translations for different users
+- updated: included templates
 
 ### 4.0.1
 
