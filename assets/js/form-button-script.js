@@ -22,13 +22,9 @@
 	};
 	window.onload = function () {
 		window.parent.postMessage(
-			[
-				mailster,
-				'd',
-				widget.offsetWidth,
-				widget.offsetHeight,
-				button_id,
-			].join('|'),
+			[mailster, 'd', widget.offsetWidth, widget.offsetHeight, button_id].join(
+				'|'
+			),
 			origin
 		);
 	};

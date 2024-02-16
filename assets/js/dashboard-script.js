@@ -66,9 +66,7 @@ mailster = (function (mailster, $, window, document) {
 
 	// init only on Mailster Dashboard
 	!isWPDashboard &&
-		window.postboxes.add_postbox_toggles(
-			'newsletter_page_mailster_dashboard'
-		);
+		window.postboxes.add_postbox_toggles('newsletter_page_mailster_dashboard');
 
 	$(document)
 		.on('click', '.locked', function () {
@@ -90,9 +88,7 @@ mailster = (function (mailster, $, window, document) {
 				if (response.success) {
 					_this
 						.closest('.postbox')
-						[response.data ? 'addClass' : 'removeClass'](
-							'has-update'
-						);
+						[response.data ? 'addClass' : 'removeClass']('has-update');
 					if (response.data) {
 						$('.update-version').html(response.data.version);
 						$('.update-last-check').html(response.data.updated);
@@ -170,7 +166,8 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					var data = response.data.data;
 
-					link.html(data.name)
+					link
+						.html(data.name)
 						.removeAttr('class')
 						.addClass('mailster-mb-link')
 						.attr('href', linktmpl.replace('%d', data.ID));
@@ -179,16 +176,20 @@ mailster = (function (mailster, $, window, document) {
 					}
 
 					box.find('.stats-total').html(data.sent_formatted);
-					box.find('.stats-open')
+					box
+						.find('.stats-open')
 						.data('easyPieChart')
 						.update(data.openrate * 100);
-					box.find('.stats-clicks')
+					box
+						.find('.stats-clicks')
 						.data('easyPieChart')
 						.update(data.clickrate * 100);
-					box.find('.stats-unsubscribes')
+					box
+						.find('.stats-unsubscribes')
 						.data('easyPieChart')
 						.update(data.unsubscriberate * 100);
-					box.find('.stats-bounces')
+					box
+						.find('.stats-bounces')
 						.data('easyPieChart')
 						.update(data.bouncerate * 100);
 

@@ -41,18 +41,13 @@ mailster = (function (mailster, $, window, document) {
 						$('.convert-plan').html(response.data.data.plan);
 					} else {
 						error = response.data.error;
-						form.addClass('has-error')
-							.find('.error-msg')
-							.html(error);
+						form.addClass('has-error').find('.error-msg').html(error);
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
 					var response =
-						mailster.util.trim(jqXHR.responseText) ||
-						'Unknown error';
-					form.addClass('has-error')
-						.find('.error-msg')
-						.html(response);
+						mailster.util.trim(jqXHR.responseText) || 'Unknown error';
+					form.addClass('has-error').find('.error-msg').html(response);
 					form.prop('disabled', false);
 					wrap.removeClass('loading');
 				}

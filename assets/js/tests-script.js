@@ -64,8 +64,7 @@ mailster = (function (mailster, $, window, document) {
 	if (/autostart/.test(location.search)) {
 		start_button.trigger('click');
 	} else {
-		location.hash &&
-		outputnav.find('a[href="' + location.hash + '"]').length
+		location.hash && outputnav.find('a[href="' + location.hash + '"]').length
 			? outputnav.find('a[href="' + location.hash + '"]').trigger('click')
 			: outputnav.find('a').eq(0).trigger('click');
 	}
@@ -86,9 +85,7 @@ mailster = (function (mailster, $, window, document) {
 				textoutput.val(textoutput.val() + response.data.message.text);
 
 				if (response.data.nexttest && !single_test) {
-					progressbar.width(
-						(++tests_run / response.data.total) * 100 + '%'
-					);
+					progressbar.width((++tests_run / response.data.total) * 100 + '%');
 					testinfo.html(
 						mailster.util.sprintf(
 							mailster.l10n.tests.running_test,
@@ -100,9 +97,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					progressbar.width('100%');
 					setTimeout(function () {
-						start_button
-							.html(mailster.l10n.tests.restart_test)
-							.show();
+						start_button.html(mailster.l10n.tests.restart_test).show();
 						progress.hide();
 						progressbar.width(0);
 						testinfo.html(

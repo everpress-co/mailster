@@ -32,11 +32,7 @@ mailster = (function (mailster, $, window, document) {
 		useitnav.on('click', 'a', function () {
 			useitnav.find('li').removeClass('active');
 			useittabs.hide();
-			var hash = $(this)
-				.parent()
-				.addClass('active')
-				.find('a')
-				.attr('href');
+			var hash = $(this).parent().addClass('active').find('a').attr('href');
 			$('#tab-' + hash.substr(1)).show();
 			return false;
 		});
@@ -117,9 +113,9 @@ mailster = (function (mailster, $, window, document) {
 			style_fields = $('[data-selector]');
 
 		iframe.on('load', function () {
-			_style = $(
-				'<style id="mailster_form_preview_css"></style>'
-			).appendTo(iframe.contents().find('head'));
+			_style = $('<style id="mailster_form_preview_css"></style>').appendTo(
+				iframe.contents().find('head')
+			);
 			updateStyle();
 			iframe.contents().find('style.mailster-custom-form-css').remove();
 		});
@@ -127,14 +123,8 @@ mailster = (function (mailster, $, window, document) {
 		addcustomstyle.on('click', function () {
 			var el = $(this).parent().find('.color-field'),
 				style =
-					'.mailster-form-' +
-					ID +
-					' ' +
-					el.data('selector') +
-					'{\n    \n}\n';
-			customstyle.val(
-				customstyle.val() + customstyleprefix.val() + style
-			);
+					'.mailster-form-' + ID + ' ' + el.data('selector') + '{\n    \n}\n';
+			customstyle.val(customstyle.val() + customstyleprefix.val() + style);
 		});
 
 		designnav
@@ -167,10 +157,7 @@ mailster = (function (mailster, $, window, document) {
 				'src',
 				iframe
 					.attr('src')
-					.replace(
-						/&s=(1|0)/,
-						'&s=' + ($(this).prop('checked') ? 1 : 0)
-					)
+					.replace(/&s=(1|0)/, '&s=' + ($(this).prop('checked') ? 1 : 0))
 			);
 		});
 
@@ -252,8 +239,7 @@ mailster = (function (mailster, $, window, document) {
 			});
 
 			$.each(selectors, function (s, p) {
-				style +=
-					'form.mailster-form.mailster-form-' + ID + ' ' + s + '{\n';
+				style += 'form.mailster-form.mailster-form-' + ID + ' ' + s + '{\n';
 				$.each(p, function (k, v) {
 					style += '\t' + k + ': ' + v + ';\n';
 				});
@@ -319,8 +305,7 @@ mailster = (function (mailster, $, window, document) {
 				showcount = $('#showcount').prop('checked'),
 				design = $('input[name=subscriber-button-style]:checked').val(),
 				ontop = $('#ontop').prop('checked'),
-				customlabel =
-					$('input[name=buttonlabel]:checked').val() == 'custom',
+				customlabel = $('input[name=buttonlabel]:checked').val() == 'custom',
 				label = customlabel
 					? $('#buttonlabel').val()
 					: $('#buttonlabel').attr('placeholder');
@@ -335,10 +320,7 @@ mailster = (function (mailster, $, window, document) {
 			code = code
 				.replace('%ID%', id)
 				.replace('%SHOWCOUNT%', showcount ? ' data-showcount="1"' : '')
-				.replace(
-					'%WIDTH%',
-					width != 480 ? ' data-width="' + width + '"' : ''
-				)
+				.replace('%WIDTH%', width != 480 ? ' data-width="' + width + '"' : '')
 				.replace(
 					'%DESIGN%',
 					design != 'default' ? ' data-design="' + design + '"' : ''
@@ -349,8 +331,7 @@ mailster = (function (mailster, $, window, document) {
 
 			buttoncode.val(code);
 
-			if (design && design != 'default')
-				scode += ' design="' + design + '"';
+			if (design && design != 'default') scode += ' design="' + design + '"';
 			if (customlabel) scode += ' label="' + label + '"';
 			if (showcount) scode += ' showcount="' + showcount + '"';
 			if (width != 480) scode += ' width="' + width + '"';

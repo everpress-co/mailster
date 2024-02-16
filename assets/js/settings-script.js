@@ -397,23 +397,16 @@ mailster = (function (mailster, $, window, document) {
 				formdata: formdata,
 			},
 			function (response) {
-				bounce_test_check(
-					response.data.identifier,
-					1,
-					formdata,
-					function () {
-						$this.prop('disabled', false);
-					}
-				);
+				bounce_test_check(response.data.identifier, 1, formdata, function () {
+					$this.prop('disabled', false);
+				});
 			},
 			function (jqXHR, textStatus, errorThrown) {
 				loader.css({
 					visibility: 'hidden',
 				});
 				$this.prop('disabled', false);
-				status.html(
-					textStatus + ' ' + jqXHR.status + ': ' + errorThrown
-				);
+				status.html(textStatus + ' ' + jqXHR.status + ': ' + errorThrown);
 			}
 		);
 	});
@@ -512,10 +505,7 @@ mailster = (function (mailster, $, window, document) {
 						'name',
 						$(this)
 							.attr('name')
-							.replace(
-								'[synclist][0]',
-								'[synclist][' + items.length + ']'
-							)
+							.replace('[synclist][0]', '[synclist][' + items.length + ']')
 					);
 				});
 
@@ -551,9 +541,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					$('.sync-button').prop('disabled', false);
 					if (response.success && response.data.count) {
-						_this
-							.data('offset', response.data.offset)
-							.trigger('click');
+						_this.data('offset', response.data.offset).trigger('click');
 					} else {
 						loader.css({
 							visibility: 'hidden',
@@ -593,9 +581,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					$('.sync-button').prop('disabled', false);
 					if (response.success && response.data.count) {
-						_this
-							.data('offset', response.data.offset)
-							.trigger('click');
+						_this.data('offset', response.data.offset).trigger('click');
 					} else {
 						loader.css({
 							visibility: 'hidden',
@@ -616,11 +602,7 @@ mailster = (function (mailster, $, window, document) {
 	$('.customfields')
 		.on('change', '.customfield-name', function () {
 			var _this = $(this),
-				_tagfield = _this
-					.parent()
-					.parent()
-					.parent()
-					.find('.customfield-key');
+				_tagfield = _this.parent().parent().parent().find('.customfield-key');
 
 			if (!_tagfield.val()) _tagfield.val(_this.val()).trigger('change');
 		})
@@ -634,28 +616,16 @@ mailster = (function (mailster, $, window, document) {
 			_this.val(val);
 			_base
 				.find('.customfield-name')
-				.attr(
-					'name',
-					'mailster_options[custom_field][' + val + '][name]'
-				);
+				.attr('name', 'mailster_options[custom_field][' + val + '][name]');
 			_base
 				.find('.customfield-type')
-				.attr(
-					'name',
-					'mailster_options[custom_field][' + val + '][type]'
-				);
+				.attr('name', 'mailster_options[custom_field][' + val + '][type]');
 			_base
 				.find('.customfield-value')
-				.attr(
-					'name',
-					'mailster_options[custom_field][' + val + '][values][]'
-				);
+				.attr('name', 'mailster_options[custom_field][' + val + '][values][]');
 			_base
 				.find('.customfield-default')
-				.attr(
-					'name',
-					'mailster_options[custom_field][' + val + '][default]'
-				);
+				.attr('name', 'mailster_options[custom_field][' + val + '][default]');
 		})
 		.on('click', '.customfield-remove', function () {
 			$(this).parent().remove();
@@ -736,12 +706,7 @@ mailster = (function (mailster, $, window, document) {
 					callback && callback();
 				} else {
 					setTimeout(function () {
-						bounce_test_check(
-							identifier,
-							++count,
-							formdata,
-							callback
-						);
+						bounce_test_check(identifier, ++count, formdata, callback);
 					}, 1000);
 				}
 			},
@@ -750,9 +715,7 @@ mailster = (function (mailster, $, window, document) {
 					visibility: 'hidden',
 				});
 				$this.prop('disabled', false);
-				status.html(
-					textStatus + ' ' + jqXHR.status + ': ' + errorThrown
-				);
+				status.html(textStatus + ' ' + jqXHR.status + ': ' + errorThrown);
 			}
 		);
 	}
@@ -768,9 +731,7 @@ mailster = (function (mailster, $, window, document) {
 				if (response.success) {
 					loader
 						.html(response.data.message)
-						.addClass(
-							response.data.found ? 'verified' : 'not-verified'
-						)
+						.addClass(response.data.found ? 'verified' : 'not-verified')
 						.removeClass('spinner');
 				} else {
 				}
@@ -792,9 +753,7 @@ mailster = (function (mailster, $, window, document) {
 				if (response.success) {
 					loader
 						.html(response.data.message)
-						.addClass(
-							response.data.found ? 'verified' : 'not-verified'
-						)
+						.addClass(response.data.found ? 'verified' : 'not-verified')
 						.removeClass('spinner');
 				} else {
 				}

@@ -89,9 +89,7 @@ mailster = (function (mailster, $, window, document) {
 							.removeClass('avatar-loading')
 							.css({
 								'background-image':
-									'url(' +
-									response.data.url.replace(/&amp;/, '&') +
-									')',
+									'url(' + response.data.url.replace(/&amp;/, '&') + ')',
 							});
 				});
 			}

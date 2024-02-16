@@ -27,10 +27,9 @@ jQuery(document).ready(function ($) {
 										poststuff = 'link';
 									case 'homepage':
 										if (
-											(selection =
-												editor.selection.getContent({
-													format: 'text',
-												}))
+											(selection = editor.selection.getContent({
+												format: 'text',
+											}))
 										) {
 											editor.insertContent(
 												'<a href="{' +
