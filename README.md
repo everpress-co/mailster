@@ -187,6 +187,13 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.2
+
+- fixed: custom field creation during import if no custom fields are present
+- fixed: render error if first step in workflow is removed
+- improved: handling different translations for different users
+- updated: included templates
+
 ### 4.0.1
 
 - fixed some phpcbf issues
