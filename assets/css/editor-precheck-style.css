@@ -68,3 +68,6 @@ highlightery:after {
 	height: 800vh;
 	margin: -400vw 0;
 }
+a:has(> img) {
+	display: inline-block;
+}
