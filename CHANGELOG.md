@@ -1,3 +1,8 @@
+### Version 4.0.3 (2024-02-20)
+
+- added: upgrade notice
+- fixed: small bug fixes and CSS improvements
+
 ### Version 4.0.2 (2024-02-16)
 
 - fixed: custom field creation during import if no custom fields are present

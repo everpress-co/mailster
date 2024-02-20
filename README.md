@@ -187,6 +187,11 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.3
+
+- added: upgrade notice
+- fixed: small bug fixes and CSS improvements
+
 ### 4.0.2
 
 - fixed: custom field creation during import if no custom fields are present
