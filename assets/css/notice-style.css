@@ -30,6 +30,17 @@ div.mailster-notice > p {
 	font-size: 1.2em;
 	color: #72777c;
 }
+div.mailster-notice a {
+	text-decoration: none;
+}
+div.mailster-notice > ul {
+	font-size: 1.2em;
+	margin-left: 1.2em;
+	color: #72777c;
+}
+div.mailster-notice > ul li {
+	list-style: disc;
+}
 div.mailster-notice > hr {
 	margin: 20px -23px 0 -23px;
 	border-top: 1px solid #f3f4f5;
