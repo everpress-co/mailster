@@ -80,6 +80,14 @@ table.wp-list-table
 	background: #e3eaed;
 	opacity: 0.8;
 }
+table.wp-list-table
+	tr
+	.column-status.cron-issue
+	div.campaign-progress
+	span.bar
+	span {
+	color: #8a8a8a !important;
+}
 table.wp-list-table tr.status-finished td,
 table.wp-list-table tr.status-finished th {
 }
@@ -249,7 +257,6 @@ table.wp-list-table .column-bounces a {
 		background-position-x: -20%;
 	}
 }
-
 .rate-good {
 	color: #3ab61b;
 }

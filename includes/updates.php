@@ -683,7 +683,14 @@ if ( $old_version ) {
 
 			$flush_rewrite_rules = true;
 
+			// deactivate the block form plugin
+			if ( is_plugin_active( 'mailster-block-forms/mailster-block-forms.php' ) ) {
+				deactivate_plugins( 'mailster-block-forms/mailster-block-forms.php' );
+			}
+
+			// re schedule cron jobs
 			mailster( 'geo' )->clear_cron();
+
 			mailster( 'geo' )->set_cron( 'single' );
 
 			// update the trigger options
@@ -703,21 +710,28 @@ if ( $old_version ) {
 			// force an update of the templates
 			mailster( 'templates' )->check_for_updates( true );
 
-		case '4.0.1':
-		case '4.0.2':
+			// enable them by default
+			$mailster_options['legacy_forms'] = true;
+
+			$utms = array(
+				'utm_campaign' => 'Mailster 4.0 Launch',
+			);
+
+
 			$msg  = '<h2>🔥 ' . esc_html__( 'Welcome to Mailster 4', 'mailster' ) . ' 🔥</h2>';
 			$msg .= '<p>' . esc_html__( 'Thank you for upgrading to Mailster 4! There are a few features and updates you should explore to get acquainted with Mailster 4.', 'mailster' ) . '</p>';
 			$msg .= '<p>' . esc_html__( 'We\'ve prepared some articles to assist you in navigating the updates and changes.', 'mailster' ) . '</p>';
 			$msg .= '<ul>';
-			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595/', array( 'utm_term' => 'mailster 4.0' ) ) . '" data-article="63fc875152af714471a17595">' . esc_html__( 'Get Started with Block Forms', 'mailster' ) . '</a></li>';
-			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/6460f6909a2fac195e609002/', array( 'utm_term' => 'mailster 4.0' ) ) . '" data-article="6460f6909a2fac195e609002">' . esc_html__( 'Get Started with Automations', 'mailster' ) . '</a></li>';
-			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/650444f6790a583e6b3b3434/', array( 'utm_term' => 'mailster 4.0' ) ) . '" data-article="650444f6790a583e6b3b3434">' . esc_html__( 'Convert your existing Forms to the new Block Forms', 'mailster' ) . '</a></li>';
-			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/6453981af6cb2d08a28cd839/', array( 'utm_term' => 'mailster 4.0' ) ) . '" data-article="6453981af6cb2d08a28cd839">' . esc_html__( 'Convert your Newsletter Homepage', 'mailster' ) . '</a></li>';
+			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595/', $utms ) . '" data-article="63fc875152af714471a17595">' . esc_html__( 'Get Started with Block Forms', 'mailster' ) . '</a></li>';
+			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/6460f6909a2fac195e609002/', $utms ) . '" data-article="6460f6909a2fac195e609002">' . esc_html__( 'Get Started with Automations', 'mailster' ) . '</a></li>';
+			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/650444f6790a583e6b3b3434/', $utms ) . '" data-article="650444f6790a583e6b3b3434">' . esc_html__( 'Convert your existing Forms to the new Block Forms', 'mailster' ) . '</a></li>';
+			$msg .= '<li><a href="' . mailster_url( 'https://kb.mailster.co/6453981af6cb2d08a28cd839/', $utms ) . '" data-article="6453981af6cb2d08a28cd839">' . esc_html__( 'Convert your Newsletter Homepage', 'mailster' ) . '</a></li>';
 			$msg .= '</ul>';
-			$msg .= '<p><a href="' . mailster_url( 'https://mailster.co/blog/mailster-4-0/', array( 'utm_term' => 'mailster 4.0' ) ) . '" class="button button-primary external">' . esc_html__( 'Read the Blog Post', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/6401de4552af714471a19027/', array( 'utm_term' => 'mailster 4.0' ) ) . '" class="button button-link" data-article="6401de4552af714471a19027">' . esc_html__( 'Read the Changelog', 'mailster' ) . '</a></p>';
+			$msg .= '<p><a href="' . mailster_url( 'https://mailster.co/blog/mailster-4-0/', $utms ) . '" class="button button-primary external">' . esc_html__( 'Read the Blog Post', 'mailster' ) . '</a> ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . mailster_url( 'https://kb.mailster.co/6401de4552af714471a19027/', $utms ) . '" class="button button-link" data-article="6401de4552af714471a19027">' . esc_html__( 'Read the Changelog', 'mailster' ) . '</a></p>';
 
 			mailster_notice( $msg, 'info', false, 'mailster_4_0', true );
-
+		case '4.0.1':
+		case '4.0.2':
 		default:
 			mailster( 'convert' )->notice();
 
