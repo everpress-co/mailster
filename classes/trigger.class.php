@@ -470,7 +470,7 @@ class MailsterTrigger {
 			// );
 
 			// faster, if we really need the post query it later explicitly
-			$workflow_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM wp_posts WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'", '%"trigger":"' . sanitize_key( $trigger ) . '"%' ) );
+			$workflow_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'", '%"trigger":"' . sanitize_key( $trigger ) . '"%' ) );
 
 			mailster_cache_set( 'workflow_by_trigger_' . $trigger, $workflow_ids );
 

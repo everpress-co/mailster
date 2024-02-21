@@ -329,7 +329,7 @@ class MailsterAutomations {
 
 		global $wpdb;
 
-		$sql = "SELECT ID FROM wp_posts WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'";
+		$sql = "SELECT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'";
 
 		$sql = $wpdb->prepare( $sql, '%"trigger":"page_visit"%' );
 

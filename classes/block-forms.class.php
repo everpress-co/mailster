@@ -198,19 +198,19 @@ class MailsterBlockForms {
 
 		global $wpdb;
 
-		$sql = "SELECT wp_posts.ID FROM {$wpdb->posts} AS wp_posts";
+		$sql = "SELECT {$wpdb->posts}.ID FROM {$wpdb->posts} AS posts";
 
 		if ( ! empty( $data['options']['all'] ) ) {
-			$sql .= ' WHERE wp_posts.post_type IN ("' . implode( '", "', $data['options']['all'] ) . '")';
+			$sql .= ' WHERE posts.post_type IN ("' . implode( '", "', $data['options']['all'] ) . '")';
 		} elseif ( ! empty( $data['options']['posts'] ) ) {
-			$sql .= ' WHERE wp_posts.ID IN (' . implode( ', ', $data['options']['posts'] ) . ')';
+			$sql .= ' WHERE posts.ID IN (' . implode( ', ', $data['options']['posts'] ) . ')';
 		} elseif ( ! empty( $data['options']['taxonomies'] ) ) {
-			$sql .= " LEFT JOIN {$wpdb->term_relationships} AS terms ON terms.object_id = wp_posts.ID WHERE terms.term_taxonomy_id IN (" . implode( ', ', $data['options']['taxonomies'] ) . ')';
+			$sql .= " LEFT JOIN {$wpdb->term_relationships} AS terms ON terms.object_id = posts.ID WHERE terms.term_taxonomy_id IN (" . implode( ', ', $data['options']['taxonomies'] ) . ')';
 		} else {
 			$sql .= ' WHERE 1=1';
 		}
 
-		$sql .= " AND (wp_posts.post_status = 'publish') ORDER BY wp_posts.post_date DESC LIMIT 0, 1";
+		$sql .= " AND (posts.post_status = 'publish') ORDER BY posts.post_date DESC LIMIT 0, 1";
 
 		return $wpdb->get_var( $sql );
 	}
