@@ -1,3 +1,10 @@
+### Version 4.0.4 (2024-02-21)
+
+- fixed: journey were triggered more than once in some circumstances
+- fixed: usage of `wp_posts` instead of `{$wpdb->posts}` on some queries
+- improved: fast triggers in automations
+- improved: cleanup on date related workflows
+
 ### Version 4.0.3 (2024-02-20)
 
 - added: upgrade notice
