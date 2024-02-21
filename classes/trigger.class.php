@@ -305,7 +305,7 @@ class MailsterTrigger {
 
 		// if date is within one hour
 		if ( $date && time() < $date && time() + HOUR_IN_SECONDS >= $date ) {
-			return $this->add_job( $workflow, 'anniversary', null );
+			$this->add_job( $workflow, 'anniversary', null );
 		}
 
 		return false;
@@ -331,7 +331,6 @@ class MailsterTrigger {
 		$links = array_keys( $triggers );
 
 		$matching_links = preg_grep( '|^' . preg_quote( '/' . $wp->request ) . '$|', $links );
-
 		// no matching links
 		if ( empty( $matching_links ) ) {
 			return;
@@ -377,17 +376,19 @@ class MailsterTrigger {
 			'context'       => $context,
 		);
 
+		require_once MAILSTER_DIR . 'classes/workflow.class.php';
+
+		$wf = new MailsterWorkflow( $workflow, $trigger, $subscriber_id, $step, $timestamp, $context );
+
+		$wf->run();
+
+		return true;
+
+		// previeous queueing < 4.0.4
+
 		$success = $this->queue_job( $job );
 
 		if ( $success ) {
-
-			// TODO this will trigger each workflow imidiatly - consider to run it only once a minute
-
-			// if ( ! $subscriber_id ) {
-			// require_once MAILSTER_DIR . 'classes/workflow.class.php';
-			// $wf     = new MailsterWorkflow( $workflow, $trigger, $subscriber_id, $step );
-			// $result = $wf->run();
-			// }
 
 			add_action( 'shutdown', array( $this, 'post_add_job' ), PHP_INT_MAX );
 
@@ -469,7 +470,7 @@ class MailsterTrigger {
 			// );
 
 			// faster, if we really need the post query it later explicitly
-			$workflow_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM wp_posts WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'", '%"trigger":"' . sanitize_key( $trigger ) . '"%' ) );
+			$workflow_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'", '%"trigger":"' . sanitize_key( $trigger ) . '"%' ) );
 
 			mailster_cache_set( 'workflow_by_trigger_' . $trigger, $workflow_ids );
 

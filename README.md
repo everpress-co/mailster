@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 6.2  
 Tested up to: 6.4  
-Stable tag: 4.0.3  
+Stable tag: 4.0.4  
 License: GPLv2 or later  
 Requires PHP: 7.4
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 4.0.4
+
+- fixed: journey were triggered more than once in some circumstances
+- fixed: usage of `wp_posts` instead of `{$wpdb->posts}` on some queries
+- improved: fast triggers in automations
+- improved: cleanup on date related workflows
 
 ### 4.0.3
 

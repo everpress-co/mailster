@@ -275,15 +275,21 @@ class MailsterAutomations {
 			return;
 		}
 
-		// TODO CHECK CHANGES and remoe triggers
-		$blocks        = parse_blocks( $post->post_content );
-		$blocks_before = $post_before ? parse_blocks( $post_before->post_content ) : null;
-
-		// TODO run trigger for this Workflow only
-		do_action( 'mailster_trigger_date' );
-		do_action( 'mailster_trigger_anniversary' );
-
 		mailster_remove_notice( 'workflow_error_' . $workflow_id );
+
+		// get all triggers
+		$triggers = $this->get_workflow_triggers( $workflow_id );
+
+		if ( in_array( 'anniversary', $triggers ) ) {
+			// delete from current pending entries so we can build them up again.
+			global $wpdb;
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND `trigger` = 'anniversary' AND (`timestamp` < %d) AND `step` IS NULL", $workflow_id, time() + HOUR_IN_SECONDS ) );
+
+			do_action( 'mailster_trigger_anniversary' );
+		}
+		if ( in_array( 'date', $triggers ) ) {
+			do_action( 'mailster_trigger_date' );
+		}
 
 		$this->update_trigger_option();
 	}
@@ -323,7 +329,7 @@ class MailsterAutomations {
 
 		global $wpdb;
 
-		$sql = "SELECT ID FROM wp_posts WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'";
+		$sql = "SELECT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'";
 
 		$sql = $wpdb->prepare( $sql, '%"trigger":"page_visit"%' );
 
@@ -554,6 +560,38 @@ class MailsterAutomations {
 		}
 
 		return $numbers;
+	}
+
+	public function get_workflow_triggers( $workflow ) {
+
+		$workflow = get_post( $workflow );
+
+		if ( ! $workflow ) {
+			return false;
+		}
+
+		// TODO CHECK CHANGES and remove triggers
+		$blocks = parse_blocks( $workflow->post_content );
+
+		// get all triggers
+		$triggers = array();
+
+		foreach ( $blocks as $block ) {
+			if ( $block['blockName'] !== 'mailster-workflow/triggers' ) {
+				continue;
+			}
+			foreach ( $block['innerBlocks'] as $innerBlock ) {
+				if ( empty( $innerBlock ) ) {
+					continue;
+				}
+				if ( ! isset( $innerBlock['attrs']['trigger'] ) ) {
+					continue;
+				}
+				$triggers[] = $innerBlock['attrs']['trigger'];
+			}
+		}
+
+		return $triggers;
 	}
 
 	public function get_workflow_campaigns( $workflow ) {

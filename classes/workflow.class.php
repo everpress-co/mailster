@@ -8,17 +8,20 @@ class MailsterWorkflow {
 	private $trigger;
 	private $subscriber;
 	private $step;
+	private $timestamp;
+	private $context;
 	private $steps;
 	private $args;
 	private $current_step;
 	private $steps_map = array();
 
-	public function __construct( $workflow, $trigger, $subscriber = null, $step = null ) {
+	public function __construct( $workflow, $trigger, $subscriber = null, $step = null, $timestamp = null, $context = null ) {
 
 		$this->set_workflow( $workflow );
 		$this->set_trigger( $trigger );
 		$this->set_subscriber( $subscriber );
 		$this->set_step( $step );
+		$this->set_timestamp( $timestamp );
 	}
 
 	public function set_workflow( $workflow ) {
@@ -40,6 +43,11 @@ class MailsterWorkflow {
 	public function set_step( $step ) {
 
 		$this->step = $step;
+	}
+
+	public function set_timestamp( $timestamp ) {
+
+		$this->timestamp = $timestamp ? $timestamp : time();
 	}
 
 	public function get_steps() {
@@ -97,15 +105,7 @@ class MailsterWorkflow {
 			return new WP_Error( 'error', 'Workflow does not exist.', $this->step );
 		}
 
-		$this->entry = $this->exists();
-
-		if ( ! $this->entry ) {
-			$this->log( 'NOT IN DATABSE!' );
-			return false;
-		}
-
 		if ( get_post_type( $this->workflow ) !== 'mailster-workflow' ) {
-			$this->delete();
 			return new WP_Error( 'info', 'This is not a correct workflow.', $this->step );
 		}
 		if ( get_post_status( $this->workflow ) !== 'publish' ) {
@@ -130,7 +130,6 @@ class MailsterWorkflow {
 			// if enddate is set and in the past
 			if ( $enddate && time() > strtotime( $enddate ) ) {
 
-				$this->delete();
 				$this->log( 'END DATE REACHED' );
 				return false;
 			}
@@ -140,7 +139,6 @@ class MailsterWorkflow {
 		if ( $this->subscriber !== 0 ) {
 			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
 				if ( ! mailster( 'subscribers' )->get( $this->subscriber ) ) {
-					$this->delete();
 					$this->log( 'SUBSCRIBER DOES NOT EXIST' );
 					return false;
 				}
@@ -182,11 +180,23 @@ class MailsterWorkflow {
 	}
 
 	/**
+	 * Gets the workflow from the database
+	 *
+	 * @return string|null
+	 */
+	private function get( $workflow_id ) {
+
+		global $wpdb;
+
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_workflows WHERE `ID` = %d LIMIT 1", $workflow_id ) );
+	}
+
+	/**
 	 * Returns the id of the current Workflow from the database
 	 *
 	 * @return string|null
 	 */
-	private function exists() {
+	private function get_entry() {
 
 		global $wpdb;
 
@@ -194,7 +204,7 @@ class MailsterWorkflow {
 		$trigger       = $this->trigger;
 		$subscriber_id = $this->subscriber;
 
-		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_workflows WHERE `workflow_id` = %d AND `trigger` = %d AND `subscriber_id` = %d", $workflow_id, $trigger, $subscriber_id ) );
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_workflows WHERE `workflow_id` = %d AND `trigger` = %d AND `subscriber_id` = %d AND `timestamp` IS NOT NULL AND finished = 0 LIMIT 1", $workflow_id, $trigger, $subscriber_id ) );
 	}
 
 	/**
@@ -203,7 +213,7 @@ class MailsterWorkflow {
 	 * @param mixed $count
 	 * @return bool
 	 */
-	private function check_count( $count ) {
+	private function limit_reached( $count ) {
 
 		global $wpdb;
 
@@ -211,10 +221,10 @@ class MailsterWorkflow {
 		$trigger       = $this->trigger;
 		$subscriber_id = $this->subscriber;
 
-		$entries = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_workflows WHERE `workflow_id` = %d AND `trigger` = %s AND `subscriber_id` = %d", $workflow_id, $trigger, $subscriber_id ) );
+		$entries = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_workflows WHERE `workflow_id` = %d AND `trigger` = %s AND `subscriber_id` = %d AND timestamp IS NULL", $workflow_id, $trigger, $subscriber_id ) );
 
 		// enough entries in the database
-		if ( $count >= $entries ) {
+		if ( $entries >= $count ) {
 			return true;
 		}
 
@@ -235,6 +245,43 @@ class MailsterWorkflow {
 		}
 
 		return false !== $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_workflows WHERE ID = %d", $this->entry->ID ) );
+	}
+
+
+	/**
+	 * adds a Workflow in the database
+	 *
+	 * @return bool
+	 */
+	private function add( array $args = array() ) {
+
+		global $wpdb;
+
+		$workflow_id   = $this->workflow->ID;
+		$trigger       = $this->trigger;
+		$subscriber_id = $this->subscriber;
+		$step          = $this->step;
+		$timestamp     = $this->timestamp;
+
+		$suppress_errors = $wpdb->suppress_errors( true );
+
+		$args = wp_parse_args( $args, array( 'step' => $this->current_step ) );
+
+		$wpdb->insert(
+			"{$wpdb->prefix}mailster_workflows",
+			array(
+				'workflow_id'   => $workflow_id,
+				'trigger'       => $trigger,
+				'subscriber_id' => $subscriber_id,
+				'step'          => $step,
+				'added'         => time(),
+				'timestamp'     => $timestamp,
+			)
+		);
+
+		$wpdb->suppress_errors( $suppress_errors );
+
+		return $this->get( $wpdb->insert_id );
 	}
 
 
@@ -325,6 +372,8 @@ class MailsterWorkflow {
 			// got it => continue
 			$this->is_search = false;
 			$this->log( 'FOUND  ' . $step['id'] . ' for ' . $this->subscriber );
+
+			$this->entry = $this->get_entry();
 
 		}
 
@@ -593,12 +642,13 @@ class MailsterWorkflow {
 			// check how often we can run this trigger
 			$repeat = isset( $trigger['attr']['repeat'] ) ? $trigger['attr']['repeat'] : 1;
 
+			// repeat is not unlimited so we check the limit before we add an entry to the database
 			if ( $repeat !== -1 ) {
-				if ( ! $this->check_count( $repeat ) ) {
+				if ( $this->limit_reached( $repeat ) ) {
 					$this->log( 'LIMIT REACHED' );
-					$this->delete();
 					return false;
-
+				} else {
+					$this->log( 'LIMIT NOT REACHED' );
 				}
 			}
 
@@ -610,7 +660,23 @@ class MailsterWorkflow {
 
 				if ( $this->subscriber && ! mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
 					$this->log( 'CONDITION NOT PASSED ! ! ' );
-					$this->delete();
+					return false;
+				}
+			}
+
+			// load existing entry
+			$this->entry = $this->get_entry();
+
+			// add if missing
+			if ( ! $this->entry ) {
+				$this->log( 'ADD TO DATABASE' );
+				$this->entry = $this->add();
+
+				// stop if existing didn't finished
+			} elseif ( ! $this->entry->finished ) {
+				$this->log( 'ENTRY NOT FINISHED' );
+				// Stop if the entry is not finished but with these triggers
+				if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
 					return false;
 				}
 			}
@@ -682,6 +748,7 @@ class MailsterWorkflow {
 						if ( ! empty( $subscriber_ids ) ) {
 							mailster( 'trigger' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
 						}
+						// delete our temp entry
 						$this->delete();
 						return false;
 					}
