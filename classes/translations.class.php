@@ -50,8 +50,6 @@ class MailsterTranslations {
 	 */
 	public function updated_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
 
-		error_log( print_r( func_get_args(), true ) );
-
 		if ( $meta_key == 'locale' ) {
 			$this->re_check();
 		}
