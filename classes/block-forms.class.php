@@ -198,7 +198,7 @@ class MailsterBlockForms {
 
 		global $wpdb;
 
-		$sql = "SELECT {$wpdb->posts}.ID FROM {$wpdb->posts} AS posts";
+		$sql = "SELECT posts.ID FROM {$wpdb->posts} AS posts";
 
 		if ( ! empty( $data['options']['all'] ) ) {
 			$sql .= ' WHERE posts.post_type IN ("' . implode( '", "', $data['options']['all'] ) . '")';
