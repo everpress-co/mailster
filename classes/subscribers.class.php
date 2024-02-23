@@ -2298,9 +2298,33 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $status
-	 * @param unknown $args (optional)
-	 * @return unknown
+	 * @param array $args (optional)
+	 * @return array
+	 */
+	public function get_counts_by_status( $args = array() ) {
+		$args = wp_parse_args(
+			array(
+				'select'          => array( 'COUNT(DISTINCT subscribers.ID) AS count, subscribers.status' ),
+				'groupby'         => 'subscribers.status',
+				'status'          => false,
+				'include_deleted' => true,
+			),
+			$args
+		);
+
+		$counts = $this->query( $args );
+		$counts = wp_list_pluck( $counts, 'count', 'status' );
+
+		return $counts;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param int|array $status
+	 * @param array     $args (optional)
+	 * @return int
 	 */
 	public function get_count_by_status( $status, $args = array() ) {
 

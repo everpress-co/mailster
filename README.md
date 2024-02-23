@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 6.2  
 Tested up to: 6.4  
-Stable tag: 4.0.4  
+Stable tag: 4.0.5  
 License: GPLv2 or later  
 Requires PHP: 7.4
 
@@ -186,6 +186,11 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 4.0.5
+
+- fixed: SQL error on form preview page
+- improved: loading time on subscribers overview
 
 ### 4.0.4
 

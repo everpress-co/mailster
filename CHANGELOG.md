@@ -1,3 +1,8 @@
+### Version 4.0.5 (2024-02-23)
+
+- fixed: SQL error on form preview page
+- improved: loading time on subscribers overview
+
 ### Version 4.0.4 (2024-02-21)
 
 - fixed: journey were triggered more than once in some circumstances

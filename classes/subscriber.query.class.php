@@ -95,6 +95,7 @@ class MailsterSubscriberQuery {
 
 		'sub_query_limit'     => false,
 		'used_fields'         => null,
+		'include_deleted'     => null,
 	);
 
 	private static $_instance = null;
@@ -798,8 +799,8 @@ class MailsterSubscriberQuery {
 			$wheres[] = 'AND queue.subscriber_id IS NULL';
 		}
 
-		// always exclude deleted if not defined
-		if ( ! $this->args['status'] ) {
+		// always exclude deleted if not defined or explicitly allowed
+		if ( ! $this->args['status'] && $this->args['include_deleted'] !== true ) {
 			$wheres[] = 'AND subscribers.status != 5';
 		}
 
