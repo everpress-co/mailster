@@ -187,6 +187,11 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.5
+
+- fixed: SQL error on form preview page
+- improved: loading time on subscribers overview
+
 ### 4.0.4
 
 - fixed: journey were triggered more than once in some circumstances
