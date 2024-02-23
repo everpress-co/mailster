@@ -39,7 +39,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$this->page       = isset( $_GET['page'] ) ? $_GET['page'] : null;
 		$this->paged      = isset( $_GET['paged'] ) ? (int) $_GET['paged'] - 1 : null;
 		$this->status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
-		$this->lists      = isset( $_GET['lists'] ) ? array_filter( (array) $_GET['lists'], 'is_numeric' ) : null;
+		$this->lists      = isset( $_GET['lists'] ) ? array_filter( (array) $_GET['lists'], 'is_numeric' ) : false;
 		$this->search     = isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null;
 		$this->strict     = isset( $_GET['strict'] ) ? $_GET['strict'] : null;
 		$this->conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
@@ -56,28 +56,23 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function get_views() {
 
-		$total    = mailster( 'subscribers' )->get_count_by_status(
-			false,
-			array(
-				'conditions' => $this->conditions,
-				'lists'      => $this->lists,
-				's'          => $this->search,
-			)
+		// return array();
+		$query = array(
+			'conditions' => $this->conditions,
+			'lists'      => $this->lists,
+			's'          => $this->search,
 		);
+
+		$counts = mailster( 'subscribers' )->get_counts_by_status( $query );
+
+		$total    = array_sum( $counts );
 		$statuses = mailster( 'subscribers' )->get_status( null, true );
 		$views    = array(
 			'view-status-all' => '<a href="' . remove_query_arg( 'status' ) . '" class="' . ( $this->status === null ? 'current' : '' ) . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $total ) . ')</span></a>',
 		);
 
 		foreach ( $statuses as $id => $status ) {
-			if ( $count = mailster( 'subscribers' )->get_count_by_status(
-				$id,
-				array(
-					'conditions' => $this->conditions,
-					'lists'      => $this->lists,
-					's'          => $this->search,
-				)
-			) ) {
+			if ( $count = isset( $counts[ $id ] ) ? $counts[ $id ] : 0 ) {
 				$views[ 'view-status-' . $id ] = '<a href="' . add_query_arg( array( 'status' => $id ) ) . '" class="' . ( $this->status === $id ? 'current' : '' ) . '">' . esc_html( $status ) . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
 			}
 		}
@@ -188,6 +183,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 * @return unknown
 	 */
 	private function searchmark( $string, $search = null ) {
+
+		if ( ! $string ) {
+			return '';
+		}
 
 		if ( is_null( $search ) && $this->search ) {
 			$search = stripslashes( $this->search );
@@ -491,6 +490,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				'fields'          => $fields,
 				'limit'           => $this->per_page,
 				'offset'          => $offset,
+				'include_deleted' => true,
 			)
 		);
 
@@ -498,11 +498,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$this->items       = $items;
 		$this->total_items = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
-
-		$item_ids = wp_list_pluck( $this->items, 'ID' );
-
-		mailster( 'actions' )->get_by_subscriber( $item_ids );
-
 		$this->total_pages = ceil( $this->total_items / $this->per_page );
 
 		$this->set_pagination_args(
