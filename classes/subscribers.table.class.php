@@ -65,7 +65,11 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$counts = mailster( 'subscribers' )->get_counts_by_status( $query );
 
-		$total    = array_sum( $counts );
+		$total = array_sum( $counts );
+		// remove deleted from all
+		if ( $this->status != 5 && isset( $counts[5] ) ) {
+			$total -= $counts[5];
+		}
 		$statuses = mailster( 'subscribers' )->get_status( null, true );
 		$views    = array(
 			'view-status-all' => '<a href="' . remove_query_arg( 'status' ) . '" class="' . ( $this->status === null ? 'current' : '' ) . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $total ) . ')</span></a>',
@@ -490,7 +494,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				'fields'          => $fields,
 				'limit'           => $this->per_page,
 				'offset'          => $offset,
-				'include_deleted' => true,
 			)
 		);
 
