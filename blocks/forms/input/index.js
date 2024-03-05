@@ -25,11 +25,12 @@ window.mailster_fields &&
 			selector: '.mailster-label',
 		};
 
-		let description = field.name + ' Description';
+		const id = field.id.replace(/_/g, '-');
+		const description = field.name + ' Description';
 
 		let selector = 'input';
 
-		switch (field.id) {
+		switch (id) {
 			case 'dropdown':
 				selector = 'select';
 				break;
@@ -48,10 +49,10 @@ window.mailster_fields &&
 				break;
 		}
 
-		registerBlockType('mailster/field-' + field.id, {
+		registerBlockType('mailster/field-' + id, {
 			apiVersion: 2,
-			title: field.name || field.id,
-			keywords: ['mailster', field.name, field.id],
+			title: field.name || id,
+			keywords: ['mailster', field.name, id],
 			category: 'mailster-form-fields',
 			description: description,
 			parent: ['mailster/form-wrapper', 'core/column', 'core/group'],
@@ -61,8 +62,9 @@ window.mailster_fields &&
 						type: 'block',
 						blocks: ['mailster/field-' + tofields.id],
 						transform: (attributes, innerBlocks) => {
+							const id = tofields.id.replace(/_/g, '-');
 							return createBlock(
-								'mailster/field-' + tofields.id,
+								'mailster/field-' + id,
 								{
 									id: attributes.id,
 									inline: attributes.inline,
@@ -109,7 +111,8 @@ window.mailster_fields &&
 				},
 				name: {
 					type: 'string',
-					default: field.id,
+					default:
+						field.id /* use original id to match the field from the settings */,
 				},
 				align: {
 					type: 'string',
@@ -128,7 +131,7 @@ window.mailster_fields &&
 				},
 				required: {
 					type: 'boolean',
-					default: field.id == 'email',
+					default: id == 'email',
 					source: 'attribute',
 					selector: selector,
 					attribute: 'required',

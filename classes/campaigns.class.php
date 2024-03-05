@@ -1424,7 +1424,7 @@ class MailsterCampaigns {
 		$success_message = array();
 		$error_message   = array();
 		$message_postfix = '';
-		$post_ids        = array_filter( $_GET['post'], 'is_numeric' );
+		$post_ids        = array_filter( (array) $_GET['post'], 'is_numeric' );
 
 		foreach ( $post_ids as $post_id ) :
 

@@ -2,8 +2,6 @@
 
 class MailsterBlockForms {
 
-
-
 	private $forms = array();
 	private $preview_data;
 
@@ -47,12 +45,17 @@ class MailsterBlockForms {
 		add_shortcode( 'mailster_form', array( &$this, 'shortcode' ) );
 		add_shortcode( 'newsletter_block_form', array( &$this, 'deprecated_shortcode' ) );
 
-		add_filter( 'embed_html', array( &$this, 'embed_html' ), PHP_INT_MAX, 4 );
+		// add_filter( 'embed_html', array( &$this, 'embed_html' ), PHP_INT_MAX, 4 );
 		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
 	}
 
 
 	public function embed_html( $output, $post, $width, $height ) {
+
+		// just skip if not on our cpt
+		if ( 'mailster-form' != get_post_type() ) {
+			return $settings;
+		}
 
 		// TODO: check if this works on forms
 		$output = sprintf( '<iframe src="%s" sandbox="allow-scripts allow-forms" width="%d" height="%d"></iframe>', get_permalink( $post ), $width, $height );
@@ -1079,9 +1082,8 @@ class MailsterBlockForms {
 
 		$custom_fields = array_keys( $this->get_fields() );
 		foreach ( $custom_fields as $block ) {
-			$types[] = 'mailster/field-' . $block;
+			$types[] = 'mailster/field-' . str_replace( '_', '-', $block );
 		}
-
 		return apply_filters( 'mailster_forms_allowed_block_types', array_values( $types ) );
 	}
 

@@ -9,7 +9,7 @@
 
 		<p>
 			<a href="<?php echo admin_url( 'post-new.php?post_type=mailster-form' ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Create new form', 'mailster' ); ?></a>
-			<a href="<?php echo mailster_url( 'https://kb.mailster.co/6460f6909a2fac195e609002' ); ?>" class="button button-secondary button-hero" data-mode="modal" data-article="6460f6909a2fac195e609002"><?php esc_html_e( 'Check out our guide', 'mailster' ); ?></a>
+			<a href="<?php echo mailster_url( 'https://kb.mailster.co/63fc875152af714471a17595' ); ?>" class="button button-secondary button-hero" data-mode="modal" data-article="63fc875152af714471a17595"><?php esc_html_e( 'Check out our guide', 'mailster' ); ?></a>
 		</p>
 		<?php if ( mailster_option( 'legacy_forms' ) ) : ?>
 		<p><a href="<?php echo mailster_url( 'https://kb.mailster.co/650444f6790a583e6b3b3434' ); ?>" class="button button-link" data-mode="modal" data-article="650444f6790a583e6b3b3434"><?php esc_html_e( 'Learn how to convert your old forms', 'mailster' ); ?></a></p>
