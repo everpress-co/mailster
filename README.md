@@ -187,6 +187,16 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.6
+
+- fixed: Custom fields with underline were not working
+- fixed: check for array on bulk actions on campaigns
+- fixed: embeded elements were broken caused by block forms
+- fixed: wrong link in the block form overview
+- improved: added option to define 'fields' in search query on the subscribers overview to search only within certain fields
+- improved: deleted subscribers no longer count to totals on overview page
+- improved: loading of lists page with large subscriber base.
+
 ### 4.0.5
 
 - fixed: SQL error on form preview page
