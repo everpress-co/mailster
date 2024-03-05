@@ -2,8 +2,6 @@
 
 class MailsterBlockForms {
 
-
-
 	private $forms = array();
 	private $preview_data;
 
@@ -1084,9 +1082,8 @@ class MailsterBlockForms {
 
 		$custom_fields = array_keys( $this->get_fields() );
 		foreach ( $custom_fields as $block ) {
-			$types[] = 'mailster/field-' . $block;
+			$types[] = 'mailster/field-' . str_replace( '_', '-', $block );
 		}
-
 		return apply_filters( 'mailster_forms_allowed_block_types', array_values( $types ) );
 	}
 
