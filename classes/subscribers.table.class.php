@@ -16,6 +16,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	private $status;
 	private $lists;
 	private $search;
+	private $search_fields;
 	private $conditions;
 	private $orderby;
 	private $order;
@@ -35,17 +36,18 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		add_action( 'admin_footer', array( &$this, 'script' ) );
 		add_filter( 'manage_newsletter_page_mailster_subscribers_columns', array( &$this, 'get_columns' ) );
 
-		$this->post_type  = isset( $_GET['post_type'] ) ? $_GET['post_type'] : null;
-		$this->page       = isset( $_GET['page'] ) ? $_GET['page'] : null;
-		$this->paged      = isset( $_GET['paged'] ) ? (int) $_GET['paged'] - 1 : null;
-		$this->status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
-		$this->lists      = isset( $_GET['lists'] ) ? array_filter( (array) $_GET['lists'], 'is_numeric' ) : false;
-		$this->search     = isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null;
-		$this->strict     = isset( $_GET['strict'] ) ? $_GET['strict'] : null;
-		$this->conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
-		$this->orderby    = isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'id';
-		$this->order      = isset( $_GET['order'] ) ? $_GET['order'] : 'DESC';
-		$this->since      = isset( $_GET['since'] ) ? strtotime( $_GET['since'] ) : null;
+		$this->post_type     = isset( $_GET['post_type'] ) ? $_GET['post_type'] : null;
+		$this->page          = isset( $_GET['page'] ) ? $_GET['page'] : null;
+		$this->paged         = isset( $_GET['paged'] ) ? (int) $_GET['paged'] - 1 : null;
+		$this->status        = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
+		$this->lists         = isset( $_GET['lists'] ) ? array_filter( (array) $_GET['lists'], 'is_numeric' ) : false;
+		$this->search        = isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null;
+		$this->search_fields = isset( $_GET['fields'] ) ? stripslashes( $_GET['fields'] ) : false;
+		$this->strict        = isset( $_GET['strict'] ) ? $_GET['strict'] : null;
+		$this->conditions    = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
+		$this->orderby       = isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'id';
+		$this->order         = isset( $_GET['order'] ) ? $_GET['order'] : 'DESC';
+		$this->since         = isset( $_GET['since'] ) ? strtotime( $_GET['since'] ) : null;
 	}
 
 
@@ -58,9 +60,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		// return array();
 		$query = array(
-			'conditions' => $this->conditions,
-			'lists'      => $this->lists,
-			's'          => $this->search,
+			'conditions'    => $this->conditions,
+			'lists'         => $this->lists,
+			'search_fields' => $this->search_fields,
+			's'             => $this->search,
 		);
 
 		$counts = mailster( 'subscribers' )->get_counts_by_status( $query );
@@ -138,6 +141,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		<?php endif; ?>
 		<?php if ( $this->status ) : ?>
 			<input type="hidden" name="status" value="<?php echo esc_attr( $this->status ); ?>">
+		<?php endif; ?>
+		<?php if ( $this->search_fields ) : ?>
+			<input type="hidden" name="search_fields" value="<?php echo esc_attr( $this->search_fields ); ?>">
 		<?php endif; ?>
 		<?php if ( $this->lists ) : ?>
 			<?php foreach ( $this->lists as $list_id ) : ?>
@@ -457,9 +463,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		// $offset  = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $this->per_page : 0;
 		$offset = $this->paged * $this->per_page;
 
-		$orderby = $this->orderby;
-		$order   = $this->order;
-		$since   = $this->since;
+		$orderby       = $this->orderby;
+		$order         = $this->order;
+		$since         = $this->since;
+		$search_fields = $this->search_fields;
 
 		if ( isset( $custom_fields[ $orderby ] ) ) {
 			$fields[] = $orderby;
@@ -493,6 +500,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				'order'           => $order,
 				'fields'          => $fields,
 				'limit'           => $this->per_page,
+				'search_fields'   => $search_fields,
 				'offset'          => $offset,
 			)
 		);
