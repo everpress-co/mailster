@@ -63,7 +63,7 @@ class MailsterForms {
 	public function form() {
 
 		if ( get_query_var( '_mailster_form' ) ) {
-			include_once MAILSTER_DIR . 'form.php';
+			include_once MAILSTER_DIR . 'includes/form.php';
 			exit;
 		}
 	}
