@@ -689,6 +689,8 @@ class MailsterTemplate {
 				$schedule_screenshots = true;
 			}
 
+			$html = $this->make_paths_absolute( $html );
+
 			$module_html  = '<li data-id="' . $id . '" draggable="true">';
 			$module_html .= '<script type="text/html">' . $html . '</script>';
 			if ( $image ) {
