@@ -6,6 +6,7 @@ class MailsterBounceHandler {
 	public $bounce_delete;
 	public $MID;
 	public $service;
+	private $max_email_at_once = 100;
 
 	/**
 	 *
@@ -17,17 +18,8 @@ class MailsterBounceHandler {
 		$this->bounce_delete = mailster_option( 'bounce_delete' );
 		$this->MID           = mailster_option( 'ID' );
 		$this->service       = $service;
-
 	}
 
-
-	public function __destruct() {
-
-		if ( $this->mailbox ) {
-			$this->mailbox->expungeDeletedMails();
-		}
-
-	}
 
 
 	/**
@@ -67,7 +59,6 @@ class MailsterBounceHandler {
 		}
 
 		return true;
-
 	}
 
 
@@ -130,7 +121,6 @@ class MailsterBounceHandler {
 			$this->delete_message( $id );
 
 		}
-
 	}
 
 
@@ -141,6 +131,7 @@ class MailsterBounceHandler {
 	 */
 	protected function delete_message( $id ) {
 		$this->mailbox->deleteMail( $id );
+		$this->mailbox->expungeDeletedMails();
 	}
 
 
@@ -174,7 +165,6 @@ class MailsterBounceHandler {
 		}
 
 		return $messages;
-
 	}
 
 
@@ -198,10 +188,7 @@ class MailsterBounceHandler {
 		}
 
 		return false;
-
 	}
-
-
 }
 
 
@@ -252,7 +239,6 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 
 			$this->msgcount = 0;
 		}
-
 	}
 
 
@@ -307,8 +293,5 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 		}
 
 		return $messages;
-
 	}
-
-
 }
