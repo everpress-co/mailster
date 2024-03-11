@@ -1319,6 +1319,7 @@ class MailsterTemplates {
 					'id'        => $i,
 					'var'       => null,
 					'value'     => $value,
+					'original'  => $value,
 					$value_name => $value,
 					'label'     => isset( $match[1] ) ? $match[1] : $value,
 				);

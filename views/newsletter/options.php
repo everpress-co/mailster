@@ -19,7 +19,6 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 <?php if ( $editable ) : ?>
 
 	<?php $colors = mailster( 'templates' )->colors( $post, $this->get_template(), $this->get_file() ); ?>
-	<?php // echo '<pre>' . print_r( $colors, true ) . '</pre>'; ?>
 	
 	<?php $customcolors = false; ?>
 
