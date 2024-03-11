@@ -1,6 +1,6 @@
 ### Version 4.0.6 (2024.03-05)
 
-- fixed: Custom fields are not working with underline
+- fixed: Custom fields with underline were not working
 - fixed: check for array on bulk actions on campaigns
 - fixed: embeded elements were broken caused by block forms
 - fixed: wrong link in the block form overview
