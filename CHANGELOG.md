@@ -1,3 +1,12 @@
+### Version 4.0.7 (2024-03-11)
+
+- fixed: action links on campaign overview page.
+- fixed: linked images in templates weren't mapped correctly.
+- fixed: missing array index in options.php
+- improved: legacy forms inclusion
+- improved: bounce handler to not timeout during processing of large quantities of bounce messages
+- removed: deprecated cron trigger
+
 ### Version 4.0.6 (2024.03-05)
 
 - fixed: Custom fields with underline were not working
