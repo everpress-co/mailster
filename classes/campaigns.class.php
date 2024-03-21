@@ -5083,13 +5083,6 @@ class MailsterCampaigns {
 
 		}
 
-		// ad an unsubscribe link if not in the content
-		if ( ! preg_match( '/\{unsub|unsublink\}/', $content ) ) {
-			$insert = '<table width="100%" role="presentation"><tr><td align="center" width="130">{unsub}</td></tr></table>';
-
-			$content = str_replace( '</body>', $insert . '</body>', $content );
-		}
-
 		$placeholder->add_defaults( $campaign->ID );
 		$placeholder->set_content( $content );
 
