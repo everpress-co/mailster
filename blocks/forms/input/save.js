@@ -84,7 +84,7 @@ export default function save(props) {
 	function autocompleteValue() {
 		switch (name) {
 			case 'firstname':
-				return 'name';
+				return 'given-name';
 			case 'lastname':
 				return 'family-name';
 			case 'email':
