@@ -865,6 +865,9 @@ class MailsterBlockForms {
 
 		$actions['form_preview'] = '<a href="' . get_permalink( $post->ID ) . '" data-title="' . esc_attr( sprintf( __( 'Preview %s', 'mailster' ), '"' . get_the_title( $post ) . '"' ) ) . '" aria-label="' . esc_attr__( 'Preview this form', 'mailster' ) . '">' . esc_html__( 'Preview', 'mailster' ) . '</a>';
 
+		// add ID to the very front
+		$actions = array_merge( array( 'form_id' => sprintf( 'ID: %d', $post->ID ) ), $actions );
+
 		return $actions;
 	}
 
