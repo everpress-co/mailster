@@ -117,6 +117,7 @@ export default function FormElement(props) {
 						spellCheck={false}
 						required={required}
 						type="checkbox"
+						autoComplete={autoComplete}
 						defaultChecked={false}
 					/>
 					<label className="mailster-label" htmlFor={fieldid}>
@@ -135,6 +136,7 @@ export default function FormElement(props) {
 					required={required}
 					value={selected ?? ''}
 					style={inputStyle}
+					autoComplete={autoComplete}
 					onChange={(event) =>
 						setAttributes({
 							selected: event.target.value,

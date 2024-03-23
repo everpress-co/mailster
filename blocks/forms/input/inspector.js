@@ -21,6 +21,8 @@ import {
 	TextControl,
 	RangeControl,
 	Button,
+	SelectControl,
+	ExternalLink,
 } from '@wordpress/components';
 
 import { useState } from '@wordpress/element';
@@ -34,6 +36,7 @@ import { external } from '@wordpress/icons';
 
 import { InputStylesPanel } from '../form-inspector/InputStylesPanel';
 import Values from './Values';
+import AutoCompleteValues from './AutoCompleteValues';
 
 export default function InputFieldInspectorControls(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
@@ -47,6 +50,7 @@ export default function InputFieldInspectorControls(props) {
 		name,
 		type,
 		selected,
+		autocomplete,
 		style,
 		values,
 		hasLabel,
@@ -210,6 +214,20 @@ export default function InputFieldInspectorControls(props) {
 									min={1}
 									max={20}
 								/>
+							</PanelRow>
+						)}
+						{type != 'submit' && (
+							<PanelRow>
+								<SelectControl
+									label={__('Autocomplete Attribute', 'mailster')}
+									help={__(
+										'Define which autocomplete value will be used on this field.',
+										'mailster'
+									)}
+									value={autocomplete}
+									onChange={(val) => setAttributes({ autocomplete: val })}
+									options={AutoCompleteValues}
+								></SelectControl>
 							</PanelRow>
 						)}
 						{type != 'submit' && (
