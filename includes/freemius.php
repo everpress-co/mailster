@@ -77,9 +77,9 @@ function mailster_legacy_license_key( $key ) {
 
 mailster_freemius()->add_action( 'connect/after_license_input', 'mailster_add_link_for_envato' );
 function mailster_add_link_for_envato() {
-	if ( ! get_option( 'mailster_envato' ) ) {
-		return;
-	}
+
+	$is_envato = get_option( 'mailster_envato' );
+
 	$email = get_option( 'mailster_email' );
 	if ( ! $email ) {
 		$user  = wp_get_current_user();
@@ -89,20 +89,30 @@ function mailster_add_link_for_envato() {
 	?>
 	<script>
 		jQuery && jQuery(document).ready(function ($) {
-			$('#fs_license_key').attr('placeholder', 'Envato Purchase code')
+			var is_envato = <?php echo $is_envato ? 'true' : 'false'; ?>;
+			$('#fs_license_key').on('change', function(){
+				if (is_envato || this.value.match(/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/)) {
+					$('.is-envato').show();
+					$('.show-license-resend-modal').hide();
+				} else {
+					$('.is-envato').hide();
+					$('.show-license-resend-modal').show();
+				}
+			}).trigger('change');
+			is_envato && $('#fs_license_key').attr('placeholder', '<?php esc_html_e( 'Envato Purchase Code', 'mailster' ); ?>' )
 			$('#fs_email').on('change', function(){
 				$.ajaxSetup({data:{fs_email:$(this).val()}});
 			}).trigger('change');
 
 		});
 	</script>
-	<style>.fs-license-key-container a.show-license-resend-modal{display: none;}#fs_connect .fs-license-key-container{width: 330px}</style>
-	<div class="fs-license-key-container">
-		<span><?php esc_html_e( 'Please enter the email address for your account', 'mailster' ); ?></span>
-		<input id="fs_email" name="fs_email" type="email" required placeholder="Email Address" value="<?php echo esc_attr( $email ); ?>">
+	<style>.is-envato{display: none;}#fs_connect .fs-license-key-container{width: 330px}</style>
+	<div class="fs-license-key-container is-envato">
+		<span><?php printf( esc_html__( 'Please enter the email address for your %s', 'mailster' ), '<a href="' . mailster_url( 'https://mailster.co/account/' ) . '" target="_blank">' . esc_html__( 'Freemius Account', 'mailster' ) . '</a>' ); ?></span>
+		<input id="fs_email" name="fs_email" type="email" required placeholder="<?php esc_attr_e( 'Email address', 'mailster' ); ?>" value="<?php echo esc_attr( $email ); ?>">
 		<span>(<?php esc_html_e( 'will be used if no account is assigned to your license', 'mailster' ); ?>)</span>
 	</div>
-	<div class="fs-license-key-container">
+	<div class="fs-license-key-container is-envato">
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co/where-is-my-purchasecode/' ); ?>" target="_blank"><?php esc_html_e( "Can't find your license key?", 'mailster' ); ?></a>
 	</div>
 	<?php
