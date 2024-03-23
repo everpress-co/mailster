@@ -237,6 +237,7 @@ class MailsterBlockForms {
 		$columns = array(
 			'cb'              => '<input type="checkbox" />',
 			'title'           => esc_html__( 'Title', 'mailster' ),
+			'shortcode'       => esc_html__( 'Shortcode', 'mailster' ),
 			'info'            => '',
 			'impressions'     => esc_html__( 'Impressions', 'mailster' ) . ' <span class="count">' . number_format_i18n( $this->get_impressions() ) . '</span>',
 			'conversions'     => esc_html__( 'Conversions', 'mailster' ) . ' <span class="count">' . number_format_i18n( $this->get_conversions() ) . '</span>',
@@ -261,7 +262,9 @@ class MailsterBlockForms {
 				$lists = mailster( 'lists' )->get( get_post_meta( $post_id, 'lists', true ) );
 				$names = wp_list_pluck( $lists, 'name', 'ID' );
 				echo '<span title="' . sprintf( esc_attr__( 'Lists: %s', 'mailster' ), "\n" . implode( "\n", $names ) ) . '" class="form-option lists ' . ( count( $lists ) ? 'is-checked' : '' ) . '">' . count( $lists ) . '</span>';
-
+				break;
+			case 'shortcode':
+				echo '<a class="clipboard code" data-clipboard-target="#shortcode-' . esc_attr( $post_id ) . '" id="shortcode-' . esc_attr( $post_id ) . '">[mailster_form id=' . esc_attr( $post_id ) . ']</a>';
 				break;
 			case 'impressions':
 				echo number_format_i18n( $this->get_impressions( $post_id ) );
@@ -1012,7 +1015,7 @@ class MailsterBlockForms {
 
 		do_action( 'mailster_admin_header' );
 
-		wp_enqueue_script( 'mailster-block-forms-overview', MAILSTER_URI . 'assets/js/block-form-overview-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-block-forms-overview', MAILSTER_URI . 'assets/js/block-form-overview-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-block-forms-overview', MAILSTER_URI . 'assets/css/block-form-overview' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_enqueue_style( 'thickbox' );
