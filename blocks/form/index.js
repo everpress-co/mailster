@@ -16,6 +16,8 @@ import './style.scss';
 import edit from './edit';
 import json from './block.json';
 
+import './ButtonExtension';
+
 const { name, ...settings } = json;
 
 registerBlockType(name, {

@@ -106,6 +106,14 @@ import apiFetch from '@wordpress/api-fetch';
 				},
 			};
 
+			const contentButtons = querySelectorAll(
+				document,
+				'.has-mailster-form-' + form.identifier
+			);
+			Array.prototype.forEach.call(contentButtons, (element, i) => {
+				addEvent(element, CLICK, openForm);
+			});
+
 			const _trigger_inactive = debounce(_trigger_inactive_debounced, 100);
 			function _trigger_inactive_debounced(event) {
 				clearTimeout(inactiveTimeout);

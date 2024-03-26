@@ -75,7 +75,6 @@ export default function PlacementSettings(props) {
 							</SelectControl>
 						</ItemGroup>
 					</PanelRow>
-
 					<PanelRow>
 						<ItemGroup isBordered={false} size="small" className="widefat">
 							<SelectControl
