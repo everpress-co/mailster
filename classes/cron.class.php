@@ -6,12 +6,6 @@ class MailsterCron {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-	}
-
-
-	public function init() {
-
 		add_filter( 'cron_schedules', array( &$this, 'filter_cron_schedules' ) );
 		add_action( 'mailster_cron', array( &$this, 'hourly_cronjob' ) );
 		add_action( 'mailster_cron_worker', array( &$this, 'handler' ), -1 );
@@ -28,6 +22,9 @@ class MailsterCron {
 		add_action( 'wp_ajax_nopriv_mailster_cron', array( &$this, 'cron_worker' ) );
 		add_action( 'template_redirect', array( &$this, 'template_redirect' ), 1 );
 	}
+
+
+
 
 
 
@@ -445,6 +442,33 @@ class MailsterCron {
 		if ( $secret = get_query_var( '_mailster_cron' ) ) {
 			$this->cron_page( $secret );
 		}
+
+		global $wp;
+
+		// legacy support
+		if ( 'wp-content/plugins/mailster/cron.php' === $wp->request ) {
+
+			_doing_it_wrong( 'mailster', 'Using this file is deprecated and no longer supported. Please use the new PHP Cron URL instead. Read more: https://mailster.co/go/phpcron', '4.0.7' );
+
+			$query  = isset( $_SERVER['REQUEST_URI'] ) ? parse_url( $_SERVER['REQUEST_URI'], PHP_URL_QUERY ) : null;
+			$secret = null;
+
+			// get the secret from the request
+			if ( isset( $_GET['secret'] ) && preg_match( '/^([a-f0-9]{32})$/', $_GET['secret'] ) ) {
+				$secret = $_GET['secret'];
+				// as HTTP header
+			} elseif ( isset( $_SERVER['HTTP_SECRET'] ) && preg_match( '/^([a-f0-9]{32})$/', $_SERVER['HTTP_SECRET'] ) ) {
+				$secret = $_SERVER['HTTP_SECRET'];
+				// as query string
+			} elseif ( $query ) {
+				parse_str( $query, $parsed );
+				$keys   = array_keys( $parsed );
+				$parsed = array_values( preg_grep( '/^([a-f0-9]{32})$/', $keys ) );
+				$secret = isset( $parsed[0] ) ? $parsed[0] : null;
+			}
+			$this->cron_page( $secret );
+
+		}
 	}
 
 
@@ -460,7 +484,7 @@ class MailsterCron {
 			define( 'MAILSTER_CRON_SECRET', $secret );
 		}
 
-		include MAILSTER_DIR . 'cron.php';
+		include MAILSTER_DIR . '/includes/cron.php';
 		exit();
 	}
 

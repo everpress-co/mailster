@@ -1,6 +1,30 @@
+### Version 4.0.8 (2024-03-26)
+
+- security: fixed possible Local File Inclusion (LFI) vulnerability reported by Patchstack
+- security: fixed possible Cross Site Scripting (XSS) vulnerability reported by Patchstack
+- fixed: linked images in templates weren't mapped correctly.
+- fixed: missing array index in options.php
+- fixed: using "given-name" for autocomplete value instead of "name" on the first name field for block forms
+- improved: legacy forms inclusion
+- improved: activation experience for Envato users
+- improved: bounce handler to not timeout during processing of large quantities of bounce messages
+- removed: beta notice
+- removed: health check notice.
+- reverted: forcing unsubscribe link on the bottom of the mail if not present in the email.
+- fully tested with WordPress 6.5
+
+### Version 4.0.7 (2024-03-11)
+
+- fixed: action links on campaign overview page.
+- fixed: linked images in templates weren't mapped correctly.
+- fixed: missing array index in options.php
+- improved: legacy forms inclusion
+- improved: bounce handler to not timeout during processing of large quantities of bounce messages
+- removed: deprecated cron trigger
+
 ### Version 4.0.6 (2024.03-05)
 
-- fixed: Custom fields are not working with underline
+- fixed: Custom fields with underline were not working
 - fixed: check for array on bulk actions on campaigns
 - fixed: embeded elements were broken caused by block forms
 - fixed: wrong link in the block form overview

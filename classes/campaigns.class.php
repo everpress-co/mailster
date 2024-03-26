@@ -1528,17 +1528,39 @@ class MailsterCampaigns {
 		}
 
 		if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $campaign->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) {
-			$actions['duplicate'] = '<a class="duplicate" href="?post_type=newsletter&duplicate=' . $campaign->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_duplicate_nonce' ) . '" title="' . sprintf( esc_html__( 'Duplicate Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . esc_html__( 'Duplicate', 'mailster' ) . '</a>';
+			$actions['duplicate'] = '<a class="duplicate" href="' . add_query_arg(
+				array(
+					'post_type'   => 'newsletter',
+					'duplicate'   => (int) $campaign->ID,
+					'post_status' => isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : null,
+					'_wpnonce'    => wp_create_nonce( 'mailster_duplicate_nonce' ),
+				),
+				admin_url( 'edit.php' )
+			) . '" title="' . sprintf( esc_html__( 'Duplicate Campaign %s', 'mailster' ), '&quot;' . esc_attr( $campaign->post_title ) . '&quot;' ) . '">' . esc_html__( 'Duplicate', 'mailster' ) . '</a>';
 		}
 
 		if ( ! in_array( $campaign->post_status, array( 'pending', 'auto-draft', 'trash', 'draft' ) ) ) {
 
 			if ( ( current_user_can( 'publish_newsletters' ) && get_current_user_id() == $campaign->post_author ) || current_user_can( 'edit_others_newsletters' ) ) {
-				$actions['statistics'] = '<a class="statistics" href="post.php?post=' . $campaign->ID . '&action=edit&showstats=1" title="' . sprintf( esc_html__( 'See stats of Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . esc_html__( 'Statistics', 'mailster' ) . '</a>';
+				$actions['statistics'] = '<a class="statistics" href="' . add_query_arg(
+					array(
+						'action'    => 'edit',
+						'post'      => (int) $campaign->ID,
+						'showstats' => true,
+					),
+					admin_url( 'post.php' )
+				) . '" title="' . sprintf( esc_html__( 'See stats of Campaign %s', 'mailster' ), '&quot;' . esc_attr( $campaign->post_title ) . '&quot;' ) . '">' . esc_html__( 'Statistics', 'mailster' ) . '</a>';
+
 			}
 
 			if ( $parent_id = (int) $this->meta( $campaign->ID, 'parent_id' ) ) {
-				$actions['autoresponder_link'] = '<a class="edit_base" href="post.php?post=' . $parent_id . '&action=edit">' . esc_html__( 'Edit base', 'mailster' ) . '</a>';
+				$actions['autoresponder_link'] = '<a class="edit_base" href="' . add_query_arg(
+					array(
+						'action' => 'edit',
+						'post'   => (int) $campaign->ID,
+					),
+					admin_url( 'post.php' )
+				) . '">' . esc_html__( 'Edit base', 'mailster' ) . '</a>';
 			}
 
 			if ( 'notification' == $campaign->post_status ) {
@@ -5059,13 +5081,6 @@ class MailsterCampaigns {
 			$insert  = '<table width="100%" role="presentation"><tr><td align="center" width="130"><a href="' . $branding_url . '" title="' . esc_attr__( 'Sent with Mailster', 'mailster' ) . '"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33" style="max-width:130px;width:130px;"></a></td></tr></table>';
 			$content = str_replace( '</body>', $insert . '</body>', $content );
 
-		}
-
-		// ad an unsubscribe link if not in the content
-		if ( ! preg_match( '/\{unsub|unsublink\}/', $content ) ) {
-			$insert = '<table width="100%" role="presentation"><tr><td align="center" width="130">{unsub}</td></tr></table>';
-
-			$content = str_replace( '</body>', $insert . '</body>', $content );
 		}
 
 		$placeholder->add_defaults( $campaign->ID );

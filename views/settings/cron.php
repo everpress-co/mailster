@@ -45,7 +45,6 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			<li class="alternative-cron-url"><code id="copy-cmd-4">curl --silent '<?php echo esc_url( $cron_url2 ); ?>'</code> <a class="clipboard" data-clipboard-target="#copy-cmd-4"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
 			<li class="regular-cron-url"><code id="copy-cmd-5">GET '<?php echo esc_url( $cron_url ); ?>' > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-5"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
 			<li class="alternative-cron-url"><code id="copy-cmd-6">GET '<?php echo esc_url( $cron_url2 ); ?>' > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-6"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-			<li><code id="copy-cmd-7">php <?php echo $cron_path; ?> > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-7"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
 			</ul>
 			<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' ); ?></p>
 			<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' ); ?></p>

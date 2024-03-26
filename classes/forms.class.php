@@ -63,7 +63,7 @@ class MailsterForms {
 	public function form() {
 
 		if ( get_query_var( '_mailster_form' ) ) {
-			include_once MAILSTER_DIR . 'form.php';
+			include_once MAILSTER_DIR . 'includes/form.php';
 			exit;
 		}
 	}
@@ -817,7 +817,7 @@ class MailsterForms {
 			if ( $field_id == 'email' ) {
 				$post_content .= '<!-- wp:mailster/field-email ' . esc_attr( $block_attributes ) . ' --><div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-asterisk"><label class="mailster-label">' . esc_attr( $form_field->name ) . '</label><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( $form_field->name ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/></div><!-- /wp:mailster/field-email -->' . "\n\n";
 			} else {
-				$post_content .= '<!-- wp:mailster/field-' . esc_attr( $field_id ) . ' ' . esc_attr( $block_attributes ) . ' --><div class="wp-block-mailster-field-' . esc_attr( $field_id ) . ' mailster-wrapper mailster-wrapper-type-text"><label class="mailster-label">' . esc_attr( $form_field->name ) . '</label><input name="' . esc_attr( $field_id ) . '" type="text" aria-required="' . ( $form_field->required ? 'true' : 'false' ) . '" aria-label="' . esc_attr( $form_field->name ) . '" spellcheck="false" ' . ( $form_field->required ? ' required' : '' ) . ' value="" class="input" autocomplete="name" placeholder=" "/></div><!-- /wp:mailster/field-' . esc_attr( $field_id ) . ' -->' . "\n\n";
+				$post_content .= '<!-- wp:mailster/field-' . esc_attr( $field_id ) . ' ' . esc_attr( $block_attributes ) . ' --><div class="wp-block-mailster-field-' . esc_attr( $field_id ) . ' mailster-wrapper mailster-wrapper-type-text"><label class="mailster-label">' . esc_attr( $form_field->name ) . '</label><input name="' . esc_attr( $field_id ) . '" type="text" aria-required="' . ( $form_field->required ? 'true' : 'false' ) . '" aria-label="' . esc_attr( $form_field->name ) . '" spellcheck="false" ' . ( $form_field->required ? ' required' : '' ) . ' value="" class="input" autocomplete="given-name" placeholder=" "/></div><!-- /wp:mailster/field-' . esc_attr( $field_id ) . ' -->' . "\n\n";
 			}
 		}
 

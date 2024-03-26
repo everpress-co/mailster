@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	return;
+}
+
 $time        = microtime( true );
 $request_url = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
 
@@ -10,39 +14,6 @@ ini_set( 'display_errors', true );
 
 if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 	define( 'DISABLE_WP_CRON', true );
-}
-
-if ( ! defined( 'ABSPATH' ) ) {
-
-	$p = null;
-	if ( isset( $argv[2] ) ) {
-		$p = rtrim( $argv[2], '/' ) . '/';
-	} elseif ( isset( $_GET['path'] ) ) {
-		$p = rtrim( $_GET['path'], '/' ) . '/';
-	}
-
-	if ( $p && is_dir( $p ) && file_exists( $p . 'wp-load.php' ) ) {
-		$path = strtr(
-			$p,
-			array(
-				"\x00" => '\x00',
-				"\n"   => '\n',
-				"\r"   => '\r',
-				'\\'   => '\\\\',
-				"'"    => "\'",
-				'"'    => '\"',
-				"\x1a" => '\x1a',
-			)
-		) . 'wp-load.php';
-	} else {
-		$path = realpath( dirname( $_SERVER['SCRIPT_NAME'] ) . '/../../../wp-load.php' );
-	}
-
-	if ( file_exists( $path ) ) {
-		require_once $path;
-	} else {
-		die( 'WordPress root not found' );
-	}
 }
 
 if ( ! defined( 'MAILSTER_VERSION' ) ) {
