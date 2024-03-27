@@ -79,7 +79,6 @@ const BlockEdit = (props) => {
 								<BoxControl
 									label={__('Form Padding', 'mailster')}
 									values={mailster.padding}
-									resetValues={null}
 									onChange={(val) => setOption({ padding: val })}
 								/>
 							</PanelRow>
