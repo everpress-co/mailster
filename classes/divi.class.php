@@ -2,6 +2,9 @@
 
 class ET_Builder_Module_Mailster_Block_Form extends ET_Builder_Module {
 
+	protected $whitelisted_fields;
+	protected $icon;
+
 	public function init() {
 		$this->name       = esc_html__( 'Mailster Form', 'mailster' );
 		$this->slug       = 'divi-mailster-block-form';
