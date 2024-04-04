@@ -98,6 +98,9 @@ class Mailster {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
+		add_action( 'rest_api_init', array( &$this, 'rest_api_init' ) );
+		add_filter( 'render_block_core/paragraph', array( &$this, 'maybe_update_subscriber_count' ), 10, 2 );
+		add_filter( 'render_block_core/heading', array( &$this, 'maybe_update_subscriber_count' ), 10, 2 );
 
 		$this->wp_mail = function_exists( 'wp_mail' );
 	}
@@ -298,6 +301,8 @@ class Mailster {
 			add_action( 'mailster_admin_header', array( &$this, 'add_admin_header' ) );
 
 			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
+			add_action( 'enqueue_block_editor_assets', array( &$this, 'enqueue_block_editor_assets' ) );
+			add_action( 'enqueue_block_assets', array( &$this, 'enqueue_block_assets' ) );
 
 		}
 
@@ -314,6 +319,58 @@ class Mailster {
 		register_widget( 'Mailster_Newsletter_Subscribers_Count_Widget' );
 	}
 
+
+	public function enqueue_block_editor_assets() {
+
+		$asset_path = MAILSTER_DIR . 'build/subscriber-count/index.asset.php';
+		$scripts    = MAILSTER_URI . 'build/subscriber-count/index.js';
+
+		$assets = include $asset_path;
+
+		wp_enqueue_script(
+			'mailster-subscribers-count-block-scripts',
+			$scripts,
+			$assets['dependencies'],
+			$assets['version'],
+			false
+		);
+	}
+
+
+	public function enqueue_block_assets() {
+
+		$asset_path = MAILSTER_DIR . 'build/subscriber-count/index.asset.php';
+		$styles     = MAILSTER_URI . 'build/subscriber-count/index.css';
+
+		$assets = include $asset_path;
+
+		wp_enqueue_style(
+			'mailster-subscribers-count-block-styles',
+			$styles,
+			array(),
+			$assets['version']
+		);
+	}
+
+	public function maybe_update_subscriber_count( string $content, array $block ) {
+
+		if ( ! isset( $block['attrs']['mailster'] ) ) {
+			return $content;
+		}
+
+		$count   = mailster( 'subscribers' )->get_formated_count( $block['attrs']['mailster'] );
+		$content = preg_replace( '/<span(.*?)class="(.*?)mailster-subscriber-count(.*?)"(.*?)>(.*?)<\/span>/', '<span$1class="$2mailster-subscriber-count$3"$4>' . esc_html( $count ) . '</span>', $content );
+
+		return $content;
+	}
+
+	public function rest_api_init() {
+
+		include MAILSTER_DIR . 'classes/rest-controller/rest.subscriber-count.class.php';
+
+		$controller = new Mailster_REST_Subscriber_Count_Controller();
+		$controller->register_routes();
+	}
 
 	public function admin_body_class( $classes = '' ) {
 

@@ -2263,6 +2263,48 @@ class MailsterSubscribers {
 	}
 
 
+
+
+	public function get_formated_count( $args ) {
+		$args = shortcode_atts(
+			array(
+				'formatted' => true,
+				'round'     => 1,
+				'lists'     => null,
+				'status'    => 1,
+			),
+			$args
+		);
+
+		error_log( print_r( $args, true ) );
+
+		if ( ! is_null( $args['lists'] ) ) {
+			$args['lists'] = explode( ',', (string) $args['lists'] );
+			$count         = mailster( 'lists' )->count( $args['lists'], $args['status'] );
+		} else {
+			$count = mailster( 'subscribers' )->get_count_by_status( $args['status'] );
+		}
+
+		if ( $args['round'] > 1 ) {
+			$count = ceil( $count / $args['round'] ) * $args['round'];
+		}
+
+		if ( 'kilo' === $args['formatted'] ) {
+			if ( $count >= 1000000 ) {
+				$count = round( $count / 1000000, 1 ) . 'M';
+			} elseif ( $count >= 10000 ) {
+				$count = round( $count / 1000, 1 ) . 'K';
+			} else {
+				$count = number_format_i18n( $count );
+			}
+		} elseif ( $args['formatted'] ) {
+			$count = number_format_i18n( $count );
+		}
+
+		return $count;
+	}
+
+
 	/**
 	 *
 	 *

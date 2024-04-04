@@ -1186,32 +1186,7 @@ class MailsterFrontpage {
 	 * @return unknown
 	 */
 	public function newsletter_subscribers( $atts ) {
-		extract(
-			shortcode_atts(
-				array(
-					'formatted' => true,
-					'round'     => 1,
-					'lists'     => null,
-				),
-				$atts
-			)
-		);
-
-		$round = max( 1, $round );
-
-		if ( ! is_null( $lists ) ) {
-			$lists       = explode( ',', (string) $lists );
-			$subscribers = mailster( 'lists' )->count( $lists, 1 );
-		} else {
-			$subscribers = mailster( 'subscribers' )->get_count_by_status( 1 );
-		}
-
-		$subscribers = ceil( $subscribers / $round ) * $round;
-		if ( $formatted ) {
-			$subscribers = number_format_i18n( $subscribers );
-		}
-
-		return $subscribers;
+		return mailster( 'subscribers' )->get_formated_count( $atts );
 	}
 
 
