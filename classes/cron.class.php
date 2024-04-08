@@ -362,8 +362,7 @@ class MailsterCron {
 			return false;
 
 		} elseif ( ! is_integer( $key ) ) {
-
-				$key = '';
+			$key = '';
 		}
 
 		if ( mailster_option( 'cron_lock' ) == 'db' ) {

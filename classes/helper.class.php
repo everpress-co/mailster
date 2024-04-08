@@ -1047,6 +1047,9 @@ class MailsterHelper {
 				$org_content = do_shortcode( $org_content );
 			}
 			if ( $shortcodes = apply_filters( 'mailster_strip_shortcode_tags', array_keys( $shortcode_tags ) ) ) {
+
+				$shortcodes = array_map( 'preg_quote', $shortcodes );
+
 				$pattern = '/\[(\/)?(' . implode( '|', $shortcodes ) . ')([^\]]*)\]/';
 
 				// remove short codes but keep content

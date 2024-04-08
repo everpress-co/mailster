@@ -6,7 +6,7 @@ class MailsterBounceHandler {
 	public $bounce_delete;
 	public $MID;
 	public $service;
-	private $max_email_at_once = 100;
+	protected $max_email_at_once = 100;
 
 	/**
 	 *
@@ -70,18 +70,24 @@ class MailsterBounceHandler {
 
 		foreach ( $messages as $id => $message ) {
 
-			preg_match( '#X-(Mailster|MyMail): ([a-f0-9]{32})#i', $message, $hash );
-			preg_match( '#X-(Mailster|MyMail)-Campaign: ([0-9-]+)#i', $message, $camp );
-
 			$bouncehandler = new Bouncehandler();
 			$bounceresult  = $bouncehandler->parse_email( $message );
 
-			if ( ! empty( $bounceresult ) ) {
-				$bounceresult = (object) $bounceresult[0];
-				$action       = $bounceresult->action;
-				$status       = $bounceresult->status;
-			} else {
-				$action = 'unsubscribe';
+			// not a bounce message we can handle
+			if ( empty( $bounceresult ) ) {
+				continue;
+			}
+
+			$bounceresult = (object) $bounceresult[0];
+			$action       = $bounceresult->action;
+			$status       = $bounceresult->status;
+
+			preg_match( '#X-(Mailster|MyMail): ([a-f0-9]{32})#i', $message, $hash );
+			preg_match( '#X-(Mailster|MyMail)-Campaign: ([0-9-]+)#i', $message, $camp );
+
+			// no hash or campaign found
+			if ( ! $hash || ! $camp ) {
+				continue;
 			}
 
 			$subscriber     = mailster( 'subscribers' )->get_by_hash( $hash[2], false );
@@ -118,6 +124,7 @@ class MailsterBounceHandler {
 				}
 			}
 
+			// remove bounce message
 			$this->delete_message( $id );
 
 		}
@@ -243,7 +250,9 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 
 
 	public function __destruct() {
-		$this->mailbox->quit();
+		if ( $this->mailbox ) {
+			$this->mailbox->quit();
+		}
 	}
 
 
@@ -267,7 +276,8 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 
 		$messages = array();
 
-		for ( $i = 1; $i <= $this->msgcount; $i++ ) {
+		// start with the last (most recent one) and only process the last $max_email_at_once
+		for ( $i = $this->msgcount; $i > $this->msgcount - $this->max_email_at_once; $i-- ) {
 
 			$message = $this->mailbox->get( $i );
 
