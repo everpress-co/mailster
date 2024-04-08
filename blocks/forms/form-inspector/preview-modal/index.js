@@ -179,6 +179,9 @@ const ModalContent = (props) => {
 	}
 
 	function setPreviewOptions() {
+		if (!iframeRef.current || !isDisplayed) {
+			return;
+		}
 		const obj = {
 			type: type,
 			user: urlLoggedIn,
@@ -192,10 +195,8 @@ const ModalContent = (props) => {
 			post_content: postContent,
 		};
 
-		if (iframeRef.current && isDisplayed) {
-			setIsLoading(true);
-			iframeRef.current.contentWindow.postMessage(JSON.stringify(obj), siteUrl);
-		}
+		setIsLoading(true);
+		iframeRef.current.contentWindow.postMessage(JSON.stringify(obj), siteUrl);
 	}
 
 	function reload() {
