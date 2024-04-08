@@ -294,7 +294,8 @@ class MailsterBlockForms {
 
 			$this->forms[ $this->preview_data['type'] ][] = $options;
 
-			$suffix = '';
+			$suffix = SCRIPT_DEBUG ? '' : '.min';
+
 			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'jquery', 'mailster-form-view-script', 'wp-api-fetch' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-form-block-preview', MAILSTER_URI . 'assets/css/form-block-preview' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -464,6 +465,7 @@ class MailsterBlockForms {
 		if ( ! isset( $this->forms['content'] ) ) {
 			return $content;
 		}
+
 		foreach ( $this->forms['content'] as $options ) {
 			$form_id = $options['id'];
 			if ( isset( $displayed[ $form_id ] ) ) {
@@ -481,6 +483,7 @@ class MailsterBlockForms {
 				$content = $form_html . $content;
 			} elseif ( 'end' === $display ) {
 				$content = $content . "\n\n" . $form_html;
+
 			} else {
 				$split_at = $this->get_block_tag_by_tag( $options['tag'], has_blocks( $content ) );
 				$pos      = (int) $options['pos'];
@@ -1052,7 +1055,7 @@ class MailsterBlockForms {
 			return;
 		}
 
-		$suffix = '';
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		do_action( 'mailster_admin_header' );
 
@@ -1069,7 +1072,7 @@ class MailsterBlockForms {
 			return;
 		}
 
-		$suffix = '';
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		do_action( 'mailster_admin_header' );
 
