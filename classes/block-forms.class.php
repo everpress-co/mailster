@@ -703,6 +703,18 @@ class MailsterBlockForms {
 
 		register_post_meta(
 			'mailster-form',
+			'prefill',
+			array(
+				'type'         => 'boolean',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => false,
+
+			)
+		);
+
+		register_post_meta(
+			'mailster-form',
 			'lists',
 			array(
 				'type'         => 'array',
@@ -1424,6 +1436,8 @@ class MailsterBlockForms {
 				'cooldown'   => 0,
 				'isPreview'  => false,
 				'type'       => $block_context,
+				'prefill'    => (bool) get_post_meta( $form->ID, 'prefill', true ),
+
 			)
 		);
 
@@ -1695,6 +1709,7 @@ class MailsterBlockForms {
 			'cooldown'   => $args['cooldown'],
 			'isPreview'  => $args['isPreview'],
 			'type'       => $args['type'],
+			'prefill'    => $args['prefill'],
 		);
 
 		if ( isset( $args['triggers'] ) ) {
