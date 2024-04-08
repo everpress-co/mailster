@@ -294,7 +294,7 @@ class MailsterTrigger {
 
 		$triggers = get_option( 'mailster_trigger' );
 		// nothing to do
-		if ( empty( $triggers ) ) {
+		if ( empty( $triggers ) || empty( $wp->request ) ) {
 			return;
 		}
 

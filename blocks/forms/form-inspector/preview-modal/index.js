@@ -170,7 +170,7 @@ const ModalContent = (props) => {
 			type: type,
 			user: urlLoggedIn,
 			options: options,
-			form_id: formId,
+			id: formId,
 		};
 
 		newUrl.searchParams.set('mailster-block-preview', JSON.stringify(obj));
@@ -188,16 +188,13 @@ const ModalContent = (props) => {
 				trigger_delay: 2,
 				trigger_inactive: 4,
 			},
-			form_id: formId,
+			id: formId,
 			post_content: postContent,
 		};
 
 		if (iframeRef.current && isDisplayed) {
 			setIsLoading(true);
-			iframeRef.current.contentWindow.postMessage(
-				JSON.stringify(obj),
-				siteUrl
-			);
+			iframeRef.current.contentWindow.postMessage(JSON.stringify(obj), siteUrl);
 		}
 	}
 
@@ -216,10 +213,7 @@ const ModalContent = (props) => {
 						role="region"
 						tabIndex="-1"
 					>
-						<Toolbar
-							label="Options"
-							className="preview-pane-toolbar widefat"
-						>
+						<Toolbar label="Options" className="preview-pane-toolbar widefat">
 							<ToolbarButton
 								icon={desktop}
 								label="Edit"
@@ -271,10 +265,7 @@ const ModalContent = (props) => {
 					</div>
 					{typeActive && isDisplayed ? (
 						<div
-							className={
-								'preview-pane-iframe preview-pane-iframe-' +
-								device
-							}
+							className={'preview-pane-iframe preview-pane-iframe-' + device}
 						>
 							<iframe
 								ref={iframeRef}
@@ -285,11 +276,7 @@ const ModalContent = (props) => {
 							/>
 						</div>
 					) : (
-						<Flex
-							className="preview-pane-info"
-							justify="center"
-							align="center"
-						>
+						<Flex className="preview-pane-info" justify="center" align="center">
 							<FlexItem>
 								<h3>
 									{isDisplayed

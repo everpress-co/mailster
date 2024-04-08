@@ -276,7 +276,7 @@ class MailsterBlockForms {
 
 		if ( $this->preview_data ) {
 
-			$this->forms[ $this->preview_data['type'] ][ $this->preview_data['form_id'] ] = $this->preview_data['options'];
+			$this->forms[ $this->preview_data['type'] ][ $this->preview_data['id'] ] = $this->preview_data['options'];
 
 			$suffix = '';
 			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'jquery', 'mailster-form-view-script', 'wp-api-fetch' ), MAILSTER_VERSION );
