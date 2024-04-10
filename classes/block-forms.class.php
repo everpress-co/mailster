@@ -266,7 +266,7 @@ class MailsterBlockForms {
 				echo '<span title="' . sprintf( esc_attr__( 'Lists: %s', 'mailster' ), "\n" . implode( "\n", $names ) ) . '" class="form-option lists ' . ( count( $lists ) ? 'is-checked' : '' ) . '">' . count( $lists ) . '</span>';
 				break;
 			case 'shortcode':
-				echo '<a class="clipboard code" data-clipboard-target="#shortcode-' . esc_attr( $post_id ) . '" id="shortcode-' . esc_attr( $post_id ) . '">[mailster_form id=' . esc_attr( $post_id ) . ']</a>';
+				echo '<a class="clipboard code" data-clipboard-text="[mailster_form id=' . esc_attr( $post_id ) . ']">[mailster_form id=' . esc_attr( $post_id ) . ']</a>';
 				break;
 			case 'impressions':
 				echo number_format_i18n( $this->get_impressions( $post_id ) );
@@ -614,17 +614,16 @@ class MailsterBlockForms {
 			'show_ui'             => true,
 			'show_in_menu'        => 'edit.php?post_type=newsletter',
 			'show_in_admin_bar'   => false,
-			'show_in_nav_menus'   => true,
+			'show_in_nav_menus'   => false,
 			'can_export'          => false,
 			'has_archive'         => false,
 			'exclude_from_search' => true,
-			'rewrite'             => false,
 			'rewrite'             => array(
 				'with_front' => false,
 				'feeds'      => false,
 				'slug'       => 'mailster-form',
 			),
-			// 'capabilities'        => $capabilities,
+			'capabilities'        => $capabilities,
 			'show_in_rest'        => true,
 
 		);
@@ -1867,6 +1866,10 @@ class MailsterBlockForms {
 
 	public function impression( $form_id, $subscriber_id = null, $post_id = null ) {
 
+		$current_user = get_current_user_id();
+		if ( $current_user && $current_user == get_post( $form_id )->post_author ) {
+			return new WP_Error( 'no_action', 'no action for author of the form', array( 'status' => 406 ) );
+		}
 		return $this->action( 'impression', $form_id, $subscriber_id, $post_id );
 	}
 
@@ -1893,12 +1896,6 @@ class MailsterBlockForms {
 
 		if ( ! isset( $actions[ $type ] ) ) {
 			return new WP_Error( 'invalid_action', 'There is no such action' );
-		}
-
-		// TODO maybe not useful.
-		$current_user = get_current_user_id();
-		if ( $current_user && $current_user == get_post( $form_id )->post_author ) {
-			// return new WP_Error( 'no_action', 'no action for author of the form', array( 'status' => 406 ) );
 		}
 
 		$action_type = $actions[ $type ];
