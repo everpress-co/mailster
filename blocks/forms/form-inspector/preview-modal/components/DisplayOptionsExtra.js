@@ -33,11 +33,7 @@ export default function DisplayOptionsExtra(props) {
 		<>
 			{type === 'content' && (
 				<PanelRow>
-					<ItemGroup
-						className="widefat"
-						isBordered={true}
-						size="medium"
-					>
+					<ItemGroup className="widefat" isBordered={true} size="medium">
 						<Item>
 							<RadioControl
 								selected={options.display || 'after'}
@@ -64,9 +60,7 @@ export default function DisplayOptionsExtra(props) {
 								<Flex align="flex-start">
 									<FlexItem>
 										<NumberControl
-											onChange={(val) =>
-												setOptions({ pos: val })
-											}
+											onChange={(val) => setOptions({ pos: val })}
 											step={1}
 											disabled={options.tag == 'more'}
 											value={options.pos || 0}
@@ -76,9 +70,7 @@ export default function DisplayOptionsExtra(props) {
 									<FlexBlock>
 										<SelectControl
 											value={options.tag || 'p'}
-											onChange={(val) =>
-												setOptions({ tag: val })
-											}
+											onChange={(val) => setOptions({ tag: val })}
 											options={[
 												{
 													value: 'p',
@@ -117,11 +109,7 @@ export default function DisplayOptionsExtra(props) {
 			)}
 			{type === 'content' && (
 				<PanelRow>
-					<ItemGroup
-						className="widefat"
-						isBordered={true}
-						size="medium"
-					>
+					<ItemGroup className="widefat" isBordered={true} size="medium">
 						<Item>
 							<BlockAlignmentToolbar
 								value={options.align}

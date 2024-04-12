@@ -6,34 +6,16 @@
  * WordPress dependencies
  */
 
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
-import {
-	useBlockProps,
-	InspectorControls,
-	RichText,
-	MediaPlaceholder,
-	MediaUpload,
-	MediaUploadCheck,
-	MediaReplaceFlow,
-	ColorPaletteControl,
-} from '@wordpress/block-editor';
 import {
 	PanelRow,
 	CheckboxControl,
-	__experimentalNumberControl as NumberControl,
-	__experimentalBoxControl as BoxControl,
-	__experimentalFormGroup as FormGroup,
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 } from '@wordpress/components';
-import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
-import { undo, chevronRight, chevronLeft, helpFilled } from '@wordpress/icons';
-import apiFetch from '@wordpress/api-fetch';
-import { useDebounce } from '@wordpress/compose';
-import { useEntityProp } from '@wordpress/core-data';
-import { select, useSelect, dispatch, subscribe } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies

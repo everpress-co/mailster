@@ -9,49 +9,17 @@
 import { __ } from '@wordpress/i18n';
 
 import {
-	useBlockProps,
-	InspectorControls,
-	RichText,
-	MediaPlaceholder,
-	MediaUpload,
-	MediaUploadCheck,
-	MediaReplaceFlow,
-	ColorPaletteControl,
-} from '@wordpress/block-editor';
-import {
-	Panel,
-	PanelBody,
-	PanelRow,
 	CheckboxControl,
-	RadioControl,
-	TextControl,
 	CardMedia,
 	Card,
 	CardHeader,
-	CardBody,
-	CardDivider,
 	CardFooter,
 	Button,
-	Modal,
 	Icon,
-	RangeControl,
-	FormTokenField,
 	Flex,
-	FlexItem,
-	FlexBlock,
-	BaseControl,
-	SelectControl,
-	useCopyToClipboard,
-	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 
-import { Fragment, Component, useState, useEffect } from '@wordpress/element';
-
 import { settings } from '@wordpress/icons';
-import apiFetch from '@wordpress/api-fetch';
-import { useDebounce } from '@wordpress/compose';
-import { useEntityProp } from '@wordpress/core-data';
-import { select, dispatch, subscribe } from '@wordpress/data';
 
 /**
  * Internal dependencies
