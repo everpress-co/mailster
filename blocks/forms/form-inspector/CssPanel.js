@@ -12,7 +12,6 @@ import {
 	PanelRow,
 	TextareaControl,
 	CheckboxControl,
-	Spinner,
 	SelectControl,
 	TabPanel,
 	Modal,

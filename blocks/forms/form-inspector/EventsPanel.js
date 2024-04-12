@@ -10,7 +10,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	PanelRow,
 	TextareaControl,
-	Spinner,
 	TabPanel,
 	Modal,
 	Tip,

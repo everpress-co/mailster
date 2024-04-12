@@ -9,7 +9,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { useState, useEffect } from '@wordpress/element';
-import { select, useSelect, dispatch } from '@wordpress/data';
+import { useSelect, dispatch } from '@wordpress/data';
 
 import { createBlock } from '@wordpress/blocks';
 
@@ -18,8 +18,6 @@ import { createBlock } from '@wordpress/blocks';
  */
 
 export default function BlockRecovery(props) {
-	const { attributes, setAttributes, clientId } = props;
-
 	const [hasBrokenBlocks, setHasBrokenBlocks] = useState(0);
 
 	const getAllBlocks = (blocks) => {

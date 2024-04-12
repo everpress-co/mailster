@@ -18,7 +18,6 @@ import {
 	SelectControl,
 	ToggleControl,
 	FocalPointPicker,
-	__experimentalBoxControl as BoxControl,
 } from '@wordpress/components';
 
 import { useState } from '@wordpress/element';

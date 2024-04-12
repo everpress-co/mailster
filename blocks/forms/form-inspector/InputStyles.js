@@ -9,9 +9,6 @@ import { __ } from '@wordpress/i18n';
 
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
-import { useSelect, select, dispatch } from '@wordpress/data';
-import { useEffect } from '@wordpress/element';
-
 /**
  * Internal dependencies
  */

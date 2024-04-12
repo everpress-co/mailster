@@ -10,10 +10,8 @@ import { __ } from '@wordpress/i18n';
 
 import {
 	PluginPrePublishPanel,
-	PluginPostPublishPanel,
 	PluginPostStatusInfo,
 } from '@wordpress/edit-post';
-import { Button } from '@wordpress/components';
 
 import { registerPlugin } from '@wordpress/plugins';
 import { useState, useEffect } from '@wordpress/element';

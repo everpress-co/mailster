@@ -11,7 +11,6 @@ import { __ } from '@wordpress/i18n';
 import { BlockPreview } from '@wordpress/block-editor';
 import {
 	TextControl,
-	TextareaControl,
 	Card,
 	CardBody,
 	CardFooter,
@@ -21,7 +20,7 @@ import {
 } from '@wordpress/components';
 
 import { useState, useEffect, useRef, useMemo } from '@wordpress/element';
-import { useSelect, select, dispatch, subscribe } from '@wordpress/data';
+import { useSelect, select, dispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 
 /**
