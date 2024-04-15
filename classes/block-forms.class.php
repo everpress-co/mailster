@@ -623,7 +623,7 @@ class MailsterBlockForms {
 				'feeds'      => false,
 				'slug'       => 'mailster-form',
 			),
-			'capabilities'        => $capabilities,
+			// 'capabilities'        => $capabilities,
 			'show_in_rest'        => true,
 
 		);

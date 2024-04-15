@@ -1,8 +1,8 @@
 <!-- wp:mailster/form-wrapper {"css":{"general":".mailster-wrapper{\n\tmargin-top:1em;\n}","tablet":"","mobile":""},"style":{"color":{"background":"#ffffff"}}} -->
 <form method="post" novalidate style="background-color:#ffffff" class="wp-block-mailster-form-wrapper mailster-block-form has-background has-background"><div class="mailster-block-form-inner"><!-- wp:columns -->
 <div class="wp-block-columns"><!-- wp:column {"width":"33.33%"} -->
-<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:cover {"url":"https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg","dimRatio":50,"isDark":false,"style":{"color":{"duotone":["#39414D","#EEEADD"]}}} -->
-<div class="wp-block-cover is-light"><span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"align":"center","placeholder":"Write title…","fontSize":"large"} -->
+<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:cover {"url":"https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg","dimRatio":0} -->
+<div class="wp-block-cover is-light"><span aria-hidden="true" class="wp-block-cover__background has-background-dim-0 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://static.mailster.co/forms/young-african-american-woman-sitting-on-steps.jpg" data-object-fit="cover"/><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"align":"center","placeholder":"Write title…","fontSize":"large"} -->
 <p class="has-text-align-center has-large-font-size"></p>
 <!-- /wp:paragraph --></div></div>
 <!-- /wp:cover --></div>
