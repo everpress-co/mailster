@@ -318,6 +318,18 @@ export function whenEditorIsReady() {
 	});
 }
 
+export function useWindow(callback) {
+	const [win, setWindow] = useState();
+
+	useEffect(() => {
+		whenEditorIsReady().then((w) => {
+			setWindow(w);
+		});
+	}, []);
+
+	return win;
+}
+
 export function useBlockChange(callback) {
 	let useBlockChangeBlockCount = null;
 	whenEditorIsReady().then((w) => {

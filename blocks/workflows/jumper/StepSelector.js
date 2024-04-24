@@ -8,7 +8,7 @@
 
 import { __ } from '@wordpress/i18n';
 
-import { InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
 	Panel,
 	PanelRow,
@@ -26,25 +26,19 @@ import { getBlockType } from '@wordpress/blocks';
 /**
  * Internal dependencies
  */
-import { searchBlocks } from '../../util';
+import { searchBlocks, useWindow, whenEditorIsReady } from '../../util';
+import StepIcon from './Icon.js';
 
 export default function StepId(props) {
 	const { attributes, setAttributes, clientId, isSelected } = props;
-	const { id, step } = attributes;
+	const { id, step, conditions } = attributes;
 
 	const [stepBlocks, setStepBlocks] = useState([]);
 
-	// useEffect(() => {
-	// 	!amount && setAttributes({ amount: 1 });
-	// 	!unit && setAttributes({ unit: 'hours' });
-	// 	!month && setAttributes({ month: 1 });
-	// 	!date && setAttributes({ date: new Date() });
-	// });
+	const window = useWindow();
 
-	const { getBlockIndex, getBlock, getBlocks, getBlockAttributes } =
-		select('core/block-editor');
-
-	const { selectBlock, toggleBlockHighlight } = dispatch('core/block-editor');
+	const { getBlock } = select('core/block-editor');
+	const { flashBlock, toggleBlockHighlight } = dispatch('core/block-editor');
 
 	useEffect(() => {
 		const blocks = searchBlocks(
@@ -54,7 +48,6 @@ export default function StepId(props) {
 	}, [isSelected]);
 
 	const setStep = (step) => {
-		console.log(step);
 		setAttributes({ step: step });
 	};
 
@@ -63,7 +56,6 @@ export default function StepId(props) {
 			const id = t.attributes.id;
 			const type = getBlockType(t.name);
 			const b = getBlock(t.clientId);
-			console.log(t, b);
 			return (
 				<MenuGroup key={i}>
 					<MenuItem
@@ -73,12 +65,23 @@ export default function StepId(props) {
 						isSelected={id === step}
 						onMouseOver={() => {
 							toggleBlockHighlight(t.clientId, true);
+							const element = window.document.getElementById(
+								'block-' + t.clientId
+							);
+							element &&
+								element.scrollIntoView({
+									behavior: 'smooth',
+									block: 'center',
+									inline: 'nearest',
+								});
 						}}
 						onMouseLeave={() => {
 							toggleBlockHighlight(t.clientId, false);
 						}}
 						//disabled={t.disabled}
 						onClick={() => {
+							//toggleBlockHighlight(t.clientId, false);
+							flashBlock(t.clientId);
 							setStep(id);
 							onClose();
 						}}
@@ -96,18 +99,16 @@ export default function StepId(props) {
 		(currentStep && getBlockType(currentStep.name).title) ||
 		__('Select a step', 'mailster');
 	const icon =
-		(currentStep && getBlockType(currentStep.name).icon.src) ||
-		__('Select a step', 'mailster');
+		(currentStep && getBlockType(currentStep.name).icon.src) || StepIcon;
 	const info =
-		(currentStep && currentStep.id) || __('Select a step', 'mailster');
+		(currentStep && currentStep.id) || __('Select a Step', 'mailster');
 
 	return (
 		<BaseControl>
 			<Panel>
 				<PanelRow>
-					<h3>{__('Step', 'mailster')}</h3>
+					<h3>{__('Jump to Step', 'mailster')}</h3>
 				</PanelRow>
-
 				<PanelRow>
 					<DropdownMenu text={label} info={info} icon={icon}>
 						{(props) => <StepButtons {...props} />}

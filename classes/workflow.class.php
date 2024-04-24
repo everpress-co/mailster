@@ -49,7 +49,7 @@ class MailsterWorkflow {
 
 	public function set_timestamp( $timestamp ) {
 
-		$this->timestamp = $timestamp ? $timestamp : time();
+		$this->timestamp = $timestamp ? $timestamp : 0;
 	}
 
 	public function get_steps() {
@@ -175,7 +175,10 @@ class MailsterWorkflow {
 
 		$result = $this->do_steps( $this->steps );
 
-		$this->log( 'FINISHED ' . $this->total_steps . ' steps' );
+		$this->log( 'RUN for ' . $this->total_steps . ' steps' );
+		$this->log( '' );
+		$this->log( '' );
+		$this->log( '' );
 		// all good => finish
 		if ( $result === true ) {
 			$this->finish();
@@ -604,10 +607,10 @@ class MailsterWorkflow {
 
 			case 'add_tag':
 				$this->log( 'add_tag' );
-				$this->log( $attr['tags'] );
-				$this->log( $this->subscriber );
 				if ( isset( $attr['tags'] ) ) {
 					mailster( 'tags' )->assign_subscribers( $attr['tags'], $this->subscriber );
+					$this->log( $attr['tags'] );
+					$this->log( $this->subscriber );
 				}
 
 				break;
@@ -677,6 +680,12 @@ class MailsterWorkflow {
 		);
 
 		$response = wp_remote_request( $url, $args );
+
+
+		if ( $this->entry->try > 3 ) {
+			$this->log( 'MAX TRIES REACHED' );
+			return true;
+		}
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -890,8 +899,10 @@ class MailsterWorkflow {
 			return new WP_Error( 'error', 'Step is incomplete', $step );
 		}
 
-		// skip that as it's the current step
-		if ( $step['id'] === $this->args['step'] ) {
+		// skip that if it's the current step and a timestamp is defined
+		if ( $step['id'] === $this->args['step'] && $this->entry->timestamp ) {
+
+			$this->log( 'SKIP AS ITS CURRENT' );
 			// step done => continue
 			return true;
 		}
@@ -966,23 +977,28 @@ class MailsterWorkflow {
 
 		$this->log( 'JUMPER ' . $step['attr']['step'] . ' for ' . $this->subscriber );
 
-		$conditions = $this->sanitize_conditions( $step['attr']['conditions'] );
+		// if conditions are present only jump if they are met
+		if ( isset( $step['attr']['conditions'] ) ) {
+			$conditions = $this->sanitize_conditions( $step['attr']['conditions'] );
 
-		if ( mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
+			if ( ! mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
 
-			$this->update( array( 'step' => $step['attr']['step'] ) );
+				$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
 
-			$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+				// return true to execute the next step
+				return true;
 
-			return false;
-
-		} else {
-
-			$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
-
-			// return true to execute the next step
-			return true;
+			}
 		}
+
+		$this->update(
+			array(
+				'step'      => $step['attr']['step'],
+				'timestamp' => null,
+			)
+		);
+
+		$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
 
 		return false;
 	}
@@ -998,26 +1014,14 @@ class MailsterWorkflow {
 
 	private function delay( $step ) {
 
-		error_log( print_r( $step, true ) ); // current step
-		error_log( print_r( $this->args, true ) ); // # prev. step
-		error_log( print_r( $this->entry, true ) );
+		// skip that if it's the current step and a timestamp is defined
+		if ( $step['id'] === $this->args['step'] && $this->entry->timestamp ) {
 
-		// skip that if it's the current step
-		if ( $step['id'] === $this->args['step'] ) {
 			$this->log( 'SKIP AS ITS CURRENT' );
-
-			error_log( print_r( date( 'Y-m-d H:i:s', $this->entry->timestamp ), true ) );
-
-			if ( $this->entry->timestamp < time() ) {
-				$this->log( 'SKIP AS ITS IN THE PAST' );
-				// return true;
-			}
-
+			// step done => continue
 			return true;
-		} else {
-			$this->log( 'DO NOT SKIP' );
-
 		}
+
 
 		$this->args['step'] = $step['id'];
 

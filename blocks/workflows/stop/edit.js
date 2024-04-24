@@ -44,10 +44,10 @@ export default function Edit(props) {
 		<>
 			<StopInspectorControls {...props} />
 			<div {...blockProps}>
+				<StepId {...props} />
 				<Comment {...props} />
 				<div className="mailster-stop">{icon}</div>
 			</div>
-			<StepId {...props} />
 		</>
 	);
 }

@@ -31,16 +31,19 @@ import QueueBadge from '../inspector/QueueBadge';
 import JumperInspectorControls from './inspector.js';
 import Comment from '../inspector/Comment.js';
 import StepId from '../inspector/StepId.js';
+import StepIcon from './Icon.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { id, conditions } = attributes;
+	const { id, conditions, step } = attributes;
 	const className = [];
 
 	const { getBlockIndex, getBlock, getBlocks, getBlockAttributes } =
 		select('core/block-editor');
 
 	id && className.push('mailster-step-' + id);
+
+	!step && className.push('mailster-step-incomplete');
 
 	const blockProps = useBlockProps({
 		className: classnames({}, className),
@@ -59,7 +62,7 @@ export default function Edit(props) {
 					<Comment {...props} />
 					<CardBody size="small">
 						<div className="mailster-step-label">
-							<Icon icon={Icons.backup} />
+							<Icon icon={StepIcon} />
 							{label}
 						</div>
 						<div className="mailster-step-info">

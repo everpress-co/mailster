@@ -8,13 +8,11 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 
-import { sprintf, __, _n } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { useBlockProps } from '@wordpress/block-editor';
 import { useEffect } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
-import { Card, CardBody, CardHeader, Icon } from '@wordpress/components';
+import { Card, CardBody, Icon } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -23,6 +21,7 @@ import DelayInspectorControls from './inspector.js';
 import QueueBadge from '../inspector/QueueBadge.js';
 import Comment from '../inspector/Comment.js';
 import StepId from '../inspector/StepId.js';
+import StepIcon from './Icon.js';
 
 import { getInfo, getLabel, isRelative } from './functions.js';
 
@@ -57,7 +56,7 @@ export default function Edit(props) {
 					<Comment {...props} />
 					<CardBody size="small">
 						<div className="mailster-step-label">
-							<Icon icon={Icons.backup} />
+							<Icon icon={StepIcon} />
 							{label}
 						</div>
 						{info && <div className="mailster-step-info">{info}</div>}

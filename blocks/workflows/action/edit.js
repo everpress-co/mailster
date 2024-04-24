@@ -38,6 +38,10 @@ export default function Edit(props) {
 		className: classnames({}, className),
 	});
 
+	const allActions = useSelect((select) =>
+		select('mailster/automation').getActions()
+	);
+
 	const actionObj = getAction(action);
 
 	const label = actionObj?.label || <></>;
@@ -50,6 +54,7 @@ export default function Edit(props) {
 			<div {...blockProps}>
 				<Card className="mailster-step" title={info}>
 					<QueueBadge {...props} />
+					<StepId {...props} />
 					<Comment {...props} />
 					<CardBody size="small">
 						<div className="mailster-step-label">
@@ -66,7 +71,6 @@ export default function Edit(props) {
 				</Card>
 				<div className="end-stop canvas-handle"></div>
 			</div>
-			<StepId {...props} />
 		</>
 	);
 }

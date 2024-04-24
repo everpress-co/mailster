@@ -5,7 +5,7 @@
 /**
  * WordPress dependencies
  */
-import { sprintf } from '@wordpress/i18n';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -15,8 +15,5 @@ import { getInfo, getLabel } from './functions';
 export default function Label(attributes, { context }) {
 	const { content } = attributes;
 
-	const info = getInfo(attributes);
-	const label = getLabel(attributes);
-
-	return sprintf('%s %s', label, info) || content;
+	return sprintf(__('Jump to %s', 'mailster'), getLabel(attributes)) || content;
 }

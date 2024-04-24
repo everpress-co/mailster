@@ -38,18 +38,24 @@ import StepSelector from './StepSelector.js';
 
 export default function JumperInspectorControls(props) {
 	const { attributes, setAttributes } = props;
-	const { weight } = attributes;
-
+	const { conditions } = attributes;
 	return (
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
-					<Conditions {...props} />
+					<StepSelector {...props} />
 				</PanelBody>
 			</Panel>
 			<Panel>
 				<PanelBody>
-					<StepSelector {...props} />
+					<PanelRow>
+						{conditions && (
+							<p>
+								{__('only if following conditions are fullfilled.', 'mailster')}
+							</p>
+						)}
+					</PanelRow>
+					<Conditions {...props} />
 				</PanelBody>
 			</Panel>
 		</InspectorControls>
