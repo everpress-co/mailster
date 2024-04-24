@@ -34,7 +34,7 @@ export function* getNumbers() {
 					clearInterval(interval);
 				}
 			},
-			debug ? 200 : 15000
+			debug ? 2000 : 15000
 		);
 	return actions.setNumbers(data);
 }

@@ -44,12 +44,20 @@ export default function StepId(props) {
 	}, [isSelected]);
 
 	return (
-		<InspectorControls>
-			<Panel>
-				<PanelBody>
-					<PanelRow>{sprintf('Step ID : %s', id)}</PanelRow>
-				</PanelBody>
-			</Panel>
-		</InspectorControls>
+		<>
+			<span
+				className="mailster-step-id"
+				title={sprintf(__('Step ID : %s', 'mailster'), id)}
+			>
+				{id}
+			</span>
+			<InspectorControls>
+				<Panel>
+					<PanelBody>
+						<PanelRow>{sprintf(__('Step ID : %s', 'mailster'), id)}</PanelRow>
+					</PanelBody>
+				</Panel>
+			</InspectorControls>
+		</>
 	);
 }

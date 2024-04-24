@@ -65,6 +65,7 @@ export default function Edit(props) {
 			<div {...blockProps}>
 				<Card className="mailster-step">
 					<QueueBadge {...props} />
+					<StepId {...props} />
 					<Comment {...props} />
 					<CardBody>
 						{label && <div className="mailster-step-label">{label}</div>}
@@ -86,7 +87,6 @@ export default function Edit(props) {
 				<div {...innerBlocksProps} />
 				<div className="end-stop"></div>
 			</div>
-			<StepId {...props} />
 		</>
 	);
 }

@@ -135,8 +135,9 @@ export default function Edit(props) {
 			<EmailInspectorControls {...props} campaignObj={campaignObj} />
 			<div {...blockProps}>
 				<Card className="mailster-step mailster-email-ref" ref={ref}>
-					<Comment {...props} />
 					<QueueBadge {...props} />
+					<StepId {...props} />
+					<Comment {...props} />
 					<CardBody>
 						<div className="mailster-step-info">
 							{__('Send Email', 'mailster')}
@@ -186,7 +187,6 @@ export default function Edit(props) {
 				</Card>
 				<div className="end-stop canvas-handle"></div>
 			</div>
-			<StepId {...props} />
 		</>
 	);
 }

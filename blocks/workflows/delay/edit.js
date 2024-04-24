@@ -52,8 +52,9 @@ export default function Edit(props) {
 			<DelayInspectorControls {...props} />
 			<div {...blockProps}>
 				<Card className="mailster-step" title={info}>
-					<Comment {...props} />
 					<QueueBadge {...props} />
+					<StepId {...props} />
+					<Comment {...props} />
 					<CardBody size="small">
 						<div className="mailster-step-label">
 							<Icon icon={Icons.backup} />
@@ -70,7 +71,6 @@ export default function Edit(props) {
 				</Card>
 				<div className="end-stop canvas-handle"></div>
 			</div>
-			<StepId {...props} />
 		</>
 	);
 }
