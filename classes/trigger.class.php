@@ -367,6 +367,8 @@ class MailsterTrigger {
 			$context = serialize( $context );
 		}
 
+		// $timestamp = time() + 120;
+
 		$job = array(
 			'subscriber_id' => (int) $subscriber_id,
 			'workflow_id'   => (int) $workflow,

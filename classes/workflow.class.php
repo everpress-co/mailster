@@ -13,7 +13,9 @@ class MailsterWorkflow {
 	private $steps;
 	private $args;
 	private $current_step;
-	private $steps_map = array();
+	private $total_steps = 0;
+	private $max_steps   = 10;
+	private $steps_map   = array();
 
 	public function __construct( $workflow, $trigger, $subscriber = null, $step = null, $timestamp = null, $context = null ) {
 
@@ -27,7 +29,6 @@ class MailsterWorkflow {
 	public function set_workflow( $workflow ) {
 
 		$this->workflow = get_post( $workflow );
-		$this->steps    = $this->get_steps();
 	}
 
 	public function set_trigger( $trigger ) {
@@ -42,7 +43,8 @@ class MailsterWorkflow {
 
 	public function set_step( $step ) {
 
-		$this->step = $step;
+		$this->step  = $step;
+		$this->steps = $this->get_steps();
 	}
 
 	public function set_timestamp( $timestamp ) {
@@ -62,14 +64,32 @@ class MailsterWorkflow {
 		return $this->steps;
 	}
 
+	/**
+	 * Parse the blocks and return a structured array
+	 *
+	 * @param array  $blocks
+	 * @param string $parent
+	 * @return array
+	 */
 	private function parse( $blocks, $parent = null ) {
-		$parsed = array();
+
+		$parsed     = array();
+		$step_found = false;
 		foreach ( $blocks as $block ) {
 			if ( ! $block['blockName'] ) {
 				continue;
 			}
 
-			$id   = isset( $block['attrs']['id'] ) ? $block['attrs']['id'] : null;
+			$id = isset( $block['attrs']['id'] ) ? $block['attrs']['id'] : null;
+			// only add needed steps to the parsed object
+			if ( ! $step_found ) {
+				if ( $id === $this->step ) {
+					$step_found = true;
+				} else {
+					continue;
+				}
+			}
+
 			$type = str_replace( 'mailster-workflow/', '', $block['blockName'] );
 			$arg  = array(
 				'type' => $type,
@@ -99,6 +119,12 @@ class MailsterWorkflow {
 		return $parsed;
 	}
 
+	/**
+	 * Start the workflow
+	 * retuns true if the workflow is finished or false if not. WP_Error if there was an error
+	 *
+	 * @return mixed
+	 */
 	public function run() {
 
 		if ( ! $this->workflow ) {
@@ -146,8 +172,10 @@ class MailsterWorkflow {
 		}
 
 		// start
+
 		$result = $this->do_steps( $this->steps );
 
+		$this->log( 'FINISHED ' . $this->total_steps . ' steps' );
 		// all good => finish
 		if ( $result === true ) {
 			$this->finish();
@@ -162,6 +190,12 @@ class MailsterWorkflow {
 		return $result;
 	}
 
+	/**
+	 * Outputs an error notice
+	 *
+	 * @param WP_Error $error
+	 * @param string   $notice_id
+	 */
 	private function error_notice( WP_Error $error, $notice_id = null ) {
 
 		if ( is_null( $notice_id ) ) {
@@ -251,7 +285,7 @@ class MailsterWorkflow {
 	/**
 	 * adds a Workflow in the database
 	 *
-	 * @return bool
+	 * @return object
 	 */
 	private function add( array $args = array() ) {
 
@@ -324,6 +358,12 @@ class MailsterWorkflow {
 		return $success;
 	}
 
+	/**
+	 * processes the current steps
+	 *
+	 * @param mixed $steps
+	 * @return mixed
+	 */
 	private function do_steps( $steps ) {
 
 		foreach ( $steps as $i => $step ) {
@@ -331,6 +371,7 @@ class MailsterWorkflow {
 			$result = $this->do_step( $step );
 
 			if ( $result === true ) {
+
 				continue;
 			}
 
@@ -341,6 +382,12 @@ class MailsterWorkflow {
 		return true;
 	}
 
+	/**
+	 * processes the current step
+	 *
+	 * @param mixed $step
+	 * @return mixed
+	 */
 	private function do_step( $step ) {
 
 		$this->current_step = $step['id'];
@@ -376,6 +423,13 @@ class MailsterWorkflow {
 			$this->entry = $this->get_entry();
 
 		}
+
+		if ( $this->total_steps >= $this->max_steps ) {
+			$this->log( 'MAX STEPS REACHED' );
+			$this->update( array( 'step' => $step['id'] ) );
+			return false;
+		}
+		++$this->total_steps;
 
 		switch ( $step['type'] ) {
 			case 'triggers':
@@ -441,6 +495,12 @@ class MailsterWorkflow {
 				return $result;
 			break;
 
+			case 'jumper':
+				$result = $this->jumper( $step );
+
+				return $result;
+			break;
+
 			case 'stop':
 				return $this->stop( $step );
 			break;
@@ -457,7 +517,13 @@ class MailsterWorkflow {
 		return true;
 	}
 
-	private function action( $step ) {
+	/**
+	 * Run the action step
+	 *
+	 * @param array $step
+	 * @return WP_Error|true|false
+	 */
+	private function action( array $step ) {
 
 		$attr = isset( $step['attr'] ) ? $step['attr'] : array();
 
@@ -572,8 +638,12 @@ class MailsterWorkflow {
 	}
 
 
-
-
+	/**
+	 * Run the webhook action
+	 *
+	 * @param mixed $step
+	 * @return WP_Error|true
+	 */
 	private function webhook( $step ) {
 
 		$url = isset( $step['attr']['webhook'] ) ? $step['attr']['webhook'] : null;
@@ -628,7 +698,12 @@ class MailsterWorkflow {
 
 
 
-
+	/**
+	 * Handle triggers
+	 *
+	 * @param mixed $step
+	 * @return bool|WP_Error
+	 */
 	private function triggers( $step ) {
 
 		// check if the current trigger is the right one
@@ -816,65 +891,67 @@ class MailsterWorkflow {
 		}
 
 		// skip that as it's the current step
-		if ( $step['id'] !== $this->args['step'] ) {
-			$this->args['step'] = $step['id'];
-			$this->log( 'EMAIL ' . $step['id'] . ' for ' . $this->subscriber );
-
-			// use the timestamp from the step for correct queueing
-			$timestamp = $this->entry->timestamp ? $this->entry->timestamp : time();
-
-			$tags = array();
-			if ( isset( $step['attr']['subject'] ) ) {
-				$tags['subject'] = $step['attr']['subject'];
-			}
-			if ( isset( $step['attr']['preheader'] ) ) {
-				$tags['preheader'] = $step['attr']['preheader'];
-			}
-			if ( isset( $step['attr']['from_name'] ) ) {
-				$tags['from_name'] = $step['attr']['from_name'];
-			}
-			if ( isset( $step['attr']['from_email'] ) ) {
-				$tags['from_email'] = $step['attr']['from_email'];
-			}
-
-			$args = array(
-				'campaign_id'   => $campaign->ID,
-				'subscriber_id' => $this->subscriber,
-				'priority'      => 15,
-				'timestamp'     => $timestamp,
-				'ignore_status' => false,
-				'options'       => false,
-				'tags'          => $tags,
-			);
-
-			// TODO: send via queue or directly
-			$queue = true;
-
-			// if timestamp is in the future
-			if ( $timestamp > time() ) {
-				$queue = true;
-			}
-
-			if ( $queue ) {
-				if ( mailster( 'queue' )->add( $args ) ) {
-					$this->update( array( 'timestamp' => $timestamp ) );
-				}
-				return false;
-			}
-
-			$track       = null;
-			$force       = false;
-			$log         = true;
-			$attachments = array();
-
-			$result = mailster( 'campaigns' )->send( $args['campaign_id'], $args['subscriber_id'], $track, $force, $log, $args['tags'], $attachments );
-
-			if ( is_wp_error( $result ) ) {
-				return $result;
-			}
+		if ( $step['id'] === $this->args['step'] ) {
+			// step done => continue
+			return true;
 		}
 
-		// step done => continue
+		$this->args['step'] = $step['id'];
+		$this->log( 'EMAIL ' . $step['id'] . ' for ' . $this->subscriber );
+
+		// use the timestamp from the step for correct queueing
+		$timestamp = $this->entry->timestamp ? $this->entry->timestamp : time();
+
+		$tags = array();
+		if ( isset( $step['attr']['subject'] ) ) {
+			$tags['subject'] = $step['attr']['subject'];
+		}
+		if ( isset( $step['attr']['preheader'] ) ) {
+			$tags['preheader'] = $step['attr']['preheader'];
+		}
+		if ( isset( $step['attr']['from_name'] ) ) {
+			$tags['from_name'] = $step['attr']['from_name'];
+		}
+		if ( isset( $step['attr']['from_email'] ) ) {
+			$tags['from_email'] = $step['attr']['from_email'];
+		}
+
+		$args = array(
+			'campaign_id'   => $campaign->ID,
+			'subscriber_id' => $this->subscriber,
+			'priority'      => 15,
+			'timestamp'     => $timestamp,
+			'ignore_status' => false,
+			'options'       => false,
+			'tags'          => $tags,
+		);
+
+		// TODO: send via queue or directly
+		$queue = true;
+
+		// if timestamp is in the future
+		if ( $timestamp > time() ) {
+			$queue = true;
+		}
+
+		if ( $queue ) {
+			if ( mailster( 'queue' )->add( $args ) ) {
+				$this->update( array( 'timestamp' => $timestamp ) );
+			}
+			return false;
+		}
+
+		$track       = null;
+		$force       = false;
+		$log         = true;
+		$attachments = array();
+
+		$result = mailster( 'campaigns' )->send( $args['campaign_id'], $args['subscriber_id'], $track, $force, $log, $args['tags'], $attachments );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
 		return true;
 
 		// TODO check when step is inclomplete and the campaigns hasn't been sent already
@@ -883,6 +960,31 @@ class MailsterWorkflow {
 		$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber, 'sent', $campaign->ID );
 
 		return (bool) $has_been_sent;
+	}
+
+	private function jumper( $step ) {
+
+		$this->log( 'JUMPER ' . $step['attr']['step'] . ' for ' . $this->subscriber );
+
+		$conditions = $this->sanitize_conditions( $step['attr']['conditions'] );
+
+		if ( mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
+
+			$this->update( array( 'step' => $step['attr']['step'] ) );
+
+			$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+
+			return false;
+
+		} else {
+
+			$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+
+			// return true to execute the next step
+			return true;
+		}
+
+		return false;
 	}
 
 	private function stop( $step ) {
@@ -896,9 +998,25 @@ class MailsterWorkflow {
 
 	private function delay( $step ) {
 
+		error_log( print_r( $step, true ) ); // current step
+		error_log( print_r( $this->args, true ) ); // # prev. step
+		error_log( print_r( $this->entry, true ) );
+
 		// skip that if it's the current step
 		if ( $step['id'] === $this->args['step'] ) {
+			$this->log( 'SKIP AS ITS CURRENT' );
+
+			error_log( print_r( date( 'Y-m-d H:i:s', $this->entry->timestamp ), true ) );
+
+			if ( $this->entry->timestamp < time() ) {
+				$this->log( 'SKIP AS ITS IN THE PAST' );
+				// return true;
+			}
+
 			return true;
+		} else {
+			$this->log( 'DO NOT SKIP' );
+
 		}
 
 		$this->args['step'] = $step['id'];

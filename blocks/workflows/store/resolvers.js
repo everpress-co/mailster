@@ -23,14 +23,19 @@ export function* getNumbers() {
 	);
 	const post_status = select('core/editor').getCurrentPost().status;
 
+	const debug = true;
+
 	const interval =
 		post_status == 'publish' &&
-		setInterval(() => {
-			if (document.hasFocus()) {
-				clearData('getNumbers');
-				clearInterval(interval);
-			}
-		}, 15000);
+		setInterval(
+			() => {
+				if (debug || document.hasFocus()) {
+					clearData('getNumbers');
+					clearInterval(interval);
+				}
+			},
+			debug ? 200 : 15000
+		);
 	return actions.setNumbers(data);
 }
 
