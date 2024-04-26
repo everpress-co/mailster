@@ -609,8 +609,6 @@ class MailsterWorkflow {
 				$this->log( 'add_tag' );
 				if ( isset( $attr['tags'] ) ) {
 					mailster( 'tags' )->assign_subscribers( $attr['tags'], $this->subscriber );
-					$this->log( $attr['tags'] );
-					$this->log( $this->subscriber );
 				}
 
 				break;
@@ -899,7 +897,7 @@ class MailsterWorkflow {
 		}
 
 		// skip that if it's the current step and a timestamp is defined
-		if ( $step['id'] === $this->args['step'] && $this->entry->timestamp ) {
+		if ( $step['id'] === $this->args['step'] && $this->entry && $this->entry->timestamp ) {
 
 			$this->log( 'SKIP AS ITS CURRENT' );
 			// step done => continue
@@ -910,7 +908,7 @@ class MailsterWorkflow {
 		$this->log( 'EMAIL ' . $step['id'] . ' for ' . $this->subscriber );
 
 		// use the timestamp from the step for correct queueing
-		$timestamp = $this->entry->timestamp ? $this->entry->timestamp : time();
+		$timestamp = $this->entry && $this->entry->timestamp ? $this->entry->timestamp : time();
 
 		$tags = array();
 		if ( isset( $step['attr']['subject'] ) ) {
@@ -1014,7 +1012,7 @@ class MailsterWorkflow {
 	private function delay( $step ) {
 
 		// skip that if it's the current step and a timestamp is defined
-		if ( $step['id'] === $this->args['step'] && $this->entry->timestamp ) {
+		if ( $step['id'] === $this->args['step'] && $this->entry && $this->entry->timestamp ) {
 
 			$this->log( 'SKIP AS ITS CURRENT' );
 			// step done => continue
@@ -1134,6 +1132,8 @@ class MailsterWorkflow {
 
 		// TODO: maybe set timestamp to now if we're in a "Testing mode"
 		// $timestamp = time();
+
+		// $timestamp = time() + 10;
 
 		// no need to schedule if in the past
 		if ( $timestamp <= time() ) {

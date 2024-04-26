@@ -10,10 +10,11 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getInfo, getLabel } from './functions';
 
 export default function Label(attributes, { context }) {
-	const { content } = attributes;
+	const { content, step } = attributes;
 
-	return sprintf(__('Jump to %s', 'mailster'), getLabel(attributes)) || content;
+	const label = sprintf(__('Jump #%s', 'mailster'), step || '…');
+
+	return label || content;
 }

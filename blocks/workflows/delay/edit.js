@@ -2,32 +2,27 @@
  * External dependencies
  */
 
-import classnames from 'classnames';
-
 /**
  * WordPress dependencies
  */
 
 import { __, _n } from '@wordpress/i18n';
 
-import { useBlockProps } from '@wordpress/block-editor';
 import { useEffect } from '@wordpress/element';
-import { Card, CardBody, Icon } from '@wordpress/components';
+import { CardBody, Icon } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
-import DelayInspectorControls from './inspector.js';
-import QueueBadge from '../inspector/QueueBadge.js';
-import Comment from '../inspector/Comment.js';
-import StepId from '../inspector/StepId.js';
+import InspectorControls from './inspector.js';
+import Step from '../inspector/Step.js';
 import StepIcon from './Icon.js';
 
 import { getInfo, getLabel, isRelative } from './functions.js';
 
 export default function Edit(props) {
-	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { id, amount, unit, date, month, timezone, weekdays } = attributes;
+	const { attributes, setAttributes } = props;
+	const { amount, unit, date, month, timezone } = attributes;
 	const className = [];
 
 	useEffect(() => {
@@ -37,38 +32,28 @@ export default function Edit(props) {
 		!date && setAttributes({ date: new Date() });
 	});
 
-	id && className.push('mailster-step-' + id);
-
 	const info = getInfo(attributes);
 	const label = getLabel(attributes);
 
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
 	return (
-		<>
-			<DelayInspectorControls {...props} />
-			<div {...blockProps}>
-				<Card className="mailster-step" title={info}>
-					<QueueBadge {...props} />
-					<StepId {...props} />
-					<Comment {...props} />
-					<CardBody size="small">
-						<div className="mailster-step-label">
-							<Icon icon={StepIcon} />
-							{label}
-						</div>
-						{info && <div className="mailster-step-info">{info}</div>}
-						{!isRelative() && timezone && (
-							<div className="mailster-step-info">
-								<br />
-								{__('Respect users timezone', 'mailster')}
-							</div>
-						)}
-					</CardBody>
-				</Card>
-				<div className="end-stop canvas-handle"></div>
-			</div>
-		</>
+		<Step
+			{...props}
+			className={className}
+			inspectorControls={<InspectorControls {...props} />}
+		>
+			<CardBody size="small">
+				<div className="mailster-step-label">
+					<Icon icon={StepIcon} />
+					{label}
+				</div>
+				{info && <div className="mailster-step-info">{info}</div>}
+				{!isRelative() && timezone && (
+					<div className="mailster-step-info">
+						<br />
+						{__('Respect users timezone', 'mailster')}
+					</div>
+				)}
+			</CardBody>
+		</Step>
 	);
 }

@@ -2,32 +2,22 @@
  * External dependencies
  */
 
-import classnames from 'classnames';
-
 /**
  * WordPress dependencies
  */
 
 import { sprintf, __, _n } from '@wordpress/i18n';
 
-import { useBlockProps, RichText } from '@wordpress/block-editor';
-
 import { useEffect, useMemo, useState, useRef } from '@wordpress/element';
-import { useEntityProp } from '@wordpress/core-data';
-import { dispatch, useSelect, useDispatch } from '@wordpress/data';
-import { Card, CardBody, CardFooter, CardMedia } from '@wordpress/components';
-import { addQueryArgs } from '@wordpress/url';
-import * as Icons from '@wordpress/icons';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { CardBody, CardFooter, CardMedia } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
 
-import QueueBadge from '../inspector/QueueBadge';
-import Comment from '../inspector/Comment';
-import StepId from '../inspector/StepId';
-import EmailInspectorControls from './inspector';
-import { set } from 'lodash';
+import Step from '../inspector/Step';
+import InspectorControls from './inspector';
 import { searchBlocks } from '../../util';
 
 const ExampleEmail = () => {
@@ -44,8 +34,7 @@ export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const { id, campaign, subject, preheader, comment, isExample, name } =
 		attributes;
-	const className = [];
-	const ref = useRef();
+
 	const allEmails = searchBlocks('mailster-workflow/email');
 
 	const currentEmailIndex = allEmails.findIndex((block) => {
@@ -95,10 +84,6 @@ export default function Edit(props) {
 		invalidateResolutionForStoreSelector('getEmails');
 	}, [campaign, name, id]);
 
-	!campaign && !isExample && className.push('mailster-step-incomplete');
-
-	id && className.push('mailster-step-' + id);
-
 	const getPreviewUrl = (campaign) => {
 		if (!campaign) return false;
 		const url = new URL(
@@ -126,66 +111,49 @@ export default function Edit(props) {
 		<ExampleEmail />
 	);
 
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
 	return (
-		<>
-			<EmailInspectorControls {...props} campaignObj={campaignObj} />
-			<div {...blockProps}>
-				<Card className="mailster-step" ref={ref}>
-					<QueueBadge {...props} />
-					<StepId {...props} />
-					<Comment {...props} />
-					<CardBody>
-						<div className="mailster-step-info">
-							{__('Send Email', 'mailster')}
-							{campaign && (
-								<span className="mailster-campaign-id"> #{campaign}</span>
-							)}
-						</div>
-						<div className="mailster-step-label">{name}</div>
-					</CardBody>
-					<CardMedia>
-						<div className="email-preview">
-							{displaySubject && (
-								<div className="email-preview-subject">{displaySubject}</div>
-							)}
-							{preview}
-						</div>
-					</CardMedia>
-
-					<CardFooter>
-						<div className="email-stats">
-							<div className="email-stats-sent">
-								<div className="email-stats-label">
-									{__('Sent', 'mailster')}
-								</div>
-								<div className="email-stats-value">{stats?.sent || '-'}</div>
-							</div>
-							<div className="email-stats-opens">
-								<div className="email-stats-label">
-									{__('Opened', 'mailster')}
-								</div>
-								<div className="email-stats-value">{stats?.opens || '-'}</div>
-							</div>
-							<div className="email-stats-clicks">
-								<div className="email-stats-label">
-									{__('Clicked', 'mailster')}
-								</div>
-								<div className="email-stats-value">{stats?.clicks || '-'}</div>
-							</div>
-							<div className="email-stats-unsubs">
-								<div className="email-stats-label">
-									{__('Unsubs', 'mailster')}
-								</div>
-								<div className="email-stats-value">{stats?.unsubs || '-'}</div>
-							</div>
-						</div>
-					</CardFooter>
-				</Card>
-				<div className="end-stop canvas-handle"></div>
-			</div>
-		</>
+		<Step
+			{...props}
+			isIncomplete={!campaign && !isExample}
+			inspectorControls={<InspectorControls {...props} />}
+		>
+			<CardBody>
+				<div className="mailster-step-info">
+					{__('Send Email', 'mailster')}
+					{campaign && (
+						<span className="mailster-campaign-id"> #{campaign}</span>
+					)}
+				</div>
+				<div className="mailster-step-label">{name}</div>
+			</CardBody>
+			<CardMedia>
+				<div className="email-preview">
+					{displaySubject && (
+						<div className="email-preview-subject">{displaySubject}</div>
+					)}
+					{preview}
+				</div>
+			</CardMedia>
+			<CardFooter>
+				<div className="email-stats">
+					<div className="email-stats-sent">
+						<div className="email-stats-label">{__('Sent', 'mailster')}</div>
+						<div className="email-stats-value">{stats?.sent || '-'}</div>
+					</div>
+					<div className="email-stats-opens">
+						<div className="email-stats-label">{__('Opened', 'mailster')}</div>
+						<div className="email-stats-value">{stats?.opens || '-'}</div>
+					</div>
+					<div className="email-stats-clicks">
+						<div className="email-stats-label">{__('Clicked', 'mailster')}</div>
+						<div className="email-stats-value">{stats?.clicks || '-'}</div>
+					</div>
+					<div className="email-stats-unsubs">
+						<div className="email-stats-label">{__('Unsubs', 'mailster')}</div>
+						<div className="email-stats-value">{stats?.unsubs || '-'}</div>
+					</div>
+				</div>
+			</CardFooter>
+		</Step>
 	);
 }

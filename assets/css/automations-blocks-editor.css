@@ -13,6 +13,9 @@
 .edit-post-header__settings .interface-pinned-items > button:not(:first-child) {
 	display: none !important;
 }
+.editor-preview-dropdown {
+	display: none !important;
+}
 .edit-post-header-toolbar-extra {
 	display: flex;
 }
@@ -445,6 +448,19 @@
 	font-size: 20px;
 	font-weight: bold;
 }
+.wp-block-mailster-workflow-stop {
+	width: 40px;
+}
+.wp-block-mailster-workflow-stop .mailster-step {
+	width: 40px;
+	height: 40px;
+	border: 0;
+	box-shadow: none;
+}
+.wp-block-mailster-workflow-stop .mailster-step .mailster-stop {
+	width: 40px;
+	height: 40px;
+}
 .mailster-step .mailster-step-queued {
 	display: inline-block;
 	vertical-align: top;
@@ -464,10 +480,7 @@
 	left: -10px;
 	top: -10px;
 }
-.mailster-stop {
-	width: 40px;
-	height: 40px;
-}
+
 .block-editor-block-list__layout
 	.block-editor-block-list__block:not([contenteditable]):focus:after {
 	box-shadow: none;
@@ -732,13 +745,18 @@
 	white-space: nowrap;
 }
 .mailster-step .mailster-step-id {
-	opacity: 0.3;
-	font-style: italic;
+	opacity: 0.8;
 	font-size: 60%;
 	white-space: nowrap;
 	position: absolute;
 	right: 2px;
-	top: 2px;
+	top: 50%;
+	rotate: 90deg;
+	transform: translate(-20%, -100%);
+	visibility: hidden;
+}
+.mailster-step:hover .mailster-step-id {
+	_visibility: visible;
 }
 /* Modals and Popups */
 

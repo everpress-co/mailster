@@ -86,7 +86,10 @@ export function formatLists(lists) {
 		return __('No list defined.', 'mailster');
 	}
 
-	const allLists = select('mailster/automation').getLists();
+	const allLists = useSelect(
+		(select) => select('mailster/automation').getLists(),
+		[lists]
+	);
 
 	if (!allLists) {
 		return '';
@@ -120,7 +123,10 @@ export function formatForms(forms) {
 		return __('No list defined.', 'mailster');
 	}
 
-	const allForms = select('mailster/automation').getForms();
+	const allForms = useSelect(
+		(select) => select('mailster/automation').getForms(),
+		[forms]
+	);
 
 	if (!allForms) {
 		return '';
@@ -168,11 +174,15 @@ export function formatField(field, value, string) {
 		return __('No field defined.', 'mailster');
 	}
 
-	const allFields = select('mailster/automation').getFields();
+	const allFields = useSelect(
+		(select) => select('mailster/automation').getFields(),
+		[field, value]
+	);
 
 	if (!allFields) {
 		return __('No field defined.', 'mailster');
 	}
+
 	const getField = (id) => {
 		if (!allFields) {
 			return null;
@@ -324,10 +334,24 @@ export function useWindow(callback) {
 	useEffect(() => {
 		whenEditorIsReady().then((w) => {
 			setWindow(w);
+			callback && callback(w);
 		});
 	}, []);
 
 	return win;
+}
+
+export function useDocument(callback) {
+	const [doc, setDocument] = useState();
+
+	useEffect(() => {
+		whenEditorIsReady().then((w) => {
+			setDocument(w.document);
+			callback && callback(w.document);
+		});
+	}, []);
+
+	return doc;
 }
 
 export function useBlockChange(callback) {

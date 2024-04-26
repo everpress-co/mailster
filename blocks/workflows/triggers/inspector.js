@@ -11,10 +11,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { Panel, PanelRow, PanelBody, Button } from '@wordpress/components';
 
-import { useEffect, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import * as Icons from '@wordpress/icons';
-import { useEntityProp } from '@wordpress/core-data';
 
 /**
  * Internal dependencies
@@ -48,13 +46,11 @@ export default function TriggersInspectorControls(props) {
 						</PanelRow>
 						<PanelRow>{__('Click to edit the trigger.', 'mailster')}</PanelRow>
 					</PanelBody>
-
 					{triggers &&
 						triggers.map((trigger, index) => {
 							const element = allTriggers.find(
 								(item) => item.id === trigger.attributes.trigger
 							);
-
 							return (
 								<PanelBody key={index}>
 									{element && (

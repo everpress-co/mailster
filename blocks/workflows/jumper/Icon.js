@@ -1,7 +1,41 @@
 export default (
 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 		<path
-			d="M10.001 3H5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h5a2 2 0 0 0 2-2V4.999A1.999 1.999 0 0 0 10.001 3ZM6 6.125"
+			d="M11,11V5a2,2,0,0,1,2-2h6a2,2,0,0,1,2,2v6a2,2,0,0,1-2,2H13"
+			fill="none"
+			stroke="#323232"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeWidth="1.5"
+		/>
+		<rect
+			x="3"
+			y="11"
+			width="10"
+			height="10"
+			rx="2"
+			strokeWidth="1.5"
+			stroke="#323232"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			fill="none"
+		/>
+		<line
+			x1="8"
+			y1="5"
+			x2="6"
+			y2="7"
+			fill="none"
+			stroke="#323232"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeWidth="1.5"
+		/>
+		<line
+			x1="6"
+			y1="3"
+			x2="8"
+			y2="5"
 			fill="none"
 			stroke="#323232"
 			strokeLinecap="round"
@@ -9,12 +43,13 @@ export default (
 			strokeWidth="1.5"
 		/>
 		<path
-			d="M15 3h3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-3M17 17l-3-3M14 17v-3M17 14h-3"
+			d="M8,5H5A2,2,0,0,0,3,7V8"
 			fill="none"
 			stroke="#323232"
 			strokeLinecap="round"
 			strokeLinejoin="round"
 			strokeWidth="1.5"
 		/>
+		<path d="M24,0V24H0V0Z" fill="none" />
 	</svg>
 );

@@ -6,7 +6,7 @@
  * WordPress dependencies
  */
 
-import { __, _n } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { select, useSelect } from '@wordpress/data';
 
 /**
@@ -14,21 +14,18 @@ import { select, useSelect } from '@wordpress/data';
  */
 import { formatLists, formatTags, formatField } from '../../util/index.js';
 
-export function getAction(id) {
-	//useSelect('mailster/automation').getActions();
+export function getAction(action) {
 	const allActions = select('mailster/automation').getActions();
 
-	// const allActionss = useSelect((select) =>
+	// const allActions = useSelect((select) =>
 	// 	select('mailster/automation').getActions()
 	// );
 
-	if (!allActions) {
+	if (!action || !allActions) {
 		return null;
 	}
 
-	const action = allActions.find((action) => action.id == id);
-
-	return action;
+	return allActions.find((a) => a.id == action);
 }
 
 export function getInfo(attributes) {

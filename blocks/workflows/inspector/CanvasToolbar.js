@@ -18,7 +18,7 @@ import { useDebounce } from '@wordpress/compose';
  * Internal dependencies
  */
 
-import { useSessionStorage, whenEditorIsReady } from '../../util';
+import { useWindow, useSessionStorage, whenEditorIsReady } from '../../util';
 
 const MAX_ZOOM = 100;
 const MIN_ZOOM = 40;
@@ -40,17 +40,13 @@ export default function CanvasToolbar() {
 		setPositionVar(pos);
 	}, 400);
 
-	useEffect(() => {
-		whenEditorIsReady().then((w) => {
-			const sel = w.document.querySelector;
-			setFrame(
-				w.document.querySelector('.interface-interface-skeleton__content') || w
-			);
-			setPane(w.document.querySelector('.is-root-container'));
-			setPane(w.document.querySelector('.editor-styles-wrapper'));
-			isLoaded(true);
-		});
-	}, []);
+	useWindow((w) => {
+		const doc = w.document;
+		setFrame(doc.querySelector('.interface-interface-skeleton__content') || w);
+		setPane(doc.querySelector('.is-root-container'));
+		setPane(doc.querySelector('.editor-styles-wrapper'));
+		isLoaded(true);
+	});
 
 	useEffect(() => {
 		if (!pane) return;
@@ -168,16 +164,16 @@ export default function CanvasToolbar() {
 		position && setZoom(position.z);
 	}, [pane]);
 
-	useEffect(() => {
-		const onResize = () => {
-			console.warn('RESIZE');
-		};
-		onResize();
-		window.addEventListener('resize', onResize);
-		return () => {
-			window.removeEventListener('resize', onResize);
-		};
-	}, []);
+	// useEffect(() => {
+	// 	const onResize = () => {
+	// 		console.warn('RESIZE');
+	// 	};
+	// 	onResize();
+	// 	window.addEventListener('resize', onResize);
+	// 	return () => {
+	// 		window.removeEventListener('resize', onResize);
+	// 	};
+	// }, []);
 
 	const resetPane = () => {
 		const triggers = pane.querySelector('.wp-block-mailster-workflow-triggers');

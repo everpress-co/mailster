@@ -43,6 +43,7 @@ export default function JumperInspectorControls(props) {
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
+					<HelpBeacon id="64623a1035c39a6db5f441e4" align="right" />
 					<StepSelector {...props} />
 				</PanelBody>
 			</Panel>

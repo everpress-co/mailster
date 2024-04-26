@@ -2,89 +2,53 @@
  * External dependencies
  */
 
-import classnames from 'classnames';
-
 /**
  * WordPress dependencies
  */
 
-import { sprintf, __, _n } from '@wordpress/i18n';
-
-import { useBlockProps, RichText } from '@wordpress/block-editor';
-import { useEffect } from '@wordpress/element';
-import { useSelect, select } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
+import { __, _n } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
-
-import {
-	Card,
-	CardBody,
-	CardHeader,
-	Icon,
-	Spinner,
-} from '@wordpress/components';
+import { CardBody, Icon, Spinner } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
-import QueueBadge from '../inspector/QueueBadge';
-import JumperInspectorControls from './inspector.js';
-import Comment from '../inspector/Comment.js';
-import StepId from '../inspector/StepId.js';
+import InspectorControls from './inspector.js';
 import StepIcon from './Icon.js';
+import Step from '../inspector/Step.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
 	const { id, conditions, step } = attributes;
-	const className = [];
 
-	const { getBlockIndex, getBlock, getBlocks, getBlockAttributes } =
-		select('core/block-editor');
+	const label = sprintf(__('Jump to #%s', 'mailster'), step || '…');
 
-	id && className.push('mailster-step-' + id);
-
-	!step && className.push('mailster-step-incomplete');
-
-	const info = __('If', 'mailster');
-	const label = __('Jump to', 'mailster');
-
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
 	return (
-		<>
-			<JumperInspectorControls {...props} />
-			<div {...blockProps}>
-				<Card className="mailster-step" title={info}>
-					<QueueBadge {...props} />
-					<Comment {...props} />
-					<StepId {...props} />
-					<CardBody size="small">
-						<div className="mailster-step-label">
-							<Icon icon={StepIcon} />
-							{label}
-						</div>
-						<div className="mailster-step-info">
-							{conditions && (
-								<>
-									{__('If', 'mailster')}
-									<ServerSideRender
-										block="mailster-workflow/conditions"
-										attributes={{
-											...attributes,
-											...{ render: true, plain: true },
-										}}
-										EmptyResponsePlaceholder={() => <Spinner />}
-									/>
-									{__('jump to', 'mailster')}
-								</>
-							)}
-							{!conditions && __('Define a condition', 'mailster')}
-						</div>
-					</CardBody>
-				</Card>
-				<div className="end-stop canvas-handle"></div>
-			</div>
-		</>
+		<Step
+			{...props}
+			isIncomplete={!step}
+			inspectorControls={<InspectorControls {...props} />}
+		>
+			<CardBody size="small">
+				<div className="mailster-step-label">
+					<Icon icon={StepIcon} />
+					{label}
+				</div>
+				{conditions && (
+					<div className="mailster-step-info">
+						{__('only if', 'mailster')}
+						<ServerSideRender
+							block="mailster-workflow/conditions"
+							attributes={{
+								...attributes,
+								...{ render: true, plain: true },
+							}}
+							EmptyResponsePlaceholder={() => <Spinner />}
+						/>
+						{__('otherwise continue', 'mailster')}
+					</div>
+				)}
+			</CardBody>
+		</Step>
 	);
 }
