@@ -40,10 +40,6 @@ export default function Edit(props) {
 		select('mailster/automation').getEmails()
 	);
 
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
-
 	const transform = 'translateX(' + (0.5 - weight) * -100 + '%)';
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -58,12 +54,16 @@ export default function Edit(props) {
 	);
 
 	const label = conditions ? __('Check if', 'mailster') : null;
+	const info = '';
 
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
 	return (
 		<>
 			<ConditionInspectorControls {...props} />
 			<div {...blockProps}>
-				<Card className="mailster-step">
+				<Card className="mailster-step" title={info}>
 					<QueueBadge {...props} />
 					<StepId {...props} />
 					<Comment {...props} />

@@ -45,21 +45,20 @@ export default function Edit(props) {
 
 	!step && className.push('mailster-step-incomplete');
 
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
-
 	const info = __('If', 'mailster');
 	const label = __('Jump to', 'mailster');
 
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
 	return (
 		<>
 			<JumperInspectorControls {...props} />
 			<div {...blockProps}>
 				<Card className="mailster-step" title={info}>
 					<QueueBadge {...props} />
-					<StepId {...props} />
 					<Comment {...props} />
+					<StepId {...props} />
 					<CardBody size="small">
 						<div className="mailster-step-label">
 							<Icon icon={StepIcon} />

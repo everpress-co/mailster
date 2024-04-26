@@ -39,13 +39,12 @@ export default function Edit(props) {
 
 	id && className.push('mailster-step-' + id);
 
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
-
 	const info = getInfo(attributes);
 	const label = getLabel(attributes);
 
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
 	return (
 		<>
 			<DelayInspectorControls {...props} />

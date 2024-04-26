@@ -48,13 +48,13 @@ export default function JumperInspectorControls(props) {
 			</Panel>
 			<Panel>
 				<PanelBody>
-					<PanelRow>
-						{conditions && (
+					{conditions && (
+						<PanelRow>
 							<p>
 								{__('only if following conditions are fullfilled.', 'mailster')}
 							</p>
-						)}
-					</PanelRow>
+						</PanelRow>
+					)}
 					<Conditions {...props} />
 				</PanelBody>
 			</Panel>

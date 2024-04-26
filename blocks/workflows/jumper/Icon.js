@@ -1,7 +1,7 @@
 export default (
 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 		<path
-			d="M10.001 3H5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h5a2 2 0 0 0 2-2V4.999A1.999 1.999 0 0 0 10.001 3ZM6 6.125h3M7.5 6.125v2.75"
+			d="M10.001 3H5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h5a2 2 0 0 0 2-2V4.999A1.999 1.999 0 0 0 10.001 3ZM6 6.125"
 			fill="none"
 			stroke="#323232"
 			strokeLinecap="round"

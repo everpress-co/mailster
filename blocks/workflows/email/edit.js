@@ -99,10 +99,6 @@ export default function Edit(props) {
 
 	id && className.push('mailster-step-' + id);
 
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
-
 	const getPreviewUrl = (campaign) => {
 		if (!campaign) return false;
 		const url = new URL(
@@ -130,11 +126,14 @@ export default function Edit(props) {
 		<ExampleEmail />
 	);
 
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
 	return (
 		<>
 			<EmailInspectorControls {...props} campaignObj={campaignObj} />
 			<div {...blockProps}>
-				<Card className="mailster-step mailster-email-ref" ref={ref}>
+				<Card className="mailster-step" ref={ref}>
 					<QueueBadge {...props} />
 					<StepId {...props} />
 					<Comment {...props} />

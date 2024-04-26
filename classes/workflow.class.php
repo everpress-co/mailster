@@ -681,7 +681,6 @@ class MailsterWorkflow {
 
 		$response = wp_remote_request( $url, $args );
 
-
 		if ( $this->entry->try > 3 ) {
 			$this->log( 'MAX TRIES REACHED' );
 			return true;
@@ -1021,7 +1020,6 @@ class MailsterWorkflow {
 			// step done => continue
 			return true;
 		}
-
 
 		$this->args['step'] = $step['id'];
 

@@ -34,10 +34,6 @@ export default function Edit(props) {
 	id && className.push('mailster-step-' + id);
 	!action && className.push('mailster-step-incomplete');
 
-	const blockProps = useBlockProps({
-		className: classnames({}, className),
-	});
-
 	const allActions = useSelect((select) =>
 		select('mailster/automation').getActions()
 	);
@@ -48,6 +44,9 @@ export default function Edit(props) {
 	const info = getInfo(attributes);
 	const icon = actionObj?.icon;
 
+	const blockProps = useBlockProps({
+		className: classnames({}, className),
+	});
 	return (
 		<>
 			<ActionInspectorControls {...props} />
