@@ -134,7 +134,7 @@ export default function Selector(props) {
 					</BaseControl>
 				)}
 			</PanelRow>
-			{trigger == 'list_add' && (
+			{(trigger == 'list_add' || trigger == 'list_removed') && (
 				<>
 					<ListSelector
 						{...props}
@@ -171,7 +171,7 @@ export default function Selector(props) {
 			{trigger == 'opened_campaign' && <CampaignSelector {...props} />}
 			{trigger == 'link_click' && <LinkSelector {...props} />}
 			{trigger == 'hook' && <HookSelector {...props} />}
-			{trigger == 'tag_added' && (
+			{(trigger == 'tag_added' || trigger == 'tag_removed') && (
 				<TagSelector
 					{...props}
 					help={__(

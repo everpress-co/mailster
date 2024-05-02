@@ -38,14 +38,14 @@ export default function Selector(props) {
 
 	const [isVisible, setIsVisible] = useState(false);
 	const [hasCopied, setHasCopied] = useState(false);
+
 	const toggleVisible = () => {
 		setIsVisible((state) => !state);
 	};
 
 	useEffect(() => {
-		if (!hook)
-			setAttributes({ hook: 'my_custom_hook_' + clientId.substring(30) });
-	});
+		if (!hook) setHook('my_custom_hook_' + clientId.substring(30));
+	}, []);
 
 	const codesnippet = sprintf(
 		"mailster_trigger( '%s', $subscriber_id );",

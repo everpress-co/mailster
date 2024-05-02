@@ -69,30 +69,37 @@ export function useUpdateEffect(effect, deps) {
 	}, deps);
 }
 
-export function useCustomFields(callback, dependencies) {
-	const firstRenderRef = useRef(true);
-
-	useEffect(() => {
-		if (firstRenderRef.current) {
-			firstRenderRef.current = false;
-			return;
-		}
-		return callback();
-	}, dependencies);
+function getData(type) {
+	return useSelect(
+		(select) => {
+			switch (type) {
+				case 'lists':
+					return select('mailster/automation').getLists();
+				case 'forms':
+					return select('mailster/automation').getForms();
+				case 'tags':
+					return select('mailster/automation').getTags();
+				case 'fields':
+					return select('mailster/automation').getFields();
+				case 'actions':
+					return select('mailster/automation').getActions();
+				case 'steps':
+					return select('mailster/automation').getSteps();
+			}
+		},
+		[type]
+	);
 }
 
 export function formatLists(lists) {
-	if (!lists || !lists.length) {
-		return __('No list defined.', 'mailster');
-	}
-
-	const allLists = useSelect(
-		(select) => select('mailster/automation').getLists(),
-		[lists]
-	);
+	const allLists = getData('lists');
 
 	if (!allLists) {
-		return '';
+		return null;
+	}
+
+	if (!lists || !lists.length) {
+		return __('No list defined.', 'mailster');
 	}
 
 	const getList = (id) => {
@@ -119,17 +126,14 @@ export function formatLists(lists) {
 }
 
 export function formatForms(forms) {
-	if (!forms || !forms.length) {
-		return __('No list defined.', 'mailster');
-	}
-
-	const allForms = useSelect(
-		(select) => select('mailster/automation').getForms(),
-		[forms]
-	);
+	const allForms = getData('forms');
 
 	if (!allForms) {
 		return '';
+	}
+
+	if (!forms || !forms.length) {
+		return __('No form defined.', 'mailster');
 	}
 
 	const getForm = (id) => {
@@ -156,10 +160,11 @@ export function formatForms(forms) {
 }
 
 export function formatTags(tags) {
+	const allFields = getData('tags');
+
 	if (!tags || !tags.length) {
 		return __('No tags defined.', 'mailster');
 	}
-
 	const tagStr = tags.map((tag) => {
 		return tag
 			? ' <strong class="mailster-step-badge">' + tag + '</strong>'
@@ -170,16 +175,9 @@ export function formatTags(tags) {
 }
 
 export function formatField(field, value, string) {
-	if (!field) {
-		return __('No field defined.', 'mailster');
-	}
+	const allFields = getData('fields');
 
-	const allFields = useSelect(
-		(select) => select('mailster/automation').getFields(),
-		[field, value]
-	);
-
-	if (!allFields) {
+	if (!allFields || !field) {
 		return __('No field defined.', 'mailster');
 	}
 
@@ -373,8 +371,6 @@ export function useBlockChange(callback) {
 			callback(useBlockChangeBlockCount);
 		});
 	});
-
-	useUpdateEffectCustom(() => {}, [useBlockChangeBlockCount]);
 }
 
 export function useLocalStorage(key, initialValue) {

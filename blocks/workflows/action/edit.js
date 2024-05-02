@@ -8,10 +8,7 @@
 
 import { __, _n } from '@wordpress/i18n';
 
-import { useBlockProps } from '@wordpress/block-editor';
-
-import { useSelect } from '@wordpress/data';
-import { Card, CardBody, Icon } from '@wordpress/components';
+import { CardBody, Icon } from '@wordpress/components';
 import * as Icons from '@wordpress/icons';
 
 /**
@@ -23,8 +20,8 @@ import Step from '../inspector/Step.js';
 import { getAction, getInfo } from './functions.js';
 
 export default function Edit(props) {
-	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { id, action, comment } = attributes;
+	const { attributes } = props;
+	const { action } = attributes;
 
 	const actionObj = getAction(action);
 

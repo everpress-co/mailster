@@ -19,106 +19,19 @@ import { dateI18n, gmdateI18n } from '@wordpress/date';
 
 import InspectorControls from './inspector';
 import Step from '../inspector/Step';
-import {
-	formatLists,
-	formatForms,
-	formatTags,
-	formatPages,
-	formatField,
-	formatOffset,
-	formatLinks,
-} from '../../util';
 
-import { TIME_FORMAT, DATE_FORMAT } from './constants';
+import { getTrigger, getInfo } from './functions';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const { trigger, conditions, repeat } = attributes;
 
-	const allTriggers = useSelect((select) =>
-		select('mailster/automation').getTriggers()
-	);
+	const triggerObj = getTrigger(trigger);
 
-	const getTrigger = (id) => {
-		if (!allTriggers) {
-			return null;
-		}
-		const t1 = allTriggers.filter((t) => {
-			return t.id == id;
-		});
-		return t1.length ? t1[0] : null;
-	};
+	const label = triggerObj?.label || <Spinner />;
 
-	const getInfo = () => {
-		const { lists, forms, tags, pages, links, hook, field, date, offset } =
-			attributes;
-		if (!trigger) return __('Set up a trigger', 'mailster');
-
-		switch (trigger) {
-			case 'list_add':
-				return formatLists(lists);
-			case 'form_conversion':
-				return formatForms(forms);
-			case 'tag_added':
-				return formatTags(tags);
-			case 'updated_field':
-				return formatField(field, false);
-			case 'page_visit':
-				return formatPages(pages);
-			case 'link_click':
-				return formatLinks(links);
-			case 'hook':
-				return (
-					hook &&
-					'<strong class="mailster-step-badge code">' + hook + '</strong>'
-				);
-			case 'date':
-				if (field) {
-					return (
-						formatField(
-							field,
-							dateI18n(TIME_FORMAT, date),
-							__('On subscribers %s field at %s', 'mailster')
-						) + formatOffset(offset)
-					);
-				}
-				return sprintf(
-					__('On %s at %s', 'mailster'),
-					'<strong class="mailster-step-badge">' +
-						dateI18n(DATE_FORMAT, date) +
-						'</strong>',
-					'<strong class="mailster-step-badge">' +
-						dateI18n(TIME_FORMAT, date) +
-						'</strong>'
-				);
-			case 'anniversary':
-				if (field) {
-					return (
-						formatField(
-							field,
-							dateI18n(TIME_FORMAT, date),
-							__('Yearly based on the subscribers %s field at %s', 'mailster')
-						) + formatOffset(offset)
-					);
-				}
-				return sprintf(
-					__('Yearly on the %s at %s', 'mailster'),
-					'<strong class="mailster-step-badge">' +
-						dateI18n('F j', date) +
-						'</strong>',
-					'<strong class="mailster-step-badge">' +
-						dateI18n(TIME_FORMAT, date) +
-						'</strong>'
-				);
-
-			default:
-				return trigger;
-		}
-		return '';
-	};
-
-	const label = getTrigger(trigger)?.info || <Spinner />;
-	const info = getInfo();
+	const info = getInfo(attributes);
+	//const info = 'test';
 
 	return (
 		<Step

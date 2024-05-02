@@ -112,6 +112,8 @@ class MailsterTrigger {
 	private function run_list( $type, $list_id, $subscriber_id ) {
 
 		$workflows = $this->get_workflows_by_trigger( $type );
+		error_log( print_r( $workflows, true ) );
+		error_log( print_r( $type, true ) );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, $type );
 

@@ -86,15 +86,22 @@ export default function Selector(props) {
 					>
 						<option value="">{__('Choose', 'mailster')}</option>
 						<option value={-1}>{__('Any field', 'mailster')}</option>
-						<optgroup label={__('User fields', 'mailster')}>
-							{allFields.map((field, i) => {
-								return (
-									<option key={i} value={field.id}>
-										{field.name}
-									</option>
-								);
-							})}
-						</optgroup>
+						{allFields.length === 0 && (
+							<option value="loading" disabled>
+								{__('Loading...', 'mailster')}
+							</option>
+						)}
+						{allFields.length > 0 && (
+							<optgroup label={__('User fields', 'mailster')}>
+								{allFields.map((field, i) => {
+									return (
+										<option key={i} value={field.id}>
+											{field.name}
+										</option>
+									);
+								})}
+							</optgroup>
+						)}
 					</SelectControl>
 				</BaseControl>
 			</PanelRow>

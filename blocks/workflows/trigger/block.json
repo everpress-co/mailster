@@ -16,12 +16,6 @@
 		"lock": false
 	},
 	"attributes": {
-		"lock": {
-			"type": "object",
-			"default": {
-				"remove": true
-			}
-		},
 		"trigger": {
 			"type": "string"
 		},

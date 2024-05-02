@@ -119,7 +119,7 @@ class MailsterAutomations {
 				'info'  => esc_html__( 'When a subscriber joins a list', 'mailster' ),
 			),
 			array(
-				'id'    => 'list_remove',
+				'id'    => 'list_removed',
 				'icon'  => 'formatListBullets',
 				'label' => esc_html__( 'Subscriber removed from a list', 'mailster' ),
 				'info'  => esc_html__( 'When a subscriber is removed from a list', 'mailster' ),
