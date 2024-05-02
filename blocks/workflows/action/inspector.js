@@ -85,6 +85,7 @@ export default function ActionInspectorControls(props) {
 			<Panel>
 				<PanelBody>
 					<HelpBeacon id="646237eb17da4d6b8d6ef0b7" align="right" />
+					<h3>{__('This is the help message of this step.', 'mailster')}</h3>
 					<PanelRow>
 						<ItemGroup>
 							{!allActions && <Spinner />}

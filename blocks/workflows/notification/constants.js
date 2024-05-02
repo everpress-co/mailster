@@ -7,7 +7,7 @@
  */
 
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { getSettings } from '@wordpress/date';
+import { dateI18n, getSettings } from '@wordpress/date';
 
 /**
  * Internal dependencies

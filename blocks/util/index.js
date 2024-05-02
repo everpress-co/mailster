@@ -70,6 +70,23 @@ export function useUpdateEffect(effect, deps) {
 }
 
 function getData(type) {
+	switch (type) {
+		case 'lists':
+			return select('mailster/automation').getLists();
+		case 'forms':
+			return select('mailster/automation').getForms();
+		case 'tags':
+			return select('mailster/automation').getTags();
+		case 'fields':
+			return select('mailster/automation').getFields();
+		case 'actions':
+			return select('mailster/automation').getActions();
+		case 'steps':
+			return select('mailster/automation').getSteps();
+	}
+
+	return null;
+
 	return useSelect(
 		(select) => {
 			switch (type) {

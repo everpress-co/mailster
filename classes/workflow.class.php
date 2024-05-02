@@ -499,9 +499,11 @@ class MailsterWorkflow {
 			break;
 
 			case 'jumper':
-				$result = $this->jumper( $step );
+				return $this->jumper( $step );
+			break;
 
-				return $result;
+			case 'notification':
+				return $this->notification( $step );
 			break;
 
 			case 'stop':
@@ -998,6 +1000,39 @@ class MailsterWorkflow {
 		$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
 
 		return false;
+	}
+
+	private function notification( $step ) {
+
+		$this->log( 'notification ' . $step['attr']['email'] . ' for ' . $this->subscriber );
+
+		if ( ! isset( $step['attr']['email'] ) ) {
+			return new WP_Error( 'error', 'No email defined', $step );
+		}
+
+		$receiver = $step['attr']['email'];
+		$subject  = esc_html( $step['attr']['subject'] );
+		$message  = nl2br( esc_html( $step['attr']['message'] ) );
+
+		$link         = admin_url( 'post.php?post=' . $this->workflow->ID . '&action=edit#step-' . $step['id'] );
+		$notification = sprintf( esc_html__( 'This email was triggered by workflow %s', 'mailster' ), '<a href="' . esc_url( $link ) . '">' . esc_html( get_the_title( $this->workflow->ID ) ) . '</a>' );
+
+		$userdata = mailster( 'subscribers' )->get( $this->subscriber, true );
+
+		$n = mailster( 'notification' );
+		$n->replace( (array) $userdata, true );
+		$n->replace(
+			array(
+				'notification' => $notification,
+				'can-spam'     => $notification,
+			),
+			true
+		);
+		$n->to( $receiver );
+		$n->subject( $subject );
+		$n->message( $message );
+		$n->requeue( false );
+		return $n->add();
 	}
 
 	private function stop( $step ) {

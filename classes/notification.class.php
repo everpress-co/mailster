@@ -364,6 +364,15 @@ class MailsterNotification {
 		$this->subject = $subject;
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $message
+	 */
+	public function message( $message ) {
+		$this->message = $message;
+	}
+
 
 	/**
 	 *
@@ -380,8 +389,13 @@ class MailsterNotification {
 	 *
 	 * @param unknown $replace
 	 */
-	public function replace( $replace ) {
-		$this->replace = is_array( $replace ) ? $replace : array( $replace );
+	public function replace( $replace, $add = false ) {
+		$replace = is_array( $replace ) ? $replace : array( $replace );
+		if ( $add ) {
+			$this->replace = array_merge( $this->replace, $replace );
+		} else {
+			$this->replace = $replace;
+		}
 	}
 
 
@@ -426,31 +440,35 @@ class MailsterNotification {
 
 		$return = null;
 
-		ob_start();
+		if ( ! $this->message ) {
+			ob_start();
 
-		if ( method_exists( $this, 'template_' . $template ) ) {
-			$return = call_user_func( array( $this, 'template_' . $template ), $subscriber, $options );
+			if ( method_exists( $this, 'template_' . $template ) ) {
+				$return = call_user_func( array( $this, 'template_' . $template ), $subscriber, $options );
+			}
+
+			$output = ob_get_contents();
+
+			ob_end_clean();
+
+			if ( false === $return ) {
+				return true;
+			}
+
+			// hook for custom templates
+			ob_start();
+
+			do_action( "mailster_notification_{$template}", $subscriber, $options, $output );
+
+			$output2 = ob_get_contents();
+
+			ob_end_clean();
+
+			$this->message = ! empty( $output2 ) ? $output2 : $output;
+
 		}
 
-		$output = ob_get_contents();
-
-		ob_end_clean();
-
-		if ( false === $return ) {
-			return true;
-		}
-
-		// hook for custom templates
-		ob_start();
-
-		do_action( "mailster_notification_{$template}", $subscriber, $options, $output );
-
-		$output2 = ob_get_contents();
-
-		ob_end_clean();
-
-		$output        = ! empty( $output2 ) ? $output2 : $output;
-		$this->message = apply_filters( 'mailster_notification_content', $output, $template, $subscriber, $options );
+		$this->message = apply_filters( 'mailster_notification_content', $this->message, $template, $subscriber, $options );
 
 		if ( empty( $this->message ) ) {
 			return new WP_Error( 'notification_error', 'no content' );
@@ -535,6 +553,8 @@ class MailsterNotification {
 		);
 
 		$placeholder->add( $this->replace );
+
+		error_log( print_r( $this->replace, true ) );
 
 		$content = $placeholder->get_content();
 		$content = mailster( 'helper' )->prepare_content( $content );

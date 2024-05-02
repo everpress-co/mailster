@@ -31,7 +31,6 @@ export default function Edit(props) {
 	const label = triggerObj?.label || <Spinner />;
 
 	const info = getInfo(attributes);
-	//const info = 'test';
 
 	return (
 		<Step

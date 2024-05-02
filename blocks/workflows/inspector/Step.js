@@ -76,8 +76,8 @@ export default function Step(props) {
 			<div {...blockProps}>
 				{before}
 				<Card className="mailster-step" ref={ref}>
-					<QueueBadge {...props} />
 					<Comment {...props} />
+					<QueueBadge {...props} />
 					<StepId {...props} />
 					{children}
 				</Card>

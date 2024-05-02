@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "mailster-workflow/notification",
+	"title": "Notification",
+	"category": "mailster-automation-fields",
+	"keywords": ["notification", "message"],
+	"description": "Send a notification to an email address.",
+	"parent": [
+		"core/post-content",
+		"mailster-workflow/condition-yes",
+		"mailster-workflow/condition-no"
+	],
+	"example": {},
+	"supports": {
+		"html": false,
+		"className": false,
+		"customClassName": false,
+		"reusable": false
+	},
+	"attributes": {
+		"id": {
+			"type": "string"
+		},
+		"email": {
+			"type": "string"
+		},
+		"subject": {
+			"type": "string"
+		},
+		"message": {
+			"type": "string"
+		},
+		"comment": {
+			"type": "string"
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./index.js"
+}

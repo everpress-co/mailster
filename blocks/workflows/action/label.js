@@ -6,6 +6,7 @@
  * WordPress dependencies
  */
 
+import { __, sprintf } from '@wordpress/i18n';
 import { getAction } from './functions';
 
 /**
@@ -13,10 +14,15 @@ import { getAction } from './functions';
  */
 
 export default function Label(attributes, { context }) {
-	return 'a';
-	const { action, content } = attributes;
+	const { action } = attributes;
+
+	return sprintf(__('Action %s', 'mailster'), '"' + action + '"' || '');
 
 	const actionObj = getAction(action);
 
-	return actionObj?.label || content;
+	if (!actionObj) {
+		return content;
+	}
+
+	return actionObj.label;
 }

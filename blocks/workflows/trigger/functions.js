@@ -46,8 +46,6 @@ export function getInfo(attributes) {
 		attributes;
 	const { trigger, conditions, repeat } = attributes;
 
-	console.log(trigger);
-
 	switch (trigger) {
 		case 'list_add':
 		case 'list_removed':
@@ -107,7 +105,6 @@ export function getInfo(attributes) {
 			);
 
 		default:
-			console.log(trigger);
 			return __('Set up a trigger', 'mailster');
 	}
 }
