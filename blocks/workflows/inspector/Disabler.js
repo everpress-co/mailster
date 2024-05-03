@@ -27,7 +27,7 @@ export default function Disabler(props) {
 
 	return (
 		<>
-			<BlockControls>
+			<BlockControls group="other">
 				<ToolbarButton
 					icon={disabled ? 'hidden' : 'visibility'}
 					isPressed={disabled}

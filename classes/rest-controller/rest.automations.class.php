@@ -156,6 +156,48 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/queue/(?P<step>[a-zA-Z0-9-]+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_queue_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				),
+				'schema' => null,
+
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/queue/(?P<step>[a-zA-Z0-9-]+)/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'edit_queue_item' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				),
+				'schema' => null,
+
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/queue/(?P<step>[a-zA-Z0-9-]+)/(?P<id>\d+)',
+			array(
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_queue_item' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				),
+				'schema' => null,
+
+			)
+		);
 	}
 
 	/**
@@ -290,6 +332,43 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 		$actions = mailster( 'actions' )->get_by_campaign( $post_id );
 
 		return rest_ensure_response( $actions );
+	}
+
+	public function get_queue_items( $request ) {
+
+		$step_id = $request->get_param( 'step' );
+
+		$items = mailster( 'automations' )->get_queue( $step_id );
+
+		return rest_ensure_response( $items );
+	}
+
+	public function edit_queue_item( $request ) {
+
+		$step_id = $request->get_param( 'step' );
+		$id      = $request->get_param( 'id' );
+		$json    = $request->get_json_params();
+
+		if ( isset( $json['finish'] ) ) {
+			$items = mailster( 'automations' )->finish_queue_item( $id );
+		}
+		if ( isset( $json['forward'] ) ) {
+			$items = mailster( 'automations' )->forward_queue_item( $id );
+		}
+
+		// $items = mailster( 'automations' )->remove_queue_item( $id );
+
+		return rest_ensure_response( $items );
+	}
+
+	public function delete_queue_item( $request ) {
+
+		$step_id = $request->get_param( 'step' );
+		$id      = $request->get_param( 'id' );
+
+		$items = mailster( 'automations' )->remove_queue_item( $id );
+
+		return rest_ensure_response( $items );
 	}
 
 

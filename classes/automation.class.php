@@ -407,6 +407,43 @@ class MailsterAutomations {
 		return true;
 	}
 
+	public function get_queue( $step = null ) {
+		global $wpdb;
+
+		$sql = "SELECT workflows.*, subscribers.email FROM {$wpdb->prefix}mailster_workflows AS workflows LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = workflows.subscriber_id WHERE workflows.step = %s ORDER BY `timestamp`";
+
+		$entries = $wpdb->get_results( $wpdb->prepare( $sql, $step ) );
+
+		return $entries;
+	}
+
+	public function remove_queue_item( $id ) {
+		global $wpdb;
+
+		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'ID' => $id ) );
+	}
+
+	public function finish_queue_item( $id ) {
+		global $wpdb;
+
+		return $wpdb->update(
+			"{$wpdb->prefix}mailster_workflows",
+			array(
+				'finished'  => time(),
+				'error'     => '',
+				'step'      => null,
+				'timestamp' => null,
+			),
+			array( 'ID' => $id )
+		);
+	}
+
+	public function forward_queue_item( $id ) {
+		global $wpdb;
+
+		return $wpdb->update( "{$wpdb->prefix}mailster_workflows", array( 'timestamp' => time() ), array( 'ID' => $id ) );
+	}
+
 	// only used for mailster_workflow hook
 	public function _run_delayed_workflow( $workflow_id, $trigger, $step ) {
 		$this->run_all( $workflow_id, $trigger, $step );
@@ -506,11 +543,11 @@ class MailsterAutomations {
 
 			global $wpdb;
 
-			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT step, COUNT(*) AS count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND step IS NOT NULL GROUP BY step;", $workflow->ID ) );
+			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT step, COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and step IS NOT null GROUP BY step;", $workflow->ID ) );
 
-			$active = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) AS count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND timestamp IS NOT NULL AND finished = 0 AND step IS NOT NULL;", $workflow->ID ) );
+			$active = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and timestamp IS NOT null and finished = 0 and step IS NOT null;", $workflow->ID ) );
 
-			$finished = $wpdb->get_var( $wpdb->prepare( "SELECT  COUNT(*) AS count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND finished != 0;", $workflow->ID ) );
+			$finished = $wpdb->get_var( $wpdb->prepare( "SELECT  COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and finished != 0;", $workflow->ID ) );
 
 			$numbers = array(
 				'steps'       => array(),
@@ -535,7 +572,7 @@ class MailsterAutomations {
 						'errors' => array(),
 					);
 				}
-				$numbers['steps'][ $entry->step ]['count'] = $entry->count;
+				$numbers['steps'][ $entry->step ]['count'] = (int) $entry->count;
 			}
 
 			$workflow_campaigns = $this->get_workflow_campaigns( $workflow );
@@ -638,7 +675,7 @@ class MailsterAutomations {
 		$msg  = '<h2>Welcome to the new Automations page.</h2>';
 		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.</p>';
 		$msg .= '<p><strong>Automations are currently in beta version. Some features are subject to change before the stable release.</strong></p>';
-		$msg .= '<p><a href="' . admin_url( 'post-new.php?post_type=mailster-workflow' ) . '" class="button button-primary">' . esc_html__( 'Create Automation' ) . '</a> <a href="https://docs.mailster.co/#/automations-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-automations/issues" class="button button-link external">Submit feedback on Github</a></p>';
+		$msg .= '<p><a href="' . admin_url( 'post - new() . php ? post_type = mailster - workflow' ) . '" class="button button - primary">' . esc_html__( 'Create Automation' ) . '</a> <a href="https : // docs.mailster.co/#/automations-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-automations/issues" class="button button-link external">Submit feedback on Github</a></p>';
 		mailster_notice( $msg, 'info', true, 'mailster-workflow_beta_notice', true, 'edit-mailster-workflow' );
 	}
 

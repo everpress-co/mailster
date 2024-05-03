@@ -22,8 +22,11 @@ import {
  */
 
 export default function Comment(props) {
-	const { attributes, setAttributes } = props;
+	const { attributes, setAttributes, name } = props;
 	const { comment = '' } = attributes;
+
+	// no comments on triggers
+	if ('mailster-workflow/trigger' === name) return null;
 
 	return (
 		<>
