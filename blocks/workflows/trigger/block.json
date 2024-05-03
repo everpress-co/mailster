@@ -19,6 +19,9 @@
 		"trigger": {
 			"type": "string"
 		},
+		"disabled": {
+			"type": "boolean"
+		},
 		"conditions": {
 			"type": "string"
 		},

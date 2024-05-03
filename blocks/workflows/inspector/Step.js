@@ -18,6 +18,7 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import QueueBadge from '../inspector/QueueBadge';
+import Disabler from '../inspector/Disabler';
 import Comment from '../inspector/Comment';
 import StepId from '../inspector/StepId';
 import { useDocument } from '../../util';
@@ -37,7 +38,7 @@ export default function Step(props) {
 		clientId,
 		blockAttributes = {},
 	} = props;
-	const { id } = attributes;
+	const { id, disabled = false } = attributes;
 
 	const doc = useDocument();
 
@@ -64,6 +65,7 @@ export default function Step(props) {
 
 	id && className.push('mailster-step-' + id);
 	isIncomplete && className.push('mailster-step-incomplete');
+	disabled && className.push('mailster-step-disabled');
 
 	const blockProps = useBlockProps({
 		className: classnames({}, className),
@@ -77,9 +79,10 @@ export default function Step(props) {
 				{before}
 				<Card className="mailster-step" ref={ref}>
 					<Comment {...props} />
+					<Disabler {...props} />
 					<QueueBadge {...props} />
 					<StepId {...props} />
-					{children}
+					<div className="mailster-step-inner">{children}</div>
 				</Card>
 				{after}
 				<div className="end-stop canvas-handle"></div>

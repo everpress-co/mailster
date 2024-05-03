@@ -358,17 +358,22 @@
 .mailster-step-conditions > .mailster-step {
 	max-width: 90%;
 }
-.mailster-step-incomplete > .mailster-step::after {
-	content: '';
-	width: 30px;
-	height: 30px;
-	display: block;
-	position: absolute;
-	top: -15px;
-	right: -15px;
-	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M14.029 4.139l7.659 13.404c.89 1.558-.235 3.497-2.029 3.497h-15.318c-1.795 0-2.92-1.939-2.029-3.497l7.659-13.404c.897-1.571 3.161-1.571 4.058 8.88178e-16Z" fill="%23ffffff"></path><path d="M0 0h24v24h-24Z"></path><path stroke="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M12 13.12v-3.74"></path><path stroke="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M11.999 16.125c-.138 0-.25.112-.249.25 0 .138.112.25.25.25 .138 0 .25-.112.25-.25 0-.138-.112-.25-.251-.25"></path></g></svg>');
-	z-index: 2;
+.mailster-step-disabled > .mailster-step {
+	opacity: 0.8;
+	filter: grayscale(1);
+	background-image: linear-gradient(
+		45deg,
+		#fafafa00 25%,
+		#e0e0e065 25%,
+		#e0e0e065 50%,
+		#fafafa00 50%,
+		#fafafa00 75%,
+		#e0e0e065 75%,
+		#e0e0e065 100%
+	);
+	background-size: 56.57px 56.57px;
 }
+
 .wp-block-mailster-workflow-trigger.mailster-step-incomplete > .mailster-step {
 	font-style: italic;
 }

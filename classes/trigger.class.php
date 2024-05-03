@@ -64,6 +64,9 @@ class MailsterTrigger {
 				continue;
 			}
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'hook' );
+			if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+				continue;
+			}
 
 			$this->add_job( $workflow, 'hook', $subscriber_id, $step );
 
@@ -75,7 +78,9 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( 'opened_campaign' );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'opened_campaign' );
-
+			if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+				continue;
+			}
 		}
 	}
 
@@ -84,7 +89,6 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( 'link_click' );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'link_click' );
-
 			if ( ! isset( $options['links'] ) || empty( $options['links'] ) ) {
 				continue;
 			}
@@ -112,10 +116,11 @@ class MailsterTrigger {
 	private function run_list( $type, $list_id, $subscriber_id ) {
 
 		$workflows = $this->get_workflows_by_trigger( $type );
-		error_log( print_r( $workflows, true ) );
-		error_log( print_r( $type, true ) );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, $type );
+			if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+				continue;
+			}
 
 			if ( ! isset( $options['lists'] ) ) {
 				continue;
@@ -136,6 +141,9 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( 'form_conversion' );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'form_conversion' );
+			if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+				continue;
+			}
 
 			if ( in_array( $form_id, $options['forms'] ) ) {
 				$this->add_job( $workflow, 'form_conversion', $subscriber_id );
@@ -153,6 +161,13 @@ class MailsterTrigger {
 
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'updated_field' );
+			if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+				continue;
+			}
+
+			if ( ! isset( $options['field'] ) ) {
+				continue;
+			}
 
 			// any field or the defined one
 			if ( '-1' == $options['field'] || $field === $options['field'] ) {
@@ -176,6 +191,9 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( $type );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, $type );
+			if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+				continue;
+			}
 
 			if ( in_array( $tag_name, $options['tags'] ) ) {
 				$this->add_job( $workflow, $type, $subscriber_id );
@@ -209,6 +227,9 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( 'published_post' );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'published_post' );
+			if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+				continue;
+			}
 
 			$query = isset( $options['query'] ) ? $options['query'] : null;
 
@@ -261,6 +282,9 @@ class MailsterTrigger {
 	private function run_date( $workflow ) {
 
 		$options = mailster( 'automations' )->get_trigger_option( $workflow, 'date' );
+		if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+			return false;
+		}
 
 		$date  = isset( $options['date'] ) ? strtotime( $options['date'] ) : null;
 		$field = isset( $options['field'] ) ? $options['field'] : null;
@@ -290,6 +314,9 @@ class MailsterTrigger {
 	private function run_anniversary( $workflow ) {
 
 		$options = mailster( 'automations' )->get_trigger_option( $workflow, 'anniversary' );
+		if ( isset( $options['disabled'] ) && $options['disabled'] ) {
+			return false;
+		}
 
 		$date   = isset( $options['date'] ) ? strtotime( $options['date'] ) : null;
 		$field  = isset( $options['field'] ) ? $options['field'] : null;

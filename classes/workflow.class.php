@@ -176,9 +176,6 @@ class MailsterWorkflow {
 		$result = $this->do_steps( $this->steps );
 
 		$this->log( 'RUN for ' . $this->total_steps . ' steps' );
-		$this->log( '' );
-		$this->log( '' );
-		$this->log( '' );
 		// all good => finish
 		if ( $result === true ) {
 			$this->finish();
@@ -427,6 +424,11 @@ class MailsterWorkflow {
 
 		}
 
+		if ( isset( $step['attr']['disabled'] ) && $step['attr']['disabled'] ) {
+			$this->log( 'STEP DISABLED ' . $step['id'] . ' for ' . $this->subscriber );
+			return true;
+		}
+
 		if ( $this->total_steps >= $this->max_steps ) {
 			$this->log( 'MAX STEPS REACHED' );
 			$this->update( array( 'step' => $step['id'] ) );
@@ -556,6 +558,7 @@ class MailsterWorkflow {
 					$datefields = mailster()->get_custom_date_fields( true );
 
 					if ( in_array( $field, $datefields ) ) {
+
 						if ( is_numeric( $value ) ) {
 							if ( $value == 0 ) {
 								$value = date( 'Y-m-d' );
@@ -576,9 +579,11 @@ class MailsterWorkflow {
 								$value = date( 'Y-m-d', strtotime( $fields[ $field ] ) + ( $value * DAY_IN_SECONDS ) );
 
 							}
-						} else {
+						} elseif ( $value ) {
 							// some sanitizations
 							$value = date( 'Y-m-d', strtotime( $value ) );
+						} else {
+							$value = '';
 						}
 					}
 

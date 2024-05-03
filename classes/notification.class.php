@@ -554,8 +554,6 @@ class MailsterNotification {
 
 		$placeholder->add( $this->replace );
 
-		error_log( print_r( $this->replace, true ) );
-
 		$content = $placeholder->get_content();
 		$content = mailster( 'helper' )->prepare_content( $content );
 		if ( apply_filters( 'mailster_inline_css', true ) ) {

@@ -50,7 +50,7 @@ window.mailster_fields &&
 		}
 
 		registerBlockType('mailster/field-' + id, {
-			apiVersion: 2,
+			apiVersion: 3,
 			title: field.name || id,
 			keywords: ['mailster', field.name, id],
 			category: 'mailster-form-fields',
