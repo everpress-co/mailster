@@ -803,7 +803,7 @@ class UpdateCenterPlugin {
 				continue;
 			}
 
-			if ( version_compare( $plugin->version, $plugin->new_version, '<' ) ) {
+			if ( $plugin->new_version && version_compare( $plugin->version, $plugin->new_version, '<' ) ) {
 				$value->response[ $plugin->plugin ] = self::$plugins[ $slug ];
 			} elseif ( isset( $value->no_update ) ) {
 				$value->no_update[ $plugin->plugin ] = self::$plugins[ $slug ];
