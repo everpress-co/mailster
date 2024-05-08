@@ -9,7 +9,6 @@
 	"example": {},
 	"supports": {
 		"html": false,
-		"reusable": false,
 		"className": false,
 		"inserter": false,
 		"customClassName": false,

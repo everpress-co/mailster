@@ -12,7 +12,9 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 
 export default function Label(attributes, { context }) {
-	const { content, email } = attributes;
+	const { email, content, metadata } = attributes;
+
+	if (metadata?.name) return metadata.name;
 
 	const label = sprintf(__('Send Notification to %s', 'mailster'), email || '');
 

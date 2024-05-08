@@ -12,9 +12,11 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 
 export default function Label(attributes, { context }) {
-	const { content, step } = attributes;
+	const { step, content, metadata } = attributes;
 
-	const label = sprintf(__('Jump #%s', 'mailster'), step || '…');
+	if (metadata?.name) return metadata.name;
+
+	const label = sprintf(__('Jump to #%s', 'mailster'), step || '…');
 
 	return label || content;
 }

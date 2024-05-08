@@ -8,18 +8,9 @@
 
 import { sprintf, __ } from '@wordpress/i18n';
 
-import {
-	Button,
-	PanelRow,
-	SelectControl,
-	Modal,
-	Flex,
-} from '@wordpress/components';
+import { Button, PanelRow, Modal, TreeSelect } from '@wordpress/components';
 
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { useSelect, select, dispatch } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
-import * as Icons from '@wordpress/icons';
+import { useSelect, dispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 
 /**
@@ -84,23 +75,24 @@ export default function CampaignSelector(props) {
 		<>
 			{allCampaigns.length > 0 && (
 				<PanelRow>
-					<SelectControl
-						label={__('Campaign')}
-						help={__('Select a campaign you like to send in this step')}
+					<TreeSelect
+						label={__('Campaign', 'mailster')}
+						help={__(
+							'Select a campaign you like to send in this step',
+							'mailster'
+						)}
+						noOptionLabel={__('Select a campaign', 'mailster')}
 						value={campaign}
 						onChange={(val) => {
 							setAttributes({ campaign: val ? parseInt(val, 10) : undefined });
 						}}
-					>
-						<option value="">{__('Select a campaign', 'mailster')}</option>
-						{allCampaigns.map((campaign, i) => {
-							return (
-								<option key={i} value={campaign.ID}>
-									{sprintf('[#%d] %s', campaign.ID, campaign.title)}
-								</option>
-							);
+						tree={allCampaigns.map((campaign, i) => {
+							return {
+								name: sprintf('[#%d] %s', campaign.ID, campaign.title),
+								id: campaign.ID,
+							};
 						})}
-					</SelectControl>
+					></TreeSelect>
 				</PanelRow>
 			)}
 			<PanelRow>

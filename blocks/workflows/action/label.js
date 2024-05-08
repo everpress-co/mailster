@@ -14,15 +14,9 @@ import { getAction } from './functions';
  */
 
 export default function Label(attributes, { context }) {
-	const { action } = attributes;
+	const { action, content, metadata } = attributes;
 
-	return sprintf(__('Action %s', 'mailster'), '"' + action + '"' || '');
+	if (metadata?.name) return metadata.name;
 
-	const actionObj = getAction(action);
-
-	if (!actionObj) {
-		return content;
-	}
-
-	return actionObj.label;
+	return sprintf(__('Action %s', 'mailster'), '"' + action + '"' || content);
 }

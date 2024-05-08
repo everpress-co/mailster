@@ -14,8 +14,7 @@
 	"supports": {
 		"html": false,
 		"className": false,
-		"customClassName": false,
-		"reusable": false
+		"customClassName": false
 	},
 	"attributes": {
 		"id": {

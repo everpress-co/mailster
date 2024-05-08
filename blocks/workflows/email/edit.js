@@ -8,7 +8,7 @@
 
 import { sprintf, __, _n } from '@wordpress/i18n';
 
-import { useEffect, useMemo, useState, useRef } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { CardBody, CardFooter, CardMedia } from '@wordpress/components';
 
@@ -42,6 +42,7 @@ export default function Edit(props) {
 	});
 
 	const [preview_url, setPreviewUrl] = useState(false);
+	const [campaignObj, setCampaignObj] = useState();
 
 	const { invalidateResolutionForStore } = useSelect('mailster/automation');
 	const { invalidateResolutionForStoreSelector } = useDispatch(
@@ -56,13 +57,6 @@ export default function Edit(props) {
 		[campaign]
 	);
 
-	const getCampaign = (id) => {
-		const a = allCampaigns.filter((camp) => camp.ID == campaign);
-		return a.length ? a[0] : null;
-	};
-
-	const campaignObj = getCampaign(campaign);
-
 	useEffect(() => {
 		setPreviewUrl(getPreviewUrl(campaign));
 		if (campaignObj) {
@@ -71,6 +65,15 @@ export default function Edit(props) {
 			});
 		}
 	}, [campaign, campaignObj]);
+
+	useEffect(() => {
+		if (!allCampaigns) return;
+		if (!campaign) return;
+		const campaignObj = allCampaigns.filter((camp) => camp.ID == campaign);
+		if (campaignObj.length) {
+			setCampaignObj(campaignObj[0]);
+		}
+	}, [campaign, allCampaigns]);
 
 	useEffect(() => {
 		if (!name)
@@ -115,7 +118,9 @@ export default function Edit(props) {
 		<Step
 			{...props}
 			isIncomplete={!campaign && !isExample}
-			inspectorControls={<InspectorControls {...props} />}
+			inspectorControls={
+				<InspectorControls {...props} campaignObj={campaignObj} />
+			}
 		>
 			<CardBody>
 				<div className="mailster-step-info">
