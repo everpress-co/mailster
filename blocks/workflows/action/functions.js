@@ -15,11 +15,11 @@ import { select, useSelect } from '@wordpress/data';
 import { formatLists, formatTags, formatField } from '../../util/index.js';
 
 export function getAction(action) {
-	//const allActions = select('mailster/automation').getActions();
+	const allActions = select('mailster/automation').getActions();
 
-	const allActions = useSelect((select) =>
-		select('mailster/automation').getActions()
-	);
+	// const allActions = useSelect((select) =>
+	// 	select('mailster/automation').getActions()
+	// );
 
 	if (!action || !allActions) {
 		return null;
@@ -46,10 +46,6 @@ export function getInfo(attributes) {
 	}
 
 	const actionObj = getAction(action);
-
-	if (!action || !actionObj) {
-		return null;
-	}
 
 	return (
 		'<i>' + (actionObj?.info || __('Set up an action', 'mailster')) + '</i>'

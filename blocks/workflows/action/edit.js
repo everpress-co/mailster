@@ -10,6 +10,7 @@ import { __, _n } from '@wordpress/i18n';
 
 import { CardBody, Icon } from '@wordpress/components';
 import * as Icons from '@wordpress/icons';
+import { useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -22,6 +23,10 @@ import { getAction, getInfo } from './functions.js';
 export default function Edit(props) {
 	const { attributes } = props;
 	const { action } = attributes;
+
+	const allActions = useSelect((select) =>
+		select('mailster/automation').getActions()
+	);
 
 	const actionObj = getAction(action);
 

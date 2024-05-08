@@ -39,38 +39,24 @@ import {
 	useBlockChange,
 } from '../../util';
 
-whenEditorIsReady().then(() => {
-	window.addEventListener('popstate', (event) => {
-		selectBlockFromHash();
-	});
+whenEditorIsReady().then((w) => {
+	w.addEventListener('popstate', selectBlockFromHash);
 	selectBlockFromHash();
 });
 
-whenEditorIsReady().then(() => {});
-
 const selectBlockFromHash = () => {
-	const step = location.hash.match(/#step-([a-z0-9]+)/);
-	if (step) {
-		const el = document.querySelector('.mailster-step-' + step[1]);
-		el && dispatch('core/block-editor').flashBlock(el.dataset.block);
-		el && dispatch('core/block-editor').selectBlock(el.dataset.block);
-	}
+	whenEditorIsReady().then((w) => {
+		const step = location.hash.match(/#step-([a-z0-9]+)/);
+		if (step) {
+			const el = w.document.querySelector('.mailster-step-' + step[1]);
+			el && dispatch('core/block-editor').flashBlock(el.dataset.block);
+			el && dispatch('core/block-editor').selectBlock(el.dataset.block);
+			el && el.scrollIntoView();
+		}
+	});
 };
 
 function SettingsPanelPlugin() {
-	const {
-		selectBlock,
-		toggleBlockHighlight,
-		flashBlock,
-		moveBlockToPosition,
-		updateBlockAttributes,
-		removeBlock,
-	} = useDispatch('core/block-editor');
-	const { getBlockRootClientId, getBlockIndex, getBlocks } =
-		select('core/block-editor');
-	const { isAutosavingPost, isSavingPost, isCleanNewPost } =
-		select('core/editor');
-
 	// TODO check if cblock count change on removing blocks
 	const blocks = select('core/block-editor').getBlocks();
 	const [invalidBlocks, setinvalidBlocks] = useState([]);

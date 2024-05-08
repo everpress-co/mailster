@@ -7,10 +7,9 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { select, useSelect } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 
-import { CardBody, CardFooter, Tooltip, Spinner } from '@wordpress/components';
-import { dateI18n, gmdateI18n } from '@wordpress/date';
+import { dateI18n } from '@wordpress/date';
 
 /**
  * Internal dependencies
