@@ -103,6 +103,7 @@ class MailsterTemplate {
 
 	public function use_notification() {
 		$this->raw = $this->get_notification_template( $this->raw );
+		$this->raw = $this->load_template_html( $this->raw );
 	}
 
 
@@ -227,7 +228,8 @@ class MailsterTemplate {
 		}
 
 		if ( $logo_id && $metadata = wp_get_attachment_metadata( $logo_id ) ) {
-			$logos     = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo"]' );
+			$logos = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo" or @alt="Logo"]' );
+
 			$high_dpi  = mailster_option( 'high_dpi' ) ? 2 : 1;
 			$logo_link = mailster_option( 'logo_link' );
 

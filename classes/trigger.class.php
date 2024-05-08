@@ -195,6 +195,10 @@ class MailsterTrigger {
 				continue;
 			}
 
+			if ( ! isset( $options['tags'] ) || empty( $options['tags'] ) ) {
+				continue;
+			}
+
 			if ( in_array( $tag_name, $options['tags'] ) ) {
 				$this->add_job( $workflow, $type, $subscriber_id );
 			}
