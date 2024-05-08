@@ -7,7 +7,7 @@ import moment from 'moment';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 import {
 	useEffect,
 	useMemo,
@@ -221,7 +221,12 @@ export function formatField(field, value, string) {
 		if (!isNaN(parseFloat(value)) && isFinite(value)) {
 			if (value < 0) {
 				return sprintf(
-					__('Decrease %s by %s days.', 'mailster'),
+					_n(
+						'Decrease %s by %s day.',
+						'Decrease %s by %s days.',
+						parseFloat(value),
+						'mailster'
+					),
 					nameStr,
 					'<strong class="mailster-step-badge">' +
 						escape(value * -1) +
@@ -229,7 +234,12 @@ export function formatField(field, value, string) {
 				);
 			} else if (value > 0) {
 				return sprintf(
-					__('Increase %s by %s days.', 'mailster'),
+					_n(
+						'Increase %s by %s day.',
+						'Increase %s by %s days.',
+						parseFloat(value),
+						'mailster'
+					),
 					nameStr,
 					'<strong class="mailster-step-badge">' + escape(value) + '</strong>'
 				);
@@ -242,7 +252,7 @@ export function formatField(field, value, string) {
 			value = date;
 		}
 	}
-	if (value !== false && currentField && currentField.type == 'checkbox') {
+	if (currentField?.type == 'checkbox') {
 		if (value) {
 			return sprintf(__('Check %s.', 'mailster'), nameStr);
 		} else {

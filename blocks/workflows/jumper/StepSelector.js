@@ -53,7 +53,7 @@ export default function StepId(props) {
 		if (s) {
 			setCurrentStep(s);
 		} else {
-			setAttributes({ step: undefined });
+			setStep(undefined);
 		}
 	}, [step, stepBlocks]);
 
@@ -72,7 +72,7 @@ export default function StepId(props) {
 			const id = t.attributes.id;
 			const type = getBlockType(t.name);
 			return (
-				<MenuGroup key={id}>
+				<MenuGroup key={i}>
 					<MenuItem
 						icon={type.icon.src || type.icon}
 						iconPosition={'left'}
@@ -103,7 +103,6 @@ export default function StepId(props) {
 		__('Select a step', 'mailster');
 	const icon =
 		(currentStep && getBlockType(currentStep.name).icon.src) || StepIcon;
-	const info = currentStep || __('Select a Step', 'mailster');
 
 	return (
 		<BaseControl>
@@ -119,7 +118,7 @@ export default function StepId(props) {
 				{stepBlocks.length > 1 && (
 					<>
 						<PanelRow>
-							<DropdownMenu text={label} label={info} icon={icon}>
+							<DropdownMenu text={label} label={label} icon={icon}>
 								{(props) => <StepButtons {...props} />}
 							</DropdownMenu>
 						</PanelRow>
@@ -127,7 +126,7 @@ export default function StepId(props) {
 							<PanelRow>
 								{!isFound && (
 									<Button
-										variant="link"
+										variant="secondary"
 										onClick={() => {
 											toggleBlockHighlight(currentStep.clientId, true);
 											const e = window.document.getElementById(
@@ -142,7 +141,7 @@ export default function StepId(props) {
 								)}
 								{isFound && (
 									<Button
-										variant="link"
+										variant="secondary"
 										onClick={() => {
 											toggleBlockHighlight(clientId, true);
 											const e = window.document.getElementById(

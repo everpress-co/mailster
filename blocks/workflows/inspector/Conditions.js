@@ -25,7 +25,7 @@ import { useEffect, useState } from '@wordpress/element';
  */
 
 export default function ConditionsModal(props) {
-	const { attributes, setAttributes, help = '' } = props;
+	const { attributes, setAttributes, help = '', label, title } = props;
 	const { conditions } = attributes;
 
 	const [isLoaded, setLoaded] = useState(false);
@@ -60,7 +60,7 @@ export default function ConditionsModal(props) {
 		<>
 			<BaseControl help={help}>
 				<PanelRow>
-					<h3>{__('Conditions', 'mailster')}</h3>
+					<h3>{label || __('Conditions', 'mailster')}</h3>
 				</PanelRow>
 				{conditions && (
 					<PanelRow>
@@ -94,7 +94,9 @@ export default function ConditionsModal(props) {
 			</BaseControl>
 			{isOpen && (
 				<Modal
-					title={__('Define your conditions for this step', 'mailster')}
+					title={
+						title || __('Define your conditions for this step', 'mailster')
+					}
 					className="mailster-conditions-modal"
 					onRequestClose={() => setOpen(false)}
 					shouldCloseOnClickOutside={true}

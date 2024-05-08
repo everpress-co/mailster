@@ -14,6 +14,7 @@ import {
 	SelectControl,
 	DatePicker,
 	__experimentalNumberControl as NumberControl,
+	TreeSelect,
 } from '@wordpress/components';
 
 import { useSelect } from '@wordpress/data';
@@ -53,7 +54,7 @@ export default function FieldSelector(props) {
 		return 'date';
 	};
 	const changeDateType = (newType) => {
-		var newValue;
+		var newValue = '';
 		switch (newType) {
 			case 'date':
 				newValue = '';
@@ -67,39 +68,32 @@ export default function FieldSelector(props) {
 			case 'current':
 				newValue = 0;
 				break;
-
-			default:
-				break;
 		}
 		setDateType(newType);
 		setAttributes({ value: newValue.toString() });
 	};
 	const [dateType, setDateType] = useState(getInitialDateType());
 
-	allFields &&
-		!field &&
-		allFields.unshift({
-			id: 0,
-			name: __('Select Custom Field', 'mailster'),
-		});
-
 	return (
 		<BaseControl
 			help={__('Add new custom fields on the settings page.', 'mailster')}
 		>
-			<SelectControl
-				label={
-					field
-						? __('Set field', 'mailster')
-						: __('Select Custom Field', 'mailster')
-				}
-				value={field}
+			<TreeSelect
+				label={label}
+				noOptionLabel={__('Select Custom Field', 'mailster')}
+				selectedId={field}
 				onChange={(val) => {
 					setAttributes({ field: val ? val : undefined });
 				}}
-				options={allFields.map((field, i) => {
-					return { value: field.id, label: field.name };
-				})}
+				tree={
+					allFields &&
+					allFields.map((field, i) => {
+						return {
+							id: field.id,
+							name: field.name,
+						};
+					})
+				}
 			/>
 			{field && currentField && (
 				<>
@@ -107,31 +101,34 @@ export default function FieldSelector(props) {
 						if (currentField.type == 'date') {
 							return (
 								<BaseControl label={__('to', 'mailster')}>
-									<SelectControl
-										value={dateType}
-										onChange={(val) => changeDateType(val)}
-										options={[
+									<TreeSelect
+										selectedId={dateType}
+										noOptionLabel={__('Remove this value', 'mailster')}
+										tree={[
 											{
-												label: __('A specific date', 'mailster'),
-												value: 'date',
+												name: __('A specific date', 'mailster'),
+												id: 'date',
 											},
 											{
-												label: __('To the current date', 'mailster'),
-												value: 'current',
+												name: __('To the current date', 'mailster'),
+												id: 'current',
 											},
 											{
-												label: __('Increase by days', 'mailster'),
-												value: 'increase',
+												name: __('Increase by days', 'mailster'),
+												id: 'increase',
 											},
 											{
-												label: __('Decrease by days', 'mailster'),
-												value: 'decrease',
+												name: __('Decrease by days', 'mailster'),
+												id: 'decrease',
 											},
 										]}
+										onChange={(val) => changeDateType(val)}
 									/>
 									{dateType == 'date' && (
 										<DatePicker
-											currentDate={value ? new Date(value) : new Date()}
+											currentDate={
+												isNaN(Date.parse(value)) ? new Date() : new Date(value)
+											}
 											onChange={(val) =>
 												setAttributes({
 													value: val ? date('Y-m-d', val) : undefined,
@@ -170,11 +167,12 @@ export default function FieldSelector(props) {
 							currentField.type == 'radio'
 						) {
 							return (
-								<SelectControl
+								<TreeSelect
 									label={__('to', 'mailster')}
-									value={value}
-									options={currentField.values.map((val, i) => {
-										return { value: val, label: val };
+									selectedId={value}
+									noOptionLabel={__('Remove this value', 'mailster')}
+									tree={currentField.values.map((val, i) => {
+										return { id: val, name: val };
 									})}
 									onChange={(val) =>
 										setAttributes({ value: val ? val : undefined })

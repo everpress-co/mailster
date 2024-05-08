@@ -26,20 +26,24 @@ export default function JumperInspectorControls(props) {
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
-					<HelpBeacon id="66336f4fc3d8e87cfb53c423" align="right" />{' '}
+					<HelpBeacon id="66336f4fc3d8e87cfb53c423" align="right" />
 					<StepSelector {...props} />
 				</PanelBody>
 			</Panel>
 			<Panel>
 				<PanelBody>
-					{conditions && (
-						<PanelRow>
-							<p>
-								{__('only if following conditions are fullfilled.', 'mailster')}
-							</p>
-						</PanelRow>
-					)}
-					<Conditions {...props} />
+					<Conditions
+						{...props}
+						label={
+							conditions
+								? __('Only if following conditions are fullfilled.', 'mailster')
+								: __('Conditions', 'mailster')
+						}
+						title={__(
+							'Only jump if these condtions are fullfilled',
+							'mailster'
+						)}
+					/>
 				</PanelBody>
 			</Panel>
 		</InspectorControls>

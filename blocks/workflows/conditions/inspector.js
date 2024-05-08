@@ -25,7 +25,6 @@ export default function ConditionInspectorControls(props) {
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
-					<h3>{__('This is the help message of this step.', 'mailster')}</h3>
 					<Conditions {...props} />
 				</PanelBody>
 			</Panel>
