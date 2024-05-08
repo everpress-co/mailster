@@ -42,7 +42,7 @@ export default function StepId(props) {
 
 	useEffect(() => {
 		const blocks = searchBlocks(
-			'^mailster-workflow/(conditions|action|email|delay|stop|jumper)$'
+			'^mailster-workflow/(conditions|action|email|delay|stop|jumper|notification)$'
 		);
 		if (stepBlocks !== blocks) setStepBlocks(blocks);
 	}, [isSelected]);
@@ -107,16 +107,13 @@ export default function StepId(props) {
 	return (
 		<BaseControl>
 			<Panel>
-				<PanelRow>
-					<h3>{__('Jump to Step', 'mailster')}</h3>
-				</PanelRow>
 				{stepBlocks.length < 1 && (
 					<PanelRow>
 						<p>{__('No valid steps found', 'mailster!')}</p>
 					</PanelRow>
 				)}
 				{stepBlocks.length > 1 && (
-					<>
+					<BaseControl label={__('Jump to Step', 'mailster')}>
 						<PanelRow>
 							<DropdownMenu text={label} label={label} icon={icon}>
 								{(props) => <StepButtons {...props} />}
@@ -124,39 +121,25 @@ export default function StepId(props) {
 						</PanelRow>
 						{step && (
 							<PanelRow>
-								{!isFound && (
-									<Button
-										variant="secondary"
-										onClick={() => {
-											toggleBlockHighlight(currentStep.clientId, true);
-											const e = window.document.getElementById(
-												'block-' + currentStep.clientId
-											);
-											e && e.scrollIntoView(scrollBehavior);
-											setFound(!isFound);
-										}}
-									>
-										{__('Find Step', 'mailster')}
-									</Button>
-								)}
-								{isFound && (
-									<Button
-										variant="secondary"
-										onClick={() => {
-											toggleBlockHighlight(clientId, true);
-											const e = window.document.getElementById(
-												'block-' + clientId
-											);
-											e && e.scrollIntoView(scrollBehavior);
-											setFound(!isFound);
-										}}
-									>
-										{__('Back to Jumper', 'mailster')}
-									</Button>
-								)}
+								<Button
+									variant="secondary"
+									isPressed={isFound}
+									icon={isFound ? 'controls-back' : 'search'}
+									onClick={() => {
+										const id = isFound ? clientId : currentStep.clientId;
+										toggleBlockHighlight(id, true);
+										const e = window.document.getElementById('block-' + id);
+										e && e.scrollIntoView(scrollBehavior);
+										setFound(!isFound);
+									}}
+								>
+									{isFound
+										? __('Back to Jumper', 'mailster')
+										: __('Find Step', 'mailster')}
+								</Button>
 							</PanelRow>
 						)}
-					</>
+					</BaseControl>
 				)}
 			</Panel>
 		</BaseControl>

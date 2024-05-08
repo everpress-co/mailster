@@ -37,7 +37,7 @@ import { getAction } from './functions.js';
 
 export default function ActionInspectorControls(props) {
 	const { attributes, setAttributes } = props;
-	const { action, doubleoptin = false, comment = '' } = attributes;
+	const { action, doubleoptin = false } = attributes;
 
 	const allActions = useSelect((select) =>
 		select('mailster/automation').getActions()
@@ -85,7 +85,7 @@ export default function ActionInspectorControls(props) {
 			<Panel>
 				<PanelBody>
 					<HelpBeacon id="646237eb17da4d6b8d6ef0b7" align="right" />
-					<h3>{__('This is the help message of this step.', 'mailster')}</h3>
+
 					<PanelRow>
 						<ItemGroup>
 							{!allActions && <Spinner />}
@@ -113,7 +113,7 @@ export default function ActionInspectorControls(props) {
 							{action == 'update_field' && (
 								<FieldSelector
 									{...props}
-									label={__('Remove subscribers from these lists', 'mailster')}
+									label={__('Update Custom Field', 'mailster')}
 									help={__(
 										'Select all lists which get removed from the subscriber in this step.',
 										'mailster'
