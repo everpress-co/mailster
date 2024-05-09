@@ -73,22 +73,13 @@ class MailsterWorkflow {
 	 */
 	private function parse( $blocks, $parent = null ) {
 
-		$parsed     = array();
-		$step_found = false;
+		$parsed = array();
 		foreach ( $blocks as $block ) {
 			if ( ! $block['blockName'] ) {
 				continue;
 			}
 
 			$id = isset( $block['attrs']['id'] ) ? $block['attrs']['id'] : null;
-			// only add needed steps to the parsed object
-			if ( ! $step_found ) {
-				if ( $id === $this->step ) {
-					$step_found = true;
-				} else {
-					continue;
-				}
-			}
 
 			$type = str_replace( 'mailster-workflow/', '', $block['blockName'] );
 			$arg  = array(
@@ -1201,7 +1192,8 @@ class MailsterWorkflow {
 			$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
 		} else {
 			$use = $step['no'];
-			$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+			$this->log( 'xCONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+			error_log( print_r( $step, true ) );
 		}
 
 		return $this->do_steps( $use );
@@ -1216,7 +1208,7 @@ class MailsterWorkflow {
 		// TOTO optimze this
 		foreach ( $conditions as $i => $condition_group ) {
 			foreach ( $condition_group as $j => $condition ) {
-				if ( isset( $this->steps_map[ $condition['value'] ] ) ) {
+				if ( ! is_array( $condition['value'] ) && isset( $this->steps_map[ $condition['value'] ] ) ) {
 					$from_map                        = $this->steps_map[ $condition['value'] ];
 					$conditions[ $i ][ $j ]['value'] = $from_map['campaign'] ? $from_map['campaign'] : null;
 				}
