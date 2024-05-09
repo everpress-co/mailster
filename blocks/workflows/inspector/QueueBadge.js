@@ -38,6 +38,7 @@ import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
  */
 
 import { TIME_FORMAT, DATE_FORMAT } from '../trigger/constants';
+import { clearData } from '../../util';
 
 export default function QueueBadge(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
@@ -125,71 +126,92 @@ const Table = (props) => {
 
 	const [disabled, setDisabled] = useState(false);
 
+	const doItem = (item, action) => {
+		if (
+			!confirm(
+				sprintf(
+					__('Do you really like to remove %s from the queue?', 'mailster'),
+					item.email
+				)
+			)
+		)
+			return;
+		setDisabled(true);
+		apiFetch({
+			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
+			method: 'DELETE',
+		}).then((response) => {
+			response && setData(data.filter((item, i) => i !== index));
+			setDisabled(false);
+			clearData('getNumbers', 'mailster/automation');
+		});
+	};
+
+	const deleteItem = (item) => {
+		if (
+			!confirm(
+				sprintf(
+					__('Do you really like to remove %s from the queue?', 'mailster'),
+					item.email
+				)
+			)
+		)
+			return;
+		setDisabled(true);
+		apiFetch({
+			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
+			method: 'DELETE',
+		}).then((response) => {
+			response && setData(data.filter((item, i) => i !== index));
+			setDisabled(false);
+			clearData('getNumbers', 'mailster/automation');
+		});
+	};
+	const forwardItem = (item) => {
+		if (
+			!confirm(
+				sprintf(
+					__('Do you really like to forward %s to the next step?', 'mailster'),
+					item.email
+				)
+			)
+		)
+			return;
+		setDisabled(true);
+		apiFetch({
+			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
+			method: 'POST',
+			data: { forward: true },
+		}).then((response) => {
+			response && setData(data.filter((item, i) => i !== index));
+			setDisabled(false);
+			clearData('getNumbers', 'mailster/automation');
+		});
+	};
+	const finishItem = (item) => {
+		if (
+			!confirm(
+				sprintf(
+					__('Do you really like to finish the journey for %s?', 'mailster'),
+					item.email
+				)
+			)
+		)
+			return;
+		setDisabled(true);
+
+		apiFetch({
+			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
+			method: 'POST',
+			data: { finish: true },
+		}).then((response) => {
+			response && setData(data.filter((item, i) => i !== index));
+			setDisabled(false);
+			clearData('getNumbers', 'mailster/automation');
+		});
+	};
+
 	const rows = data.map((item, index) => {
-		const deleteItem = () => {
-			if (
-				!confirm(
-					sprintf(
-						__('Do you really like to remove %s from the queue?', 'mailster'),
-						item.email
-					)
-				)
-			)
-				return;
-			setDisabled(true);
-			apiFetch({
-				path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
-				method: 'DELETE',
-			}).then((response) => {
-				response && setData(data.filter((item, i) => i !== index));
-				setDisabled(false);
-			});
-		};
-		const forwardItem = () => {
-			if (
-				!confirm(
-					sprintf(
-						__(
-							'Do you really like to forward %s to the next step?',
-							'mailster'
-						),
-						item.email
-					)
-				)
-			)
-				return;
-			setDisabled(true);
-
-			apiFetch({
-				path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
-				method: 'POST',
-				data: { forward: true },
-			}).then((response) => {
-				response && setData(data.filter((item, i) => i !== index));
-				setDisabled(false);
-			});
-		};
-		const finishItem = () => {
-			if (
-				!confirm(
-					sprintf(
-						__('Do you really like to finish the journey for %s?', 'mailster'),
-						item.email
-					)
-				)
-			)
-				return;
-			setDisabled(true);
-
-			apiFetch({
-				path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
-				method: 'POST',
-				data: { finish: true },
-			}).then((response) => {
-				response && setData(data.filter((item, i) => i !== index));
-				setDisabled(false);
-			});
-		};
 		const t = item.timestamp * 1000;
 		return (
 			<tr key={index}>
@@ -206,31 +228,33 @@ const Table = (props) => {
 				</td>
 				<td>{item.trigger}</td>
 				<td>
-					<Tooltip
-						text={dateI18n(DATE_FORMAT, t) + ' @ ' + dateI18n(TIME_FORMAT, t)}
-					>
-						<div>{humanTimeDiff(t)}</div>
-					</Tooltip>
+					{t && (
+						<Tooltip
+							text={dateI18n(DATE_FORMAT, t) + ' @ ' + dateI18n(TIME_FORMAT, t)}
+						>
+							<div>{humanTimeDiff(t)}</div>
+						</Tooltip>
+					)}
 				</td>
 				<td>
 					<IconButton
 						icon="flag"
 						disabled={disabled}
 						label={__('Finish Journey', 'mailster')}
-						onClick={finishItem}
+						onClick={() => finishItem(item)}
 					/>
 					<IconButton
 						icon="controls-skipforward"
 						disabled={disabled}
 						label={__('Forward to next step', 'mailster')}
-						onClick={forwardItem}
+						onClick={() => forwardItem(item)}
 					/>
 					<IconButton
 						icon="trash"
 						disabled={disabled}
 						isDestructive
 						label={__('Remove item', 'mailster')}
-						onClick={deleteItem}
+						onClick={() => deleteItem(item)}
 					/>
 				</td>
 			</tr>

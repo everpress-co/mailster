@@ -11,6 +11,7 @@ import { useSelect, select, dispatch } from '@wordpress/data';
  * Internal dependencies
  */
 import * as actions from './actions';
+import { clearData } from '../../util';
 
 export function* getTriggers() {
 	const data = yield actions.getTriggers('/mailster/v1/automations/triggers');
@@ -30,7 +31,7 @@ export function* getNumbers() {
 		setInterval(
 			() => {
 				if (debug || document.hasFocus()) {
-					clearData('getNumbers');
+					clearData('getNumbers', 'mailster/automation');
 					clearInterval(interval);
 				}
 			},
@@ -87,9 +88,4 @@ export function* getForms() {
 export function* getEmails() {
 	const data = yield actions.getEmails();
 	return actions.setEmails(data);
-}
-function clearData(selector) {
-	dispatch('mailster/automation').invalidateResolutionForStoreSelector(
-		selector
-	);
 }

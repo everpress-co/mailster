@@ -15,7 +15,13 @@ import {
 	useState,
 	useCallback,
 } from '@wordpress/element';
-import { select, subscribe, useSelect, useDispatch } from '@wordpress/data';
+import {
+	select,
+	subscribe,
+	useSelect,
+	useDispatch,
+	dispatch,
+} from '@wordpress/data';
 import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
 
 /**
@@ -636,4 +642,8 @@ export function searchBlocks(pattern, clientId = null, innerBlocks = true) {
 
 	_s(allBlocks);
 	return matchingBlocks;
+}
+
+export function clearData(selector, store) {
+	dispatch(store).invalidateResolutionForStoreSelector(selector);
 }
