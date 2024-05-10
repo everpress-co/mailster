@@ -952,6 +952,7 @@ class MailsterWorkflow {
 		$log         = true;
 		$attachments = array();
 
+		// TODO: make sure the user is subscribed!
 		$result = mailster( 'campaigns' )->send( $args['campaign_id'], $args['subscriber_id'], $track, $force, $log, $args['tags'], $attachments );
 
 		if ( is_wp_error( $result ) ) {

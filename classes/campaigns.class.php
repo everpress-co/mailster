@@ -591,7 +591,7 @@ class MailsterCampaigns {
 				if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
 					wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
 				} elseif ( $new_id = $this->duplicate( $id ) ) {
-						$id = $new_id;
+					$id = $new_id;
 				}
 
 				// pause campaign

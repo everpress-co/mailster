@@ -662,7 +662,7 @@ class MailsterConditions {
 			if ( isset( $this->workflow_campaigns[ $post ]['campaign'] ) ) {
 				$campaign_title = get_the_title( $this->workflow_campaigns[ $post ]['campaign'] );
 				if ( $campaign_title != $title ) {
-					$title .= ' (' . $campaign_titl . ')';
+					$title .= ' (' . $campaign_title . ')';
 				}
 			}
 			return $title;
@@ -910,6 +910,10 @@ class MailsterConditions {
 
 	private function value_field_click_related( $value_arr, $inputname ) {
 		$value_arr = is_array( $value_arr ) ? $value_arr : array( $value_arr );
+
+		// remove empty values and make it unique
+		$value_arr = array_unique( array_filter( $value_arr ) );
+
 		?>
 		<div>
 			<?php foreach ( $value_arr as $k => $v ) : ?>
