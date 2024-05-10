@@ -44,7 +44,7 @@ class MailsterAutomations {
 
 		add_shortcode( 'newsletter_block_form', array( &$this, 'block_forms_shortcode' ) );
 
-		add_action( 'wp_loaded', array( &$this, 'edit_hook' ) );
+		add_action( 'admin_init', array( &$this, 'edit_hook' ) );
 		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
 	}
 
@@ -906,26 +906,27 @@ class MailsterAutomations {
 
 	public function edit_hook() {
 
-		if ( isset( $_GET['post_type'] ) && 'mailster-workflow' == $_GET['post_type'] && ! isset( $_GET['page'] ) ) {
+		if ( ! isset( $_GET['post_type'] ) || 'mailster-workflow' !== $_GET['post_type'] ) {
+			return;
+		}
 
-			// duplicate campaign
-			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-				$id = (int) $_GET['duplicate'];
-				if ( false ) {
-					// if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
-					wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
-				} elseif ( $new_id = $this->duplicate( $id ) ) {
-					$id = $new_id;
-				}
+		// duplicate campaign
+		if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
+			$id = (int) $_GET['duplicate'];
+			if ( false ) {
+				// if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
+				wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
+			} elseif ( $new_id = $this->duplicate( $id ) ) {
+				$id = $new_id;
 			}
+		}
 
-			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
-				$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
-				( isset( $_GET['edit'] ) )
-					? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
-					: mailster_redirect( 'edit.php?post_type=mailster-workflow' . $status );
-				exit;
-			}
+		if ( isset( $id ) && ! wp_doing_ajax() ) {
+			$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
+			( isset( $_GET['edit'] ) )
+				? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
+				: mailster_redirect( 'edit.php?post_type=mailster-workflow' . $status );
+			exit;
 		}
 	}
 

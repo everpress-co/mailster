@@ -40,7 +40,7 @@ class MailsterCampaigns {
 		add_filter( 'admin_post_thumbnail_html', array( &$this, 'add_post_thumbnail_link' ), 10, 2 );
 		add_filter( 'admin_post_thumbnail_size', array( &$this, 'admin_post_thumbnail_size' ), 10, 3 );
 
-		add_action( 'wp_loaded', array( &$this, 'edit_hook' ) );
+		add_action( 'admin_init', array( &$this, 'edit_hook' ) );
 		add_action( 'get_the_excerpt', array( &$this, 'get_the_excerpt' ) );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'assets' ) );
 		add_filter( 'update_post_metadata', array( &$this, 'prevent_edit_lock' ), 10, 5 );
@@ -573,112 +573,113 @@ class MailsterCampaigns {
 
 
 	public function get_the_excerpt( $excerpt ) {
-		if ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] ) {
-			return '';
+		if ( ! isset( $_GET['post_type'] ) || 'newsletter' !== $_GET['post_type'] ) {
+			return $excerpt;
 		}
-		return $excerpt;
+
+		return '';
 	}
 
 
 	public function edit_hook() {
 
-		if ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] && ! isset( $_GET['page'] ) ) {
+		if ( ! isset( $_GET['post_type'] ) || 'newsletter' !== $_GET['post_type'] ) {
+			return;
+		}
 
 			// duplicate campaign
-			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-				$id   = (int) $_GET['duplicate'];
-				$post = get_post( $id );
-				if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
-					wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
-				} elseif ( $new_id = $this->duplicate( $id ) ) {
-					$id = $new_id;
-				}
-
-				// pause campaign
-			} elseif ( isset( $_GET['pause'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_pause_nonce' ) ) {
-				$id = (int) $_GET['pause'];
-				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
-					wp_die( esc_html__( 'You are not allowed to pause this campaign.', 'mailster' ) );
-				} else {
-					$this->pause( $id );
-				}
-
-				// continue/start campaign
-			} elseif ( isset( $_GET['start'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
-				$id = (int) $_GET['start'];
-				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
-					wp_die( esc_html__( 'You are not allowed to start this campaign.', 'mailster' ) );
-				} else {
-					$this->start( $id );
-				}
-
-				// resume campaign
-			} elseif ( isset( $_GET['resume'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
-				$id = (int) $_GET['resume'];
-				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
-					wp_die( esc_html__( 'You are not allowed to resume this campaign.', 'mailster' ) );
-				} else {
-					$this->resume( $id );
-				}
-
-				// finish campaign
-			} elseif ( isset( $_GET['finish'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_finish_nonce' ) ) {
-				$id = (int) $_GET['finish'];
-				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
-					wp_die( esc_html__( 'You are not allowed to finish this campaign.', 'mailster' ) );
-				} else {
-					$this->finish( $id );
-				}
-
-				// activate autoresponder
-			} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
-				$id = (int) $_GET['activate'];
-				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
-					wp_die( esc_html__( 'You are not allowed to activate this campaign.', 'mailster' ) );
-				} else {
-					$this->activate( $id );
-				}
-
-				// deactivate autoresponder
-			} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
-				$id = (int) $_GET['deactivate'];
-				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
-					wp_die( esc_html__( 'You are not allowed to deactivate this campaign.', 'mailster' ) );
-				} else {
-					$this->deactivate( $id );
-				}
+		if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
+			$id   = (int) $_GET['duplicate'];
+			$post = get_post( $id );
+			if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
+				wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
+			} elseif ( $new_id = $this->duplicate( $id ) ) {
+				$id = $new_id;
 			}
 
-			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
-				$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
-				( isset( $_GET['edit'] ) )
-					? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
-					: mailster_redirect( 'edit.php?post_type=newsletter' . $status );
-				exit;
+			// pause campaign
+		} elseif ( isset( $_GET['pause'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_pause_nonce' ) ) {
+			$id = (int) $_GET['pause'];
+			if ( ! current_user_can( 'publish_newsletters', $id ) ) {
+				wp_die( esc_html__( 'You are not allowed to pause this campaign.', 'mailster' ) );
+			} else {
+				$this->pause( $id );
 			}
 
-			// convert to block form
-			if ( isset( $_GET['convert'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_convert_nonce' ) ) {
-				$id = (int) $_GET['convert'];
-				$id = $this->convert( $id );
-
-				mailster_redirect( admin_url( 'post.php?post=' . $id . '&action=edit' ) );
-				exit;
-
+			// continue/start campaign
+		} elseif ( isset( $_GET['start'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
+			$id = (int) $_GET['start'];
+			if ( ! current_user_can( 'publish_newsletters', $id ) ) {
+				wp_die( esc_html__( 'You are not allowed to start this campaign.', 'mailster' ) );
+			} else {
+				$this->start( $id );
 			}
 
-			add_filter( 'the_excerpt', '__return_false' );
-			add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
-			add_filter( 'page_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
-			add_filter( 'bulk_actions-edit-newsletter', array( &$this, 'bulk_actions' ) );
-			add_filter( 'manage_edit-newsletter_columns', array( &$this, 'columns' ) );
-			add_filter( 'manage_newsletter_posts_custom_column', array( &$this, 'columns_content' ) );
-			add_filter( 'manage_edit-newsletter_sortable_columns', array( &$this, 'columns_sortable' ) );
-			add_filter( 'pre_get_posts', array( &$this, 'pre_get_posts' ) );
+			// resume campaign
+		} elseif ( isset( $_GET['resume'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
+			$id = (int) $_GET['resume'];
+			if ( ! current_user_can( 'publish_newsletters', $id ) ) {
+				wp_die( esc_html__( 'You are not allowed to resume this campaign.', 'mailster' ) );
+			} else {
+				$this->resume( $id );
+			}
 
-			$this->handle_bulk_actions();
+			// finish campaign
+		} elseif ( isset( $_GET['finish'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_finish_nonce' ) ) {
+			$id = (int) $_GET['finish'];
+			if ( ! current_user_can( 'publish_newsletters', $id ) ) {
+				wp_die( esc_html__( 'You are not allowed to finish this campaign.', 'mailster' ) );
+			} else {
+				$this->finish( $id );
+			}
+
+			// activate autoresponder
+		} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
+			$id = (int) $_GET['activate'];
+			if ( ! current_user_can( 'publish_newsletters', $id ) ) {
+				wp_die( esc_html__( 'You are not allowed to activate this campaign.', 'mailster' ) );
+			} else {
+				$this->activate( $id );
+			}
+
+			// deactivate autoresponder
+		} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
+			$id = (int) $_GET['deactivate'];
+			if ( ! current_user_can( 'publish_newsletters', $id ) ) {
+				wp_die( esc_html__( 'You are not allowed to deactivate this campaign.', 'mailster' ) );
+			} else {
+				$this->deactivate( $id );
+			}
+		}
+
+		if ( isset( $id ) && ! wp_doing_ajax() ) {
+			$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
+			( isset( $_GET['edit'] ) )
+				? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
+				: mailster_redirect( 'edit.php?post_type=newsletter' . $status );
+			exit;
+		}
+
+		// convert to workflow
+		if ( isset( $_GET['convert'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_convert_nonce' ) ) {
+			$id = (int) $_GET['convert'];
+			$id = $this->convert( $id );
+
+			mailster_redirect( admin_url( 'post.php?post=' . $id . '&action=edit' ) );
+			exit;
 
 		}
+
+		add_filter( 'the_excerpt', '__return_false' );
+		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
+		add_filter( 'page_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
+		add_filter( 'bulk_actions-edit-newsletter', array( &$this, 'bulk_actions' ) );
+		add_filter( 'manage_edit-newsletter_columns', array( &$this, 'columns' ) );
+		add_filter( 'manage_newsletter_posts_custom_column', array( &$this, 'columns_content' ) );
+		add_filter( 'manage_edit-newsletter_sortable_columns', array( &$this, 'columns_sortable' ) );
+		add_filter( 'pre_get_posts', array( &$this, 'pre_get_posts' ) );
+
+		$this->handle_bulk_actions();
 	}
 
 
