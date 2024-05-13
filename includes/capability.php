@@ -2,9 +2,30 @@
 
 $mailster_capabilities = array(
 
+	// campaigns
+	'edit_newsletter'                     => array(
+		'title' => esc_html__( 'edit campaign', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'read_newsletter'                     => array(
+		'title' => esc_html__( 'read campaign', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'delete_newsletter'                   => array(
+		'title' => esc_html__( 'delete campaigns', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
 	'edit_newsletters'                    => array(
 		'title' => esc_html__( 'edit campaigns', 'mailster' ),
 		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'edit_others_newsletters'             => array(
+		'title' => esc_html__( 'edit others campaigns', 'mailster' ),
+		'roles' => array( 'editor' ),
 	),
 
 	'publish_newsletters'                 => array(
@@ -12,14 +33,9 @@ $mailster_capabilities = array(
 		'roles' => array( 'author', 'editor' ),
 	),
 
-	'delete_newsletters'                  => array(
-		'title' => esc_html__( 'delete campaigns', 'mailster' ),
-		'roles' => array( 'contributor', 'author', 'editor' ),
-	),
-
-	'edit_others_newsletters'             => array(
-		'title' => esc_html__( 'edit others campaigns', 'mailster' ),
-		'roles' => array( 'editor' ),
+	'read_private_newsletters'            => array(
+		'title' => esc_html__( 'read private campaigns', 'mailster' ),
+		'roles' => array( 'author', 'editor' ),
 	),
 
 	'delete_others_newsletters'           => array(
@@ -36,6 +52,119 @@ $mailster_capabilities = array(
 		'title' => esc_html__( 'duplicate others campaigns', 'mailster' ),
 		'roles' => array( 'editor' ),
 	),
+
+
+
+
+	// workflows
+	'edit_mailster-workflow'              => array(
+		'title' => esc_html__( 'edit workflow', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'read_mailster-workflow'              => array(
+		'title' => esc_html__( 'view workflow', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'delete_mailster-workflow'            => array(
+		'title' => esc_html__( 'delete workflows', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'edit_mailster-workflows'             => array(
+		'title' => esc_html__( 'edit workflows', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'edit_others_mailster-workflows'      => array(
+		'title' => esc_html__( 'edit others workflows', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'publish_mailster-workflows'          => array(
+		'title' => esc_html__( 'activate workflows', 'mailster' ),
+		'roles' => array( 'author', 'editor' ),
+	),
+
+	'read_private_mailster-workflows'     => array(
+		'title' => esc_html__( 'view inactive workflows', 'mailster' ),
+		'roles' => array( 'author', 'editor' ),
+	),
+
+	'delete_others_mailster-workflows'    => array(
+		'title' => esc_html__( 'delete others workflows', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'duplicate_mailster-workflows'        => array(
+		'title' => esc_html__( 'duplicate workflows', 'mailster' ),
+		'roles' => array( 'author', 'editor' ),
+	),
+
+	'duplicate_others_mailster-workflows' => array(
+		'title' => esc_html__( 'duplicate others workflows', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+
+
+
+	// block forms
+	'edit_mailster-form'                  => array(
+		'title' => esc_html__( 'edit form', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'read_mailster-form'                  => array(
+		'title' => esc_html__( 'view form', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'delete_mailster-form'                => array(
+		'title' => esc_html__( 'delete forms', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'edit_mailster-forms'                 => array(
+		'title' => esc_html__( 'edit forms', 'mailster' ),
+		'roles' => array( 'contributor', 'author', 'editor' ),
+	),
+
+	'edit_others_mailster-forms'          => array(
+		'title' => esc_html__( 'edit others forms', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'publish_mailster-forms'              => array(
+		'title' => esc_html__( 'activate forms', 'mailster' ),
+		'roles' => array( 'author', 'editor' ),
+	),
+
+	'read_private_mailster-forms'         => array(
+		'title' => esc_html__( 'view private forms', 'mailster' ),
+		'roles' => array( 'author', 'editor' ),
+	),
+
+	'delete_others_mailster-forms'        => array(
+		'title' => esc_html__( 'delete others forms', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'duplicate_mailster-forms'            => array(
+		'title' => esc_html__( 'duplicate forms', 'mailster' ),
+		'roles' => array( 'author', 'editor' ),
+	),
+
+	'duplicate_others_mailster-forms'     => array(
+		'title' => esc_html__( 'duplicate others forms', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+
+
+
+
 
 	'mailster_edit_autoresponders'        => array(
 		'title' => esc_html__( 'edit autoresponders', 'mailster' ),
@@ -89,17 +218,17 @@ $mailster_capabilities = array(
 	),
 
 	'mailster_edit_forms'                 => array(
-		'title' => esc_html__( 'edit forms', 'mailster' ),
+		'title' => esc_html__( 'edit forms', 'mailster' ) . ' (legacy)',
 		'roles' => array( 'editor' ),
 	),
 
 	'mailster_add_forms'                  => array(
-		'title' => esc_html__( 'add forms', 'mailster' ),
+		'title' => esc_html__( 'add forms', 'mailster' ) . ' (legacy)',
 		'roles' => array( 'editor' ),
 	),
 
 	'mailster_delete_forms'               => array(
-		'title' => esc_html__( 'delete forms', 'mailster' ),
+		'title' => esc_html__( 'delete forms', 'mailster' ) . ' (legacy)',
 		'roles' => array( 'editor' ),
 	),
 

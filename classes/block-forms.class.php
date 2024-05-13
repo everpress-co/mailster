@@ -559,16 +559,7 @@ class MailsterBlockForms {
 			'item_updated'             => __( 'Form updated.', 'mailster' ),
 
 		);
-		$capabilities = array(
-			'edit_post'          => 'mailster_edit_form',
-			'read_post'          => 'mailster_read_form',
-			'delete_post'        => 'mailster_delete_forms',
-			'edit_posts'         => 'mailster_edit_forms',
-			'edit_others_posts'  => 'mailster_edit_others_forms',
-			'publish_posts'      => 'mailster_publish_forms',
-			'read_private_posts' => 'mailster_read_private_forms',
-		);
-		$args         = array(
+		$args = array(
 			'label'               => __( 'Form', 'mailster' ),
 			'description'         => __( 'Newsletter Form', 'mailster' ),
 			'labels'              => $labels,
@@ -576,6 +567,7 @@ class MailsterBlockForms {
 			'hierarchical'        => false,
 			'public'              => false,
 			'publicly_queryable'  => ! is_admin(),
+			'capability_type'     => 'mailster-form',
 			'show_ui'             => true,
 			'show_in_menu'        => 'edit.php?post_type=newsletter',
 			'show_in_admin_bar'   => false,
