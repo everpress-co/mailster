@@ -29,6 +29,7 @@ class MailsterAutomations {
 
 		add_filter( 'manage_mailster-workflow_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_mailster-workflow_posts_custom_column', array( &$this, 'columns_content' ), 10, 2 );
+		add_filter( 'quick_edit_enabled_for_post_type', array( &$this, 'quick_edit_enabled_for_post_type' ), 10, 3 );
 		add_filter( 'wp_list_table_class_name', array( &$this, 'wp_list_table_class_name' ), 10, 2 );
 
 		add_action( 'mailster_cron_workflow', array( &$this, 'wp_schedule' ) );
@@ -46,6 +47,8 @@ class MailsterAutomations {
 
 		add_action( 'admin_init', array( &$this, 'edit_hook' ) );
 		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
+
+		add_action( 'mailster_unsubscribe', array( &$this, 'on_unsubscribe' ), 10, 4 );
 	}
 
 
@@ -748,6 +751,15 @@ class MailsterAutomations {
 		return $output;
 	}
 
+	public function quick_edit_enabled_for_post_type( $enabled, $post_type ) {
+
+		if ( get_post_type() !== 'mailster-workflow' ) {
+			return $enabled;
+		}
+
+		return false;
+	}
+
 
 	/**
 	 *
@@ -889,7 +901,7 @@ class MailsterAutomations {
 			return $actions;
 		}
 
-		// if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $workflow->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) {
+		if ( ( current_user_can( 'duplicate_mailster-workflows' ) && get_current_user_id() == $workflow->post_author ) || current_user_can( 'duplicate_others_mailster-workflows' ) ) {
 			$actions['duplicate'] = '<a class="duplicate" href="' . add_query_arg(
 				array(
 					'post_type'   => 'mailster-workflow',
@@ -899,7 +911,29 @@ class MailsterAutomations {
 				),
 				admin_url( 'edit.php' )
 			) . '" title="' . sprintf( esc_html__( 'Duplicate Workflow %s', 'mailster' ), '&quot;' . esc_attr( $workflow->post_title ) . '&quot;' ) . '">' . esc_html__( 'Duplicate', 'mailster' ) . '</a>';
-		// }
+		}
+		if ( $workflow->post_status == 'private' && ( current_user_can( 'publish_mailster-workflows' ) ) ) {
+			$actions['activate'] = '<a class="activate" href="' . add_query_arg(
+				array(
+					'post_type'   => 'mailster-workflow',
+					'activate'    => (int) $workflow->ID,
+					'post_status' => isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : null,
+					'_wpnonce'    => wp_create_nonce( 'mailster_activate_nonce' ),
+				),
+				admin_url( 'edit.php' )
+			) . '" title="' . sprintf( esc_html__( 'Activate Workflow %s', 'mailster' ), '&quot;' . esc_attr( $workflow->post_title ) . '&quot;' ) . '">' . esc_html__( 'Activate', 'mailster' ) . '</a>';
+		}
+		if ( $workflow->post_status == 'publish' && current_user_can( 'publish_mailster-workflows' ) ) {
+			$actions['deactivate'] = '<a class="deactivate" href="' . add_query_arg(
+				array(
+					'post_type'   => 'mailster-workflow',
+					'deactivate'  => (int) $workflow->ID,
+					'post_status' => isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : null,
+					'_wpnonce'    => wp_create_nonce( 'mailster_deactivate_nonce' ),
+				),
+				admin_url( 'edit.php' )
+			) . '" title="' . sprintf( esc_html__( 'Deactivate Workflow %s', 'mailster' ), '&quot;' . esc_attr( $workflow->post_title ) . '&quot;' ) . '">' . esc_html__( 'Deactivate', 'mailster' ) . '</a>';
+		}
 
 		return $actions;
 	}
@@ -910,47 +944,42 @@ class MailsterAutomations {
 			return;
 		}
 
-		// duplicate campaign
+		// duplicate workflow
 		if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
 			$id = (int) $_GET['duplicate'];
-			if ( false ) {
-				// if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
-				wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
+			if ( ( current_user_can( 'duplicate_mailster-workflows' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_mailster-workflows' ) ) {
+				wp_die( esc_html__( 'You are not allowed to duplicate this workflow.', 'mailster' ) );
 			} elseif ( $new_id = $this->duplicate( $id ) ) {
 				$id = $new_id;
+			}
+			// activate workflow
+		} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
+			$id = (int) $_GET['activate'];
+			if ( ( current_user_can( 'activate_mailster-workflows' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'activate_others_mailster-workflows' ) ) {
+				wp_die( esc_html__( 'You are not allowed to activate this workflow.', 'mailster' ) );
+			} else {
+				$this->activate( $id );
+			}
+			// deactivate workflow
+		} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
+			$id = (int) $_GET['deactivate'];
+			if ( ( current_user_can( 'deactivate_mailster-workflows' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'deactivate_others_mailster-workflows' ) ) {
+				wp_die( esc_html__( 'You are not allowed to deactivate this workflow.', 'mailster' ) );
+			} else {
+				$this->deactivate( $id );
 			}
 		}
 
 		if ( isset( $id ) && ! wp_doing_ajax() ) {
 			$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
 			( isset( $_GET['edit'] ) )
-				? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
-				: mailster_redirect( 'edit.php?post_type=mailster-workflow' . $status );
+			? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
+			: mailster_redirect( 'edit.php?post_type=mailster-workflow' . $status );
 			exit;
 		}
 	}
 
 
-	public function ___custom_column( $column, $post_id ) {
-
-		switch ( $column ) {
-			case 'active':
-				$numbers = $this->get_numbers( $post_id );
-				echo number_format_i18n( $numbers['active'] );
-				break;
-			case 'finished':
-				$numbers = $this->get_numbers( $post_id );
-				echo number_format_i18n( $numbers['finished'] );
-				break;
-			case 'total':
-				$numbers = $this->get_numbers( $post_id );
-				echo number_format_i18n( $numbers['total'] );
-				echo '<pre>' . print_r( $numbers, true ) . '</pre>';
-				break;
-			default:
-				break;
-		}
-	}
 
 	public function register_post_type() {
 
@@ -972,7 +1001,7 @@ class MailsterAutomations {
 			'not_found_in_trash'       => __( 'Not found in Trash', 'mailster' ),
 			'items_list'               => __( 'Workflows list', 'mailster' ),
 			'items_list_navigation'    => __( 'Workflows list navigation', 'mailster' ),
-			'filter_items_list'        => __( 'Filter forms list', 'mailster' ),
+			'filter_items_list'        => __( 'Filter workflow list', 'mailster' ),
 			'item_published'           => __( 'Workflow published', 'mailster' ),
 			'item_published_privately' => __( 'Workflow published privately.', 'mailster' ),
 			'item_reverted_to_draft'   => __( 'Workflow reverted to draft.', 'mailster' ),
@@ -980,16 +1009,8 @@ class MailsterAutomations {
 			'item_updated'             => __( 'Workflow updated.', 'mailster' ),
 
 		);
-		$capabilities = array(
-			'edit_post'          => 'mailster_edit_form',
-			'read_post'          => 'mailster_read_form',
-			'delete_post'        => 'mailster_delete_forms',
-			'edit_posts'         => 'mailster_edit_forms',
-			'edit_others_posts'  => 'mailster_edit_others_forms',
-			'publish_posts'      => 'mailster_publish_forms',
-			'read_private_posts' => 'mailster_read_private_forms',
-		);
-		$args         = array(
+
+		$args = array(
 			'label'               => __( 'Automation', 'mailster' ),
 			'description'         => __( 'Newsletter Automation', 'mailster' ),
 			'labels'              => $labels,
@@ -997,6 +1018,7 @@ class MailsterAutomations {
 			'hierarchical'        => false,
 			'public'              => false,
 			'show_ui'             => true,
+			'capability_type'     => 'mailster-workflow',
 			'show_in_menu'        => 'edit.php?post_type=newsletter',
 			'show_in_admin_bar'   => false,
 			'show_in_nav_menus'   => true,
@@ -1169,7 +1191,6 @@ class MailsterAutomations {
 		return $editor_settings;
 	}
 
-
 	public function force_block_editor( $bool, $post_type ) {
 
 		// just pass through
@@ -1217,7 +1238,6 @@ class MailsterAutomations {
 		);
 	}
 
-
 	public function register_conditions_variations( $args, $block_type ) {
 		if ( $block_type !== 'mailster-workflow/condition' ) {
 			return $args;
@@ -1248,7 +1268,6 @@ class MailsterAutomations {
 		return $args;
 	}
 
-
 	public function register_variations( $args, $block_type ) {
 
 		if ( $block_type !== 'mailster-workflow/action' ) {
@@ -1274,7 +1293,6 @@ class MailsterAutomations {
 
 		return $args;
 	}
-
 
 	public function register_block_patterns() {
 
@@ -1318,14 +1336,45 @@ class MailsterAutomations {
 		return $this->render_form_with_options( $atts['id'], array(), false );
 	}
 
+	public function on_unsubscribe( $subscriber_id, $campaign_id, $status, $index ) {
 
-	/**
-	 *
-	 *
-	 * @param unknown $id
-	 * @param unknown $timestamp (optional)
-	 * @return unknown
-	 */
+		global $wpdb;
+
+		// delete workflows with subscribers
+		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'subscriber_id' => (int) $subscriber_id ) );
+	}
+
+
+	public function activate( $id ) {
+
+		$workflow = get_post( $id );
+
+		if ( ! $workflow ) {
+			return new WP_Error( 'no_workflow', esc_html__( 'This workflow doesn\'t exists.', 'mailster' ) );
+		}
+
+		return wp_publish_post( $workflow );
+	}
+	public function deactivate( $id ) {
+
+		$workflow = get_post( $id );
+
+		if ( ! $workflow ) {
+			return new WP_Error( 'no_workflow', esc_html__( 'This workflow doesn\'t exists.', 'mailster' ) );
+		}
+
+		// make post private
+		$workflow->post_status = 'private';
+		return wp_update_post( $workflow );
+	}
+
+		/**
+		 *
+		 *
+		 * @param unknown $id
+		 * @param unknown $timestamp (optional)
+		 * @return unknown
+		 */
 	public function duplicate( $id, $workflow_args = array(), $workflow_meta = array(), $timestamp = null ) {
 
 		$workflow = get_post( $id );
