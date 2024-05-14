@@ -369,8 +369,7 @@
 .mailster-step-conditions > .mailster-step {
 	max-width: 90%;
 }
-.mailster-step-disabled > .mailster-step {
-	opacity: 0.8;
+.mailster-step-disabled .mailster-step {
 	filter: grayscale(1);
 	background-image: linear-gradient(
 		45deg,
@@ -383,6 +382,9 @@
 		#e0e0e065 100%
 	);
 	background-size: 56.57px 56.57px;
+}
+.mailster-step-disabled .mailster-step-inner {
+	opacity: 0.5;
 }
 
 .wp-block-mailster-workflow-trigger.mailster-step-incomplete > .mailster-step {

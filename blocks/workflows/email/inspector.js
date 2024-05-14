@@ -17,10 +17,6 @@ import {
 	Tip,
 } from '@wordpress/components';
 
-import { useEffect, useState } from '@wordpress/element';
-import { useSelect, select, dispatch } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
-
 /**
  * Internal dependencies
  */

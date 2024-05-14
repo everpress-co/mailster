@@ -8,10 +8,19 @@
 
 import { sprintf, __ } from '@wordpress/i18n';
 
-import { Button, PanelRow, Modal, TreeSelect } from '@wordpress/components';
+import {
+	Button,
+	PanelRow,
+	Modal,
+	TreeSelect,
+	ToolbarButton,
+	ButtonGroup,
+} from '@wordpress/components';
 
-import { useSelect, dispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
+import { BlockControls } from '@wordpress/block-editor';
+import { clearData } from '../../util';
 
 /**
  * Internal dependencies
@@ -31,9 +40,7 @@ export default function CampaignSelector(props) {
 	useEffect(() => {
 		window.mailster_receiver_post_id = (post_id) => {
 			setAttributes({ campaign: undefined });
-			dispatch('mailster/automation').invalidateResolutionForStoreSelector(
-				'getCampaigns'
-			);
+			clearData('mailster/automation', 'getCampaigns');
 			setTimeout(() => {
 				setAttributes({
 					campaign: post_id ? parseInt(post_id, 10) : undefined,
@@ -73,6 +80,19 @@ export default function CampaignSelector(props) {
 
 	return (
 		<>
+			<BlockControls group="inline">
+				<ToolbarButton
+					icon={'edit'}
+					disabled={!campaign || !campaignObj}
+					title={__('Edit Campaign', 'mailster')}
+					onClick={editCampaign}
+				/>
+				<ToolbarButton
+					icon={'welcome-add-page'}
+					title={__('New Campaign', 'mailster')}
+					onClick={newCampaign}
+				/>
+			</BlockControls>
 			{allCampaigns.length > 0 && (
 				<PanelRow>
 					<TreeSelect
@@ -96,18 +116,19 @@ export default function CampaignSelector(props) {
 				</PanelRow>
 			)}
 			<PanelRow>
-				{allCampaigns.length > 0 && (
+				<ButtonGroup>
 					<Button
 						variant="secondary"
 						onClick={editCampaign}
 						disabled={!campaign || !campaignObj}
 					>
 						{__('Edit Campaign', 'mailster')}
+					</Button>{' '}
+					<Button variant="secondary" onClick={newCampaign}>
+						{__('New Campaign', 'mailster')}
 					</Button>
-				)}
-				<Button variant="secondary" onClick={() => newCampaign()}>
-					{__('New Campaign', 'mailster')}
-				</Button>
+				</ButtonGroup>
+
 				{editIframe && (
 					<Modal
 						title={__('Campaign for this step', 'mailster')}
