@@ -39,22 +39,21 @@ import {
 	useBlockChange,
 } from '../../util';
 
-whenEditorIsReady().then(() => {
-	window.addEventListener('popstate', (event) => {
-		selectBlockFromHash();
-	});
+whenEditorIsReady().then((w) => {
+	w.addEventListener('popstate', selectBlockFromHash);
 	selectBlockFromHash();
 });
 
-whenEditorIsReady().then(() => {});
-
 const selectBlockFromHash = () => {
-	const step = location.hash.match(/#step-([a-z0-9]+)/);
-	if (step) {
-		const el = document.querySelector('.mailster-step-' + step[1]);
-		el && dispatch('core/block-editor').flashBlock(el.dataset.block);
-		el && dispatch('core/block-editor').selectBlock(el.dataset.block);
-	}
+	whenEditorIsReady().then((w) => {
+		const step = location.hash.match(/#step-([a-z0-9]+)/);
+		if (step) {
+			const el = w.document.querySelector('.mailster-step-' + step[1]);
+			el && dispatch('core/block-editor').flashBlock(el.dataset.block);
+			el && dispatch('core/block-editor').selectBlock(el.dataset.block);
+			el && el.scrollIntoView();
+		}
+	});
 };
 
 function SettingsPanelPlugin() {
