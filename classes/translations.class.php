@@ -24,10 +24,8 @@ class MailsterTranslations {
 	 */
 	public function load() {
 
-		$locale = $this->get_locale();
-
 		if ( is_dir( MAILSTER_UPLOAD_DIR . '/languages' ) ) {
-			$custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . $locale . '.mo';
+			$custom = MAILSTER_UPLOAD_DIR . '/languages/' . sprintf( 'mailster-%s.mo', $this->get_locale() );
 			if ( file_exists( $custom ) ) {
 				load_textdomain( 'mailster', $custom );
 			} else {
@@ -264,7 +262,12 @@ class MailsterTranslations {
 	 */
 	public function on_activate( $new ) {
 
+		if ( ! $new ) {
+			return;
+		}
+
 		try {
+			$this->re_check();
 			$this->download_language();
 			mailster( 'settings' )->define_texts( true );
 

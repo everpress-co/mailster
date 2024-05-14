@@ -950,14 +950,12 @@ class MailsterBlockForms {
 
 		} else {
 			$homepage = (int) mailster_option( 'homepage' );
-			if ( $homepage && $post_id !== $homepage ) {
+			// on the newsletter homepage
+			if ( $homepage && $post_id === $homepage ) {
+				wp_add_inline_script( 'wp-blocks', 'var mailster_homepage_slugs = ' . json_encode( mailster_option( 'slugs' ) ) . ';' );
+			} else {
 				unregister_block_type( 'mailster/homepage' );
 				unregister_block_type( 'mailster/homepage-context' );
-			} else {
-
-				do_action( 'mailster_admin_header' );
-
-				wp_add_inline_script( 'wp-blocks', 'var mailster_homepage_slugs = ' . json_encode( mailster_option( 'slugs' ) ) . ';' );
 			}
 		}
 

@@ -16,9 +16,6 @@ import {
 	BaseControl,
 	Notice,
 	DateTimePicker,
-	Flex,
-	FlexItem,
-	FlexBlock,
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 } from '@wordpress/components';
@@ -29,7 +26,6 @@ import { format, __experimentalGetSettings } from '@wordpress/date';
 /**
  * Internal dependencies
  */
-import PostTypeFields from './PostTypeFields';
 
 function ScheduleEntry(props) {
 	const { index, setDate, schedule, removeSchedule } = props;
@@ -46,10 +42,7 @@ function ScheduleEntry(props) {
 	function formatDate(date, fallback) {
 		const settings = __experimentalGetSettings();
 		if (!date) return fallback;
-		return format(
-			`${settings.formats.date} ${settings.formats.time}`,
-			date
-		);
+		return format(`${settings.formats.date} ${settings.formats.time}`, date);
 	}
 
 	useEffect(() => {
@@ -70,10 +63,7 @@ function ScheduleEntry(props) {
 							aria-expanded={isOpen}
 							variant="tertiary"
 						>
-							{formatDate(
-								schedule.start,
-								__('immediately', 'mailster')
-							)}
+							{formatDate(schedule.start, __('immediately', 'mailster'))}
 						</Button>
 					)}
 					onClose={() => console.warn('close')}
@@ -172,9 +162,7 @@ export default function Schedule(props) {
 			<>
 				{__('Schedule', 'mailster')}
 				{schedule.length > 0 && (
-					<span className="component-count-indicator">
-						{schedule.length}
-					</span>
+					<span className="component-count-indicator">{schedule.length}</span>
 				)}
 			</>
 		);
@@ -188,19 +176,11 @@ export default function Schedule(props) {
 		>
 			<PanelRow>
 				<p>
-					{__(
-						'Show the form if at least one schedule applies.',
-						'mailster'
-					)}
+					{__('Show the form if at least one schedule applies.', 'mailster')}
 				</p>
 			</PanelRow>
 			<PanelRow>
-				<ItemGroup
-					className="widefat"
-					size="small"
-					isBordered
-					isSeparated
-				>
+				<ItemGroup className="widefat" size="small" isBordered isSeparated>
 					{schedule.map((s, i) => {
 						return (
 							<ScheduleEntry
@@ -215,12 +195,7 @@ export default function Schedule(props) {
 				</ItemGroup>
 			</PanelRow>
 			<PanelRow>
-				<Button
-					variant="secondary"
-					onClick={addSchedule}
-					icon="plus"
-					isSmall
-				>
+				<Button variant="secondary" onClick={addSchedule} icon="plus" isSmall>
 					{__('Add Schedule', 'mailster')}
 				</Button>
 			</PanelRow>

@@ -7,8 +7,6 @@
  */
 
 import { registerBlockType } from '@wordpress/blocks';
-import { addFilter } from '@wordpress/hooks';
-import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */

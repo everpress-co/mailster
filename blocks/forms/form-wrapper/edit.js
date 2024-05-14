@@ -19,8 +19,7 @@ import {
 	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
 
-import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
-import { useEffect, useMemo } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 import { useEntityProp } from '@wordpress/core-data';
 
 /**
@@ -49,8 +48,14 @@ const prefixCss = (css, className, type) => {
 	rules = rules.replace(/\/\*(?:(?!\*\/)[\s\S])*\*\/|[\r\n\t]+/g, '');
 
 	// makes sure nextChar will not target a space
-	rules = rules.replace(/}(\s*)@/g, '}@');
-	rules = rules.replace(/}(\s*)}/g, '}}');
+
+	// doesn't work
+	//rules = rules.replace(/}(\s*)@/g, '}@');
+	//rules = rules.replace(/}(\s*)}/g, '}}');
+
+	// works
+	//rules = rules.replace(/}(\s*)@/g, '}@');
+	//rules = rules.replace(/}(\s*)}/g, '}}');
 
 	for (var i = 0; i < rules.length - 2; i++) {
 		char = rules[i];

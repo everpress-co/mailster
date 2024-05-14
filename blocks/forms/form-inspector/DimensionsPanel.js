@@ -8,8 +8,6 @@
 
 import { __ } from '@wordpress/i18n';
 
-import { useSelect, select, dispatch } from '@wordpress/data';
-import { useEffect } from '@wordpress/element';
 import {
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,

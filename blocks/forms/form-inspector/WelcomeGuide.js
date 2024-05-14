@@ -8,10 +8,9 @@
 
 import { __ } from '@wordpress/i18n';
 
-import { Guide, Button } from '@wordpress/components';
+import { Guide } from '@wordpress/components';
 
-import { useState } from '@wordpress/element';
-import { useSelect, select, useDispatch } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { store as Store } from '@wordpress/edit-post';
 
 /**
@@ -23,10 +22,7 @@ import FormModal from './FormModal';
 const STORAGENAME = 'mailsterFormsWelcomeGuide';
 
 export default function WelcomeGuide(props) {
-	const { meta, setMeta } = props;
-	const [isOpen, setOpen] = useState(false);
-
-	const { toggleFeature, togglePublishSidebar } = useDispatch(Store);
+	const { toggleFeature } = useDispatch(Store);
 
 	const { showGeneralBlockWelcomeGuide } = useSelect((select) => {
 		return {
