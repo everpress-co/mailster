@@ -431,6 +431,11 @@ mailster = (function (mailster, $, window, document) {
 						  mailster.l10n.campaigns.codeview +
 						  '"></button>'
 						: '',
+					conditions = mailsterdata.codeview
+						? '<button class="mailster-btn condition" title="' +
+						  mailster.l10n.campaigns.conditions +
+						  '"></button>'
+						: '',
 					auto = $this.is('[auto]')
 						? '<button class="mailster-btn auto" title="' +
 						  mailster.l10n.campaigns.auto +
@@ -454,6 +459,7 @@ mailster = (function (mailster, $, window, document) {
 						mailster.l10n.campaigns.move_module_down +
 						'"></button>' +
 						save +
+						conditions +
 						codeview +
 						'<button class="mailster-btn remove" title="' +
 						mailster.l10n.campaigns.remove_module +

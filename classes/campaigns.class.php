@@ -1745,6 +1745,7 @@ class MailsterCampaigns {
 					'remove_all_modules'     => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
 					'save_template'          => esc_html__( 'Save Template File', 'mailster' ),
 					'save_module'            => esc_html__( 'Save Module', 'mailster' ),
+					'conditions'             => esc_html__( 'Add Conditions', 'mailster' ),
 					'add_module'             => esc_html__( 'Add Module', 'mailster' ),
 					'module'                 => esc_html__( 'Module %s', 'mailster' ),
 					'codeview'               => esc_html__( 'Codeview', 'mailster' ),

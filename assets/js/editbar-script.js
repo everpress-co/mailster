@@ -1009,13 +1009,6 @@ mailster = (function (mailster, $, window, document) {
 				current.element.html(content);
 			}
 		} else if (current.type == 'single') {
-			if (current.conditions) {
-				current.aa = '<if';
-				$.each($('.conditinal-area'), function () {
-					current.aa = '';
-				});
-			}
-
 			if (current.element.parent().is('a')) current.element.unwrap();
 			var link = singlelink.val();
 			if (link) current.element.wrap('<a href="' + link + '"></a>');
@@ -1025,6 +1018,8 @@ mailster = (function (mailster, $, window, document) {
 			current.modulebuttons.prependTo(current.element);
 
 			current.element.attr('label', $('#module-name').val());
+		} else if (current.type == 'condition') {
+			alert('CLOSE CONDITION');
 		}
 
 		close();
@@ -1218,8 +1213,6 @@ mailster = (function (mailster, $, window, document) {
 			name = data.name || '',
 			type = data.type,
 			content = mailster.util.trim(el.html()),
-			condition = el.find('if'),
-			conditions,
 			position = current.element.data('position') || 0,
 			carea,
 			cwrap,
@@ -1243,56 +1236,6 @@ mailster = (function (mailster, $, window, document) {
 		searchstring = '';
 
 		mailster.trigger('selectModule', module);
-
-		if (condition.length) {
-			conditions = {
-				if: null,
-				elseif: [],
-				else: null,
-				total: 0,
-			};
-			conditions = [];
-
-			bar.addClass('has-conditions');
-			carea = base.find('.conditinal-area');
-			cwrap = bar.find('.conditions').eq(0);
-			cwrap.clone().prependTo(carea);
-
-			$.each(condition.find('elseif'), function () {
-				var _t = $(this),
-					_c = _t.html();
-				conditions.push({
-					el: _t,
-					html: _c,
-					field: _t.attr('field'),
-					operator: _t.attr('operator'),
-					value: _t.attr('value'),
-				});
-				_t.detach();
-				carea.clone().val(_c).insertAfter(carea);
-			});
-			$.each(condition.find('else'), function () {
-				var _t = $(this),
-					_c = _t.html();
-				conditions.push({
-					el: _t,
-					html: _c,
-				});
-				_t.detach();
-				carea.clone().val(_c).insertAfter(carea);
-			});
-			conditions.unshift({
-				el: condition,
-				html: condition.html(),
-				field: condition.attr('field'),
-				operator: condition.attr('operator'),
-				value: condition.attr('value'),
-			});
-		} else {
-			bar.removeClass('has-conditions');
-		}
-
-		current.conditions = conditions;
 
 		if (type == 'img') {
 			original.prop('checked', current.original);
@@ -1386,6 +1329,8 @@ mailster = (function (mailster, $, window, document) {
 			current.modulebuttons = clone.find('modulebuttons');
 			textarea.show().html(html);
 			$('#module-name').val(name);
+		} else if (type == 'condition') {
+			alert('OPEN CONDITION');
 		}
 
 		offset =
@@ -1420,34 +1365,24 @@ mailster = (function (mailster, $, window, document) {
 				loader();
 
 				if (type == 'single') {
-					if (conditions) {
-						$.each(conditions, function (i, condition) {
-							var _b = base.find('.conditinal-area').eq(i);
-							_b.find('select.condition-fields').val(condition.field);
-							_b.find('select.condition-operators').val(condition.operator);
-							_b.find('input.condition-value').val(condition.value);
-							_b.find('input.input').val(condition.html);
-						});
-					} else {
-						var val = content.replace(/&amp;/g, '&');
+					var val = content.replace(/&amp;/g, '&');
 
-						singlelink.val('');
+					singlelink.val('');
 
-						if (current.element.parent().is('a')) {
-							var href = current.element.parent().attr('href');
+					if (current.element.parent().is('a')) {
+						var href = current.element.parent().attr('href');
+						singlelink.val(href != '#' ? href : '');
+						loadSingleLink();
+					} else if (current.element.find('a').length) {
+						var link = current.element.find('a');
+						if (val == link.text()) {
+							var href = link.attr('href');
+							val = link.text();
 							singlelink.val(href != '#' ? href : '');
-							loadSingleLink();
-						} else if (current.element.find('a').length) {
-							var link = current.element.find('a');
-							if (val == link.text()) {
-								var href = link.attr('href');
-								val = link.text();
-								singlelink.val(href != '#' ? href : '');
-							}
 						}
-
-						base.find('input').eq(0).val(mailster.util.trim(val));
 					}
+
+					base.find('input').eq(0).val(mailster.util.trim(val));
 				} else if (type == 'img') {
 					var maxwidth =
 						parseInt(el[0].style.maxWidth, 10) ||

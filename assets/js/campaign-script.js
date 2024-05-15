@@ -521,6 +521,16 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
+	function condition() {
+		var module = $(this).parent().parent().parent();
+		mailster.editbar.open({
+			element: module,
+			name: module.attr('label'),
+			type: 'condition',
+			offset: module.offset(),
+		});
+	}
+
 	function save() {
 		var module = $(this).parent().parent().parent(),
 			name = module.attr('label'),
@@ -609,6 +619,7 @@ mailster = (function (mailster, $, window, document) {
 			.on('click.mailster', 'button.duplicate', duplicate)
 			.on('click.mailster', 'button.remove', remove)
 			.on('click.mailster', 'button.codeview', codeView)
+			.on('click.mailster', 'button.condition', condition)
 			.on('click.mailster', 'button.save', save);
 
 		selector

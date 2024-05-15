@@ -334,6 +334,11 @@
 					<textarea id="module-codeview-textarea" autocomplete="off"></textarea>
 				</p>
 			</div>
+			<div class="type condition">
+				<p>
+				<?php mailster( 'conditions' )->view(); ?>
+				</p>
+			</div>
 
 		</div>
 

@@ -14,7 +14,7 @@ class MailsterPlaceholder {
 	private $subscriberID        = null;
 	private $index_offset        = 0;
 	private $subscriberHash      = null;
-	private $progress_conditions = false;
+	private $progress_conditions = true;
 	private $remove_modules      = true;
 	private $replace_custom      = true;
 	private $social_services;
@@ -586,102 +586,18 @@ class MailsterPlaceholder {
 			return;
 		}
 
-		if ( preg_match_all( '#<(module|single|multi)[^>]*?condition="([a-z0-9-_]+)([=!GLTE\^$]+)(.*?)".*?</(\\1)>#ms', $this->content, $conditions ) ) {
+		if ( preg_match_all( '#<module[^>]*?conditions="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
-			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true, true ) : false;
+			foreach ( $modules[0] as $i => $html ) {
 
-			foreach ( $conditions[0] as $i => $html ) {
-				$key      = $conditions[2][ $i ];
-				$operator = $conditions[3][ $i ];
-				$value    = $conditions[4][ $i ];
+				$search     = $modules[0][ $i ];
+				$conditions = str_replace( '&amp;', '&', $modules[1][ $i ] );
+				wp_parse_str( $conditions, $params );
 
-				if ( $operator == '=' && isset( $subscriber->{$key} ) && $subscriber->{$key} == $value ) {
-					continue;
-				}
+				$conditions = $params['conditions'];
 
-				if ( $operator == '!=' && ( ! isset( $subscriber->{$key} ) || $subscriber->{$key} != $value ) ) {
-					continue;
-				}
-
-				if ( $operator == '^' && isset( $subscriber->{$key} ) && false !== ( strrpos( $subscriber->{$key}, $value, -strlen( $subscriber->{$key} ) ) ) ) {
-					continue;
-				}
-
-				if ( $operator == '$' && isset( $subscriber->{$key} ) && false !== ( ( $t = strlen( $subscriber->{$key} ) - strlen( $value ) ) >= 0 && strpos( $subscriber->{$key}, $value, $t ) ) ) {
-					continue;
-				}
-
-				if ( $operator == 'GT' && isset( $subscriber->{$key} ) && $subscriber->{$key} > $value ) {
-					continue;
-				}
-
-				if ( $operator == 'GTE' && isset( $subscriber->{$key} ) && $subscriber->{$key} >= $value ) {
-					continue;
-				}
-
-				if ( $operator == 'LT' && isset( $subscriber->{$key} ) && $subscriber->{$key} < $value ) {
-					continue;
-				}
-
-				if ( $operator == 'LTE' && isset( $subscriber->{$key} ) && $subscriber->{$key} <= $value ) {
-					continue;
-				}
-
-				$this->content = str_replace( $html, '', $this->content );
-			}
-		}
-
-		if ( preg_match_all( '#<if field="([a-z0-9-_]+)" operator="([a-z_]+)+" value="(.*?)">(.*?)</if>#s', $this->content, $if_conditions ) ) {
-
-			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true, true ) : false;
-
-			foreach ( $if_conditions[0] as $i => $ifhtml ) {
-
-				// if condition passed
-				if ( $this->check_condition( $subscriber, $if_conditions[1][ $i ], $if_conditions[2][ $i ], $if_conditions[3][ $i ] ) ) {
-
-					$html          = $if_conditions[4][ $i ];
-					$html          = preg_replace( '#<elseif(.*?)<\/elseif>#s', '', $if_conditions[4][ $i ] );
-					$html          = preg_replace( '#<else(.*?)<\/else>#s', '', $html );
-					$this->content = str_replace( $ifhtml, $html, $this->content );
-
-				} else {
-
-					// elseif exists
-					if ( preg_match_all( '#<elseif field="([a-z0-9-_]+)" operator="([a-z_]+)+" value="(.*?)">(.*?)</elseif>#s', $ifhtml, $elseif_conditions ) ) {
-
-						foreach ( $elseif_conditions[0] as $j => $elseifhtml ) {
-
-							// elseif condition passed
-							if ( $this->check_condition( $subscriber, $elseif_conditions[1][ $j ], $elseif_conditions[2][ $j ], $elseif_conditions[3][ $j ] ) ) {
-
-								$this->content = str_replace( $ifhtml, $elseif_conditions[4][ $j ], $this->content );
-
-								break;
-
-							} elseif ( $j == count( $elseif_conditions[0] ) - 1 ) {
-									// no elseif passes
-								if ( preg_match( '#<else>(.*?)</else>#s', $ifhtml, $else_conditions ) ) {
-
-									$this->content = str_replace( $ifhtml, $else_conditions[1], $this->content );
-
-									break;
-
-								}
-							}
-						}
-
-						// no else if but else
-					} elseif ( preg_match( '#<else>(.*?)</else>#s', $ifhtml, $else_conditions ) ) {
-
-						$this->content = str_replace( $ifhtml, $else_conditions[1], $this->content );
-
-						// only if statement but didn't pass
-					} else {
-
-						$this->content = str_replace( $ifhtml, '', $this->content );
-
-					}
+				if ( ! $this->subscriberID || ! mailster( 'conditions' )->check( $conditions, $this->subscriberID ) ) {
+					$this->content = str_replace( $search, '', $this->content );
 				}
 			}
 		}
@@ -689,48 +605,6 @@ class MailsterPlaceholder {
 		return $this->content;
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $subscriber
-	 * @param unknown $field
-	 * @param unknown $operator
-	 * @param unknown $value
-	 * @return unknown
-	 */
-	private function check_condition( $subscriber, $field, $operator, $value ) {
-
-		// return only true if operator is is_not
-		if ( ! isset( $subscriber->{$field} ) ) {
-			return $operator == 'is_not' || $operator == 'not_pattern';
-		}
-
-		switch ( $operator ) {
-			case 'is':
-				return $subscriber->{$field} == $value;
-			case 'is_not':
-				return $subscriber->{$field} != $value;
-			case 'begin_with':
-				return false !== ( strrpos( $subscriber->{$key}, $value, - strlen( $subscriber->{$key} ) ) );
-			case 'end_with':
-				return false !== ( ( $t = strlen( $subscriber->{$key} ) - strlen( $value ) ) >= 0 && strpos( $subscriber->{$key}, $value, $t ) );
-			case 'is_greater':
-				return $subscriber->{$key} > $value;
-			case 'is_greater_equal':
-				return $subscriber->{$key} >= $value;
-			case 'is_smaller':
-				return $subscriber->{$key} < $value;
-			case 'is_smaller_equal':
-				return $subscriber->{$key} <= $value;
-			case 'pattern':
-				return preg_match( '#' . preg_quote( $subscriber->{$key} ) . '#', $value );
-			case 'not_pattern':
-				return ! preg_match( '#' . preg_quote( $subscriber->{$key} ) . '#', $value );
-		}
-
-		return false;
-	}
 
 
 	/**
