@@ -92,10 +92,12 @@ export default function Selector(props) {
 
 	const TriggerButtons = ({ onClose }) => {
 		return filterTrigger.map((t, i) => {
+			const ico = Icons[t.icon] || t.icon;
+
 			return (
 				<MenuGroup key={i}>
 					<MenuItem
-						icon={Icons[t.icon]}
+						icon={ico || icon}
 						iconPosition={'left'}
 						info={t.disabled ? t.reason : t.info}
 						isSelected={t.id === trigger}
