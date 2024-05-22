@@ -315,10 +315,16 @@ class MailsterAutomations {
 				if ( empty( $innerBlock ) ) {
 					continue;
 				}
+				// not a trigger
 				if ( ! isset( $innerBlock['attrs']['trigger'] ) ) {
 					continue;
 				}
+				// not the right trigger
 				if ( $innerBlock['attrs']['trigger'] !== $trigger ) {
+					continue;
+				}
+				// it is disabled
+				if ( isset( $innerBlock['attrs']['disabled'] ) && $innerBlock['attrs']['disabled'] ) {
 					continue;
 				}
 

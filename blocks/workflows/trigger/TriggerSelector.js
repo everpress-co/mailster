@@ -21,7 +21,6 @@ import {
 import { useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import * as Icons from '@wordpress/icons';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,11 +39,12 @@ import DateSelector from './DateSelector';
 import FieldSelector from './FieldSelector';
 import HookSelector from './HookSelector';
 import PublishSelector from './PublishSelector';
+import TriggerSlotFill from './TriggerSlotFill';
 import { HelpBeacon } from '../../util';
 
 export default function Selector(props) {
 	const { attributes, setAttributes } = props;
-	const { trigger, hook = '', lists = [], forms = [] } = attributes;
+	const { trigger, lists = [], forms = [] } = attributes;
 
 	const [title, setTitle] = useEntityProp(
 		'postType',
@@ -74,14 +74,6 @@ export default function Selector(props) {
 		return trigger.length ? trigger[0] : null;
 	};
 
-	// const filterTrigger =
-	// 	allTriggers &&
-	// 	allTriggers.filter((t) => {
-	// 		return !meta.trigger.includes(t.id) || t.id === trigger;
-	// 	});
-
-	const filterTrigger = allTriggers;
-
 	const label =
 		getTrigger(trigger)?.label ||
 		__('Define a trigger to start this workflow.', 'mailster');
@@ -91,7 +83,7 @@ export default function Selector(props) {
 	const t_icon = getTrigger(trigger)?.icon;
 
 	const TriggerButtons = ({ onClose }) => {
-		return filterTrigger.map((t, i) => {
+		return allTriggers.map((t, i) => {
 			const ico = Icons[t.icon] || t.icon;
 
 			return (
@@ -117,11 +109,11 @@ export default function Selector(props) {
 	return (
 		<>
 			<PanelRow>
-				{!filterTrigger && <Spinner />}
+				{!allTriggers && <Spinner />}
 				{trigger && (
 					<BaseControl help={info}>
 						<HelpBeacon id="646232738783627a4ed4c596" align="right" />
-						<DropdownMenu icon={Icons[t_icon] || icon} text={label}>
+						<DropdownMenu icon={Icons[t_icon] || t_icon || icon} text={label}>
 							{(props) => <TriggerButtons {...props} />}
 						</DropdownMenu>
 					</BaseControl>
@@ -187,6 +179,9 @@ export default function Selector(props) {
 			{trigger == 'date' && <DateSelector {...props} />}
 			{trigger == 'anniversary' && <DateSelector {...props} isAnniversary />}
 			{trigger == 'published_post' && <PublishSelector {...props} />}
+			<TriggerSlotFill.Slot
+				fillProps={{ ...props, trigger: trigger, allTriggers: allTriggers }}
+			/>
 		</>
 	);
 }

@@ -31,7 +31,7 @@ export default function Edit(props) {
 	const actionObj = getAction(action);
 
 	const label = actionObj?.label || <></>;
-	const info = getInfo(attributes);
+	const info = getInfo(props);
 	const icon = actionObj?.icon;
 
 	return (
@@ -45,12 +45,7 @@ export default function Edit(props) {
 					<Icon icon={Icons[icon]} />
 					{label}
 				</div>
-				{info && (
-					<div
-						className="mailster-step-info"
-						dangerouslySetInnerHTML={{ __html: info }}
-					/>
-				)}
+				{info && <div className="mailster-step-info">{info}</div>}
 			</CardBody>
 		</Step>
 	);

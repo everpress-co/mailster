@@ -66,7 +66,7 @@ class Mailster {
 				'campaigns'    => new MailsterCampaigns(),
 				'subscribers'  => new MailsterSubscribers(),
 				'automations'  => new MailsterAutomations(),
-				'trigger'      => new MailsterTrigger(),
+				'triggers'     => new MailsterTrigger(),
 				'lists'        => new MailsterLists(),
 				'tags'         => new MailsterTags(),
 				'block-forms'  => new MailsterBlockForms(),

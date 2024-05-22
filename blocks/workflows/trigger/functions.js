@@ -8,6 +8,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
+import { createInterpolateElement } from '@wordpress/element';
 
 import { dateI18n } from '@wordpress/date';
 
@@ -25,6 +26,7 @@ import {
 } from '../../util';
 
 import { TIME_FORMAT, DATE_FORMAT } from './constants';
+import TriggerStepSlotFill from './TriggerStepSlotFill';
 
 export function getTrigger(id) {
 	const allTriggers = useSelect((select) =>
@@ -40,10 +42,15 @@ export function getTrigger(id) {
 	return t1.length ? t1[0] : null;
 }
 
-export function getInfo(attributes) {
+export function getInfo(props) {
+	const { attributes } = props;
 	const { lists, forms, tags, pages, links, hook, field, date, offset } =
 		attributes;
 	const { trigger, conditions, repeat } = attributes;
+
+	if (!trigger) {
+		return <>{__('Set up a trigger', 'mailster')}</>;
+	}
 
 	switch (trigger) {
 		case 'list_add':
@@ -62,48 +69,66 @@ export function getInfo(attributes) {
 			return formatLinks(links);
 		case 'hook':
 			return (
-				hook && '<strong class="mailster-step-badge code">' + hook + '</strong>'
+				hook && <strong className="mailster-step-badge code">{hook}</strong>
 			);
 		case 'date':
 			if (field) {
 				return (
-					formatField(
-						field,
-						dateI18n(TIME_FORMAT, date),
-						__('On subscribers %s field at %s', 'mailster')
-					) + formatOffset(offset)
+					<>
+						{formatField(
+							field,
+							dateI18n(TIME_FORMAT, date),
+							__('On subscribers %s field at %s', 'mailster')
+						)}
+						{formatOffset(offset)}
+					</>
 				);
 			}
-			return sprintf(
-				__('On %s at %s', 'mailster'),
-				'<strong class="mailster-step-badge">' +
-					dateI18n(DATE_FORMAT, date) +
-					'</strong>',
-				'<strong class="mailster-step-badge">' +
-					dateI18n(TIME_FORMAT, date) +
-					'</strong>'
+			return createInterpolateElement(
+				sprintf(__('On %s at %s', 'mailster'), '<date />', '<time />'),
+				{
+					date: (
+						<strong className="mailster-step-badge">
+							{dateI18n(DATE_FORMAT, date)}
+						</strong>
+					),
+					time: (
+						<strong className="mailster-step-badge">
+							{dateI18n(TIME_FORMAT, date)}
+						</strong>
+					),
+				}
 			);
 		case 'anniversary':
 			if (field) {
 				return (
-					formatField(
-						field,
-						dateI18n(TIME_FORMAT, date),
-						__('Yearly based on the subscribers %s field at %s', 'mailster')
-					) + formatOffset(offset)
+					<>
+						{formatField(
+							field,
+							dateI18n(TIME_FORMAT, date),
+							__('Yearly based on the subscribers %s field at %s', 'mailster')
+						)}
+						{formatOffset(offset)}
+					</>
 				);
 			}
-			return sprintf(
-				__('Yearly on the %s at %s', 'mailster'),
-				'<strong class="mailster-step-badge">' +
-					dateI18n('F j', date) +
-					'</strong>',
-				'<strong class="mailster-step-badge">' +
-					dateI18n(TIME_FORMAT, date) +
-					'</strong>'
+			return createInterpolateElement(
+				sprintf(__('On %s at %s', 'mailster'), '<date />', '<time />'),
+				{
+					date: (
+						<strong className="mailster-step-badge">
+							{dateI18n('F j', date)}
+						</strong>
+					),
+					time: (
+						<strong className="mailster-step-badge">
+							{dateI18n(TIME_FORMAT, date)}
+						</strong>
+					),
+				}
 			);
 
 		default:
-			return __('Set up a trigger', 'mailster');
+			return <TriggerStepSlotFill {...props} />;
 	}
 }

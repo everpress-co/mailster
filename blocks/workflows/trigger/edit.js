@@ -9,9 +9,13 @@ import ServerSideRender from '@wordpress/server-side-render';
 
 import { __ } from '@wordpress/i18n';
 
-import { useSelect } from '@wordpress/data';
-import { CardBody, CardFooter, Tooltip, Spinner } from '@wordpress/components';
-import { dateI18n, gmdateI18n } from '@wordpress/date';
+import {
+	CardBody,
+	CardFooter,
+	Tooltip,
+	Spinner,
+	Icon,
+} from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -19,7 +23,6 @@ import { dateI18n, gmdateI18n } from '@wordpress/date';
 
 import InspectorControls from './inspector';
 import Step from '../inspector/Step';
-
 import { getTrigger, getInfo } from './functions';
 
 export default function Edit(props) {
@@ -29,8 +32,9 @@ export default function Edit(props) {
 	const triggerObj = getTrigger(trigger);
 
 	const label = triggerObj?.label || <Spinner />;
+	//const icon = <Icon icon={triggerObj?.icon} />;
 
-	const info = getInfo(attributes);
+	const info = getInfo(props);
 
 	return (
 		<Step
@@ -55,10 +59,7 @@ export default function Edit(props) {
 					</Tooltip>
 				)}
 				{trigger && <div className="mailster-step-label">{label}</div>}
-				<div
-					className="mailster-step-info"
-					dangerouslySetInnerHTML={{ __html: info }}
-				/>
+				{info && <div className="mailster-step-info">{info}</div>}
 			</CardBody>
 			{trigger && conditions && (
 				<CardBody>
