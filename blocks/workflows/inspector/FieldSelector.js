@@ -6,35 +6,32 @@
  * WordPress dependencies
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 import {
+	Button,
 	TextControl,
 	BaseControl,
-	SelectControl,
 	DatePicker,
 	__experimentalNumberControl as NumberControl,
+	PanelRow,
 	TreeSelect,
+	TextareaControl,
+	Tip,
+	ExternalLink,
 } from '@wordpress/components';
 
 import { useSelect } from '@wordpress/data';
 import { date } from '@wordpress/date';
-import { useState } from '@wordpress/element';
-import { Button } from '@wordpress/components';
-import { PanelRow } from '@wordpress/components';
+import { useState, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 
 export default function FieldSelector(props) {
-	const {
-		attributes,
-		setAttributes,
-		help,
-		label = __('Fields', 'mailster'),
-	} = props;
-	const { field, value = '' } = attributes;
+	const { attributes, setAttributes, label = __('Fields', 'mailster') } = props;
+	const { field, value } = attributes;
 
 	const allFields = useSelect((select) =>
 		select('mailster/automation').getFields()
@@ -51,7 +48,7 @@ export default function FieldSelector(props) {
 			}
 			return 'current';
 		}
-		return 'date';
+		return undefined;
 	};
 	const changeDateType = (newType) => {
 		var newValue = '';
@@ -72,12 +69,11 @@ export default function FieldSelector(props) {
 		setDateType(newType);
 		setAttributes({ value: newValue.toString() });
 	};
-	const [dateType, setDateType] = useState(getInitialDateType());
+
+	const [dateType, setDateType] = useState();
 
 	return (
-		<BaseControl
-			help={__('Add new custom fields on the settings page.', 'mailster')}
-		>
+		<BaseControl>
 			<TreeSelect
 				label={label}
 				noOptionLabel={__('Select Custom Field', 'mailster')}
@@ -202,6 +198,17 @@ export default function FieldSelector(props) {
 									</PanelRow>
 								</BaseControl>
 							);
+						} else if (currentField.type == 'textarea') {
+							return (
+								<TextareaControl
+									label={__('to', 'mailster')}
+									value={value}
+									onChange={(val) =>
+										setAttributes({ value: val ? val : undefined })
+									}
+									rows={7}
+								/>
+							);
 						} else {
 							return (
 								<TextControl
@@ -216,6 +223,21 @@ export default function FieldSelector(props) {
 					})()}
 				</>
 			)}
+			<Tip>
+				{createInterpolateElement(
+					sprintf(
+						__('Add new custom fields on the %s', 'mailster'),
+						'<link />'
+					),
+					{
+						link: (
+							<ExternalLink href="edit.php?post_type=newsletter&page=mailster_settings#subscribers">
+								{__('settings page.', 'mailster')}
+							</ExternalLink>
+						),
+					}
+				)}
+			</Tip>
 		</BaseControl>
 	);
 }

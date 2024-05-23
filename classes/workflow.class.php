@@ -825,7 +825,7 @@ class MailsterWorkflow {
 
 						// $step = isset( $trigger['attr']['id'] ) ? $trigger['attr']['id'] : null;
 						if ( ! empty( $subscriber_ids ) ) {
-							mailster( 'trigger' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
+							mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
 						}
 						// delete our temp entry
 						$this->delete();
@@ -859,7 +859,7 @@ class MailsterWorkflow {
 
 						// $step = isset( $trigger['attr']['id'] ) ? $trigger['attr']['id'] : null;
 						if ( ! empty( $subscriber_ids ) ) {
-							mailster( 'trigger' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp, $context );
+							mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp, $context );
 						}
 						$this->delete();
 						return false;

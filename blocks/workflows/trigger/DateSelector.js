@@ -33,17 +33,17 @@ import { Flex } from '@wordpress/components';
 
 export default function Selector(props) {
 	const { attributes, setAttributes, isAnniversary = false } = props;
-	const { date, field, offset } = attributes;
+	const { date, field, offset = 0 } = attributes;
 
-	const site = useSelect((select) => select('core').getSite());
 	const [popover, setPopover] = useState(false);
-	const [relative, setRelative] = useState('');
 	const [amount, setAmount] = useState(0);
 	const [unit, setUnit] = useState(60);
 
 	const setDate = (newDate) => {
 		// store in UTC
-		setAttributes({ date: new Date(newDate).toISOString() });
+		setAttributes({
+			date: newDate ? new Date(newDate).toISOString() : undefined,
+		});
 	};
 
 	const allFields = useSelect((select) =>
@@ -70,6 +70,7 @@ export default function Selector(props) {
 			setAmount(Math.floor(offset / 60));
 		}
 	}, [offset]);
+
 	useEffect(() => {
 		if (field) return;
 		setUnit(60);
@@ -131,7 +132,7 @@ export default function Selector(props) {
 					>
 						{!field && (
 							<>
-								{'  '}
+								{' '}
 								<Button
 									variant="secondary"
 									onClick={(e) => setPopover(true)}
@@ -256,7 +257,7 @@ export default function Selector(props) {
 					<BaseControl
 						label={__('Offset', 'mailster')}
 						help={__(
-							'Offset the time to trigger either before ar after the defined date.',
+							'Offset the time to trigger either before or after the defined date.',
 							'mailster'
 						)}
 					>
@@ -302,7 +303,7 @@ export default function Selector(props) {
 			{!isAnniversary && !field && isInPast && (
 				<PanelRow>
 					<Button
-						variant="link"
+						variant="secondary"
 						onClick={(e) => setPopover(true)}
 						isDestructive
 					>

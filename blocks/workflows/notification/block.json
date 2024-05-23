@@ -25,13 +25,16 @@
 			"type": "boolean"
 		},
 		"email": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"subject": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"message": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"comment": {
 			"type": "string"

@@ -9,6 +9,7 @@ import moment from 'moment';
  */
 import { __, _n } from '@wordpress/i18n';
 import {
+	createInterpolateElement,
 	useEffect,
 	useMemo,
 	useRef,
@@ -22,8 +23,6 @@ import {
 	useDispatch,
 	dispatch,
 } from '@wordpress/data';
-import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
-import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -208,10 +207,15 @@ export function formatField(field, value, string) {
 		return <>{__('No Field defined.', 'mailster')}</>;
 	}
 
+	if (field == -1) {
+		return (
+			<strong className="mailster-step-badge">
+				{__('Any Field', 'mailster')}
+			</strong>
+		);
+	}
+
 	const getField = (id) => {
-		if (id == -1) {
-			return <>{__('Any Field', 'mailster')}</>;
-		}
 		if (!allFields) {
 			return null;
 		}
@@ -231,6 +235,7 @@ export function formatField(field, value, string) {
 	if (currentField && currentField.type == 'date') {
 		if (!isNaN(parseFloat(value)) && isFinite(value)) {
 			let info = '';
+			let valueStr;
 			if (value < 0) {
 				info = sprintf(
 					_n(
@@ -239,10 +244,11 @@ export function formatField(field, value, string) {
 						parseFloat(value),
 						'mailster'
 					),
-					nameStr,
-					'<strong class="mailster-step-badge">' +
-						escape(value * -1) +
-						'</strong>'
+					'<field />',
+					'<value />'
+				);
+				valueStr = (
+					<strong className="mailster-step-badge">{escape(value * -1)}</strong>
 				);
 			} else if (value > 0) {
 				info = sprintf(
@@ -252,14 +258,29 @@ export function formatField(field, value, string) {
 						parseFloat(value),
 						'mailster'
 					),
-					nameStr,
-					'<strong class="mailster-step-badge">' + escape(value) + '</strong>'
+					'<field />',
+					'<value />'
+				);
+				valueStr = (
+					<strong className="mailster-step-badge">{escape(value)}</strong>
 				);
 			} else {
-				info = sprintf(__('Set %s to the current date.', 'mailster'), nameStr);
+				info = sprintf(
+					__('Set %s to the %s.', 'mailster'),
+					'<field />',
+					'<value />'
+				);
+				valueStr = (
+					<strong className="mailster-step-badge">
+						{__('current date', 'mailster')}
+					</strong>
+				);
 			}
 
-			return <span dangerouslySetInnerHTML={{ __html: info }} />;
+			return createInterpolateElement(info, {
+				field: nameStr,
+				value: valueStr,
+			});
 		}
 
 		const date = new Date(value || new Date()).toLocaleDateString();
@@ -269,10 +290,12 @@ export function formatField(field, value, string) {
 	}
 	if (currentField?.type == 'checkbox') {
 		if (value) {
-			return <>{sprintf(__('Check %s.', 'mailster'), nameStr)}</>;
+			string = sprintf(__('Check %s.', 'mailster'), '<field />');
 		} else {
-			return <>{sprintf(__('Uncheck %s.', 'mailster'), nameStr)}</>;
+			string = sprintf(__('Uncheck %s.', 'mailster'), '<field />');
 		}
+
+		return createInterpolateElement(string, { field: nameStr });
 	}
 
 	const valueStr = (

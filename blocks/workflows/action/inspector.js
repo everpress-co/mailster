@@ -20,6 +20,7 @@ import {
 	MenuItem,
 	ToggleControl,
 	BaseControl,
+	Tip,
 } from '@wordpress/components';
 
 import { useSelect } from '@wordpress/data';
@@ -180,6 +181,14 @@ export default function ActionInspectorControls(props) {
 										'mailster'
 									)}
 								/>
+							)}
+							{action == 'unsubscribe' && (
+								<Tip>
+									{__(
+										'User status will be changed to "unsusbcribe".',
+										'mailster'
+									)}
+								</Tip>
 							)}
 							{action == 'webhook' && <WebHookSelector {...props} />}
 						</PanelRow>

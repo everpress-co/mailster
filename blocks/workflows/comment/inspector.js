@@ -20,17 +20,14 @@ import {
  * Internal dependencies
  */
 
-export default function CommentInspectorControls({
-	attributes,
-	setAttributes,
-}) {
+export default function CommentInspectorControls(props) {
+	const { attributes, setAttributes } = props;
 	const { comment = '' } = attributes;
 
 	return (
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
-					<h3>{__('This is the help message of this step.', 'mailster')}</h3>
 					<PanelRow>
 						<TextareaControl
 							label={__('Comment', 'mailster')}

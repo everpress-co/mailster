@@ -24,6 +24,7 @@ export default function Edit(props) {
 	const { attributes } = props;
 	const { action } = attributes;
 
+	// artifically trigger this
 	const allActions = useSelect((select) =>
 		select('mailster/automation').getActions()
 	);

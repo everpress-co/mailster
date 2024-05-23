@@ -17,7 +17,7 @@ import {
 	ButtonGroup,
 } from '@wordpress/components';
 
-import { useSelect } from '@wordpress/data';
+import { useSelect, dispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import { BlockControls } from '@wordpress/block-editor';
 import { clearData } from '../../util';
@@ -35,12 +35,15 @@ export default function CampaignSelector(props) {
 	const allCampaigns = useSelect((select) => {
 		return select('mailster/automation').getCampaigns();
 	}, []);
+	const workflow_id = useSelect((select) => {
+		return select('core/editor').getCurrentPostId();
+	}, []);
 	const [editIframe, setEditIframe] = useState(false);
 
 	useEffect(() => {
 		window.mailster_receiver_post_id = (post_id) => {
 			setAttributes({ campaign: undefined });
-			clearData('mailster/automation', 'getCampaigns');
+			clearData('getCampaigns', 'mailster/automation');
 			setTimeout(() => {
 				setAttributes({
 					campaign: post_id ? parseInt(post_id, 10) : undefined,
@@ -56,7 +59,6 @@ export default function CampaignSelector(props) {
 	const editCampaign = () => {
 		const nonce = campaignObj?.nonce;
 		const edit_url = campaignObj?.edit_url;
-		const workflow_id = wp.data.select('core/editor').getCurrentPostId();
 		const url = new URL(edit_url);
 		const params = url.searchParams;
 		params.set('post', campaign);
@@ -67,10 +69,8 @@ export default function CampaignSelector(props) {
 		setEditIframe(url.toString());
 	};
 	const newCampaign = () => {
-		const workflow_id = wp.data.select('core/editor').getCurrentPostId();
 		const url = new URL(
-			window.location.origin +
-				window.location.pathname.replace('post.php', 'post-new.php')
+			location.origin + location.pathname.replace('post.php', 'post-new.php')
 		);
 		const params = url.searchParams;
 		params.set('post_type', 'newsletter');
