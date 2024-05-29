@@ -21,7 +21,6 @@ class MailsterBlockForms {
 
 		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
 
-		// add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
 		add_action( 'enqueue_block_assets', array( &$this, 'block_script_styles' ) );
 
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 9999, 2 );
