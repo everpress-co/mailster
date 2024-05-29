@@ -1,7 +1,18 @@
+### Version 4.0.9 (2024-05-14)
+
+- fixed: line height on form selector input field
+- fixed: PHP Warning: preg_replace(): Compilation failed with certain shortcodes.
+- fixed: PHP deprecated notice
+- fixed: admin header was visible on the newsletter homepage
+- fixed: deeplink of steps works again
+- fixed: dynamic properties are deprecated
+- fixed: fatal error on tags triggers if no tag has been set
+- fixed: logos were not applied to some templates
+- fixed: translation wasn't loaded before the setup wizard
+- improved: bounce performances
+
 ### Version 4.0.8 (2024-03-26)
 
-- security: fixed possible Local File Inclusion (LFI) vulnerability reported by Patchstack
-- security: fixed possible Cross Site Scripting (XSS) vulnerability reported by Patchstack
 - fixed: linked images in templates weren't mapped correctly.
 - fixed: missing array index in options.php
 - fixed: using "given-name" for autocomplete value instead of "name" on the first name field for block forms

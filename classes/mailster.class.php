@@ -2636,7 +2636,7 @@ class Mailster {
 
 		} elseif ( $this->wp_mail ) {
 
-				$message = sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' );
+			$message = sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' );
 
 			if ( class_exists( 'ReflectionFunction' ) ) {
 				$reflFunc = new ReflectionFunction( 'wp_mail' );
@@ -2660,7 +2660,7 @@ class Mailster {
 				$message .= '<br>' . esc_html__( 'More info:', 'mailster' ) . ' - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
 			}
 
-				mailster_notice( $message, 'error', true, 'wp_mail_notice' );
+			mailster_notice( $message, 'error', true, 'wp_mail_notice' );
 		}
 	}
 
@@ -2757,7 +2757,6 @@ class Mailster {
 		} else {
 			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 		}
-
 		$placeholder = mailster( 'placeholder', $content );
 
 		$placeholder->add_defaults();
@@ -2971,9 +2970,7 @@ class Mailster {
 		if ( false === ( $info = mailster_cache_get( 'plugin_info' ) ) || $force ) {
 
 			if ( $force ) {
-				mailster_freemius()->_sync_cron();
-				mailster_freemius()->_sync_licenses();
-				mailster_freemius()->get_update();
+				$this->recheck_license();
 			}
 
 			$plugins = get_site_transient( 'update_plugins' );
@@ -3006,6 +3003,11 @@ class Mailster {
 		return null;
 	}
 
+	public function recheck_license() {
+		mailster_freemius()->_sync_cron();
+		mailster_freemius()->_sync_licenses();
+		mailster_freemius()->get_update();
+	}
 
 	public function get_license( $fallback = '' ) {
 
