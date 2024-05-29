@@ -2,21 +2,13 @@
 
 class Mailster {
 
-	private $template;
-	private $post_data;
-	private $campaign_data;
-	private $mail = array();
-
-	public $wp_mail = null;
 
 	private $_classes = array();
 
 	static $form_active;
+	private static $instance = null;
 
-	public function __construct() {
-
-		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
-		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
+	private function __construct() {
 
 		require_once MAILSTER_DIR . 'classes/settings.class.php';
 		require_once MAILSTER_DIR . 'classes/convert.class.php';
@@ -96,12 +88,19 @@ class Mailster {
 			)
 		);
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
-
-		$this->wp_mail = function_exists( 'wp_mail' );
+		$this->init();
 	}
 
+
+	public static function get_instance() {
+		global $mailster;
+
+		if ( self::$instance == null ) {
+			self::$instance = $mailster = new Mailster();
+		}
+
+		return self::$instance;
+	}
 
 	/**
 	 *
@@ -266,15 +265,14 @@ class Mailster {
 
 	public function init() {
 
-		// remove revisions if newsletter is finished
-		add_action( 'mailster_reset_mail', array( &$this, 'reset_mail_delayed' ), 10, 3 );
-
 		add_action( 'mailster_cron', array( &$this, 'check_homepage' ) );
 		add_action( 'mailster_cron', array( &$this, 'check_compatibility' ) );
 
 		add_action( 'mailster_update', array( &$this, 'remove_support_accounts' ) );
 
-		$this->wp_mail_setup();
+		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
+
+		add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ), 99 );
 
 		if ( is_admin() ) {
 
@@ -2566,51 +2564,6 @@ class Mailster {
 	/**
 	 *
 	 *
-	 */
-	public function wp_mail_setup() {
-
-		if ( ! ( $system_mail = mailster_option( 'system_mail' ) ) ) {
-			return;
-		}
-
-		if ( 'template' == $system_mail ) {
-
-			add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ), 99 );
-
-		} elseif ( $this->wp_mail ) {
-
-			$message = sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' );
-
-			if ( class_exists( 'ReflectionFunction' ) ) {
-				$reflFunc = new ReflectionFunction( 'wp_mail' );
-
-				$plugin_path = $reflFunc->getFileName();
-
-				if ( strpos( $plugin_path, WP_PLUGIN_DIR ) !== false ) {
-
-					require_once ABSPATH . '/wp-admin/includes/plugin.php';
-
-					if ( preg_match( '/([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\.php)$/', $plugin_path, $output_array ) ) {
-						$plugin_file = $output_array[1];
-						$plugin_data = get_plugin_data( $plugin_path );
-
-						$deactivate = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( esc_html_x( 'Deactivate %s', 'mailster' ), $plugin_data['Name'] ) ) . '">' . esc_html__( 'Deactivate', 'mailster' ) . '</a>';
-						$message   .= '<br>' . esc_html__( 'Plugin Name', 'mailster' ) . ': ' . esc_html( $plugin_data['Name'] );
-						$message   .= '<br>' . $deactivate;
-					}
-				}
-
-				$message .= '<br>' . esc_html__( 'More info:', 'mailster' ) . ' - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
-			}
-
-			mailster_notice( $message, 'error', true, 'wp_mail_notice' );
-		}
-	}
-
-
-	/**
-	 *
-	 *
 	 * @param unknown $content_type
 	 * @return unknown
 	 */
@@ -2626,6 +2579,10 @@ class Mailster {
 	 * @return unknown
 	 */
 	public function wp_mail_set( $args ) {
+
+		if ( 'template' !== mailster_option( 'system_mail' ) ) {
+			return $args;
+		}
 
 		$current_filter = current_filter();
 		$methods        = wp_list_pluck( debug_backtrace(), 'function' );

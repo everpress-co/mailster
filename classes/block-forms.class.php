@@ -11,7 +11,6 @@ class MailsterBlockForms {
 		if ( ! function_exists( 'get_allowed_block_types' ) ) {
 			return;
 		}
-		add_action( 'plugins_loaded', array( &$this, 'maybe_preview' ) );
 
 		add_action( 'init', array( &$this, 'register_post_type' ) );
 		add_action( 'init', array( &$this, 'register_post_meta' ) );
@@ -23,7 +22,7 @@ class MailsterBlockForms {
 		add_action( 'admin_print_scripts-edit.php', array( &$this, 'overview_script_styles' ), 1 );
 
 		// add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
-		add_action( 'enqueue_block_assets', array( &$this, 'block_script_styles' ), 1 );
+		add_action( 'enqueue_block_assets', array( &$this, 'block_script_styles' ) );
 
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 9999, 2 );
 		add_filter( 'block_editor_settings_all', array( &$this, 'block_editor_settings' ), PHP_INT_MAX, 2 );
@@ -47,6 +46,8 @@ class MailsterBlockForms {
 
 		// add_filter( 'embed_html', array( &$this, 'embed_html' ), PHP_INT_MAX, 4 );
 		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
+
+		$this->maybe_preview();
 	}
 
 

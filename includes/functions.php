@@ -1545,3 +1545,12 @@ if ( ! function_exists( 'get_user_locale' ) ) :
 	}
 
 endif;
+
+
+function mailster_on_activate() {
+	Mailster::get_instance()->activate();
+}
+
+function mailster_on_deactivate() {
+	Mailster::get_instance()->deactivate();
+}

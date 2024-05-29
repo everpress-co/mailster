@@ -7,8 +7,6 @@ class MailsterUpdate {
 
 	public function __construct() {
 
-		add_filter( 'plugins_loaded', array( &$this, 'init' ) );
-
 		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
 		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
 		add_filter( 'upgrader_package_options', array( &$this, 'upgrader_package_options' ) );
@@ -16,6 +14,8 @@ class MailsterUpdate {
 		add_action( 'install_plugins_pre_plugin-information', array( &$this, 'add_css_for_information_screen' ), 1 );
 
 		add_action( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
+
+		$this->init();
 	}
 
 
