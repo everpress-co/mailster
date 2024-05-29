@@ -32,6 +32,7 @@
 	background-repeat: repeat;
 	background-size: 25px !important;
 	padding-top: 10% !important;
+	margin: 0;
 }
 .block-editor-block-preview__content-iframe .editor-styles-wrapper {
 	padding-top: 0% !important;
@@ -57,10 +58,16 @@
 	margin-right: auto !important;
 }
 .post-type-mailster-form.editor-styles-wrapper .is-root-container {
-	margin: 0;
+	margin: 0 !important;
 	background-color: transparent;
 	max-width: 100%;
 	_width: 100%;
+}
+.editor-styles-wrapper.editor-styles-wrapper
+	.block-editor-block-list__layout.is-root-container
+	> :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+	margin-left: auto !important;
+	margin-right: auto !important;
 }
 .components-navigator-provider {
 	width: 100%;
