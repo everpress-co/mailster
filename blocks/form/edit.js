@@ -39,72 +39,7 @@ import HomepageInspectorControls from '../homepage/inspector';
 import { searchBlock } from '../util';
 import { TABS } from '../homepage/constants';
 import InlineStyles from '../util/InlineStyles';
-
-function MailsterFormSelector(props) {
-	const { attributes, setAttributes, isSelected, selectForm, formId } = props;
-
-	const query = { status: 'publish,future,draft,pending,private' };
-
-	const forms = useSelect((select) => {
-		return select('core').getEntityRecords('postType', 'mailster-form', query);
-	});
-
-	const isLoading = useSelect((select) => {
-		return select('core/data').isResolving('core', 'getEntityRecords', [
-			'postType',
-			'mailster-form',
-			query,
-		]);
-	});
-
-	if (isLoading)
-		return (
-			<p>
-				<Spinner />
-			</p>
-		);
-
-	if (forms && forms.length === 0) {
-		return (
-			<p>
-				{__(
-					'You currently have no forms. Please create a new form.',
-					'mailster'
-				)}
-			</p>
-		);
-	}
-	const editForm = () => {
-		window.open(
-			'post.php?post=' + formId + '&action=edit',
-			'edit_form_' + formId
-		);
-	};
-
-	return (
-		forms && (
-			<>
-				<SelectControl
-					value={formId}
-					onChange={(val) => selectForm(parseInt(val, 10))}
-				>
-					<option value="">{__('Choose an existing form', 'mailster')}</option>
-					{forms.map((form) => (
-						<option key={form.id} value={form.id}>
-							{sprintf('#%d - %s', form.id, form.title.rendered)}
-						</option>
-					))}
-				</SelectControl>
-				<Button
-					variant="secondary"
-					icon={edit}
-					onClick={editForm}
-					text={__('Edit form', 'mailster')}
-				/>
-			</>
-		)
-	);
-}
+import FormSelector from './FormSelector';
 
 export default function Edit(props) {
 	const { attributes, isSelected, setAttributes, context, clientId } = props;
@@ -217,10 +152,6 @@ export default function Edit(props) {
 		);
 	};
 
-	const createNewForm = () => {
-		window.open('post-new.php?post_type=mailster-form', 'new_form');
-	};
-
 	const currentTab = TABS.find((tab) => tab.id === contextType);
 
 	const getPlaceholderLabel = () => {
@@ -286,25 +217,7 @@ export default function Edit(props) {
 						label={getPlaceholderLabel()}
 						instructions={getPlaceholderInstructions()}
 					>
-						<MailsterFormSelector
-							{...props}
-							selectForm={selectForm}
-							formId={formId}
-						/>
-						<div className="placeholder-buttons-wrap">
-							<Button
-								variant="secondary"
-								icon={plus}
-								onClick={createNewForm}
-								text={__('Create new form', 'mailster')}
-							/>
-							<Button
-								variant="tertiary"
-								icon={update}
-								onClick={reloadForm}
-								text={__('Reload Forms', 'mailster')}
-							/>
-						</div>
+						<FormSelector {...props} selectForm={selectForm} formId={formId} />
 					</Placeholder>
 				)}
 			</div>
@@ -333,7 +246,7 @@ export default function Edit(props) {
 							title={__('Form Selector', 'mailster')}
 							initialOpen={true}
 						>
-							<MailsterFormSelector
+							<FormSelector
 								{...props}
 								selectForm={selectForm}
 								formId={formId}

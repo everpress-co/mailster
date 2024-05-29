@@ -35,6 +35,8 @@ class MailsterBlockForms {
 
 		add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
 
+		add_filter( 'render_block_core/button', array( &$this, 'maybe_add_form_for_button' ), 10, 2 );
+
 		add_action( 'save_post_mailster-form', array( &$this, 'clear_cache' ) );
 		add_action( 'save_post_page', array( &$this, 'maybe_set_homepage' ), 10, 3 );
 		add_action( 'switch_theme', array( &$this, 'clear_inline_style' ) );
@@ -238,6 +240,7 @@ class MailsterBlockForms {
 		$columns = array(
 			'cb'              => '<input type="checkbox" />',
 			'title'           => esc_html__( 'Title', 'mailster' ),
+			'shortcode'       => esc_html__( 'Shortcode', 'mailster' ),
 			'info'            => '',
 			'impressions'     => esc_html__( 'Impressions', 'mailster' ) . ' <span class="count">' . number_format_i18n( $this->get_impressions() ) . '</span>',
 			'conversions'     => esc_html__( 'Conversions', 'mailster' ) . ' <span class="count">' . number_format_i18n( $this->get_conversions() ) . '</span>',
@@ -262,7 +265,9 @@ class MailsterBlockForms {
 				$lists = mailster( 'lists' )->get( get_post_meta( $post_id, 'lists', true ) );
 				$names = wp_list_pluck( $lists, 'name', 'ID' );
 				echo '<span title="' . sprintf( esc_attr__( 'Lists: %s', 'mailster' ), "\n" . implode( "\n", $names ) ) . '" class="form-option lists ' . ( count( $lists ) ? 'is-checked' : '' ) . '">' . count( $lists ) . '</span>';
-
+				break;
+			case 'shortcode':
+				echo '<a class="clipboard code" data-clipboard-text="[mailster_form id=' . esc_attr( $post_id ) . ']">[mailster_form id=' . esc_attr( $post_id ) . ']</a>';
 				break;
 			case 'impressions':
 				echo number_format_i18n( $this->get_impressions( $post_id ) );
@@ -285,13 +290,17 @@ class MailsterBlockForms {
 
 		if ( $this->preview_data ) {
 
-			$this->forms[ $this->preview_data['type'] ][ $this->preview_data['form_id'] ] = $this->preview_data['options'];
+			$options       = $this->preview_data['options'];
+			$options['id'] = $this->preview_data['id'];
 
-			$suffix = '';
+			$this->forms[ $this->preview_data['type'] ][] = $options;
+
+			$suffix = SCRIPT_DEBUG ? '' : '.min';
+
 			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'jquery', 'mailster-form-view-script', 'wp-api-fetch' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-form-block-preview', MAILSTER_URI . 'assets/css/form-block-preview' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-		} elseif ( get_post_type() == 'mailster-form' ) {
+		} elseif ( get_post_type() === 'mailster-form' ) {
 			if ( ! is_post_publicly_viewable() ) {
 				global $wp_query;
 				$wp_query->set_404();
@@ -302,7 +311,7 @@ class MailsterBlockForms {
 				// TODO: check if there's a better way to alter the post content
 				// $wp_query->post->post_content = $this->render_form_in_content( $wp_query->post->post_content );
 				// add_filter( 'the_content', array( &$this, 'render_form_in_content' ) );
-						// no output on the content
+				// no output on the content
 				add_filter( 'the_content', '__return_empty_string', PHP_INT_MAX );
 				show_admin_bar( false );
 				add_action( 'wp_body_open', array( &$this, 'render_form_in_body' ), PHP_INT_MIN );
@@ -328,6 +337,24 @@ class MailsterBlockForms {
 	}
 
 
+	public function maybe_add_form_for_button( string $content, array $block ) {
+
+		if ( ! isset( $block['attrs']['mailster'] ) ) {
+			return $content;
+		}
+
+		if ( ! isset( $this->forms['popup'] ) ) {
+			$this->forms['popup'] = array();
+		}
+
+		$this->forms['popup'][] = wp_parse_args( $block['attrs']['mailster'], array( 'validity' => true ) );
+
+		add_action( 'wp_footer', array( &$this, 'maybe_add_form_to_footer' ) );
+
+		return $content;
+	}
+
+
 	public function check_validity( $form_id, $options = array() ) {
 
 		/**
@@ -340,6 +367,11 @@ class MailsterBlockForms {
 		$pre = apply_filters( 'mailster_block_form_pre_check_validity', null, $form_id, $options );
 		if ( null !== $pre ) {
 			return $pre;
+		}
+
+		// use this to skip the validity check
+		if ( isset( $options['validity'] ) ) {
+			return (bool) $options['validity'];
 		}
 
 		$post_type = get_post_type();
@@ -413,15 +445,14 @@ class MailsterBlockForms {
 		if ( ! isset( $this->forms['popup'] ) ) {
 			return;
 		}
-		foreach ( $this->forms['popup'] as $form_id => $options ) {
 
-			if ( ! $this->check_validity( $form_id, $options ) ) {
-				continue;
-			}
-			// $options['id']      = $form_id;
+		foreach ( $this->forms['popup'] as $options ) {
+
+			$form_id = $options['id'];
+
 			$options['classes'] = array( 'mailster-block-form-type-popup' );
 
-			echo $this->render_form( $form_id, $options );
+			echo $this->render_form( $form_id, $options, true );
 
 		}
 	}
@@ -435,7 +466,9 @@ class MailsterBlockForms {
 		if ( ! isset( $this->forms['content'] ) ) {
 			return $content;
 		}
-		foreach ( $this->forms['content'] as $form_id => $options ) {
+
+		foreach ( $this->forms['content'] as $options ) {
+			$form_id = $options['id'];
 			if ( isset( $displayed[ $form_id ] ) ) {
 				continue;
 			}
@@ -447,10 +480,11 @@ class MailsterBlockForms {
 
 			$form_html = $this->render_form( $form_id, $options );
 
-			if ( 'start' == $display ) {
+			if ( 'start' === $display ) {
 				$content = $form_html . $content;
-			} elseif ( 'end' == $display ) {
+			} elseif ( 'end' === $display ) {
 				$content = $content . "\n\n" . $form_html;
+
 			} else {
 				$split_at = $this->get_block_tag_by_tag( $options['tag'], has_blocks( $content ) );
 				$pos      = (int) $options['pos'];
@@ -516,7 +550,8 @@ class MailsterBlockForms {
 				foreach ( $placements as $placement ) {
 					$placement_options = get_post_meta( $form_id, 'placement_' . $placement, true );
 					if ( $placement_options ) {
-						$forms[ $placement ][ $form_id ] = $placement_options;
+						$placement_options['id'] = $form_id;
+						$forms[ $placement ][]   = $placement_options;
 					}
 				}
 			}
@@ -572,11 +607,10 @@ class MailsterBlockForms {
 			'show_ui'             => true,
 			'show_in_menu'        => 'edit.php?post_type=newsletter',
 			'show_in_admin_bar'   => false,
-			'show_in_nav_menus'   => true,
+			'show_in_nav_menus'   => false,
 			'can_export'          => false,
 			'has_archive'         => false,
 			'exclude_from_search' => true,
-			'rewrite'             => false,
 			'rewrite'             => array(
 				'with_front' => false,
 				'feeds'      => false,
@@ -658,6 +692,18 @@ class MailsterBlockForms {
 				'show_in_rest' => true,
 				'single'       => true,
 				'default'      => true,
+
+			)
+		);
+
+		register_post_meta(
+			'mailster-form',
+			'prefill',
+			array(
+				'type'         => 'boolean',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => false,
 
 			)
 		);
@@ -858,6 +904,9 @@ class MailsterBlockForms {
 
 		$actions['form_preview'] = '<a href="' . get_permalink( $post->ID ) . '" data-title="' . esc_attr( sprintf( __( 'Preview %s', 'mailster' ), '"' . get_the_title( $post ) . '"' ) ) . '" aria-label="' . esc_attr__( 'Preview this form', 'mailster' ) . '">' . esc_html__( 'Preview', 'mailster' ) . '</a>';
 
+		// add ID to the very front
+		$actions = array_merge( array( 'form_id' => sprintf( 'ID: %d', $post->ID ) ), $actions );
+
 		return $actions;
 	}
 
@@ -996,11 +1045,11 @@ class MailsterBlockForms {
 			return;
 		}
 
-		$suffix = '';
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		do_action( 'mailster_admin_header' );
 
-		wp_enqueue_script( 'mailster-block-forms-overview', MAILSTER_URI . 'assets/js/block-form-overview-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-block-forms-overview', MAILSTER_URI . 'assets/js/block-form-overview-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-block-forms-overview', MAILSTER_URI . 'assets/css/block-form-overview' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_enqueue_style( 'thickbox' );
@@ -1013,7 +1062,7 @@ class MailsterBlockForms {
 			return;
 		}
 
-		$suffix = '';
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		do_action( 'mailster_admin_header' );
 
@@ -1329,8 +1378,13 @@ class MailsterBlockForms {
 			}
 		}
 
-		// create identifier based on arguments
-		$identifier = $this->get_identifier( $form, $args );
+		if ( isset( $args['identifier'] ) ) {
+			$identifier = $args['identifier'];
+		} else {
+			// create identifier based on arguments
+			$identifier = $this->get_identifier( $form, $args );
+		}
+
 		// is on a page in the backend and loaded via the REST API
 		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;
 
@@ -1375,6 +1429,8 @@ class MailsterBlockForms {
 				'cooldown'   => 0,
 				'isPreview'  => false,
 				'type'       => $block_context,
+				'prefill'    => (bool) get_post_meta( $form->ID, 'prefill', true ),
+
 			)
 		);
 
@@ -1646,6 +1702,7 @@ class MailsterBlockForms {
 			'cooldown'   => $args['cooldown'],
 			'isPreview'  => $args['isPreview'],
 			'type'       => $args['type'],
+			'prefill'    => $args['prefill'],
 		);
 
 		if ( isset( $args['triggers'] ) ) {
@@ -1802,6 +1859,10 @@ class MailsterBlockForms {
 
 	public function impression( $form_id, $subscriber_id = null, $post_id = null ) {
 
+		$current_user = get_current_user_id();
+		if ( $current_user && $current_user == get_post( $form_id )->post_author ) {
+			return new WP_Error( 'no_action', 'no action for author of the form', array( 'status' => 406 ) );
+		}
 		return $this->action( 'impression', $form_id, $subscriber_id, $post_id );
 	}
 
@@ -1828,12 +1889,6 @@ class MailsterBlockForms {
 
 		if ( ! isset( $actions[ $type ] ) ) {
 			return new WP_Error( 'invalid_action', 'There is no such action' );
-		}
-
-		// TODO maybe not useful.
-		$current_user = get_current_user_id();
-		if ( $current_user && $current_user == get_post( $form_id )->post_author ) {
-			// return new WP_Error( 'no_action', 'no action for author of the form', array( 'status' => 406 ) );
 		}
 
 		$action_type = $actions[ $type ];

@@ -51,6 +51,7 @@ import domReady from '@wordpress/dom-ready';
 	domReady(() => {
 		const forms = querySelectorAll(document, '.mailster-block-form');
 		const events = windowObj.mailsterBlockEvents || {};
+		const params = getParameters();
 
 		Array.prototype.forEach.call(forms, (formEl) => {
 			const form_el = querySelector(formEl, '.mailster-block-form-data');
@@ -101,6 +102,13 @@ import domReady from '@wordpress/dom-ready';
 				},
 			};
 
+			Array.prototype.forEach.call(
+				querySelectorAll(document, '.has-mailster-form-' + form.identifier),
+				(element, i) => {
+					addEvent(element, CLICK, openForm);
+				}
+			);
+
 			const _trigger_inactive = debounce(_trigger_inactive_debounced, 100);
 			function _trigger_inactive_debounced(event) {
 				clearTimeout(inactiveTimeout);
@@ -123,6 +131,31 @@ import domReady from '@wordpress/dom-ready';
 					openForm();
 				}
 			}
+
+			// prefill the form
+			form.prefill &&
+				params &&
+				Object.entries(params).forEach(([key, value]) => {
+					const el = querySelector(formEl, '[name="' + key + '"]');
+					if (!el) return;
+					switch (el.type) {
+						case 'checkbox':
+							el.checked = !!value && value !== 'false';
+							break;
+						case 'radio':
+							const rel = querySelectorAll(formEl, '[name="' + key + '"]');
+							for (let i = 0; i < rel.length; i++) {
+								rel[i].checked = rel[i].value == decodeURIComponent(value);
+							}
+							break;
+						case 'date':
+							el.value = value;
+							break;
+						default:
+							el.value = decodeURIComponent(value);
+							break;
+					}
+				});
 
 			function formSubmit(event) {
 				event.preventDefault();
@@ -570,6 +603,18 @@ import domReady from '@wordpress/dom-ready';
 		);
 		let yiq = (c[1] * 299 + c[2] * 587 + c[3] * 114) / 1000;
 		return yiq >= 128 ? 'is-light-bg' : 'is-dark-bg';
+	}
+
+	function getParameters() {
+		let params = {};
+		const parts = windowObj.location.search.replace('?', '').split('&');
+		var length = parts.length;
+		for (var i = 0; i < length; i++) {
+			var prop = parts[i].slice(0, parts[i].search('='));
+			var value = parts[i].slice(parts[i].search('=')).replace('=', '');
+			params[prop] = value;
+		}
+		return params;
 	}
 
 	function storageWithLocalStorage(identifier, key, value) {

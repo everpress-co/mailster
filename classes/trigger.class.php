@@ -329,6 +329,10 @@ class MailsterTrigger {
 			return;
 		}
 
+		if ( ! $wp ) {
+			return;
+		}
+
 		$triggers = get_option( 'mailster_trigger' );
 		// nothing to do
 		if ( empty( $triggers ) ) {

@@ -63,7 +63,7 @@ jQuery(document).ready(function ($) {
 
 		try {
 			data = JSON.parse(event.data);
-			if (!data.form_id) return;
+			if (!data.id) return;
 		} catch (e) {
 			return;
 		}
@@ -72,7 +72,7 @@ jQuery(document).ready(function ($) {
 
 		params.set('context', 'edit');
 		params.set('_locale', 'user');
-		params.set('attributes[id]', data.form_id);
+		params.set('attributes[id]', data.id);
 		data.options.align && params.set('attributes[align]', data.options.align);
 
 		var args = {
@@ -98,16 +98,16 @@ jQuery(document).ready(function ($) {
 				data: { block_form_content: data.post_content, args: args },
 			})
 				.then(function (post) {
-					$(
-						'.wp-block-mailster-form-outside-wrapper-' + data.form_id
-					).replaceWith(post.rendered);
+					$('.wp-block-mailster-form-outside-wrapper-' + data.id).replaceWith(
+						post.rendered
+					);
 
 					updateForm();
 
 					return post;
 				})
 				.catch(function (err) {
-					$('.wp-block-mailster-form-outside-wrapper-' + data.form_id)
+					$('.wp-block-mailster-form-outside-wrapper-' + data.id)
 						.addClass('has-error')
 						.html(err.message);
 					event.source.postMessage(
@@ -147,7 +147,7 @@ jQuery(document).ready(function ($) {
 		}
 
 		function updateForm() {
-			var form = $('.wp-block-mailster-form-outside-wrapper-' + data.form_id);
+			var form = $('.wp-block-mailster-form-outside-wrapper-' + data.id);
 			form.removeClass('has-animation animation-' + lastanimation);
 
 			if (data.options.animation) {

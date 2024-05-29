@@ -1,5 +1,8 @@
 const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 
+// Import the helper to find and generate the entry points in the src directory
+const { getWebpackEntryPoints } = require('@wordpress/scripts/utils/config');
+
 const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 const SoundsPlugin = require('sounds-webpack-plugin');
 
@@ -41,9 +44,16 @@ const soundPluginOptions = {
 	},
 };
 
+const customEntries = {
+	'subscriber-count/index': './blocks/subscriber-count/index.js',
+};
+
 module.exports = {
 	...defaultConfig,
-
+	entry: {
+		...getWebpackEntryPoints(),
+		...customEntries,
+	},
 	module: {
 		...defaultConfig.module,
 		rules: [

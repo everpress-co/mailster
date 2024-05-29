@@ -27,7 +27,7 @@ import { searchBlock } from '../../util';
 
 export default function Options(props) {
 	const { meta, setMeta } = props;
-	const { redirect, overwrite, gdpr, doubleoptin } = meta;
+	const { redirect, overwrite, gdpr, doubleoptin, prefill } = meta;
 
 	const [title, setTitle] = useEntityProp('postType', 'mailster-form', 'title');
 
@@ -81,6 +81,17 @@ export default function Options(props) {
 					)}
 					checked={!!overwrite}
 					onChange={() => setMeta({ overwrite: !overwrite })}
+				/>
+			</PanelRow>
+			<PanelRow>
+				<CheckboxControl
+					label={__('Allow Prefills', 'mailster')}
+					help={__(
+						'Allow to prefill this form with GET variables. Use the field name as key and the value as value.',
+						'mailster'
+					)}
+					checked={!!prefill}
+					onChange={() => setMeta({ prefill: !prefill })}
 				/>
 			</PanelRow>
 			<PanelRow>

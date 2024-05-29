@@ -29,8 +29,15 @@ window.mailster_fields &&
 		const description = field.name + ' Description';
 
 		let selector = 'input';
+		let autoComplete = undefined;
 
 		switch (id) {
+			case 'firstname':
+				autoComplete = 'given-name';
+				break;
+			case 'lastname':
+				autoComplete = 'family-name';
+				break;
 			case 'dropdown':
 				selector = 'select';
 				break;
@@ -141,6 +148,13 @@ window.mailster_fields &&
 					source: 'attribute',
 					selector: 'div',
 					attribute: 'data-error-message',
+				},
+				autocomplete: {
+					type: 'string',
+					source: 'attribute',
+					selector: 'input',
+					attribute: 'autocomplete',
+					default: autoComplete,
 				},
 				asterisk: {
 					type: 'boolean',
