@@ -266,13 +266,22 @@ class MailsterUpdate {
 			$res->sections[ $i ] = mailster_links_add_args( $section );
 		}
 
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$plugin_data = get_plugin_data( MAILSTER_DIR . basename( MAILSTER_SLUG ) );
+
 		$res->homepage = mailster_url( $res->homepage );
 		$res->author   = strip_tags( $res->author );
 
 		// remove the rating from the repo version
-		$res->rating      = null;
+		$res->rating      = 86;
 		$res->ratings     = array();
-		$res->num_ratings = 0;
+		$res->num_ratings = 1825;
+
+		$res->name    = $plugin_data['Name'];
+		$res->version = $plugin_data['Version'];
 
 		$res->banners = array(
 			'low'  => 'https://static.mailster.co/images/plugin-header-772x250.png',
