@@ -6,7 +6,7 @@
  * WordPress dependencies
  */
 
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { getAction } from './functions';
 
 /**
@@ -18,5 +18,7 @@ export default function Label(attributes, { context }) {
 
 	if (metadata?.name) return metadata.name;
 
-	return sprintf(__('Action %s', 'mailster'), '"' + action + '"' || content);
+	if (!action) return content;
+
+	return getAction(action)?.label || content;
 }

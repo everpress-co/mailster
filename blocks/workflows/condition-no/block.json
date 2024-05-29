@@ -12,6 +12,7 @@
 		"className": false,
 		"customClassName": false,
 		"reusable": false,
+		"renaming": false,
 		"lock": false
 	},
 	"attributes": {

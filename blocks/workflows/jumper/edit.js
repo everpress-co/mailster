@@ -18,8 +18,8 @@ import StepIcon from './Icon.js';
 import Step from '../inspector/Step.js';
 
 export default function Edit(props) {
-	const { attributes, setAttributes, isSelected } = props;
-	const { id, conditions, step } = attributes;
+	const { attributes } = props;
+	const { conditions, step } = attributes;
 
 	const label = sprintf(__('Jump to #%s', 'mailster'), step || '…');
 

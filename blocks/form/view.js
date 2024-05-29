@@ -6,6 +6,7 @@
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
+import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
@@ -46,14 +47,8 @@ import apiFetch from '@wordpress/api-fetch';
 	const KEYDOWN = 'keydown';
 	const KEYUP = 'keyup';
 	const KEYPRESS = 'keypress';
-	const DOMCONTENTLOADED = 'DOMContentLoaded';
 
-	// initialize instant or wait if the DOM is not loaded yet
-	document.readyState === 'complete'
-		? app()
-		: addEvent(windowObj, DOMCONTENTLOADED, app);
-
-	function app() {
+	domReady(() => {
 		const forms = querySelectorAll(document, '.mailster-block-form');
 		const events = windowObj.mailsterBlockEvents || {};
 
@@ -526,7 +521,7 @@ import apiFetch from '@wordpress/api-fetch';
 
 			addEvent(formEl, SUBMIT, formSubmit);
 		});
-	}
+	});
 
 	function stopPropagation(event) {
 		event.stopPropagation();

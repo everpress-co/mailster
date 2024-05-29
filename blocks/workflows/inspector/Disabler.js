@@ -17,26 +17,25 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { help } from '@wordpress/icons';
+import { useEffect } from '@wordpress/element';
+import { dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 
+import { useUpdateEffect } from '../../util';
+
 const STEP_LABELS = {
-	disable: __('Disable step', 'mailster'),
-	enable: __('Enable step', 'mailster'),
+	label: __('Step Enabled', 'mailster'),
 	help: __(
-		'Disables this step. It will be skipped when the workflow is executed.',
+		'Disable this step to skip it when the workflow is executed.',
 		'mailster'
 	),
 };
 const TRIGGER_LABELS = {
-	disable: __('Disable trigger', 'mailster'),
-	enable: __('Enable trigger', 'mailster'),
-	help: __(
-		'Disables this trigger. The workflow will be skipped if this trigger is used.',
-		'mailster'
-	),
+	label: __('Trigger Enabled', 'mailster'),
+	help: __('Disable this trigger to skip this workflow is used.', 'mailster'),
 };
 
 export default function Disabler(props) {
@@ -46,13 +45,23 @@ export default function Disabler(props) {
 	const label =
 		name == 'mailster-workflow/trigger' ? TRIGGER_LABELS : STEP_LABELS;
 
+	useUpdateEffect(() => {
+		const msg = disabled
+			? __('Step disabled', 'mailster')
+			: __('Step enabled', 'mailster');
+		dispatch('core/notices').createNotice('success', msg, {
+			type: 'snackbar',
+			isDismissible: true,
+		});
+	}, [disabled]);
+
 	return (
 		<>
 			<BlockControls group="other">
 				<ToolbarButton
 					icon={disabled ? 'hidden' : 'visibility'}
 					isPressed={disabled}
-					title={disabled ? label.enable : label.disable}
+					title={label.label}
 					onClick={() =>
 						setAttributes({ disabled: disabled ? undefined : true })
 					}
@@ -64,11 +73,11 @@ export default function Disabler(props) {
 						<PanelRow>
 							<ToggleControl
 								icon={disabled ? 'hidden' : 'visibility'}
-								label={disabled ? label.enable : label.disable}
+								label={label.label}
 								help={label.help}
-								checked={disabled}
+								checked={!disabled}
 								onChange={(val) =>
-									setAttributes({ disabled: val ? val : undefined })
+									setAttributes({ disabled: val ? undefined : true })
 								}
 							/>
 						</PanelRow>
