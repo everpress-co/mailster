@@ -25,14 +25,13 @@ import { getBlockType } from '@wordpress/blocks';
 /**
  * Internal dependencies
  */
-import { searchBlocks, useWindow } from '../../util';
+import { searchBlocks, useSteps, useWindow } from '../../util';
 import StepIcon from './Icon.js';
 
 export default function StepId(props) {
 	const { attributes, setAttributes, clientId, isSelected } = props;
 	const { step } = attributes;
 
-	const [stepBlocks, setStepBlocks] = useState([]);
 	const [currentStep, setCurrentStep] = useState();
 	const [isFound, setFound] = useState(false);
 
@@ -40,12 +39,7 @@ export default function StepId(props) {
 
 	const { toggleBlockHighlight } = dispatch('core/block-editor');
 
-	useEffect(() => {
-		const blocks = searchBlocks(
-			'^mailster-workflow/(conditions|action|email|delay|stop|jumper|notification)$'
-		);
-		if (stepBlocks !== blocks) setStepBlocks(blocks);
-	}, [isSelected]);
+	const stepBlocks = useSteps(isSelected);
 
 	useEffect(() => {
 		if (!stepBlocks.length) return;

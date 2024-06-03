@@ -687,3 +687,63 @@ export function searchBlocks(pattern, clientId = null, innerBlocks = true) {
 export function clearData(selector, store) {
 	dispatch(store).invalidateResolutionForStoreSelector(selector);
 }
+
+export function useInterval(callback, delay, instant = false) {
+	const interval = useRef(null);
+	const cb = useRef(callback);
+	useEffect(() => {
+		cb.current = callback;
+	}, [callback]);
+	useEffect(() => {
+		const tick = () => cb.current();
+		if (instant && cb.current) {
+			tick();
+		}
+		if (typeof delay === 'number') {
+			interval.current = window.setInterval(tick, delay);
+			return () => window.clearInterval(interval.current);
+		}
+	}, [delay]);
+	return interval;
+}
+
+export function useFocus(element) {
+	const ref = useRef(element);
+	// set to true if element is window
+	const [isFocused, setIsFocused] = useState(element === window);
+	const focus = useCallback(() => {
+		setIsFocused(true);
+	}, [isFocused]);
+	const blur = useCallback(() => {
+		setIsFocused(false);
+	}, [isFocused]);
+
+	useEffect(() => {
+		const el = ref.current;
+
+		el?.addEventListener('focus', focus);
+		el?.addEventListener('blur', blur);
+
+		return () => {
+			el?.removeEventListener('focus', focus);
+			el?.removeEventListener('blur', blur);
+		};
+	});
+
+	return [ref, isFocused];
+}
+
+export function useSteps(dependencies) {
+	const [stepBlocks, setStepBlocks] = useState([]);
+
+	useEffect(() => {
+		const blocks = searchBlocks(
+			'^mailster-workflow/(conditions|action|email|delay|stop|jumper|notification)$'
+		);
+		if (stepBlocks !== blocks) {
+			setStepBlocks(blocks);
+		}
+	}, [dependencies]);
+
+	return stepBlocks;
+}

@@ -39,7 +39,6 @@ export default function Edit(props) {
 	return (
 		<Step
 			{...props}
-			hasStepId={false}
 			isIncomplete={!trigger}
 			inspectorControls={<InspectorControls {...props} />}
 			blockAttributes={{ 'data-or': __('or', 'mailster') }}

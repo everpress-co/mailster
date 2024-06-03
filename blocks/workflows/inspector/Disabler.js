@@ -16,26 +16,18 @@ import {
 	ToolbarButton,
 	ToggleControl,
 } from '@wordpress/components';
-import { help } from '@wordpress/icons';
-import { useEffect } from '@wordpress/element';
-import { dispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 
-import { useUpdateEffect } from '../../util';
-
 const STEP_LABELS = {
-	label: __('Step Enabled', 'mailster'),
-	help: __(
-		'Disable this step to skip it when the workflow is executed.',
-		'mailster'
-	),
+	label: __('Skip Step', 'mailster'),
+	help: __('Skip this step when the workflow is executed.', 'mailster'),
 };
 const TRIGGER_LABELS = {
-	label: __('Trigger Enabled', 'mailster'),
-	help: __('Disable this trigger to skip this workflow is used.', 'mailster'),
+	label: __('Skip Trigger', 'mailster'),
+	help: __('Disable the trigger for this workflow.', 'mailster'),
 };
 
 export default function Disabler(props) {
@@ -44,16 +36,6 @@ export default function Disabler(props) {
 
 	const label =
 		name == 'mailster-workflow/trigger' ? TRIGGER_LABELS : STEP_LABELS;
-
-	useUpdateEffect(() => {
-		const msg = disabled
-			? __('Step disabled', 'mailster')
-			: __('Step enabled', 'mailster');
-		dispatch('core/notices').createNotice('success', msg, {
-			type: 'snackbar',
-			isDismissible: true,
-		});
-	}, [disabled]);
 
 	return (
 		<>
@@ -75,9 +57,9 @@ export default function Disabler(props) {
 								icon={disabled ? 'hidden' : 'visibility'}
 								label={label.label}
 								help={label.help}
-								checked={!disabled}
+								checked={disabled}
 								onChange={(val) =>
-									setAttributes({ disabled: val ? undefined : true })
+									setAttributes({ disabled: val ? true : undefined })
 								}
 							/>
 						</PanelRow>

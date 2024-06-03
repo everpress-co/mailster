@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-
 /**
  * WordPress dependencies
  */
@@ -19,7 +18,13 @@ import { useState, useEffect, createRoot } from '@wordpress/element';
 import { createBlock } from '@wordpress/blocks';
 import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
-import { BaseControl, Flex, FlexItem, PanelRow } from '@wordpress/components';
+import {
+	BaseControl,
+	Button,
+	Flex,
+	FlexItem,
+	PanelRow,
+} from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -37,6 +42,9 @@ import {
 	searchBlocks,
 	searchBlock,
 	useBlockChange,
+	useInterval,
+	clearData,
+	useFocus,
 } from '../../util';
 
 whenEditorIsReady().then((w) => {
@@ -70,6 +78,35 @@ function SettingsPanelPlugin() {
 	const finished = allNumbers ? allNumbers['finished'] : 0;
 	const active = allNumbers ? allNumbers['active'] : 0;
 	const total = allNumbers ? allNumbers['total'] : 0;
+
+	const [isDynmanic, setDynamic] = useState(true);
+
+	const [ref, isFocused] = useFocus(window);
+
+	const queueInterval = isFocused ? 2000 : 20000;
+
+	console.log(isFocused);
+
+	isDynmanic &&
+		useInterval(
+			() => {
+				clearData('getQueue', 'mailster/automation');
+				//console.log('clear queue');
+			},
+			queueInterval,
+			isFocused
+		);
+	const numbersInterval = isFocused ? 15000 : 30000;
+
+	isDynmanic &&
+		useInterval(
+			() => {
+				clearData('getCampaignStats', 'mailster/automation');
+				clearData('getNumbers', 'mailster/automation');
+			},
+			numbersInterval,
+			isFocused
+		);
 
 	// TODO Make this better
 	// Toolbar
@@ -173,6 +210,7 @@ function SettingsPanelPlugin() {
 			</PluginPostPublishPanel>
 
 			<PublishInfo />
+
 			<PluginPostStatusInfo className="status-numbers">
 				<Flex align="center" justify="space-between">
 					<FlexItem>

@@ -22,22 +22,14 @@ export function* getNumbers() {
 	const data = yield actions.getNumbers(
 		'/mailster/v1/automations/numbers/' + post_id
 	);
-	const post_status = select('core/editor').getCurrentPost().status;
-
-	const debug = true;
-
-	const interval =
-		post_status == 'publish' &&
-		setInterval(
-			() => {
-				if (debug || document.hasFocus()) {
-					clearData('getNumbers', 'mailster/automation');
-					clearInterval(interval);
-				}
-			},
-			debug ? 2000 : 15000
-		);
 	return actions.setNumbers(data);
+}
+export function* getQueue() {
+	const post_id = select('core/editor').getCurrentPostId();
+	const data = yield actions.getQueue(
+		'/mailster/v1/automations/queue/' + post_id
+	);
+	return actions.setQueue(data);
 }
 
 export function* getActions() {
@@ -68,17 +60,6 @@ export function* getCampaignStats(campaign) {
 		'/mailster/v1/automations/stats/' + campaign,
 		campaign
 	);
-
-	//const post_status = select('core/editor').getCurrentPost().status;
-
-	// const interval =
-	// 	post_status == 'publish' &&
-	// 	setInterval(() => {
-	// 		if (document.hasFocus()) {
-	// 			//clearData('getCampaignStats');
-	// 			clearInterval(interval);
-	// 		}
-	// 	}, 15000);
 	return actions.setCampaignStats(data, campaign);
 }
 export function* getForms() {

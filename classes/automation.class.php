@@ -48,6 +48,8 @@ class MailsterAutomations {
 		add_action( 'admin_init', array( &$this, 'edit_hook' ) );
 		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
 
+		add_action( 'after_delete_post', array( &$this, 'after_delete_post' ), 10, 2 );
+
 		add_action( 'mailster_unsubscribe', array( &$this, 'on_unsubscribe' ), 10, 4 );
 	}
 
@@ -419,12 +421,18 @@ class MailsterAutomations {
 		return true;
 	}
 
-	public function get_queue( $step = null ) {
+	public function get_queue( $workflow_id, $step = null ) {
 		global $wpdb;
 
-		$sql = "SELECT workflows.*, subscribers.email FROM {$wpdb->prefix}mailster_workflows AS workflows LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = workflows.subscriber_id WHERE workflows.step = %s ORDER BY `timestamp`";
+		$sql = "SELECT workflows.*, subscribers.email FROM {$wpdb->prefix}mailster_workflows AS workflows LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = workflows.subscriber_id WHERE 1=1";
 
-		$entries = $wpdb->get_results( $wpdb->prepare( $sql, $step ) );
+		$sql .= $wpdb->prepare( ' AND workflows.workflow_id = %d', $workflow_id );
+		if ( $step ) {
+			$sql .= $wpdb->prepare( ' AND workflows.step = %s', $step );
+		}
+		$sql .= ' ORDER BY `timestamp`';
+
+		$entries = $wpdb->get_results( $sql );
 
 		return $entries;
 	}
@@ -438,22 +446,34 @@ class MailsterAutomations {
 	public function finish_queue_item( $id ) {
 		global $wpdb;
 
-		return $wpdb->update(
-			"{$wpdb->prefix}mailster_workflows",
-			array(
-				'finished'  => time(),
-				'error'     => '',
-				'step'      => null,
-				'timestamp' => null,
-			),
-			array( 'ID' => $id )
+		$data = array(
+			'finished'  => time(),
+			'error'     => '',
+			'step'      => null,
+			'timestamp' => null,
 		);
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $id ) ) ) {
+			// process the queue for this item
+			$this->wp_schedule( $id );
+			return true;
+		}
+
+		return false;
 	}
 
 	public function forward_queue_item( $id ) {
 		global $wpdb;
 
-		return $wpdb->update( "{$wpdb->prefix}mailster_workflows", array( 'timestamp' => time() ), array( 'ID' => $id ) );
+		$data = array( 'timestamp' => time() );
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $id ) ) ) {
+			// process the queue for this item
+			$this->wp_schedule( $id );
+			return true;
+		}
+
+		return false;
 	}
 
 	// only used for mailster_workflow hook
@@ -555,14 +575,13 @@ class MailsterAutomations {
 
 			global $wpdb;
 
-			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT step, COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and step IS NOT null GROUP BY step;", $workflow->ID ) );
+			// $entries = $wpdb->get_results( $wpdb->prepare( "SELECT step, COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and step IS NOT null GROUP BY step;", $workflow->ID ) );
 
 			$active = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and timestamp IS NOT null and finished = 0 and step IS NOT null;", $workflow->ID ) );
 
 			$finished = $wpdb->get_var( $wpdb->prepare( "SELECT  COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and finished != 0;", $workflow->ID ) );
 
 			$numbers = array(
-				'steps'       => array(),
 				'active'      => (int) $active,
 				'finished'    => (int) $finished,
 				'total'       => (int) $finished + $active,
@@ -577,15 +596,15 @@ class MailsterAutomations {
 				'bounce_rate' => 0,
 			);
 
-			foreach ( $entries as $entry ) {
-				if ( ! isset( $numbers['steps'][ $entry->step ] ) ) {
-					$return['steps'][ $entry->step ] = array(
-						'count'  => 0,
-						'errors' => array(),
-					);
-				}
-				$numbers['steps'][ $entry->step ]['count'] = (int) $entry->count;
-			}
+			// foreach ( $entries as $entry ) {
+			// if ( ! isset( $numbers['steps'][ $entry->step ] ) ) {
+			// $return['steps'][ $entry->step ] = array(
+			// 'count'  => 0,
+			// 'errors' => array(),
+			// );
+			// }
+			// $numbers['steps'][ $entry->step ]['count'] = (int) $entry->count;
+			// }
 
 			$workflow_campaigns = $this->get_workflow_campaigns( $workflow );
 
@@ -1348,6 +1367,18 @@ class MailsterAutomations {
 
 		// delete workflows with subscribers
 		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'subscriber_id' => (int) $subscriber_id ) );
+	}
+
+	public function after_delete_post( $post_id, $post ) {
+
+		if ( get_post_type( $post ) !== 'mailster-workflow' ) {
+			return;
+		}
+
+		global $wpdb;
+
+		// delete workflow entries from this post (workflow)
+		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'workflow_id' => (int) $post_id ) );
 	}
 
 

@@ -159,7 +159,7 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/queue/(?P<step>[a-zA-Z0-9-]+)',
+			'/' . $this->rest_base . '/queue/(?P<post_id>\d+)(?:/(?P<step>[a-zA-Z0-9-]+))?',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
@@ -173,7 +173,7 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/queue/(?P<step>[a-zA-Z0-9-]+)/(?P<id>\d+)',
+			'/' . $this->rest_base . '/queue/(?P<post_id>\d+)/(?P<step>[a-zA-Z0-9-]+)/(?P<id>\d+)',
 			array(
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
@@ -187,7 +187,7 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/queue/(?P<step>[a-zA-Z0-9-]+)/(?P<id>\d+)',
+			'/' . $this->rest_base . '/queue/(?P<post_id>\d+)/(?P<step>[a-zA-Z0-9-]+)/(?P<id>\d+)',
 			array(
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
@@ -336,15 +336,17 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 	public function get_queue_items( $request ) {
 
+		$post_id = $request->get_param( 'post_id' );
 		$step_id = $request->get_param( 'step' );
 
-		$items = mailster( 'automations' )->get_queue( $step_id );
+		$items = mailster( 'automations' )->get_queue( $post_id, $step_id );
 
 		return rest_ensure_response( $items );
 	}
 
 	public function edit_queue_item( $request ) {
 
+		$post_id = $request->get_param( 'post_id' );
 		$step_id = $request->get_param( 'step' );
 		$id      = $request->get_param( 'id' );
 		$json    = $request->get_json_params();
@@ -363,6 +365,7 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 	public function delete_queue_item( $request ) {
 
+		$post_id = $request->get_param( 'post_id' );
 		$step_id = $request->get_param( 'step' );
 		$id      = $request->get_param( 'id' );
 

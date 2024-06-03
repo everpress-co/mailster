@@ -7,6 +7,7 @@ class MailsterWorkflow {
 	private $workflow;
 	private $trigger;
 	private $subscriber;
+	private $subscriber_id;
 	private $step;
 	private $timestamp;
 	private $context;
@@ -17,11 +18,11 @@ class MailsterWorkflow {
 	private $max_steps   = 10;
 	private $steps_map   = array();
 
-	public function __construct( $workflow, $trigger, $subscriber = null, $step = null, $timestamp = null, $context = null ) {
+	public function __construct( $workflow, $trigger, $subscriber_id = null, $step = null, $timestamp = null, $context = null ) {
 
 		$this->set_workflow( $workflow );
 		$this->set_trigger( $trigger );
-		$this->set_subscriber( $subscriber );
+		$this->set_subscriber( $subscriber_id );
 		$this->set_step( $step );
 		$this->set_timestamp( $timestamp );
 	}
@@ -36,9 +37,10 @@ class MailsterWorkflow {
 		$this->trigger = $trigger;
 	}
 
-	public function set_subscriber( $subscriber ) {
+	public function set_subscriber( $subscriber_id ) {
 
-		$this->subscriber = $subscriber;
+		$this->subscriber_id = $subscriber_id;
+		$this->subscriber    = mailster( 'subscribers' )->get( $subscriber_id );
 	}
 
 	public function set_step( $step ) {
@@ -132,7 +134,7 @@ class MailsterWorkflow {
 		$this->args = array(
 			'trigger'    => $this->trigger,
 			'id'         => $this->workflow->ID,
-			'subscriber' => $this->subscriber,
+			'subscriber' => $this->subscriber_id,
 			'step'       => $this->step,
 		);
 
@@ -140,7 +142,7 @@ class MailsterWorkflow {
 		$this->is_search = ! is_null( $this->step );
 		if ( ! $this->is_search ) {
 
-			$this->log( 'RUN JOB ' . $this->trigger . ' for ' . $this->subscriber . ' on ' . $this->trigger );
+			$this->log( 'RUN JOB ' . $this->trigger . ' for ' . $this->subscriber_id . ' on ' . $this->trigger );
 
 			$enddate = get_post_meta( $this->workflow->ID, 'enddate', true );
 
@@ -153,9 +155,9 @@ class MailsterWorkflow {
 		}
 
 		// check if subscriber exists if it's not 0 ( 'date', 'anniversary', 'published_post' )
-		if ( $this->subscriber !== 0 ) {
+		if ( $this->subscriber_id !== 0 ) {
 			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
-				if ( ! mailster( 'subscribers' )->get( $this->subscriber ) ) {
+				if ( ! mailster( 'subscribers' )->get( $this->subscriber_id ) ) {
 					$this->log( 'SUBSCRIBER DOES NOT EXIST' );
 					return false;
 				}
@@ -227,7 +229,7 @@ class MailsterWorkflow {
 
 		$workflow_id   = $this->workflow->ID;
 		$trigger       = $this->trigger;
-		$subscriber_id = $this->subscriber;
+		$subscriber_id = $this->subscriber_id;
 
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_workflows WHERE `workflow_id` = %d AND `trigger` = %d AND `subscriber_id` = %d AND `timestamp` IS NOT NULL AND finished = 0 LIMIT 1", $workflow_id, $trigger, $subscriber_id ) );
 	}
@@ -244,7 +246,7 @@ class MailsterWorkflow {
 
 		$workflow_id   = $this->workflow->ID;
 		$trigger       = $this->trigger;
-		$subscriber_id = $this->subscriber;
+		$subscriber_id = $this->subscriber_id;
 
 		$entries = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_workflows WHERE `workflow_id` = %d AND `trigger` = %s AND `subscriber_id` = %d AND timestamp IS NULL", $workflow_id, $trigger, $subscriber_id ) );
 
@@ -284,7 +286,7 @@ class MailsterWorkflow {
 
 		$workflow_id   = $this->workflow->ID;
 		$trigger       = $this->trigger;
-		$subscriber_id = $this->subscriber;
+		$subscriber_id = $this->subscriber_id;
 		$step          = $this->step;
 		$timestamp     = $this->timestamp;
 
@@ -323,7 +325,7 @@ class MailsterWorkflow {
 
 		$workflow_id   = $this->workflow->ID;
 		$trigger       = $this->trigger;
-		$subscriber_id = $this->subscriber;
+		$subscriber_id = $this->subscriber_id;
 		$step          = $this->step;
 
 		$suppress_errors = $wpdb->suppress_errors( true );
@@ -409,14 +411,14 @@ class MailsterWorkflow {
 
 			// got it => continue
 			$this->is_search = false;
-			$this->log( 'FOUND  ' . $step['id'] . ' for ' . $this->subscriber );
+			$this->log( 'FOUND  ' . $step['id'] . ' for ' . $this->subscriber_id );
 
 			$this->entry = $this->get_entry();
 
 		}
 
 		if ( isset( $step['attr']['disabled'] ) && $step['attr']['disabled'] ) {
-			$this->log( 'STEP DISABLED ' . $step['id'] . ' for ' . $this->subscriber );
+			$this->log( 'STEP DISABLED ' . $step['id'] . ' for ' . $this->subscriber_id );
 			return true;
 		}
 
@@ -425,6 +427,7 @@ class MailsterWorkflow {
 			$this->update( array( 'step' => $step['id'] ) );
 			return false;
 		}
+
 		++$this->total_steps;
 
 		switch ( $step['type'] ) {
@@ -457,7 +460,7 @@ class MailsterWorkflow {
 					$try_again_after = 6;
 
 					$error = new WP_Error( 'warning', sprintf( __( 'Action failed with %1$s', 'mailster' ), '"' . $error_msg . '"', $tries ), $step );
-					$this->error_notice( $error, 'workflow_error_action_' . $step['id'] . '_' . $this->subscriber );
+					$this->error_notice( $error, 'workflow_error_action_' . $step['id'] . '_' . $this->subscriber_id );
 
 					$this->update(
 						array(
@@ -531,7 +534,7 @@ class MailsterWorkflow {
 			return new WP_Error( 'info', 'No Action for this step . ', $step );
 		}
 
-		$this->log( 'ACTION ' . $step['attr']['action'] . ' ' . $step['id'] . ' for ' . $this->subscriber );
+		$this->log( 'ACTION ' . $step['attr']['action'] . ' ' . $step['id'] . ' for ' . $this->subscriber_id );
 
 		switch ( $action ) {
 			case 'nothing':
@@ -556,7 +559,7 @@ class MailsterWorkflow {
 							} else {
 
 								// relative date so we ned the current one
-								$fields = mailster( 'subscribers' )->get_custom_fields( $this->subscriber );
+								$fields = mailster( 'subscribers' )->get_custom_fields( $this->subscriber_id );
 
 								if ( ! isset( $fields[ $field ] ) ) {
 									return true;
@@ -579,10 +582,10 @@ class MailsterWorkflow {
 					}
 
 					if ( $value !== '' ) {
-						mailster( 'subscribers' )->add_custom_field( $this->subscriber, $field, $value );
+						mailster( 'subscribers' )->add_custom_field( $this->subscriber_id, $field, $value );
 
 					} else {
-						mailster( 'subscribers' )->remove_custom_field( $this->subscriber, $field );
+						mailster( 'subscribers' )->remove_custom_field( $this->subscriber_id, $field );
 					}
 				}
 				break;
@@ -592,21 +595,21 @@ class MailsterWorkflow {
 				if ( isset( $attr['lists'] ) ) {
 					$remove_old  = false;
 					$doubleoptin = isset( $attr['doubleoptin'] ) && $attr['doubleoptin'];
-					mailster( 'lists' )->assign_subscribers( $attr['lists'], $this->subscriber, $remove_old, ! $doubleoptin );
+					mailster( 'lists' )->assign_subscribers( $attr['lists'], $this->subscriber_id, $remove_old, ! $doubleoptin );
 				}
 				break;
 
 			case 'remove_list':
 				$this->log( 'remove_list' );
 				if ( isset( $attr['lists'] ) ) {
-					mailster( 'lists' )->unassign_subscribers( $attr['lists'], $this->subscriber );
+					mailster( 'lists' )->unassign_subscribers( $attr['lists'], $this->subscriber_id );
 				}
 				break;
 
 			case 'add_tag':
 				$this->log( 'add_tag' );
 				if ( isset( $attr['tags'] ) ) {
-					mailster( 'tags' )->assign_subscribers( $attr['tags'], $this->subscriber );
+					mailster( 'tags' )->assign_subscribers( $attr['tags'], $this->subscriber_id );
 				}
 
 				break;
@@ -614,14 +617,14 @@ class MailsterWorkflow {
 			case 'remove_tag':
 				$this->log( 'remove_tag' );
 				if ( isset( $attr['tags'] ) ) {
-					mailster( 'tags' )->unassign_subscribers( $attr['tags'], $this->subscriber );
+					mailster( 'tags' )->unassign_subscribers( $attr['tags'], $this->subscriber_id );
 				}
 				break;
 
 			case 'unsubscribe':
 				$this->log( 'unsubscribe' );
 
-				mailster( 'subscribers' )->unsubscribe( $this->subscriber, $this->workflow->ID, 'UNSUBSCRIBED FROM WORKFLOW' );
+				mailster( 'subscribers' )->unsubscribe( $this->subscriber_id, $this->workflow->ID, 'UNSUBSCRIBED FROM WORKFLOW' );
 				break;
 
 			case 'webhook':
@@ -650,7 +653,7 @@ class MailsterWorkflow {
 		if ( ! $url ) {
 			return new WP_Error( 'error', 'No Webhook defined', $step );
 		}
-		$subscriber = mailster( 'subscribers' )->get( $this->subscriber, true );
+		$subscriber = mailster( 'subscribers' )->get( $this->subscriber_id, true );
 
 		$data = array(
 			'workflow'   => array(
@@ -737,7 +740,7 @@ class MailsterWorkflow {
 			if ( $conditions ) {
 				$conditions = $this->sanitize_conditions( $conditions );
 
-				if ( $this->subscriber && ! mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
+				if ( $this->subscriber_id && ! mailster( 'conditions' )->check( $conditions, $this->subscriber_id ) ) {
 					$this->log( 'CONDITION NOT PASSED ! ! ' );
 					return false;
 				}
@@ -756,11 +759,20 @@ class MailsterWorkflow {
 				$this->log( 'ENTRY NOT FINISHED' );
 				// Stop if the entry is not finished but with these triggers
 				if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
-					return false;
+					// return false;
 				}
 			}
 
 			$this->log( 'use TRIGGER ' . $this->trigger );
+
+			// check if user is subscribed
+			if ( $this->subscriber && $this->subscriber->status !== 1 ) {
+				$this->log( 'SUBSCRIBER NOT SUBSCRIBED ' . $this->subscriber->status );
+				error_log( print_r( $step, true ) );
+				// $this->update( array( 'step' => $step['id'] ) );
+				die();
+				return false;
+			}
 
 			switch ( $this->trigger ) {
 				case 'date':
@@ -768,7 +780,7 @@ class MailsterWorkflow {
 					$timestamp = isset( $trigger['attr']['date'] ) ? strtotime( $trigger['attr']['date'] ) : null;
 
 					// if this is not defined we get all based on the condtion
-					if ( ! $this->subscriber ) {
+					if ( ! $this->subscriber_id ) {
 						if ( ! $timestamp ) {
 							$this->delete();
 							return false;
@@ -843,10 +855,10 @@ class MailsterWorkflow {
 					break;
 				case 'published_post':
 					// if this is not defined we get all based on the condtion
-					if ( ! $this->subscriber ) {
+					if ( ! $this->subscriber_id ) {
 
 						$query_args = array(
-							'include '   => $this->subscriber,
+							'include '   => $this->subscriber_id,
 							'return_ids' => true,
 							'conditions' => $conditions,
 						);
@@ -898,12 +910,16 @@ class MailsterWorkflow {
 		if ( $step['id'] === $this->args['step'] && $this->entry && $this->entry->timestamp ) {
 
 			$this->log( 'SKIP AS ITS CURRENT' );
+
+			$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber_id, 'sent', $campaign->ID );
+			return (bool) $has_been_sent;
+
 			// step done => continue
 			return true;
 		}
 
 		$this->args['step'] = $step['id'];
-		$this->log( 'EMAIL ' . $step['id'] . ' for ' . $this->subscriber );
+		$this->log( 'EMAIL ' . $step['id'] . ' for ' . $this->subscriber_id );
 
 		// use the timestamp from the step for correct queueing
 		$timestamp = $this->entry && $this->entry->timestamp ? $this->entry->timestamp : time();
@@ -924,7 +940,7 @@ class MailsterWorkflow {
 
 		$args = array(
 			'campaign_id'   => $campaign->ID,
-			'subscriber_id' => $this->subscriber,
+			'subscriber_id' => $this->subscriber_id,
 			'priority'      => 15,
 			'timestamp'     => $timestamp,
 			'ignore_status' => false,
@@ -944,6 +960,7 @@ class MailsterWorkflow {
 			if ( mailster( 'queue' )->add( $args ) ) {
 				$this->update( array( 'timestamp' => $timestamp ) );
 			}
+
 			return false;
 		}
 
@@ -964,22 +981,22 @@ class MailsterWorkflow {
 		// TODO check when step is inclomplete and the campaigns hasn't been sent already
 
 		// only continue with the next step if campaign has been sent
-		$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber, 'sent', $campaign->ID );
+		$has_been_sent = mailster( 'actions' )->get_by_subscriber( $this->subscriber_id, 'sent', $campaign->ID );
 
 		return (bool) $has_been_sent;
 	}
 
 	private function jumper( $step ) {
 
-		$this->log( 'JUMPER ' . $step['attr']['step'] . ' for ' . $this->subscriber );
+		$this->log( 'JUMPER ' . $step['attr']['step'] . ' for ' . $this->subscriber_id );
 
 		// if conditions are present only jump if they are met
 		if ( isset( $step['attr']['conditions'] ) ) {
 			$conditions = $this->sanitize_conditions( $step['attr']['conditions'] );
 
-			if ( ! mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
+			if ( ! mailster( 'conditions' )->check( $conditions, $this->subscriber_id ) ) {
 
-				$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+				$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
 
 				// return true to execute the next step
 				return true;
@@ -994,14 +1011,14 @@ class MailsterWorkflow {
 			)
 		);
 
-		$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+		$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
 
 		return false;
 	}
 
 	private function notification( $step ) {
 
-		$this->log( 'notification ' . $step['attr']['email'] . ' for ' . $this->subscriber );
+		$this->log( 'notification ' . $step['attr']['email'] . ' for ' . $this->subscriber_id );
 
 		if ( ! isset( $step['attr']['email'] ) ) {
 			return new WP_Error( 'error', 'No email defined', $step );
@@ -1014,7 +1031,7 @@ class MailsterWorkflow {
 		$link         = admin_url( 'post.php?post=' . $this->workflow->ID . '&action=edit#step-' . $step['id'] );
 		$notification = sprintf( esc_html__( 'This email was triggered by workflow %s', 'mailster' ), '<a href="' . esc_url( $link ) . '">' . esc_html( get_the_title( $this->workflow->ID ) ) . '</a>' );
 
-		$userdata = mailster( 'subscribers' )->get( $this->subscriber, true );
+		$userdata = mailster( 'subscribers' )->get( $this->subscriber_id, true );
 
 		$n = mailster( 'notification' );
 		$n->replace( (array) $userdata, true );
@@ -1034,7 +1051,7 @@ class MailsterWorkflow {
 
 	private function stop( $step ) {
 
-		$this->log( 'STOP ' . $step['id'] . ' for ' . $this->subscriber );
+		$this->log( 'STOP ' . $step['id'] . ' for ' . $this->subscriber_id );
 		$this->finish();
 
 		// return false to not execute the next step
@@ -1061,7 +1078,7 @@ class MailsterWorkflow {
 
 		if ( isset( $step['attr']['date'] ) ) {
 			if ( $use_timezone ) {
-				$timeoffset = mailster( 'subscribers' )->meta( $this->subscriber, 'timeoffset' );
+				$timeoffset = mailster( 'subscribers' )->meta( $this->subscriber_id, 'timeoffset' );
 			}
 			$date = strtotime( $step['attr']['date'] ) + ( $timeoffset * HOUR_IN_SECONDS );
 		}
@@ -1188,12 +1205,12 @@ class MailsterWorkflow {
 
 		$conditions = $this->sanitize_conditions( $step['attr']['conditions'] );
 
-		if ( mailster( 'conditions' )->check( $conditions, $this->subscriber ) ) {
+		if ( mailster( 'conditions' )->check( $conditions, $this->subscriber_id ) ) {
 			$use = $step['yes'];
-			$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+			$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
 		} else {
 			$use = $step['no'];
-			$this->log( 'xCONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber );
+			$this->log( 'xCONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
 			error_log( print_r( $step, true ) );
 		}
 

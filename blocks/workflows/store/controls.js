@@ -7,6 +7,9 @@ export function GET_TRIGGERS(action) {
 export function GET_NUMBERS(action) {
 	return apiFetch({ path: action.path });
 }
+export function GET_QUEUE(action) {
+	return apiFetch({ path: action.path });
+}
 export function GET_ACTIONS(action) {
 	return apiFetch({ path: action.path });
 }

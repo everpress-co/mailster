@@ -15,64 +15,63 @@ import {
 	Button,
 	Modal,
 	Spinner,
-	CheckboxControl,
-	TreeSelect,
-	ButtonGroup,
-	IconButton,
-	ToolbarItem,
-	ToolbarButton,
 	ExternalLink,
 	Tooltip,
 	Tip,
 } from '@wordpress/components';
 
-import { select, useSelect } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 
-import { BlockControls, InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls } from '@wordpress/block-editor';
 import { useState, useEffect } from '@wordpress/element';
-import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
+import { dateI18n, humanTimeDiff } from '@wordpress/date';
 
 /**
  * Internal dependencies
  */
 
 import { TIME_FORMAT, DATE_FORMAT } from '../trigger/constants';
-import { clearData } from '../../util';
+import { clearData, useSteps } from '../../util';
 
 export default function QueueBadge(props) {
-	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { id } = attributes;
+	const { attributes, setAttributes, isSelected, clientId, name } = props;
+	const { id, trigger } = attributes;
 
-	const allNumbers = useSelect((select) => {
-		return select('mailster/automation').getNumbers();
+	const allQueue = useSelect((select) => {
+		return select('mailster/automation').getQueue();
+	}, []);
+	const post_id = useSelect((select) => {
+		return select('core/editor').getCurrentPostId();
 	}, []);
 
+	const [queued, setQueued] = useState(0);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [data, setData] = useState(false);
 
-	const queued = allNumbers ? allNumbers['steps'][id]?.count : null;
-
-	const title =
-		queued &&
-		sprintf(
-			_n('%s subscriber queued', '%s subscribers queued', queued, 'mailster'),
-			queued
-		);
+	const title = sprintf(
+		_n('%s subscriber queued', '%s subscribers queued', queued, 'mailster'),
+		queued
+	);
 
 	useEffect(() => {
-		if (!modalOpen || !id) return;
+		if (!allQueue) return;
+		setQueued(allQueue.filter((item) => item.step === id).length);
+	}, [allQueue]);
+
+	useEffect(() => {
+		if (!modalOpen || !id || !post_id) return;
 
 		apiFetch({
-			path: '/mailster/v1/automations/queue/' + id,
+			path: '/mailster/v1/automations/queue/' + post_id + '/' + id,
 		}).then((response) => {
 			setData(response);
 		});
-	}, [modalOpen]);
+	}, [modalOpen, post_id, id]);
 
 	return (
 		<>
-			{queued && (
+			{queued > 0 && (
 				<span
 					className="mailster-step-queued"
 					title={title}
@@ -104,7 +103,7 @@ export default function QueueBadge(props) {
 				</Modal>
 			)}
 			<InspectorControls>
-				{queued && (
+				{queued > 0 && (
 					<Panel>
 						<PanelBody title={__('Queue', 'mailster')} initialOpen={false}>
 							<PanelRow>
@@ -126,89 +125,54 @@ const Table = (props) => {
 
 	const [disabled, setDisabled] = useState(false);
 
-	const doItem = (item, action) => {
-		if (
-			!confirm(
-				sprintf(
-					__('Do you really like to remove %s from the queue?', 'mailster'),
-					item.email
-				)
-			)
-		)
-			return;
+	const post_id = useSelect((select) => {
+		return select('core/editor').getCurrentPostId();
+	}, []);
+
+	const doItem = (item, index, method, args) => {
+		const path =
+			'/mailster/v1/automations/queue/' + post_id + '/' + id + '/' + item.ID;
+
 		setDisabled(true);
 		apiFetch({
-			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
-			method: 'DELETE',
+			path: path,
+			method: method,
+			data: args,
 		}).then((response) => {
 			response && setData(data.filter((item, i) => i !== index));
 			setDisabled(false);
-			clearData('getNumbers', 'mailster/automation');
+			clearData('getQueue', 'mailster/automation');
 		});
 	};
 
-	const deleteItem = (item) => {
-		if (
-			!confirm(
-				sprintf(
-					__('Do you really like to remove %s from the queue?', 'mailster'),
-					item.email
-				)
-			)
-		)
-			return;
-		setDisabled(true);
-		apiFetch({
-			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
-			method: 'DELETE',
-		}).then((response) => {
-			response && setData(data.filter((item, i) => i !== index));
-			setDisabled(false);
-			clearData('getNumbers', 'mailster/automation');
-		});
-	};
-	const forwardItem = (item) => {
-		if (
-			!confirm(
-				sprintf(
-					__('Do you really like to forward %s to the next step?', 'mailster'),
-					item.email
-				)
-			)
-		)
-			return;
-		setDisabled(true);
-		apiFetch({
-			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
-			method: 'POST',
-			data: { forward: true },
-		}).then((response) => {
-			response && setData(data.filter((item, i) => i !== index));
-			setDisabled(false);
-			clearData('getNumbers', 'mailster/automation');
-		});
-	};
-	const finishItem = (item) => {
-		if (
-			!confirm(
-				sprintf(
-					__('Do you really like to finish the journey for %s?', 'mailster'),
-					item.email
-				)
-			)
-		)
-			return;
-		setDisabled(true);
+	const deleteItem = (item, index) => {
+		const t = sprintf(
+			__('Do you really like to remove %s from the queue?', 'mailster'),
+			item.email
+		);
+		if (!confirm(t)) return;
 
-		apiFetch({
-			path: '/mailster/v1/automations/queue/' + id + '/' + item.ID,
-			method: 'POST',
-			data: { finish: true },
-		}).then((response) => {
-			response && setData(data.filter((item, i) => i !== index));
-			setDisabled(false);
-			clearData('getNumbers', 'mailster/automation');
-		});
+		doItem(item, index, 'DELETE');
+	};
+
+	const forwardItem = (item, index) => {
+		const t = sprintf(
+			__('Do you really like to forward %s to the next step?', 'mailster'),
+			item.email
+		);
+		if (!confirm(t)) return;
+
+		doItem(item, index, 'POST', { forward: true });
+	};
+
+	const finishItem = (item, index) => {
+		const t = sprintf(
+			__('Do you really like to finish the journey for %s?', 'mailster'),
+			item.email
+		);
+		if (!confirm(t)) return;
+
+		doItem(item, index, 'POST', { finish: true });
 	};
 
 	const rows = data.map((item, index) => {
@@ -237,24 +201,24 @@ const Table = (props) => {
 					)}
 				</td>
 				<td>
-					<IconButton
+					<Button
 						icon="flag"
 						disabled={disabled}
 						label={__('Finish Journey', 'mailster')}
-						onClick={() => finishItem(item)}
+						onClick={() => finishItem(item, index)}
 					/>
-					<IconButton
+					<Button
 						icon="controls-skipforward"
 						disabled={disabled}
 						label={__('Forward to next step', 'mailster')}
-						onClick={() => forwardItem(item)}
+						onClick={() => forwardItem(item, index)}
 					/>
-					<IconButton
+					<Button
 						icon="trash"
 						disabled={disabled}
 						isDestructive
 						label={__('Remove item', 'mailster')}
-						onClick={() => deleteItem(item)}
+						onClick={() => deleteItem(item, index)}
 					/>
 				</td>
 			</tr>

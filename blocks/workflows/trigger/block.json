@@ -15,6 +15,9 @@
 		"lock": false
 	},
 	"attributes": {
+		"id": {
+			"type": "string"
+		},
 		"trigger": {
 			"type": "string"
 		},
