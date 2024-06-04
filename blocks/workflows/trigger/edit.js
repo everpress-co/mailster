@@ -7,15 +7,9 @@
  */
 import ServerSideRender from '@wordpress/server-side-render';
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
-import {
-	CardBody,
-	CardFooter,
-	Tooltip,
-	Spinner,
-	Icon,
-} from '@wordpress/components';
+import { CardBody, CardFooter, Tooltip, Spinner } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -31,15 +25,21 @@ export default function Edit(props) {
 
 	const triggerObj = getTrigger(trigger);
 
-	const label = triggerObj?.label || <Spinner />;
-	//const icon = <Icon icon={triggerObj?.icon} />;
+	const label =
+		triggerObj === false ? (
+			<div className="mailster-step-info">
+				{sprintf(__('Trigger %s not found!', 'mailster'), '"' + trigger + '"')}
+			</div>
+		) : (
+			triggerObj?.label || <Spinner />
+		);
 
 	const info = getInfo(props);
 
 	return (
 		<Step
 			{...props}
-			isIncomplete={!trigger}
+			isIncomplete={!trigger || triggerObj === false}
 			inspectorControls={<InspectorControls {...props} />}
 			blockAttributes={{ 'data-or': __('or', 'mailster') }}
 		>

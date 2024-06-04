@@ -115,7 +115,7 @@ export default function ConditionsModal(props) {
 								setAttributes({ conditions: mailster.conditions.serialize() });
 							}}
 						>
-							Save
+							{__('Save', 'mailster')}
 						</Button>
 						<Button
 							disabled={!isLoaded}
@@ -124,7 +124,7 @@ export default function ConditionsModal(props) {
 								setOpen(false);
 							}}
 						>
-							Cancel
+							{__('Cancel', 'mailster')}
 						</Button>
 					</div>
 				</Modal>

@@ -109,7 +109,7 @@ export default function StepId(props) {
 				{stepBlocks.length > 1 && (
 					<BaseControl label={__('Jump to Step', 'mailster')}>
 						<PanelRow>
-							<DropdownMenu text={label} label={label} icon={icon}>
+							<DropdownMenu text={label} icon={icon}>
 								{(props) => <StepButtons {...props} />}
 							</DropdownMenu>
 						</PanelRow>

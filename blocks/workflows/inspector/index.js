@@ -85,8 +85,6 @@ function SettingsPanelPlugin() {
 
 	const queueInterval = isFocused ? 2000 : 20000;
 
-	console.log(isFocused);
-
 	isDynmanic &&
 		useInterval(
 			() => {

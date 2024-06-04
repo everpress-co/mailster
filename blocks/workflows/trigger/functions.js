@@ -39,7 +39,7 @@ export function getTrigger(id) {
 	const t1 = allTriggers.filter((t) => {
 		return t.id == id;
 	});
-	return t1.length ? t1[0] : null;
+	return t1.length ? t1[0] : false;
 }
 
 export function getInfo(props) {

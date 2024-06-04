@@ -27,7 +27,7 @@ const STEP_LABELS = {
 };
 const TRIGGER_LABELS = {
 	label: __('Skip Trigger', 'mailster'),
-	help: __('Disable the trigger for this workflow.', 'mailster'),
+	help: __('Disable this trigger for the workflow.', 'mailster'),
 };
 
 export default function Disabler(props) {

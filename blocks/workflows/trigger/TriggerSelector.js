@@ -41,6 +41,7 @@ import HookSelector from './HookSelector';
 import PublishSelector from './PublishSelector';
 import TriggerSlotFill from './TriggerSlotFill';
 import { HelpBeacon } from '../../util';
+import { getTrigger } from './functions';
 
 export default function Selector(props) {
 	const { attributes, setAttributes } = props;
@@ -64,23 +65,22 @@ export default function Selector(props) {
 		}
 	}
 
-	const getTrigger = (id) => {
-		if (!allTriggers) {
-			return null;
-		}
-		const trigger = allTriggers.filter((trigger) => {
-			return trigger.id == id;
-		});
-		return trigger.length ? trigger[0] : null;
-	};
+	const triggerObj = getTrigger(trigger);
 
 	const label =
-		getTrigger(trigger)?.label ||
-		__('Define a trigger to start this workflow.', 'mailster');
+		triggerObj === false ? (
+			<div className="mailster-step-info">
+				{sprintf(__('Trigger %s not found!', 'mailster'), '"' + trigger + '"')}
+			</div>
+		) : (
+			triggerObj?.label || (
+				<>{__('Define a trigger to start this workflow.', 'mailster')}</>
+			)
+		);
 	const info =
-		getTrigger(trigger)?.info ||
+		triggerObj?.info ||
 		__('Define a trigger to start this workflow.', 'mailster');
-	const t_icon = getTrigger(trigger)?.icon;
+	const t_icon = triggerObj?.icon;
 
 	const TriggerButtons = ({ onClose }) => {
 		return allTriggers.map((t, i) => {
@@ -110,15 +110,14 @@ export default function Selector(props) {
 		<>
 			<PanelRow>
 				{!allTriggers && <Spinner />}
-				{trigger && (
+				{trigger && triggerObj !== false ? (
 					<BaseControl help={info}>
 						<HelpBeacon id="646232738783627a4ed4c596" align="right" />
 						<DropdownMenu icon={Icons[t_icon] || t_icon || icon} text={label}>
 							{(props) => <TriggerButtons {...props} />}
 						</DropdownMenu>
 					</BaseControl>
-				)}
-				{!trigger && (
+				) : (
 					<BaseControl>
 						<HelpBeacon id="646232738783627a4ed4c596" align="right" />
 						<h2>{label}</h2>
