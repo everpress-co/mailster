@@ -59,23 +59,25 @@
 	<ul id="header">
 		<li class="logo header"><a href="<?php echo esc_url( $logo_link ); ?>"><?php echo esc_html( $blogname ); ?></a></li>
 <?php if ( get_previous_post() && mailster_option( 'frontpage_pagination' ) ) : ?>
-			<li class="button header previous"><?php previous_post_link( '%link', '' ); ?></li>
+		<li class="button header previous"><?php previous_post_link( '%link', '' ); ?></li>
 <?php endif; ?>
-		<li class="subject header"><a href="<?php echo esc_url( $permalink ); ?>">
+		<li class="subject header">
+			<a href="<?php echo esc_url( $permalink ); ?>">
 			<?php if ( ! $meta['webversion'] ) : ?>
 				<strong>[ <?php esc_html_e( 'Private', 'mailster' ); ?> ]</strong>
 			<?php endif; ?>
-			<?php echo esc_html( $title ); ?></a>
+			<?php echo esc_html( $title ); ?>
+			</a>
 		</li>
 <?php if ( current_user_can( 'edit_post', $post_id ) ) : ?>
-		<li class="editlink header"><a href="<?php echo admin_url( 'post.php?post=' . $post_id . '&action=edit' ); ?>"><?php esc_html_e( 'Edit', 'mailster' ); ?></a></li>
+		<li class="editlink header"><a href="<?php echo esc_url( admin_url( 'post.php?post=' . $post_id . '&action=edit' ) ); ?>"><?php esc_html_e( 'Edit', 'mailster' ); ?></a></li>
 <?php endif; ?>
 <?php if ( get_next_post() && mailster_option( 'frontpage_pagination' ) ) : ?>
 		<li class="button header next"><?php next_post_link( '%link', '' ); ?></li>
 <?php endif; ?>
 		<li class="button header closeframe"><a title="remove frame" href="<?php echo esc_url( add_query_arg( 'frame', 0, $permalink ) ); ?>">&#10005;</a></li>
 <?php if ( mailster_option( 'share_button' ) && ! $preview && ! post_password_required() ) : ?>
-	<?php $is_forward = isset( $_GET['mailster_forward'] ) && is_email( $_GET['mailster_forward'] ) ? $_GET['mailster_forward'] : ''; ?>
+	<?php $is_forward = isset( $_GET['mailster_forward'] ) && mailster_is_email( $_GET['mailster_forward'] ) ? $_GET['mailster_forward'] : ''; ?>
 			<li class="share header">
 				<a><?php esc_html_e( 'Share', 'mailster' ); ?></a>
 				<div class="sharebox"<?php echo $is_forward ? ' style="display:block"' : ''; ?>>
@@ -144,8 +146,6 @@
 	<div id="iframe-wrap">
 		<iframe src="<?php echo esc_url( add_query_arg( 'frame', 0, $permalink ) ); ?>" data-no-lazy=""></iframe>
 	</div>
-
 	<?php do_action( 'mailster_wpfooter' ); ?>
-
 </body>
 </html>
