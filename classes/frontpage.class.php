@@ -781,9 +781,7 @@ class MailsterFrontpage {
 
 					$content = links_add_target( $content, '_top' );
 
-					$content = mailster()->sanitize_content( $content, $meta['head'] );
-
-					echo $content;
+					echo mailster()->sanitize_content( $content );
 
 					exit;
 
