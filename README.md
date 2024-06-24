@@ -187,6 +187,13 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.0.10
+
+- fixed: escaping on web version
+- fixed: subject placeholder tag in title was not replaced on the webversion
+- improved: css improvements
+- update plugin api info
+
 ### 4.0.9
 
 - fixed: line height on form selector input field
