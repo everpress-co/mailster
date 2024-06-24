@@ -1,3 +1,10 @@
+### Version 4.0.10 (2024-06-24)
+
+- fixed: escaping on web version
+- fixed: subject placeholder tag in title was not replaced on the webversion
+- improved: css improvements
+- update plugin api info
+
 ### Version 4.0.9 (2024-05-14)
 
 - fixed: line height on form selector input field
