@@ -308,6 +308,8 @@ class MailsterAutomations {
 		$workflow = get_post( $workflow );
 		$blocks   = parse_blocks( $workflow->post_content );
 
+		$options = array();
+
 		foreach ( $blocks as $block ) {
 			if ( $block['blockName'] !== 'mailster-workflow/triggers' ) {
 				continue;
@@ -330,12 +332,17 @@ class MailsterAutomations {
 					continue;
 				}
 
-				return $innerBlock['attrs'];
+				// add this since it's required since 4.1
+				if ( ! isset( $innerBlock['attrs']['id'] ) ) {
+					$innerBlock['attrs']['id'] = null;
+				}
+
+				$options[] = $innerBlock['attrs'];
 
 			}
 		}
 
-		return false;
+		return $options;
 	}
 
 
@@ -355,8 +362,11 @@ class MailsterAutomations {
 
 			$options = $this->get_trigger_option( $workflow_id, 'page_visit' );
 
-			if ( isset( $options['pages'] ) ) {
-				foreach ( $options['pages'] as $page ) {
+			foreach ( $options as $option ) {
+				if ( ! isset( $option['pages'] ) ) {
+					continue;
+				}
+				foreach ( $option['pages'] as $page ) {
 					$page = '/' . trim( $page, '/' );
 					if ( ! isset( $store[ $page ] ) ) {
 						$store[ $page ] = array();
@@ -424,7 +434,7 @@ class MailsterAutomations {
 	public function get_queue( $workflow_id, $step = null ) {
 		global $wpdb;
 
-		$sql = "SELECT workflows.*, subscribers.email FROM {$wpdb->prefix}mailster_workflows AS workflows LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = workflows.subscriber_id WHERE 1=1";
+		$sql = "SELECT workflows.*, subscribers.email, subscribers.status FROM {$wpdb->prefix}mailster_workflows AS workflows LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = workflows.subscriber_id WHERE 1=1";
 
 		$sql .= $wpdb->prepare( ' AND workflows.workflow_id = %d', $workflow_id );
 		if ( $step ) {
@@ -435,6 +445,26 @@ class MailsterAutomations {
 		$entries = $wpdb->get_results( $sql );
 
 		return $entries;
+	}
+
+	public function get_queue_count( $workflow_id ) {
+		global $wpdb;
+
+		$sql = "SELECT COUNT(*) AS count, step FROM {$wpdb->prefix}mailster_workflows AS workflows WHERE 1=1 AND step IS NOT NULL";
+
+		$sql .= $wpdb->prepare( ' AND workflows.workflow_id = %d', $workflow_id );
+
+		$sql .= ' GROUP BY step';
+
+		$entries = $wpdb->get_results( $sql );
+
+		$result = array();
+
+		foreach ( $entries as $entry ) {
+			$result[ $entry->step ] = (int) $entry->count;
+		}
+
+		return $result;
 	}
 
 	public function remove_queue_item( $id ) {
@@ -700,14 +730,6 @@ class MailsterAutomations {
 
 		$controller = new Mailster_REST_Automations_Controller();
 		$controller->register_routes();
-	}
-
-	public function beta_notice() {
-		$msg  = '<h2>Welcome to the new Automations page.</h2>';
-		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.</p>';
-		$msg .= '<p><strong>Automations are currently in beta version. Some features are subject to change before the stable release.</strong></p>';
-		$msg .= '<p><a href="' . admin_url( 'post - new() . php ? post_type = mailster - workflow' ) . '" class="button button - primary">' . esc_html__( 'Create Automation' ) . '</a> <a href="https : // docs.mailster.co/#/automations-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-automations/issues" class="button button-link external">Submit feedback on Github</a></p>';
-		mailster_notice( $msg, 'info', true, 'mailster-workflow_beta_notice', true, 'edit-mailster-workflow' );
 	}
 
 

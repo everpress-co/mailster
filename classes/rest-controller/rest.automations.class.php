@@ -338,8 +338,13 @@ class Mailster_REST_Automations_Controller extends WP_REST_Controller {
 
 		$post_id = $request->get_param( 'post_id' );
 		$step_id = $request->get_param( 'step' );
+		$id      = $request->get_param( 'id' );
 
-		$items = mailster( 'automations' )->get_queue( $post_id, $step_id );
+		if ( ! empty( $step_id ) ) {
+			$items = mailster( 'automations' )->get_queue( $post_id, $step_id );
+		} else {
+			$items = mailster( 'automations' )->get_queue_count( $post_id );
+		}
 
 		return rest_ensure_response( $items );
 	}

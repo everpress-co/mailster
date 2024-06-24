@@ -45,6 +45,7 @@ import {
 	useInterval,
 	clearData,
 	useFocus,
+	useWindow,
 } from '../../util';
 
 whenEditorIsReady().then((w) => {
@@ -108,26 +109,30 @@ function SettingsPanelPlugin() {
 
 	// TODO Make this better
 	// Toolbar
-	useEffect(() => {
-		const editorToolbar = document.querySelector('.edit-post-header__toolbar');
+	useWindow((w) => {
+		const editorToolbar = document.querySelector(
+			'.editor-header__settings, .edit-post-header__settings'
+		);
+		const wrapper = document.querySelector('.edit-post-visual-editor');
 
 		// If toolbar doesn't exist, we can't continue
 		if (!editorToolbar) {
 			return;
 		}
 
-		const canvasWrap = document.createElement('div');
-		canvasWrap.className = 'edit-post-header-toolbar-extra';
-		//canvasWrap.style.cssText = 'display:flex;';
-		editorToolbar.appendChild(canvasWrap);
+		const canvasToolbar = document.createElement('div');
+		canvasToolbar.className = 'interface-interface-canvas-toolbar';
 
-		const canvas = createRoot(canvasWrap);
-		canvas.render(
-			<>
-				<CanvasToolbar />
-				<ActiveStatus />
-			</>
-		);
+		const toolbarWrap = document.createElement('div');
+		toolbarWrap.className = 'edit-post-header-toolbar-extra';
+		//canvasToolbar.style.cssText = 'display:flex;';
+		//editorToolbar.appendChild(canvasToolbar);
+
+		editorToolbar.prepend(toolbarWrap);
+		wrapper.prepend(canvasToolbar);
+
+		createRoot(canvasToolbar).render(<CanvasToolbar />);
+		createRoot(toolbarWrap).render(<ActiveStatus />);
 	}, []);
 
 	useBlockChange(() => {

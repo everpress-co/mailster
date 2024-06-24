@@ -65,8 +65,10 @@ class MailsterTrigger {
 			}
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'hook' );
 
-			$this->add_job( $workflow, 'hook', $subscriber_id, $step );
-
+			// TODO: check for problems
+			foreach ( $options as $option ) {
+				$this->add_job( $workflow, 'hook', $subscriber_id, $step );
+			}
 		}
 	}
 
@@ -75,7 +77,8 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( 'opened_campaign' );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'opened_campaign' );
-
+			foreach ( $options as $option ) {
+			}
 		}
 	}
 
@@ -84,16 +87,20 @@ class MailsterTrigger {
 		$workflows = $this->get_workflows_by_trigger( 'link_click' );
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'link_click' );
-			if ( ! isset( $options['links'] ) || empty( $options['links'] ) ) {
-				continue;
-			}
 
-			$links = $options['links'];
+			foreach ( $options as $option ) {
 
-			$matching_links = preg_grep( '|^' . preg_quote( $target ) . '$|', $links );
+				if ( ! isset( $option['links'] ) || empty( $option['links'] ) ) {
+					continue;
+				}
 
-			if ( ! empty( $matching_links ) ) {
-				$this->add_job( $workflow, 'link_click', $subscriber_id );
+				$links = $option['links'];
+
+				$matching_links = preg_grep( '|^' . preg_quote( $target ) . '$|', $links );
+
+				if ( ! empty( $matching_links ) ) {
+					$this->add_job( $workflow, 'link_click', $subscriber_id, $option['id'] );
+				}
 			}
 		}
 	}
@@ -114,16 +121,19 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, $type );
 
-			if ( ! isset( $options['lists'] ) ) {
-				continue;
-			}
+			foreach ( $options as $option ) {
 
-			if ( in_array( $list_id, $options['lists'] ) ) {
-				$this->add_job( $workflow, $type, $subscriber_id );
+				if ( ! isset( $option['lists'] ) ) {
+					continue;
+				}
 
-				// any list
-			} elseif ( in_array( '-1', $options['lists'] ) ) {
-				$this->add_job( $workflow, $type, $subscriber_id );
+				if ( in_array( $list_id, $option['lists'] ) ) {
+					$this->add_job( $workflow, $type, $subscriber_id, $option['id'] );
+
+					// any list
+				} elseif ( in_array( '-1', $option['lists'] ) ) {
+					$this->add_job( $workflow, $type, $subscriber_id, $option['id'] );
+				}
 			}
 		}
 	}
@@ -134,12 +144,20 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'form_conversion' );
 
-			if ( in_array( $form_id, $options['forms'] ) ) {
-				$this->add_job( $workflow, 'form_conversion', $subscriber_id );
+			foreach ( $options as $option ) {
 
-				// any list
-			} elseif ( in_array( '-1', $options['forms'] ) ) {
-				$this->add_job( $workflow, 'form_conversion', $subscriber_id );
+				if ( ! isset( $option['forms'] ) ) {
+					continue;
+				}
+
+				// the defined form
+				if ( in_array( $form_id, $option['forms'] ) ) {
+					$this->add_job( $workflow, 'form_conversion', $subscriber_id, $option['id'] );
+
+					// any list
+				} elseif ( in_array( '-1', $option['forms'] ) ) {
+					$this->add_job( $workflow, 'form_conversion', $subscriber_id, $option['id'] );
+				}
 			}
 		}
 	}
@@ -151,13 +169,16 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'updated_field' );
 
-			if ( ! isset( $options['field'] ) ) {
-				continue;
-			}
+			foreach ( $options as $option ) {
 
-			// any field or the defined one
-			if ( '-1' == $options['field'] || $field === $options['field'] ) {
-				$this->add_job( $workflow, 'updated_field', $subscriber_id );
+				if ( ! isset( $option['field'] ) ) {
+					continue;
+				}
+
+				// any field or the defined one
+				if ( '-1' == $option['field'] || $field === $option['field'] ) {
+					$this->add_job( $workflow, 'updated_field', $subscriber_id, $option['id'] );
+				}
 			}
 		}
 	}
@@ -178,12 +199,14 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, $type );
 
-			if ( ! isset( $options['tags'] ) || empty( $options['tags'] ) ) {
-				continue;
-			}
+			foreach ( $options as $option ) {
+				if ( ! isset( $option['tags'] ) || empty( $option['tags'] ) ) {
+					continue;
+				}
 
-			if ( in_array( $tag_name, $options['tags'] ) ) {
-				$this->add_job( $workflow, $type, $subscriber_id );
+				if ( in_array( $tag_name, $option['tags'] ) ) {
+					$this->add_job( $workflow, $type, $subscriber_id, $option['id'] );
+				}
 			}
 		}
 	}
@@ -215,42 +238,44 @@ class MailsterTrigger {
 		foreach ( $workflows as $workflow ) {
 			$options = mailster( 'automations' )->get_trigger_option( $workflow, 'published_post' );
 
-			$query = isset( $options['query'] ) ? $options['query'] : null;
+			foreach ( $options as $option ) {
 
-			// if query is there we need to check it
-			if ( $query ) {
+				$query = isset( $option['query'] ) ? $option['query'] : null;
 
-				// check correct post type
-				if ( $query['postType'] != $post->post_type ) {
-					continue;
-				}
+				// if query is there we need to check it
+				if ( $query ) {
 
-				// check for authors
-				if ( $query['author'] ) {
-					$authors = explode( ',', $query['author'] );
-					if ( ! in_array( $post->post_author, $authors ) ) {
+					// check correct post type
+					if ( $query['postType'] != $post->post_type ) {
 						continue;
 					}
-				}
 
-				if ( $query['taxQuery'] ) {
-					foreach ( $query['taxQuery'] as $taxonomy => $ids ) {
-						$post_terms = get_the_terms( $post->ID, $taxonomy );
-						$post_terms = wp_list_pluck( $post_terms, 'term_id' );
+					// check for authors
+					if ( $query['author'] ) {
+						$authors = explode( ',', $query['author'] );
+						if ( ! in_array( $post->post_author, $authors ) ) {
+							continue;
+						}
+					}
 
-						// no post_terms set but required => give up (not passed)
-						if ( ! count( array_intersect( $post_terms, $ids ) ) ) {
-							break 2; // break out of both loops
+					if ( $query['taxQuery'] ) {
+						foreach ( $query['taxQuery'] as $taxonomy => $ids ) {
+							$post_terms = get_the_terms( $post->ID, $taxonomy );
+							$post_terms = wp_list_pluck( $post_terms, 'term_id' );
+
+							// no post_terms set but required => give up (not passed)
+							if ( ! count( array_intersect( $post_terms, $ids ) ) ) {
+								break 2; // break out of both loops
+							}
 						}
 					}
 				}
+
+				// TODO check for the right step if posts should be skipped
+				$context = array( 'query' => $query );
+
+				$this->add_job( $workflow, 'published_post', null, $option['id'], null, $context );
 			}
-
-			// TODO check for the right step if posts should be skipped
-			$context = array( 'query' => $query );
-
-			return $this->add_job( $workflow, 'published_post', null, null, null, $context );
-
 		}
 	}
 
@@ -267,20 +292,20 @@ class MailsterTrigger {
 
 		$options = mailster( 'automations' )->get_trigger_option( $workflow, 'date' );
 
-		$date  = isset( $options['date'] ) ? strtotime( $options['date'] ) : null;
-		$field = isset( $options['field'] ) ? $options['field'] : null;
+		foreach ( $options as $option ) {
+			$date  = isset( $option['date'] ) ? strtotime( $option['date'] ) : null;
+			$field = isset( $option['field'] ) ? $option['field'] : null;
 
-		// get timestamp from today at the time of $date if a usefield is set
-		if ( $field ) {
-			$date = strtotime( 'today ' . date( 'H:i', $date ) );
+			// get timestamp from today at the time of $date if a usefield is set
+			if ( $field ) {
+				$date = strtotime( 'today ' . date( 'H:i', $date ) );
+			}
+
+			// if date is within one hour
+			if ( $date && time() < $date && time() + HOUR_IN_SECONDS > $date ) {
+				$this->add_job( $workflow, 'date', null, $option['id'] );
+			}
 		}
-
-		// if date is within one hour
-		if ( $date && time() < $date && time() + HOUR_IN_SECONDS > $date ) {
-			return $this->add_job( $workflow, 'date', null );
-		}
-
-		return false;
 	}
 
 	public function anniversary() {
@@ -296,26 +321,26 @@ class MailsterTrigger {
 
 		$options = mailster( 'automations' )->get_trigger_option( $workflow, 'anniversary' );
 
-		$date   = isset( $options['date'] ) ? strtotime( $options['date'] ) : null;
-		$field  = isset( $options['field'] ) ? $options['field'] : null;
-		$offset = isset( $options['offset'] ) ? (int) $options['offset'] : 0;
+		foreach ( $options as $option ) {
+			$date   = isset( $option['date'] ) ? strtotime( $option['date'] ) : null;
+			$field  = isset( $option['field'] ) ? $option['field'] : null;
+			$offset = isset( $option['offset'] ) ? (int) $option['offset'] : 0;
 
-		// get timestamp from today at the time of $date if a userfield is set
-		if ( $field ) {
+			// get timestamp from today at the time of $date if a userfield is set
+			if ( $field ) {
 
-			$date = strtotime( 'today ' . date( 'H:i', $date ) );
+				$date = strtotime( 'today ' . date( 'H:i', $date ) );
 
-			// add offset in seconds
-			$date += $offset;
+				// add offset in seconds
+				$date += $offset;
 
+			}
+
+			// if date is within one hour
+			if ( $date && time() < $date && time() + HOUR_IN_SECONDS >= $date ) {
+				$this->add_job( $workflow, 'anniversary', null, $option['id'] );
+			}
 		}
-
-		// if date is within one hour
-		if ( $date && time() < $date && time() + HOUR_IN_SECONDS >= $date ) {
-			$this->add_job( $workflow, 'anniversary', null );
-		}
-
-		return false;
 	}
 
 

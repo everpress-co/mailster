@@ -32,7 +32,7 @@ import { dateI18n, humanTimeDiff } from '@wordpress/date';
  */
 
 import { TIME_FORMAT, DATE_FORMAT } from '../trigger/constants';
-import { clearData, useSteps } from '../../util';
+import { clearData } from '../../util';
 
 export default function QueueBadge(props) {
 	const { attributes, setAttributes, isSelected, clientId, name } = props;
@@ -56,7 +56,7 @@ export default function QueueBadge(props) {
 
 	useEffect(() => {
 		if (!allQueue) return;
-		setQueued(allQueue.filter((item) => item.step === id).length);
+		setQueued(allQueue[id] || 0);
 	}, [allQueue]);
 
 	useEffect(() => {
@@ -175,8 +175,11 @@ const Table = (props) => {
 		doItem(item, index, 'POST', { finish: true });
 	};
 
+	const now = new Date().getTime();
+
 	const rows = data.map((item, index) => {
 		const t = item.timestamp * 1000;
+		const a = item.added * 1000;
 		return (
 			<tr key={index}>
 				<td>
@@ -189,14 +192,33 @@ const Table = (props) => {
 					>
 						{item.email}
 					</ExternalLink>
+					{item.status == 0 && (
+						<p className="description">
+							{__(
+								"This subscriber hasn't confirmed their subscription yet. The workflow will continue once the user confirms their subscriptions.",
+								'mailster'
+							)}
+						</p>
+					)}
 				</td>
 				<td>{item.trigger}</td>
+				<td>
+					{a && (
+						<Tooltip
+							text={dateI18n(DATE_FORMAT, a) + ' @ ' + dateI18n(TIME_FORMAT, a)}
+						>
+							<div>{humanTimeDiff(a)}</div>
+						</Tooltip>
+					)}
+				</td>
 				<td>
 					{t && (
 						<Tooltip
 							text={dateI18n(DATE_FORMAT, t) + ' @ ' + dateI18n(TIME_FORMAT, t)}
 						>
-							<div>{humanTimeDiff(t)}</div>
+							<div>
+								{t > now ? humanTimeDiff(t) : __('right now', 'mailster')}
+							</div>
 						</Tooltip>
 					)}
 				</td>
@@ -209,7 +231,7 @@ const Table = (props) => {
 					/>
 					<Button
 						icon="controls-skipforward"
-						disabled={disabled}
+						disabled={disabled || item.status != 1}
 						label={__('Forward to next step', 'mailster')}
 						onClick={() => forwardItem(item, index)}
 					/>
@@ -231,6 +253,7 @@ const Table = (props) => {
 				<tr>
 					<th>{__('Subscriber', 'mailster')}</th>
 					<th>{__('Trigger', 'mailster')}</th>
+					<th>{__('Added', 'mailster')}</th>
 					<th>{__('Continues', 'mailster')}</th>
 					<th style={{ width: '150px' }}>{__('Actions', 'mailster')}</th>
 				</tr>

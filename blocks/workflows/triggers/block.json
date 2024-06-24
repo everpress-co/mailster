@@ -13,6 +13,7 @@
 		"className": false,
 		"customClassName": false,
 		"inserter": false,
+		"renaming": false,
 		"lock": false
 	},
 	"attributes": {

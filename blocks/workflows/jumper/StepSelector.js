@@ -47,6 +47,7 @@ export default function StepId(props) {
 		if (s) {
 			setCurrentStep(s);
 		} else {
+			setCurrentStep(undefined);
 			setStep(undefined);
 		}
 	}, [step, stepBlocks]);

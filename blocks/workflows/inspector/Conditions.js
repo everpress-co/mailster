@@ -58,10 +58,7 @@ export default function ConditionsModal(props) {
 
 	return (
 		<>
-			<BaseControl help={help}>
-				<PanelRow>
-					<h3>{label || __('Conditions', 'mailster')}</h3>
-				</PanelRow>
+			<BaseControl label={label || __('Conditions', 'mailster')} help={help}>
 				{conditions && (
 					<PanelRow>
 						<ServerSideRender

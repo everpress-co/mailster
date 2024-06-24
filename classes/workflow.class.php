@@ -98,7 +98,9 @@ class MailsterWorkflow {
 				$arg['yes'] = $this->parse( $block['innerBlocks'][0]['innerBlocks'], $id );
 				$arg['no']  = $this->parse( $block['innerBlocks'][1]['innerBlocks'], $id );
 			} elseif ( $type === 'triggers' ) {
-				$arg['trigger'] = $this->parse( $block['innerBlocks'], $id );
+				$triggers = $this->parse( $block['innerBlocks'], $id );
+				$parsed   = array_merge( $triggers, $parsed );
+				continue;
 			}
 
 			if ( $id ) {
@@ -257,6 +259,7 @@ class MailsterWorkflow {
 
 		return false;
 	}
+
 
 	/**
 	 * Deletes the current Workflow from the database
@@ -431,8 +434,8 @@ class MailsterWorkflow {
 		++$this->total_steps;
 
 		switch ( $step['type'] ) {
-			case 'triggers':
-				return $this->triggers( $step );
+			case 'trigger':
+				return $this->trigger( $step );
 			break;
 
 			case 'action':
@@ -706,192 +709,197 @@ class MailsterWorkflow {
 
 
 	/**
-	 * Handle triggers
+	 * Handle trigger
 	 *
 	 * @param mixed $step
 	 * @return bool|WP_Error
 	 */
-	private function triggers( $step ) {
+	private function trigger( $step ) {
 
-		// check if the current trigger is the right one
-		foreach ( $step['trigger'] as $trigger ) {
-
-			// no => try next
-			if ( $trigger['attr']['trigger'] !== $this->trigger ) {
-				continue;
-			}
-
-			// check how often we can run this trigger
-			$repeat = isset( $trigger['attr']['repeat'] ) ? $trigger['attr']['repeat'] : 1;
-
-			// repeat is not unlimited so we check the limit before we add an entry to the database
-			if ( $repeat !== -1 ) {
-				if ( $this->limit_reached( $repeat ) ) {
-					$this->log( 'LIMIT REACHED' );
-					return false;
-				} else {
-					$this->log( 'LIMIT NOT REACHED' );
-				}
-			}
-
-			// check for conditions
-			$conditions = isset( $trigger['attr']['conditions'] ) ? $trigger['attr']['conditions'] : array();
-
-			if ( $conditions ) {
-				$conditions = $this->sanitize_conditions( $conditions );
-
-				if ( $this->subscriber_id && ! mailster( 'conditions' )->check( $conditions, $this->subscriber_id ) ) {
-					$this->log( 'CONDITION NOT PASSED ! ! ' );
-					return false;
-				}
-			}
-
-			// load existing entry
-			$this->entry = $this->get_entry();
-
-			// add if missing
-			if ( ! $this->entry ) {
-				$this->log( 'ADD TO DATABASE' );
-				$this->entry = $this->add();
-
-				// stop if existing didn't finished
-			} elseif ( ! $this->entry->finished ) {
-				$this->log( 'ENTRY NOT FINISHED' );
-				// Stop if the entry is not finished but with these triggers
-				if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
-					// return false;
-				}
-			}
-
-			$this->log( 'use TRIGGER ' . $this->trigger );
-
-			// check if user is subscribed
-			if ( $this->subscriber && $this->subscriber->status !== 1 ) {
-				$this->log( 'SUBSCRIBER NOT SUBSCRIBED ' . $this->subscriber->status );
-				error_log( print_r( $step, true ) );
-				// $this->update( array( 'step' => $step['id'] ) );
-				die();
-				return false;
-			}
-
-			switch ( $this->trigger ) {
-				case 'date':
-				case 'anniversary':
-					$timestamp = isset( $trigger['attr']['date'] ) ? strtotime( $trigger['attr']['date'] ) : null;
-
-					// if this is not defined we get all based on the condtion
-					if ( ! $this->subscriber_id ) {
-						if ( ! $timestamp ) {
-							$this->delete();
-							return false;
-						}
-
-						$query_args = array(
-							'return_ids' => true,
-							'conditions' => $conditions,
-						);
-
-						$field = isset( $trigger['attr']['field'] ) ? $trigger['attr']['field'] : null;
-
-						// handle custom field options
-						if ( $field ) {
-							// $query_args['return_sql'] = true;
-
-							// get timestamp for the defined time of today
-							$timestamp = strtotime( 'today ' . date( 'H:i', $timestamp ) );
-
-							if ( $this->trigger === 'anniversary' ) {
-								$cond = array(
-									'field'    => $field,
-									'operator' => 'end_with',
-									'value'    => date( '-m-d' ),
-								);
-							} else {
-								$cond = array(
-									'field'    => $field,
-									'operator' => 'is',
-									'value'    => date( 'Y-m-d' ),
-								);
-							}
-
-							// for anniversary get all with the field on today, otherwise exactly today
-							$value = $this->trigger == 'anniversary' ? '-m-d' : 'Y-m-d';
-
-							// add the date field as AND condition
-							$query_args['conditions'][] = array( $cond );
-
-							// not in the future
-							$query_args['conditions'][] = array(
-								array(
-									'field'    => $field,
-									'operator' => 'is_smaller_equal',
-									'value'    => date( 'Y-m-d' ),
-								),
-							);
-
-							// $query_args['return_sql'] = true;
-
-						}
-
-						$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
-
-						// $step = isset( $trigger['attr']['id'] ) ? $trigger['attr']['id'] : null;
-						if ( ! empty( $subscriber_ids ) ) {
-							mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
-						}
-						// delete our temp entry
-						$this->delete();
-						return false;
-					}
-
-					// round it down to second 00
-					$timestamp = strtotime( date( 'Y-m-d H:i', $timestamp ) );
-
-					if ( time() < $timestamp ) {
-						$this->log( 'TIMESTAMP NOT REACHED' );
-						return false;
-					}
-
-					break;
-				case 'published_post':
-					// if this is not defined we get all based on the condtion
-					if ( ! $this->subscriber_id ) {
-
-						$query_args = array(
-							'include '   => $this->subscriber_id,
-							'return_ids' => true,
-							'conditions' => $conditions,
-						);
-
-						$timestamp = time();
-
-						$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
-
-						$context = $this->entry->context;
-
-						// $step = isset( $trigger['attr']['id'] ) ? $trigger['attr']['id'] : null;
-						if ( ! empty( $subscriber_ids ) ) {
-							mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp, $context );
-						}
-						$this->delete();
-						return false;
-
-					}
-
-					break;
-
-				default:
-					break;
-			}
-
-			// everything is prepared and we can move on
+		// no => try next
+		if ( $step['attr']['trigger'] !== $this->trigger ) {
 			return true;
-
 		}
 
-		// no such trigger found in this workflow
-		$this->delete();
-		return new WP_Error( 'error', 'No matching trigger found ! ', $step );
+		// check how often we can run this trigger
+		$repeat = isset( $step['attr']['repeat'] ) ? $step['attr']['repeat'] : 1;
+
+		// repeat is not unlimited so we check the limit before we add an entry to the database
+		if ( $repeat !== -1 ) {
+			if ( $this->limit_reached( $repeat ) ) {
+				$this->log( 'LIMIT REACHED' );
+				return false;
+			} else {
+				$this->log( 'LIMIT NOT REACHED' );
+			}
+		}
+		$pending = isset( $step['attr']['pending'] ) ? (bool) $step['attr']['pending'] : false;
+
+		// check if we should do pending subscribers
+		if ( $this->subscriber ) {
+			$is_pending = $this->subscriber->status === 0;
+			// we check for pending subscribers and we are not pending
+			if ( ! $pending && $is_pending ) {
+				$this->log( 'NO PENDING SUBSCRIBER!' );
+				return false;
+			}
+		}
+
+		// check for conditions
+		$conditions = isset( $step['attr']['conditions'] ) ? $step['attr']['conditions'] : array();
+
+		if ( $conditions ) {
+			$conditions = $this->sanitize_conditions( $conditions );
+
+			if ( $this->subscriber_id && ! mailster( 'conditions' )->check( $conditions, $this->subscriber_id ) ) {
+				$this->log( 'CONDITION NOT PASSED ! ! ' );
+				return false;
+			}
+		}
+
+		// load existing entry
+		$this->entry = $this->get_entry();
+
+			// add if missing
+		if ( ! $this->entry ) {
+			$this->log( 'ADD TO DATABASE' );
+			$this->entry = $this->add();
+
+			// stop if existing didn't finished
+		} elseif ( ! $this->entry->finished ) {
+			$this->log( 'ENTRY NOT FINISHED' );
+			// Stop if the entry is not finished but with these triggers
+			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
+				// return false;
+			}
+		}
+
+		$this->log( 'use TRIGGER ' . $this->trigger );
+
+			// check if user is subscribed
+		if ( $this->subscriber && $is_pending ) {
+			$this->log( 'SUBSCRIBER NOT SUBSCRIBED ' . $this->subscriber->status );
+
+			$try_again_after = MINUTE_IN_SECONDS * 5;
+			// $try_again_after = 1;
+
+			$this->update( array( 'timestamp' => time() + $try_again_after ) );
+
+			return false;
+		}
+
+		switch ( $this->trigger ) {
+			case 'date':
+			case 'anniversary':
+				$timestamp = isset( $step['attr']['date'] ) ? strtotime( $step['attr']['date'] ) : null;
+
+				// if this is not defined we get all based on the condtion
+				if ( ! $this->subscriber_id ) {
+					if ( ! $timestamp ) {
+						$this->delete();
+						return false;
+					}
+
+					$query_args = array(
+						'return_ids' => true,
+						'conditions' => $conditions,
+					);
+
+					$field = isset( $step['attr']['field'] ) ? $step['attr']['field'] : null;
+
+					// handle custom field options
+					if ( $field ) {
+						// $query_args['return_sql'] = true;
+
+						// get timestamp for the defined time of today
+						$timestamp = strtotime( 'today ' . date( 'H:i', $timestamp ) );
+
+						if ( $this->trigger === 'anniversary' ) {
+							$cond = array(
+								'field'    => $field,
+								'operator' => 'end_with',
+								'value'    => date( '-m-d' ),
+							);
+						} else {
+							$cond = array(
+								'field'    => $field,
+								'operator' => 'is',
+								'value'    => date( 'Y-m-d' ),
+							);
+						}
+
+						// for anniversary get all with the field on today, otherwise exactly today
+						$value = $this->trigger == 'anniversary' ? '-m-d' : 'Y-m-d';
+
+						// add the date field as AND condition
+						$query_args['conditions'][] = array( $cond );
+
+						// not in the future
+						$query_args['conditions'][] = array(
+							array(
+								'field'    => $field,
+								'operator' => 'is_smaller_equal',
+								'value'    => date( 'Y-m-d' ),
+							),
+						);
+
+						// $query_args['return_sql'] = true;
+
+					}
+
+					$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
+
+					// $step = isset( $step['attr']['id'] ) ? $step['attr']['id'] : null;
+					if ( ! empty( $subscriber_ids ) ) {
+						mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
+					}
+					// delete our temp entry
+					$this->delete();
+					return false;
+				}
+
+				// round it down to second 00
+				$timestamp = strtotime( date( 'Y-m-d H:i', $timestamp ) );
+
+				if ( time() < $timestamp ) {
+					$this->log( 'TIMESTAMP NOT REACHED' );
+					return false;
+				}
+
+				break;
+			case 'published_post':
+				// if this is not defined we get all based on the condtion
+				if ( ! $this->subscriber_id ) {
+
+					$query_args = array(
+						'include '   => $this->subscriber_id,
+						'return_ids' => true,
+						'conditions' => $conditions,
+					);
+
+					$timestamp = time();
+
+					$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
+
+					$context = $this->entry->context;
+
+					// $step = isset( $step['attr']['id'] ) ? $step['attr']['id'] : null;
+					if ( ! empty( $subscriber_ids ) ) {
+						mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp, $context );
+					}
+					$this->delete();
+					return false;
+
+				}
+
+				break;
+
+			default:
+				break;
+		}
+
+		// everything is prepared and we can move on
+		return true;
 	}
 
 
@@ -1210,8 +1218,7 @@ class MailsterWorkflow {
 			$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
 		} else {
 			$use = $step['no'];
-			$this->log( 'xCONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
-			error_log( print_r( $step, true ) );
+			$this->log( 'CONDITION NOT PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
 		}
 
 		return $this->do_steps( $use );

@@ -18,7 +18,7 @@ import { useDebounce } from '@wordpress/compose';
  * Internal dependencies
  */
 
-import { useWindow, useSessionStorage, whenEditorIsReady } from '../../util';
+import { useWindow, useSessionStorage } from '../../util';
 
 const MAX_ZOOM = 100;
 const MIN_ZOOM = 40;
@@ -43,7 +43,7 @@ export default function CanvasToolbar() {
 	useWindow((w) => {
 		const doc = w.document;
 		setFrame(doc.querySelector('.interface-interface-skeleton__content') || w);
-		setPane(doc.querySelector('.is-root-container'));
+		//setPane(doc.querySelector('.is-root-container'));
 		setPane(doc.querySelector('.editor-styles-wrapper'));
 		isLoaded(true);
 	});
@@ -51,7 +51,7 @@ export default function CanvasToolbar() {
 	useEffect(() => {
 		if (!pane) return;
 
-		var offsetX, offsetY, posX, posY;
+		let offsetX, offsetY, posX, posY;
 
 		pane.addEventListener('mousedown', startDrag);
 		frame.addEventListener('scroll', onScroll);
@@ -85,7 +85,7 @@ export default function CanvasToolbar() {
 		function drag(e) {
 			e.preventDefault();
 
-			let pos = getPanePosition();
+			const pos = getPanePosition();
 
 			//let f = (100 - pos.z) * Math.exp(-4) + 1;
 
@@ -103,8 +103,6 @@ export default function CanvasToolbar() {
 		}
 
 		function stopDrag(e) {
-			//console.warn('STOP DRAG');
-
 			// stop moving when mouse button is released:
 			pane.classList.remove('dragging');
 			pane.removeEventListener('mouseup', stopDrag);
@@ -206,6 +204,17 @@ export default function CanvasToolbar() {
 
 	return (
 		<>
+			{/* <div>
+				<RangeControl
+					className="zoom-level"
+					withInputField={false}
+					value={zoom}
+					onChange={(value) => setZoom(value)}
+					min={MIN_ZOOM}
+					max={MAX_ZOOM}
+					showTooltip={false}
+				/>
+			</div> */}
 			<Button
 				variant="tertiary"
 				icon={home}
@@ -213,23 +222,14 @@ export default function CanvasToolbar() {
 				label={__('Reset View', 'mailster')}
 			/>
 			<Button
-				variant="link"
+				variant="tertiary"
 				icon={reset}
 				disabled={zoom === MIN_ZOOM}
 				onClick={zoomOut}
 				label={__('Zoom Out', 'mailster')}
 			/>
-			<RangeControl
-				className="zoom-level"
-				withInputField={false}
-				value={zoom}
-				onChange={(value) => setZoom(value)}
-				min={MIN_ZOOM}
-				max={MAX_ZOOM}
-				showTooltip={false}
-			/>
 			<Button
-				variant="link"
+				variant="tertiary"
 				icon={plus}
 				disabled={zoom === MAX_ZOOM}
 				onClick={zoomIn}
