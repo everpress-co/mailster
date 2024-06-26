@@ -33,7 +33,7 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="<?php echo esc_attr( $title ); ?>" />
 	<meta property="og:description" content="<?php echo esc_attr( $description ); ?>"/>
-	<meta property="og:url" content="<?php echo $permalink; ?>" />
+	<meta property="og:url" content="<?php echo esc_url( $permalink ); ?>" />
 	<meta property="og:site_name" content="<?php echo esc_attr( $blogname ); ?>" />
 <?php if ( $post_thumbnail_id ) : ?>
 	<meta property="og:image" content="<?php echo esc_attr( $image[0] ); ?>" />
@@ -59,23 +59,25 @@
 	<ul id="header">
 		<li class="logo header"><a href="<?php echo esc_url( $logo_link ); ?>"><?php echo esc_html( $blogname ); ?></a></li>
 <?php if ( get_previous_post() && mailster_option( 'frontpage_pagination' ) ) : ?>
-			<li class="button header previous"><?php previous_post_link( '%link', '' ); ?></li>
+		<li class="button header previous"><?php previous_post_link( '%link', '' ); ?></li>
 <?php endif; ?>
-		<li class="subject header"><a href="<?php echo $permalink; ?>">
+		<li class="subject header">
+			<a href="<?php echo esc_url( $permalink ); ?>">
 			<?php if ( ! $meta['webversion'] ) : ?>
 				<strong>[ <?php esc_html_e( 'Private', 'mailster' ); ?> ]</strong>
 			<?php endif; ?>
-			<?php echo esc_html( $title ); ?></a>
+			<?php echo esc_html( $title ); ?>
+			</a>
 		</li>
 <?php if ( current_user_can( 'edit_post', $post_id ) ) : ?>
-		<li class="editlink header"><a href="<?php echo admin_url( 'post.php?post=' . $post_id . '&action=edit' ); ?>"><?php esc_html_e( 'Edit', 'mailster' ); ?></a></li>
+		<li class="editlink header"><a href="<?php echo esc_url( admin_url( 'post.php?post=' . $post_id . '&action=edit' ) ); ?>"><?php esc_html_e( 'Edit', 'mailster' ); ?></a></li>
 <?php endif; ?>
 <?php if ( get_next_post() && mailster_option( 'frontpage_pagination' ) ) : ?>
 		<li class="button header next"><?php next_post_link( '%link', '' ); ?></li>
 <?php endif; ?>
-		<li class="button header closeframe"><a title="remove frame" href="<?php echo add_query_arg( 'frame', 0, $permalink ); ?>">&#10005;</a></li>
+		<li class="button header closeframe"><a title="remove frame" href="<?php echo esc_url( add_query_arg( 'frame', 0, $permalink ) ); ?>">&#10005;</a></li>
 <?php if ( mailster_option( 'share_button' ) && ! $preview && ! post_password_required() ) : ?>
-	<?php $is_forward = isset( $_GET['mailster_forward'] ) ? $_GET['mailster_forward'] : ''; ?>
+	<?php $is_forward = isset( $_GET['mailster_forward'] ) && mailster_is_email( $_GET['mailster_forward'] ) ? $_GET['mailster_forward'] : ''; ?>
 			<li class="share header">
 				<a><?php esc_html_e( 'Share', 'mailster' ); ?></a>
 				<div class="sharebox"<?php echo $is_forward ? ' style="display:block"' : ''; ?>>
@@ -107,7 +109,7 @@
 									<input type="text" name="sendername" id="sendername" placeholder="<?php esc_attr_e( 'Your name', 'mailster' ); ?>" value="">
 								</p>
 								<p>
-									<input type="email" name="sender" id="sender" placeholder="<?php esc_attr_e( 'Your email address', 'mailster' ); ?>" value="<?php echo $is_forward; ?>">
+									<input type="email" name="sender" id="sender" placeholder="<?php esc_attr_e( 'Your email address', 'mailster' ); ?>" value="<?php echo esc_attr( $is_forward ); ?>">
 								</p>
 								<p>
 									<input type="email" name="receiver" id="receiver" placeholder="<?php esc_attr_e( 'Your friend\'s email address', 'mailster' ); ?>" value="">
@@ -142,10 +144,8 @@
 <?php endif; ?>
 	</ul>
 	<div id="iframe-wrap">
-		<iframe src="<?php echo add_query_arg( 'frame', 0, $permalink ); ?>" data-no-lazy=""></iframe>
+		<iframe src="<?php echo esc_url( add_query_arg( 'frame', 0, $permalink ) ); ?>" data-no-lazy=""></iframe>
 	</div>
-
 	<?php do_action( 'mailster_wpfooter' ); ?>
-
 </body>
 </html>

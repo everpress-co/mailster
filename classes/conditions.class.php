@@ -31,13 +31,14 @@ class MailsterConditions {
 	public function __construct() {}
 
 
-	public function check( $conditions, $subscribers ) {
+	public function check( $conditions, $subscribers, $status = false ) {
 
 		$query = mailster( 'subscribers' )->query(
 			array(
 				'return_ids' => true,
 				'include'    => $subscribers,
 				'conditions' => $conditions,
+				'status'     => $status, // ignore the status
 			)
 		);
 
@@ -58,10 +59,6 @@ class MailsterConditions {
 
 		if ( is_null( $inputname ) ) {
 			$inputname = 'mailster_data[conditions]';
-		}
-
-		if ( empty( $conditions ) ) {
-			$conditions = array();
 		}
 
 		include MAILSTER_DIR . 'views/conditions/conditions.php';

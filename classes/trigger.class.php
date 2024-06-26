@@ -485,9 +485,15 @@ class MailsterTrigger {
 		return $success;
 	}
 
-	public function get_workflows_by_trigger( string $trigger ) {
+	public function get_workflows_by_trigger( string|array $triggers ) {
 
-		if ( ! ( $workflow_ids = mailster_cache_get( 'workflow_by_trigger_' . $trigger ) ) ) {
+		if ( ! is_array( $triggers ) ) {
+			$triggers = array( $triggers );
+		}
+
+		$key = implode( '_', $triggers );
+
+		if ( ! ( $workflow_ids = mailster_cache_get( 'workflow_by_trigger_' . $key ) ) ) {
 
 			global $wpdb;
 
@@ -500,7 +506,7 @@ class MailsterTrigger {
 			// 'meta_query' => array(
 			// array(
 			// 'key'     => 'trigger',
-			// 'value'   => $trigger,
+			// 'value'   => $triggers,
 			// 'compare' => '=',
 			// ),
 			// ),
@@ -508,9 +514,9 @@ class MailsterTrigger {
 			// );
 
 			// faster, if we really need the post query it later explicitly
-			$workflow_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content LIKE '%s'", '%"trigger":"' . sanitize_key( $trigger ) . '"%' ) );
+			$workflow_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type = 'mailster-workflow' AND post_content REGEXP '\"trigger\":\"(" . implode( '|', $triggers ) . ")\"'" );
 
-			mailster_cache_set( 'workflow_by_trigger_' . $trigger, $workflow_ids );
+			mailster_cache_set( 'workflow_by_trigger_' . $key, $workflow_ids );
 
 		}
 

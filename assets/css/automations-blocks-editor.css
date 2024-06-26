@@ -978,10 +978,10 @@
 .interface-interface-canvas-toolbar {
 	box-sizing: border-box;
 	padding: 0.1em;
-	position: absolute;
+	position: fixed;
 	border: 1px solid #e0e0e0;
 	margin: 1em;
-	bottom: 0;
+	bottom: 0px;
 	right: 0;
 	z-index: 100;
 	background-color: #fff;
@@ -989,6 +989,12 @@
 	align-items: center;
 	border-radius: 4px !important;
 	justify-content: center;
+}
+.is-sidebar-opened .interface-interface-canvas-toolbar {
+	right: 280px;
+}
+.has-footer .interface-interface-canvas-toolbar {
+	bottom: 25px;
 }
 .rtl .interface-interface-canvas-toolbar {
 	left: 0;

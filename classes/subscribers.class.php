@@ -1407,20 +1407,6 @@ class MailsterSubscribers {
 
 		_deprecated_function( __FUNCTION__, '4.0', 'remove_custom_field( $subscriber_id, $key )' );
 		return $this->remove_custom_field( $subscriber_id, $key );
-
-		global $wpdb;
-
-		$sql = "DELETE FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d";
-		if ( ! is_null( $key ) ) {
-			$sql .= $wpdb->prepare( ' AND meta_key = %s', (string) $key );
-		}
-
-		if ( false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) ) ) {
-			// mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
-			return true;
-		}
-
-		return false;
 	}
 
 
@@ -2275,8 +2261,6 @@ class MailsterSubscribers {
 			),
 			$args
 		);
-
-		error_log( print_r( $args, true ) );
 
 		if ( ! is_null( $args['lists'] ) ) {
 			$args['lists'] = explode( ',', (string) $args['lists'] );

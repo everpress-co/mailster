@@ -752,7 +752,8 @@ class MailsterWorkflow {
 			$conditions = $this->sanitize_conditions( $conditions );
 
 			if ( $this->subscriber_id && ! mailster( 'conditions' )->check( $conditions, $this->subscriber_id ) ) {
-				$this->log( 'CONDITION NOT PASSED ! ! ' );
+				$this->log( 'CONDITION NOT PASSED! Entry deleted' );
+				$this->delete();
 				return false;
 			}
 		}
@@ -780,7 +781,7 @@ class MailsterWorkflow {
 		if ( $this->subscriber && $is_pending ) {
 			$this->log( 'SUBSCRIBER NOT SUBSCRIBED ' . $this->subscriber->status );
 
-			$try_again_after = MINUTE_IN_SECONDS * 5;
+			$try_again_after = MINUTE_IN_SECONDS * 5; // TODO find reasonable tiemframe
 			// $try_again_after = 1;
 
 			$this->update( array( 'timestamp' => time() + $try_again_after ) );
