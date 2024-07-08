@@ -903,17 +903,24 @@ class MailsterWorkflow {
 
 		$this->args['step'] = $step['id'];
 
-		$use_timezone = isset( $step['attr']['timezone'] ) ? $step['attr']['timezone'] : false;
-		$amount       = $step['attr']['amount'];
-		$unit         = $step['attr']['unit'];
-		$timeoffset   = 0;
-		$date         = 0;
+		$amount     = $step['attr']['amount'];
+		$unit       = $step['attr']['unit'];
+		$timeoffset = 0;
+		$date       = 0;
 
 		if ( isset( $step['attr']['date'] ) ) {
-			if ( $use_timezone ) {
-				$timeoffset = mailster( 'subscribers' )->meta( $this->subscriber, 'timeoffset' );
+			$date = strtotime( $step['attr']['date'] );
+			if ( isset( $step['attr']['timezone'] ) && $step['attr']['timezone'] ) {
+				$user_timeoffset = mailster( 'subscribers' )->meta( $this->subscriber, 'timeoffset' );
+
+				// timeoffset must be defined
+				if ( ! is_null( $user_timeoffset ) ) {
+					// add the sites timeoffset
+					$timeoffset += mailster( 'helper' )->gmt_offset( true );
+					// remove the users timeoffset
+					$timeoffset -= $user_timeoffset * HOUR_IN_SECONDS;
+				}
 			}
-			$date = strtotime( $step['attr']['date'] ) + ( $timeoffset * HOUR_IN_SECONDS );
 		}
 
 		switch ( $unit ) {
@@ -926,14 +933,17 @@ class MailsterWorkflow {
 				break;
 
 			case 'day':
-				if ( $date < time() ) {
-					$this->log( 'WE ARE IN THE FUTURE' );
-					$timestamp = strtotime( 'tomorrow ' . date( 'H:i', $date ) );
+				// get the timestamp for the time of the day
+				$timestamp = strtotime( date( 'Y-m-d ' . date( 'H:i', $date ) ) );
 
-				} else {
-					$this->log( 'WE ARE IN THE PAST' );
-					$timestamp = strtotime( 'today ' . date( 'H:i', $date ) );
+				// add timeoffset if set (for timezone based sending)
+				$timestamp += $timeoffset;
+
+				// time is in the past so postpone it for 24 hours
+				if ( $timestamp < time() ) {
+					$timestamp = mailster( 'helper' )->get_next_date_in_future( $timestamp, 1, 'day', array(), true );
 				}
+
 				break;
 
 			case 'week':
@@ -942,18 +952,23 @@ class MailsterWorkflow {
 				}
 
 				$weekdays = $step['attr']['weekdays'];
-				// get a fictional date with the same day (respecting timezone)
-				$date = strtotime( date( 'Y-m-d ' . date( 'H:i', $date ) ) );
 
-				if ( $date < time() ) {
-					$timestamp = mailster( 'helper' )->get_next_date_in_future( $date, 1, 'day', $weekdays, true );
+				// get the timestamp for the time of the day
+				$timestamp = strtotime( date( 'Y-m-d ' . date( 'H:i', $date ) ) );
+
+				// add timeoffset if set (for timezone based sending)
+				$timestamp += $timeoffset;
+
+				// time is in the past so postpone it for at least 24 hours (check weekdays)
+				if ( $timestamp < time() ) {
+					$timestamp = mailster( 'helper' )->get_next_date_in_future( $timestamp, 1, 'day', $weekdays, true );
 
 				} else {
 					// today in in the list of weekdays
 					if ( empty( $weekdays ) || in_array( date( 'w' ), $weekdays ) ) {
-						$timestamp = $date;
+						$timestamp = $timestamp;
 					} else {
-						$timestamp = mailster( 'helper' )->get_next_date_in_future( $date, 1, 'day', $weekdays, false );
+						$timestamp = mailster( 'helper' )->get_next_date_in_future( $timestamp, 1, 'day', $weekdays, false );
 					}
 				}
 
@@ -964,31 +979,31 @@ class MailsterWorkflow {
 					return new WP_Error( 'error', 'No month defined!', $step );
 				}
 
-				$day = $step['attr']['month'];
+				$month = $step['attr']['month'];
 
-				// get a fictional date with the same day
-				if ( $day === -1 ) { // last day of the month
+				if ( $month === -1 ) { // last day of the month
 					// t returns the number of days in the month of a given date
-					$date = strtotime( date( 'Y-m-t ' . date( 'H:i', $date ) ) );
+					$timestamp = strtotime( date( 'Y-m-t ' . date( 'H:i', $date ) ) );
 
 				} else {
 
-					$date = strtotime( date( 'Y-m-' . $day . ' ' . date( 'H:i', $date ) ) );
+					$timestamp = strtotime( date( 'Y-m-' . $month . ' ' . date( 'H:i', $date ) ) );
 
 					// check if the current month has this day
-					if ( $day > 28 ) {
+					if ( $month > 28 ) {
 
 						// get last day of the month
 						$last = strtotime( date( 'Y-m-t ' . date( 'H:i', $date ) ) );
 
-						if ( $date != $last ) {
+						if ( $timestamp != $last ) {
 							// the last day of the current month + our days
-							$date = $last + ( $day * DAY_IN_SECONDS );
+							$timestamp = $last + ( $month * DAY_IN_SECONDS );
 						}
 					}
 				}
 
-				$timestamp = $date;
+				// add timeoffset if set (for timezone based sending)
+				$timestamp += $timeoffset;
 
 				// timestamp is in the past
 				if ( $timestamp < time() ) {
@@ -1000,6 +1015,9 @@ class MailsterWorkflow {
 			case 'year':
 				// remove seconds from our date
 				$timestamp = strtotime( date( 'Y-m-d H:i', $date ) );
+
+				// add timeoffset if set (for timezone based sending)
+				$timestamp += $timeoffset;
 
 				// timestamp is in the past
 				if ( $timestamp < time() ) {
@@ -1027,6 +1045,7 @@ class MailsterWorkflow {
 		// return false to stop the queue from processing
 		return false;
 	}
+
 
 	private function conditions( $step ) {
 
