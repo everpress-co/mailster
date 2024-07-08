@@ -807,10 +807,10 @@ class MailsterForms {
 
 		foreach ( $form->fields as $field_id => $form_field ) {
 
-			$custom_field = $custom_fields[ $field_id ];
+			$custom_field_type = isset( $custom_fields[ $field_id ] ) ? $custom_fields[ $field_id ]['type'] : 'text';
 
 			$block_attributes = array(
-				'inline' => $form->inline && ! in_array( $custom_field['type'], array( 'checkbox', 'radios' ) ),
+				'inline' => $form->inline && ! in_array( $custom_field_type, array( 'checkbox', 'radios' ) ),
 			);
 
 			$block_attributes = json_encode( $block_attributes );
@@ -861,7 +861,7 @@ class MailsterForms {
 		update_post_meta( $post_id, 'headline', $form->headline );
 		update_post_meta( $post_id, 'content', $form->content );
 		update_post_meta( $post_id, 'link', $form->link );
-		update_post_meta( $post_id, 'tags', $form->tags );
+		// update_post_meta( $post_id, 'tags', $form->tags );
 
 		return $post_id;
 	}

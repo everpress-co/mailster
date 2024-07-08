@@ -649,6 +649,21 @@ export function useEmailSteps() {
 	return [attributes, setAttributes];
 }
 
+export function useQueue(id) {
+	const allQueue = useSelect((select) => {
+		return select('mailster/automation').getQueue();
+	}, []);
+
+	const [queued, setQueued] = useState(0);
+
+	useEffect(() => {
+		if (!allQueue) return;
+		setQueued(allQueue[id] || 0);
+	}, [id, allQueue]);
+
+	return queued;
+}
+
 export function searchBlock(blockName, clientId, innerBlocks = true) {
 	const blocks = searchBlocks(blockName, clientId, innerBlocks);
 

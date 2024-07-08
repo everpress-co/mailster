@@ -150,7 +150,7 @@ export default function TriggerInspectorControls(props) {
 						<PanelBody>
 							<BaseControl
 								help={__(
-									'Allow unconfirmed subscribers to enter the workflow. This is useful if they need to confirm their subscription first.',
+									'Allow unconfirmed subscribers to enter the workflow. This is useful if they need to confirm their subscription first. The trigger will be executed once they are confirmed.',
 									'mailster'
 								)}
 							>

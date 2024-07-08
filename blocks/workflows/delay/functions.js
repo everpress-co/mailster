@@ -52,10 +52,7 @@ export function getInfo(attributes) {
 			return sprintf(__('on the %s.', 'mailster'), MONTH_OPTIONS[month]);
 
 		case 'year':
-			return sprintf(
-				__('on the %s.', 'mailster'),
-				currDate.toLocaleDateString()
-			);
+			return sprintf(__('on the %s.', 'mailster'), dateI18n(DATE_FORMAT, date));
 	}
 
 	return new Date(date).toString();
@@ -94,7 +91,7 @@ function getDate(attributes) {
 			return dateI18n(TIME_FORMAT, currDate);
 	}
 
-	return 'zz' + dateI18n(TIME_FORMAT, currDate);
+	return dateI18n(TIME_FORMAT, currDate);
 }
 
 export function isRelative(unit) {

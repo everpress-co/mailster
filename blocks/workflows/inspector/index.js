@@ -6,25 +6,18 @@
  */
 
 import { sprintf, __, _n } from '@wordpress/i18n';
+import { addFilter } from '@wordpress/hooks';
 
 import {
 	PluginPrePublishPanel,
 	PluginPostPublishPanel,
 	PluginPostStatusInfo,
-	PluginSidebarMoreMenuItem,
 } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
 import { useState, useEffect, createRoot } from '@wordpress/element';
 import { createBlock } from '@wordpress/blocks';
-import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
-import {
-	BaseControl,
-	Button,
-	Flex,
-	FlexItem,
-	PanelRow,
-} from '@wordpress/components';
+import { useSelect, select, dispatch } from '@wordpress/data';
+import { BaseControl, Flex, FlexItem, PanelRow } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -90,7 +83,6 @@ function SettingsPanelPlugin() {
 		useInterval(
 			() => {
 				clearData('getQueue', 'mailster/automation');
-				//console.log('clear queue');
 			},
 			queueInterval,
 			isFocused
@@ -204,13 +196,6 @@ function SettingsPanelPlugin() {
 					</BaseControl>
 				</PanelRow>
 			</PluginPrePublishPanel>
-			<PluginPostPublishPanel
-				className="my-plugin-publish-panel"
-				title="Panel title"
-				initialOpen={true}
-			>
-				PluginPostPublishPanel
-			</PluginPostPublishPanel>
 
 			<PublishInfo />
 
@@ -242,3 +227,17 @@ registerPlugin('mailster-automation-settings-panel', {
 	render: SettingsPanelPlugin,
 	icon: false,
 });
+
+// only allow blocks inside the form wrapper
+function convertP(settings, name) {
+	if ('core/paragraph' !== name) {
+		return settings;
+	}
+	settings.supports.inserter = false;
+	//settings.supports.multiple = false;
+	//settings.attributes.placeholder.default = 'aaaaa';
+
+	return settings;
+}
+
+addFilter('blocks.registerBlockType', 'mailster/workflows/convert-p', convertP);

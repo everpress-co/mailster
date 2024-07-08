@@ -32,32 +32,25 @@ import { dateI18n, humanTimeDiff } from '@wordpress/date';
  */
 
 import { TIME_FORMAT, DATE_FORMAT } from '../trigger/constants';
-import { clearData } from '../../util';
+import { clearData, useQueue } from '../../util';
 
 export default function QueueBadge(props) {
 	const { attributes, setAttributes, isSelected, clientId, name } = props;
 	const { id, trigger } = attributes;
 
-	const allQueue = useSelect((select) => {
-		return select('mailster/automation').getQueue();
-	}, []);
 	const post_id = useSelect((select) => {
 		return select('core/editor').getCurrentPostId();
 	}, []);
 
-	const [queued, setQueued] = useState(0);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [data, setData] = useState(false);
+
+	const queued = useQueue(id);
 
 	const title = sprintf(
 		_n('%s subscriber queued', '%s subscribers queued', queued, 'mailster'),
 		queued
 	);
-
-	useEffect(() => {
-		if (!allQueue) return;
-		setQueued(allQueue[id] || 0);
-	}, [allQueue]);
 
 	useEffect(() => {
 		if (!modalOpen || !id || !post_id) return;
@@ -217,7 +210,14 @@ const Table = (props) => {
 							text={dateI18n(DATE_FORMAT, t) + ' @ ' + dateI18n(TIME_FORMAT, t)}
 						>
 							<div>
-								{t > now ? humanTimeDiff(t) : __('right now', 'mailster')}
+								{
+									// time in hours
+								}
+								{(t - +new Date()) / 1000 / 60 / 60}{' '}
+								{dateI18n(DATE_FORMAT, t) + ' @ ' + dateI18n(TIME_FORMAT, t)}{' '}
+								{
+									//t > now ? humanTimeDiff(t) : __('right now', 'mailster')
+								}
 							</div>
 						</Tooltip>
 					)}

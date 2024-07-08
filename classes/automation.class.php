@@ -1260,8 +1260,9 @@ class MailsterAutomations {
 
 		// only mailster workflow blocks
 		$types = preg_grep( '/^(mailster-workflow)\//', $types );
+		$types = array_values( $types );
 
-		return apply_filters( 'mailster_automations_allowed_block_types', array_values( $types ) );
+		return apply_filters( 'mailster_automations_allowed_block_types', $types );
 	}
 
 	public function block_categories( $categories ) {

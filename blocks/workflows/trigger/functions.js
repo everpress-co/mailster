@@ -33,7 +33,7 @@ export function getTrigger(id) {
 		select('mailster/automation').getTriggers()
 	);
 
-	if (!allTriggers) {
+	if (!allTriggers || !id) {
 		return null;
 	}
 	const t1 = allTriggers.filter((t) => {
