@@ -55,12 +55,14 @@ export default function QueueBadge(props) {
 	useEffect(() => {
 		if (!modalOpen || !id || !post_id) return;
 
+		if (!queued) return setData([]);
+
 		apiFetch({
 			path: '/mailster/v1/automations/queue/' + post_id + '/' + id,
 		}).then((response) => {
 			setData(response);
 		});
-	}, [modalOpen, post_id, id]);
+	}, [modalOpen, post_id, id, queued]);
 
 	return (
 		<>
@@ -98,12 +100,20 @@ export default function QueueBadge(props) {
 			<InspectorControls>
 				{queued > 0 && (
 					<Panel>
-						<PanelBody title={__('Queue', 'mailster')} initialOpen={false}>
+						<PanelBody title={__('Queue', 'mailster')}>
 							<PanelRow>
 								<Button onClick={() => setModalOpen(true)} variant="secondary">
 									{title}
 								</Button>
 							</PanelRow>
+						</PanelBody>
+						<PanelBody>
+							<Tip>
+								{__(
+									'Subscribers who are already queued in this step will not be affected by any changes you make.',
+									'mailster'
+								)}
+							</Tip>
 						</PanelBody>
 					</Panel>
 				)}
@@ -181,7 +191,6 @@ const Table = (props) => {
 							'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' +
 							item.subscriber_id
 						}
-						target="abc"
 					>
 						{item.email}
 					</ExternalLink>
@@ -210,14 +219,7 @@ const Table = (props) => {
 							text={dateI18n(DATE_FORMAT, t) + ' @ ' + dateI18n(TIME_FORMAT, t)}
 						>
 							<div>
-								{
-									// time in hours
-								}
-								{(t - +new Date()) / 1000 / 60 / 60}{' '}
-								{dateI18n(DATE_FORMAT, t) + ' @ ' + dateI18n(TIME_FORMAT, t)}{' '}
-								{
-									//t > now ? humanTimeDiff(t) : __('right now', 'mailster')
-								}
+								{t > now ? humanTimeDiff(t) : __('right now', 'mailster')}
 							</div>
 						</Tooltip>
 					)}

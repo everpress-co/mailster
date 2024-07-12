@@ -26,9 +26,9 @@ import {
 	__experimentalNumberControl as NumberControl,
 	Tip,
 } from '@wordpress/components';
-import { dateI18n, gmdateI18n } from '@wordpress/date';
-
-import { useEffect, useState } from '@wordpress/element';
+import { dateI18n } from '@wordpress/date';
+import { useSelect, select } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -64,7 +64,6 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 	} = attributes;
 
 	const [popover, setPopover] = useState(false);
-	const queued = useQueue(id);
 
 	const isInPast = +new Date() - +new Date(date) > 0;
 
@@ -109,17 +108,13 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 		</Button>
 	);
 
-	const QueueTip = () =>
-		queued === 0 ? null : (
-			<PanelBody>
-				<Tip>
-					{__(
-						'Subscribers in this step will be not affected by changes you make.',
-						'mailster'
-					)}
-				</Tip>
-			</PanelBody>
-		);
+	const delayOptions = Object.keys(DELAY_OPTIONS).map((key, index) => {
+		return {
+			label:
+				(amount > 1 && DELAY_OPTIONS[key].plural) || DELAY_OPTIONS[key].single,
+			value: DELAY_OPTIONS[key].value,
+		};
+	});
 
 	const TimeZoneSending = () =>
 		['day', 'week', 'month', 'year'].includes(unit) ? (
@@ -168,14 +163,7 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 								<FlexItem>
 									<SelectControl
 										value={unit}
-										options={Object.keys(DELAY_OPTIONS).map((key, index) => {
-											return {
-												label:
-													(amount > 1 && DELAY_OPTIONS[key].plural) ||
-													DELAY_OPTIONS[key].single,
-												value: DELAY_OPTIONS[key].value,
-											};
-										})}
+										options={delayOptions}
 										onChange={(val) => setUnit(val)}
 									/>
 								</FlexItem>
@@ -358,9 +346,8 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 													currentDate={date}
 													onChange={(val) => setDate(val)}
 													is12Hour={IS_12_HOUR}
-													__nextRemoveHelpButton
-													__nextRemoveResetButton
 												/>
+												<NowButton />
 											</Popover>
 										)}
 									</Button>
@@ -381,7 +368,6 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 					)}
 				</PanelBody>
 				<TimeZoneSending />
-				<QueueTip />
 			</Panel>
 		</InspectorControls>
 	);

@@ -22,7 +22,7 @@ import {
 } from '@wordpress/components';
 
 import { useSelect } from '@wordpress/data';
-import { date } from '@wordpress/date';
+import { date, format } from '@wordpress/date';
 import { useState, createInterpolateElement } from '@wordpress/element';
 
 /**
@@ -38,7 +38,6 @@ export default function FieldSelector(props) {
 	);
 
 	const currentField = allFields.filter((f) => f.id == field).pop();
-
 	const getInitialDateType = () => {
 		if (!isNaN(parseFloat(value)) && isFinite(value)) {
 			if (value < 0) {
@@ -47,6 +46,8 @@ export default function FieldSelector(props) {
 				return 'increase';
 			}
 			return 'current';
+		} else if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) {
+			return 'date';
 		}
 		return undefined;
 	};
@@ -54,7 +55,7 @@ export default function FieldSelector(props) {
 		var newValue = '';
 		switch (newType) {
 			case 'date':
-				newValue = '';
+				newValue = format('Y-m-d');
 				break;
 			case 'decrease':
 				newValue = -1;
@@ -70,7 +71,7 @@ export default function FieldSelector(props) {
 		setAttributes({ value: newValue.toString() });
 	};
 
-	const [dateType, setDateType] = useState();
+	const [dateType, setDateType] = useState(getInitialDateType());
 
 	return (
 		<BaseControl>
@@ -130,8 +131,6 @@ export default function FieldSelector(props) {
 													value: val ? date('Y-m-d', val) : undefined,
 												})
 											}
-											__nextRemoveHelpButton
-											__nextRemoveResetButton
 										/>
 									)}
 									{dateType == 'increase' && (

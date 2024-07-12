@@ -349,12 +349,12 @@ class MailsterTrigger {
 
 		global $wp;
 
-		// not on backend
-		if ( is_admin() ) {
+		if ( ! $wp ) {
 			return;
 		}
 
-		if ( ! $wp ) {
+		// not on backend
+		if ( is_admin() ) {
 			return;
 		}
 
@@ -403,8 +403,6 @@ class MailsterTrigger {
 			$context = serialize( $context );
 		}
 
-		// $timestamp = time() + 120;
-
 		$job = array(
 			'subscriber_id' => (int) $subscriber_id,
 			'workflow_id'   => (int) $workflow,
@@ -421,18 +419,6 @@ class MailsterTrigger {
 		$wf->run();
 
 		return true;
-
-		// previeous queueing < 4.0.4
-
-		$success = $this->queue_job( $job );
-
-		if ( $success ) {
-
-			add_action( 'shutdown', array( $this, 'post_add_job' ), PHP_INT_MAX );
-
-		}
-
-		return $success;
 	}
 
 

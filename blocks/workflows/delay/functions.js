@@ -19,6 +19,7 @@ import {
 	TIME_FORMAT,
 	DATE_TIME_FORMAT,
 } from './constants.js';
+import { select, useSelect } from '@wordpress/data';
 
 const WAIT_FOR = __('Wait for %s', 'mailster');
 const WAIT_UNTIL = __('Wait until %s', 'mailster');
@@ -53,6 +54,8 @@ export function getInfo(attributes) {
 
 		case 'year':
 			return sprintf(__('on the %s.', 'mailster'), dateI18n(DATE_FORMAT, date));
+
+		default:
 	}
 
 	return new Date(date).toString();

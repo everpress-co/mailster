@@ -5,12 +5,10 @@
  * WordPress dependencies
  */
 
-import { sprintf, __, _n } from '@wordpress/i18n';
-import { addFilter } from '@wordpress/hooks';
+import { __, _n } from '@wordpress/i18n';
 
 import {
 	PluginPrePublishPanel,
-	PluginPostPublishPanel,
 	PluginPostStatusInfo,
 } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
@@ -227,17 +225,3 @@ registerPlugin('mailster-automation-settings-panel', {
 	render: SettingsPanelPlugin,
 	icon: false,
 });
-
-// only allow blocks inside the form wrapper
-function convertP(settings, name) {
-	if ('core/paragraph' !== name) {
-		return settings;
-	}
-	settings.supports.inserter = false;
-	//settings.supports.multiple = false;
-	//settings.attributes.placeholder.default = 'aaaaa';
-
-	return settings;
-}
-
-addFilter('blocks.registerBlockType', 'mailster/workflows/convert-p', convertP);

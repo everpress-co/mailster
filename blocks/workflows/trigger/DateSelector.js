@@ -41,9 +41,7 @@ export default function Selector(props) {
 
 	const setDate = (newDate) => {
 		// store in UTC
-		setAttributes({
-			date: newDate ? new Date(newDate).toISOString() : undefined,
-		});
+		setAttributes({ date: new Date(newDate || Date.now()).toISOString() });
 	};
 
 	const allFields = useSelect((select) =>
@@ -81,6 +79,17 @@ export default function Selector(props) {
 		const newOffset = amount * unit;
 		setAttributes({ offset: newOffset || undefined });
 	}, [unit, amount]);
+
+	const NowButton = () => (
+		<Button
+			variant="tertiary"
+			size="small"
+			onClick={() => setDate()}
+			className="alignright"
+		>
+			{__('now', 'mailster')}
+		</Button>
+	);
 
 	const isInPast = +new Date() - +new Date(date) - offset * 1000 > 0;
 
@@ -144,12 +153,11 @@ export default function Selector(props) {
 											onClose={(e) => setPopover(false)}
 											className="delay-popover"
 										>
+											<NowButton />
 											<DateTimePicker
 												currentDate={date}
 												onChange={(val) => setDate(val)}
 												is12Hour={IS_12_HOUR}
-												__nextRemoveHelpButton
-												__nextRemoveResetButton
 											/>
 										</Popover>
 									)}
@@ -166,12 +174,11 @@ export default function Selector(props) {
 											onClose={(e) => setPopover(false)}
 											className="delay-popover"
 										>
+											<NowButton />
 											<TimePicker
 												currentDate={date}
 												onChange={(val) => setDate(val)}
 												is12Hour={IS_12_HOUR}
-												__nextRemoveHelpButton
-												__nextRemoveResetButton
 											/>
 										</Popover>
 									)}
@@ -215,12 +222,11 @@ export default function Selector(props) {
 											onClose={(e) => setPopover(false)}
 											className="delay-popover"
 										>
+											<NowButton />
 											<DateTimePicker
 												currentDate={date}
 												onChange={(val) => setDate(val)}
 												is12Hour={IS_12_HOUR}
-												__nextRemoveHelpButton
-												__nextRemoveResetButton
 											/>
 										</Popover>
 									)}
@@ -230,19 +236,20 @@ export default function Selector(props) {
 						{field && (
 							<>
 								{' @ '}
+
 								<Button variant="secondary" onClick={(e) => setPopover(true)}>
 									{dateI18n(TIME_FORMAT, date)}
 									{popover && (
 										<Popover
 											onClose={(e) => setPopover(false)}
+											focusOnMount={true}
 											className="delay-popover"
 										>
+											<NowButton />
 											<TimePicker
 												currentDate={date}
 												onChange={(val) => setDate(val)}
 												is12Hour={IS_12_HOUR}
-												__nextRemoveHelpButton
-												__nextRemoveResetButton
 											/>
 										</Popover>
 									)}

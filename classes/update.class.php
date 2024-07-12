@@ -15,7 +15,7 @@ class MailsterUpdate {
 
 		add_action( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
 
-		$this->init();
+		add_action( 'plugins_loaded', array( &$this, 'init' ) );
 	}
 
 

@@ -362,12 +362,12 @@ class MailsterWorkflow {
 	 */
 	private function do_steps( $steps ) {
 
+		// step by step (ooh baby)
 		foreach ( $steps as $i => $step ) {
 
 			$result = $this->do_step( $step );
 
 			if ( $result === true ) {
-
 				continue;
 			}
 
@@ -848,11 +848,18 @@ class MailsterWorkflow {
 
 					}
 
+					$step_id = isset( $step['attr']['id'] ) ? $step['attr']['id'] : null;
+					$step_id = null;
+
+					if ( isset( $step['attr']['pending'] ) && $step['attr']['pending'] ) {
+						// allow pending subscribers to be added
+						$query_args['status'] = array( 0, 1 );
+					}
+
 					$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
 
-					// $step = isset( $step['attr']['id'] ) ? $step['attr']['id'] : null;
 					if ( ! empty( $subscriber_ids ) ) {
-						mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp );
+						mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, $step_id, $timestamp );
 					}
 					// delete our temp entry
 					$this->delete();
@@ -873,18 +880,17 @@ class MailsterWorkflow {
 				if ( ! $this->subscriber_id ) {
 
 					$query_args = array(
-						'include '   => $this->subscriber_id,
 						'return_ids' => true,
 						'conditions' => $conditions,
 					);
 
+					$step_id   = isset( $step['attr']['id'] ) ? $step['attr']['id'] : null;
 					$timestamp = time();
 
 					$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
 
 					$context = $this->entry->context;
 
-					// $step = isset( $step['attr']['id'] ) ? $step['attr']['id'] : null;
 					if ( ! empty( $subscriber_ids ) ) {
 						mailster( 'triggers' )->bulk_add( $this->workflow->ID, $this->trigger, $subscriber_ids, null, $timestamp, $context );
 					}
