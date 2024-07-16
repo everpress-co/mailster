@@ -2,8 +2,6 @@
 
 class MailsterTrigger {
 
-	private $queue_ids = array();
-
 	public function __construct() {
 
 		// subscriber added/removed to list
@@ -422,53 +420,12 @@ class MailsterTrigger {
 	}
 
 
-	/**
-	 * This runs if a job was added once
-	 *
-	 * @return void
-	 */
-	public function post_add_job() {
-
-		if ( empty( $this->queue_ids ) ) {
-			return;
-		}
-
-		mailster( 'automations' )->wp_schedule( $this->queue_ids );
-	}
-
 
 	public function bulk_add( $workflow, $trigger, $subscriber_ids, $step, $timestamp = null, $context = null ) {
 
 		foreach ( (array) $subscriber_ids as $subscriber_id ) {
 			$this->add_job( $workflow, $trigger, $subscriber_id, $step, $timestamp, $context );
 		}
-	}
-
-	private function queue_job( $job ) {
-
-		global $wpdb;
-
-		$job['added'] = time();
-
-		$fields = array_keys( $job );
-		$data   = array_values( $job );
-
-		$sql = "INSERT INTO {$wpdb->prefix}mailster_workflows (`" . implode( '`, `', $fields ) . "`) VALUES ('" . implode( "', '", $data ) . "') ON DUPLICATE KEY UPDATE timestamp = values(timestamp)";
-		$sql = str_replace( "''", 'NULL', $sql );
-
-		$suppress_errors = $wpdb->suppress_errors( true );
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			$last_insert_id    = $wpdb->insert_id;
-			$this->queue_ids[] = $last_insert_id;
-			$success           = true;
-		} else {
-			$success = false;
-		}
-
-		$wpdb->suppress_errors( $suppress_errors );
-
-		return $success;
 	}
 
 	public function get_workflows_by_trigger( string|array $triggers ) {

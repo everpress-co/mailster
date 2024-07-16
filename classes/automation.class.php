@@ -283,6 +283,11 @@ class MailsterAutomations {
 			return;
 		}
 
+		// not on autosave
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
 		mailster_remove_notice( 'workflow_error_' . $workflow_id );
 
 		// get all triggers
@@ -300,6 +305,12 @@ class MailsterAutomations {
 		}
 
 		$this->update_trigger_option();
+
+		// cleanup of deleted steps
+		$this->remove_missing_steps( $workflow_id );
+
+		// run it once
+		$this->wp_schedule( array( 'workflow_id' => $workflow_id ) );
 	}
 
 
@@ -382,15 +393,46 @@ class MailsterAutomations {
 	}
 
 	/**
+	 * Remove workflow entries where the step is no longer in the workflow
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function remove_missing_steps( $workflow_id ) {
+
+		$workflow = get_post( $workflow_id );
+
+		if ( ! $workflow ) {
+			return;
+		}
+
+		// get all step Ids from this workflow
+		if ( ! preg_match_all( '/"id":"(.*?)"/', $workflow->post_content, $matches ) ) {
+			return;
+		}
+
+		// ids are string so we need to escape them
+		$existing_ids = array_map( 'esc_sql', $matches[1] );
+
+		global $wpdb;
+
+		// only keep the ones which are in the workflow
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND step IS NOT NULL AND step NOT IN ('" . implode( "','", $existing_ids ) . "')";
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $workflow_id ) );
+	}
+
+	/**
 	 * Find all initialed workflows and starte them if they are due
 	 *
 	 * @access public
 	 * @return void
 	 */
-	public function wp_schedule( $queue_ids = array() ) {
+	public function wp_schedule( $where = array() ) {
+
 		global $wpdb;
 
-		// time to schedule upfront ins seconds
+		// time to schedule upfront in seconds
 		$queue_upfront = HOUR_IN_SECONDS;
 
 		// limit to not overload the WP cron
@@ -398,12 +440,14 @@ class MailsterAutomations {
 
 		$now = time();
 
-		$sql = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL)";
-		if ( ! empty( $queue_ids ) ) {
-			$queue_ids = array_map( 'absint', (array) $queue_ids );
-			$sql      .= ' AND ID IN (' . implode( ',', $queue_ids ) . ')';
+		$sql = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE `finished` = 0 AND (`timestamp` <= %d OR `timestamp` IS NULL)";
+
+		foreach ( $where as $key => $value ) {
+			$values = array_map( 'esc_sql', (array) $value );
+			$sql   .= ' AND `' . esc_sql( $key ) . "` IN ('" . implode( "','", $values ) . "')";
 		}
-		$sql .= ' AND finished = 0 AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` LIMIT %d';
+
+		$sql .= ' AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` ASC LIMIT %d';
 
 		$entries = $wpdb->get_results( $wpdb->prepare( $sql, $now, $now + $queue_upfront, $limit ) );
 
@@ -467,13 +511,13 @@ class MailsterAutomations {
 		return $result;
 	}
 
-	public function remove_queue_item( $id ) {
+	public function remove_queue_item( $queue_id ) {
 		global $wpdb;
 
-		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'ID' => $id ) );
+		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'ID' => $queue_id ) );
 	}
 
-	public function finish_queue_item( $id ) {
+	public function finish_queue_item( $queue_id ) {
 		global $wpdb;
 
 		$data = array(
@@ -483,23 +527,23 @@ class MailsterAutomations {
 			'timestamp' => null,
 		);
 
-		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $id ) ) ) {
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $queue_id ) ) ) {
 			// process the queue for this item
-			$this->wp_schedule( $id );
+			$this->wp_schedule( array( 'id' => $queue_id ) );
 			return true;
 		}
 
 		return false;
 	}
 
-	public function forward_queue_item( $id ) {
+	public function forward_queue_item( $queue_id ) {
 		global $wpdb;
 
 		$data = array( 'timestamp' => time() );
 
-		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $id ) ) ) {
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $queue_id ) ) ) {
 			// process the queue for this item
-			$this->wp_schedule( $id );
+			$this->wp_schedule( array( 'id' => $queue_id ) );
 			return true;
 		}
 
@@ -512,20 +556,7 @@ class MailsterAutomations {
 	}
 
 
-	private function run_async( $workflow, $trigger, $step = null ) {
 
-		foreach ( (array) $subscribers as $subscriber ) {
-			$args = array(
-				'id'      => $workflow,
-				'trigger' => $trigger,
-				'step'    => $step,
-			);
-
-			$this->jobs[] = $args;
-		}
-
-		add_action( 'shutdown', array( &$this, 'schedule_async_jobs' ) );
-	}
 
 	public function schedule_async_jobs() {
 

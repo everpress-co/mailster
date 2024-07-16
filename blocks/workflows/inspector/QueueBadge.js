@@ -35,8 +35,8 @@ import { TIME_FORMAT, DATE_FORMAT } from '../trigger/constants';
 import { clearData, useQueue } from '../../util';
 
 export default function QueueBadge(props) {
-	const { attributes, setAttributes, isSelected, clientId, name } = props;
-	const { id, trigger } = attributes;
+	const { attributes } = props;
+	const { id } = attributes;
 
 	const post_id = useSelect((select) => {
 		return select('core/editor').getCurrentPostId();
@@ -233,7 +233,7 @@ const Table = (props) => {
 					/>
 					<Button
 						icon="controls-skipforward"
-						disabled={disabled || item.status != 1}
+						disabled={disabled || item.status != 1 || attributes.disabled}
 						label={__('Forward to next step', 'mailster')}
 						onClick={() => forwardItem(item, index)}
 					/>

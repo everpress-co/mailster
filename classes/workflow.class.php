@@ -14,9 +14,10 @@ class MailsterWorkflow {
 	private $steps;
 	private $args;
 	private $current_step;
-	private $total_steps = 0;
-	private $max_steps   = 10;
-	private $steps_map   = array();
+	private $max_steps = 1024; // max steps to prevent endless loops (per process)
+	private $steps_map = array();
+
+	static $total_steps = 0;
 
 	public function __construct( $workflow, $trigger, $subscriber_id = null, $step = null, $timestamp = null, $context = null ) {
 
@@ -134,10 +135,10 @@ class MailsterWorkflow {
 		}
 
 		$this->args = array(
-			'trigger'    => $this->trigger,
-			'id'         => $this->workflow->ID,
-			'subscriber' => $this->subscriber_id,
-			'step'       => $this->step,
+			'trigger'       => $this->trigger,
+			'id'            => $this->workflow->ID,
+			'subscriber_id' => $this->subscriber_id,
+			'step'          => $this->step,
 		);
 
 		// if a step is defined we have to find it first
@@ -166,14 +167,20 @@ class MailsterWorkflow {
 			}
 		}
 
-		// start
-
+		// start the workflow
 		$result = $this->do_steps( $this->steps );
 
-		$this->log( 'RUN for ' . $this->total_steps . ' steps' );
+		$this->log( 'RUN for ' . self::$total_steps . ' steps' );
+
 		// all good => finish
 		if ( $result === true ) {
-			$this->finish();
+
+			// still in search mode => current step not found
+			if ( $this->is_search ) {
+				$this->delete();
+			} else {
+				$this->finish();
+			}
 
 			// more info here
 		} elseif ( is_wp_error( $result ) ) {
@@ -270,11 +277,24 @@ class MailsterWorkflow {
 
 		global $wpdb;
 
-		if ( ! $this->entry ) {
-			return false;
+		if ( $this->entry ) {
+			return false !== $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_workflows WHERE ID = %d", $this->entry->ID ) );
 		}
 
-		return false !== $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_workflows WHERE ID = %d", $this->entry->ID ) );
+		// used if step is missing
+		if ( $this->args ) {
+			$delete = array(
+				'workflow_id'   => $this->workflow->ID,
+				'trigger'       => $this->trigger,
+				'step'          => $this->step,
+				'subscriber_id' => $this->subscriber_id,
+				'finished'      => 0,
+			);
+
+			return false !== $wpdb->delete( "{$wpdb->prefix}mailster_workflows", $delete );
+		}
+
+		return false;
 	}
 
 
@@ -388,11 +408,11 @@ class MailsterWorkflow {
 
 		$this->current_step = $step['id'];
 
-		// no more subscriber TODO maybe not needed at that point
-		if ( empty( $this->args['subscriber'] ) ) {
-			// return false;
+		if ( $this->max_steps && self::$total_steps >= $this->max_steps ) {
+			$this->log( 'MAX STEPS REACHED' );
+			$this->update( array( 'step' => $step['id'] ) );
+			return false;
 		}
-
 		// we are in search mode, let's find our step
 		if ( $this->is_search ) {
 
@@ -422,16 +442,20 @@ class MailsterWorkflow {
 
 		if ( isset( $step['attr']['disabled'] ) && $step['attr']['disabled'] ) {
 			$this->log( 'STEP DISABLED ' . $step['id'] . ' for ' . $this->subscriber_id );
+
+			// re-schedule on current step
+			if ( $this->is_current_step( $step ) ) {
+				$try_again_after = MINUTE_IN_SECONDS * 5; // TODO find reasonable timeframe
+				// $try_again_after = 1;
+
+				$this->update( array( 'timestamp' => ( time() + $try_again_after ) ) );
+				return false;
+			}
+
 			return true;
 		}
 
-		if ( $this->total_steps >= $this->max_steps ) {
-			$this->log( 'MAX STEPS REACHED' );
-			$this->update( array( 'step' => $step['id'] ) );
-			return false;
-		}
-
-		++$this->total_steps;
+		++self::$total_steps;
 
 		switch ( $step['type'] ) {
 			case 'trigger':
@@ -781,7 +805,7 @@ class MailsterWorkflow {
 		if ( $this->subscriber && $is_pending ) {
 			$this->log( 'SUBSCRIBER NOT SUBSCRIBED ' . $this->subscriber->status );
 
-			$try_again_after = MINUTE_IN_SECONDS * 5; // TODO find reasonable tiemframe
+			$try_again_after = MINUTE_IN_SECONDS * 5; // TODO find reasonable timeframe
 			// $try_again_after = 1;
 
 			$this->update( array( 'timestamp' => time() + $try_again_after ) );
@@ -909,20 +933,10 @@ class MailsterWorkflow {
 		return true;
 	}
 
-
 	private function email( $step ) {
 
-		// TODO invalid step can cause email to get stuck
-		if ( ! isset( $step['attr']['campaign'] ) ) {
-			return new WP_Error( 'error', 'Step is incomplete', $step );
-		}
-
-		if ( ! $campaign = mailster( 'campaigns' )->get( $step['attr']['campaign'] ) ) {
-			return new WP_Error( 'error', 'Step is incomplete', $step );
-		}
-
 		// skip that if it's the current step and a timestamp is defined
-		if ( $step['id'] === $this->args['step'] && $this->entry && $this->entry->timestamp ) {
+		if ( $this->is_current_step( $step ) ) {
 
 			$this->log( 'SKIP AS ITS CURRENT' );
 
@@ -931,6 +945,15 @@ class MailsterWorkflow {
 
 			// step done => continue
 			return true;
+		}
+
+		// TODO invalid step can cause email to get stuck
+		if ( ! isset( $step['attr']['campaign'] ) ) {
+			return new WP_Error( 'error', 'Step is incomplete', $step );
+		}
+
+		if ( ! $campaign = mailster( 'campaigns' )->get( $step['attr']['campaign'] ) ) {
+			return new WP_Error( 'error', 'Step is incomplete', $step );
 		}
 
 		$this->args['step'] = $step['id'];
@@ -1019,17 +1042,28 @@ class MailsterWorkflow {
 			}
 		}
 
+		// move to the new step
 		$this->update(
 			array(
 				'step'      => $step['attr']['step'],
-				'timestamp' => null,
+				'timestamp' => null, // needs to be NULL otherwise delay steps will get triggered on that timestamp
 			)
 		);
 
-		$this->log( 'CONDITION PASSED ' . $step['id'] . ' for ' . $this->subscriber_id );
+		// since we are jumping we need to re-schedule the workflow
+		mailster( 'automations' )->wp_schedule(
+			array(
+				'workflow_id'   => $this->workflow->ID,
+				'step'          => $step['attr']['step'],
+				'subscriber_id' => $this->subscriber_id,
+			)
+		);
 
+		// return false to exist the queue
 		return false;
 	}
+
+
 
 	private function notification( $step ) {
 
@@ -1076,7 +1110,7 @@ class MailsterWorkflow {
 	private function delay( $step ) {
 
 		// skip that if it's the current step and a timestamp is defined
-		if ( $step['id'] === $this->args['step'] && $this->entry && $this->entry->timestamp ) {
+		if ( $this->is_current_step( $step ) ) {
 
 			$this->log( 'SKIP AS ITS CURRENT' );
 			// step done => continue
@@ -1098,7 +1132,7 @@ class MailsterWorkflow {
 				// timeoffset must be defined
 				if ( ! is_null( $user_timeoffset ) ) {
 					// add the sites timeoffset
-					$timeoffset += mailster( 'helper' )->gmt_offset( true );
+					$timeoffset += mailster( 'helper' )->gmt_offset() * HOUR_IN_SECONDS;
 					// remove the users timeoffset
 					$timeoffset -= $user_timeoffset * HOUR_IN_SECONDS;
 				}
@@ -1281,6 +1315,11 @@ class MailsterWorkflow {
 		);
 
 		$this->update( $args );
+	}
+
+
+	private function is_current_step( $step ) {
+		return $step['id'] === $this->args['step'] && $this->entry && $this->entry->timestamp;
 	}
 
 
