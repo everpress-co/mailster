@@ -99,27 +99,30 @@ function SettingsPanelPlugin() {
 
 	// TODO Make this better
 	// Toolbar
-	useWindow((w) => {
+	useEffect(() => {
 		const editorToolbar = document.querySelector(
-			'.editor-header__settings, .edit-post-header__settings'
+			'.edit-post-header__toolbar,.editor-header__toolbar'
 		);
-		const wrapper = document.querySelector('.edit-post-visual-editor');
 
 		// If toolbar doesn't exist, we can't continue
 		if (!editorToolbar) {
 			return;
 		}
 
+		const postEditor = document.querySelector('.edit-post-visual-editor');
+
 		const canvasToolbar = document.createElement('div');
 		canvasToolbar.className = 'interface-interface-canvas-toolbar';
 
 		const toolbarWrap = document.createElement('div');
 		toolbarWrap.className = 'edit-post-header-toolbar-extra';
-		//canvasToolbar.style.cssText = 'display:flex;';
-		//editorToolbar.appendChild(canvasToolbar);
 
-		editorToolbar.prepend(toolbarWrap);
-		wrapper.prepend(canvasToolbar);
+		if (document.querySelector('.edit-post-header-toolbar-extra')) {
+			return;
+		}
+
+		editorToolbar.appendChild(toolbarWrap);
+		postEditor.prepend(canvasToolbar);
 
 		createRoot(canvasToolbar).render(<CanvasToolbar />);
 		createRoot(toolbarWrap).render(<ActiveStatus />);

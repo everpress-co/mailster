@@ -1,3 +1,10 @@
+### Version 4.0.11 (2024-07-17)
+
+- fixed: PHP error "attempt to assign a property to an array"
+- fixed: styling issues on Automations with WP 6.6
+- fixed: missing Canvas tools on WP 6.6
+- fixed: workflow steps with delay didn't calculated the timezone correctly.
+
 ### Version 4.0.10 (2024-06-24)
 
 - fixed: escaping on web version

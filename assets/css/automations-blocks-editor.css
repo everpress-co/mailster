@@ -812,10 +812,6 @@
 }
 /* Sidebar */
 
-.components-base-control {
-	width: 100%;
-}
-
 .edit-post-post-visibility {
 	display: none;
 }
@@ -840,8 +836,7 @@
 	width: 100%;
 	color: #757575;
 }
-
-.block-editor-block-inspector .components-base-control.inspector-checkbox {
+.inspector-checkbox {
 	margin-bottom: 5px;
 }
 .conditions-preview .mailster-conditions-render:empty {
