@@ -644,7 +644,7 @@ class MailsterNotification {
 			$form_args = (array) get_transient( '_mailster_form_' . $form_key );
 			$form      = (object) wp_parse_args( $form_args, (array) $form );
 		}
-		return $form;
+		return (object) $form;
 	}
 
 
