@@ -3,8 +3,8 @@
 Contributors: everpress  
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 6.2  
-Tested up to: 6.5  
-Stable tag: 4.0.10  
+Tested up to: 6.6  
+Stable tag: 4.0.11  
 License: GPLv2 or later  
 Requires PHP: 7.4
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 4.0.11
+
+- fixed: PHP error "attempt to assign a property to an array"
+- fixed: styling issues on Automations with WP 6.6
+- fixed: missing Canvas tools on WP 6.6
+- fixed: workflow steps with delay didn't calculated the timezone correctly.
 
 ### 4.0.10
 
