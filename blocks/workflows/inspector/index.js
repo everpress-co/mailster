@@ -6,19 +6,17 @@
  * WordPress dependencies
  */
 
-import { sprintf, __, _n } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 
 import {
 	PluginPrePublishPanel,
 	PluginPostPublishPanel,
 	PluginPostStatusInfo,
-	PluginSidebarMoreMenuItem,
 } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
 import { useState, useEffect, createRoot } from '@wordpress/element';
 import { createBlock } from '@wordpress/blocks';
 import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
 import { BaseControl, Flex, FlexItem, PanelRow } from '@wordpress/components';
 
 /**
@@ -87,7 +85,9 @@ function SettingsPanelPlugin() {
 	// TODO Make this better
 	// Toolbar
 	useEffect(() => {
-		const editorToolbar = document.querySelector('.edit-post-header__toolbar');
+		const editorToolbar = document.querySelector(
+			'.edit-post-header__toolbar,.editor-header__toolbar'
+		);
 
 		// If toolbar doesn't exist, we can't continue
 		if (!editorToolbar) {
@@ -96,6 +96,11 @@ function SettingsPanelPlugin() {
 
 		const canvasWrap = document.createElement('div');
 		canvasWrap.className = 'edit-post-header-toolbar-extra';
+
+		if (document.querySelector('.edit-post-header-toolbar-extra')) {
+			return;
+		}
+
 		//canvasWrap.style.cssText = 'display:flex;';
 		editorToolbar.appendChild(canvasWrap);
 

@@ -784,38 +784,34 @@
 }
 /* Sidebar */
 
-.edit-post-sidebar .components-base-control {
-	width: 100%;
-}
-
-.edit-post-sidebar .edit-post-post-visibility {
+.edit-post-post-visibility {
 	display: none;
 }
-.edit-post-sidebar .status-numbers:empty {
+.status-numbers:empty {
 	display: none;
 }
-.edit-post-sidebar .status-numbers {
+.status-numbers {
 	margin-top: 3em;
 	margin-bottom: 2em;
 }
-.edit-post-sidebar .status-numbers .number {
+.status-numbers .number {
 	font-size: 26px;
 	display: block;
 	font-weight: bold;
 }
-.edit-post-sidebar .status-numbers .label {
+.status-numbers .label {
 	font-size: 12px;
 	color: #757575;
 	font-weight: bold;
 }
-.edit-post-sidebar .conditions-preview {
+.conditions-preview {
 	width: 100%;
 	color: #757575;
 }
-.edit-post-sidebar .inspector-checkbox {
+.inspector-checkbox {
 	margin-bottom: 5px;
 }
-.edit-post-sidebar .conditions-preview .mailster-conditions-render:empty {
+.conditions-preview .mailster-conditions-render:empty {
 	padding: 1em 0;
 }
 .edit-post-sidebar
