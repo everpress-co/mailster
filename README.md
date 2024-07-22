@@ -187,9 +187,6 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
-<<<<<<< HEAD
-=======
-
 ### 4.0.11
 
 - fixed: PHP error "attempt to assign a property to an array"
@@ -204,8 +201,6 @@ Get professional development help from our expert support partner _Codeable_ for
 - improved: css improvements
 - update plugin api info
 
->>>>>>> origin/develop
->>>>>>>
 ### 4.0.9
 
 - fixed: line height on form selector input field
