@@ -40,11 +40,50 @@ const SingleColumnItem = styled.div`
 import { TABS } from './constants';
 import { HelpBeacon, searchBlock } from '../util';
 
+const EditorInspector = () => {
+	const postID = useSelect((select) => {
+		return select('core/editor').getCurrentPostId();
+	});
+	return (
+		<InspectorControls>
+			<Panel>
+				<PanelBody initialOpen={true}>
+					<PanelRow>
+						<Tip>
+							{__(
+								'You can edit the forms on the Newsletter Homepage.',
+								'mailster'
+							)}
+						</Tip>
+					</PanelRow>
+					<PanelRow>
+						<Button
+							variant="primary"
+							icon={external}
+							target="mailster-newsletter-homepage"
+							href={
+								'post.php?post=' + postID + '&action=edit#mailster-submission'
+							}
+						>
+							{__('Newsletter Homepage', 'mailster')}
+						</Button>
+					</PanelRow>
+				</PanelBody>
+			</Panel>
+		</InspectorControls>
+	);
+};
+
 export default function HomepageInspectorControls(props) {
 	const { current, onSelect } = props;
 
 	const homepage = searchBlock('mailster/homepage');
 
+	if (!homepage) return <EditorInspector />;
+
+	const permalink = useSelect((select) => {
+		return select('core/editor').getPermalink();
+	});
 	const attributes = useSelect((select) => {
 		return select('core/block-editor').getBlockAttributes(homepage.clientId);
 	});
@@ -60,10 +99,6 @@ export default function HomepageInspectorControls(props) {
 	};
 
 	const { showAll } = attributes;
-
-	const permalink = useSelect((select) => {
-		return select('core/editor').getPermalink();
-	});
 
 	// get current status
 	const status = useSelect((select) => {

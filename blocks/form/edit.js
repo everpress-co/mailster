@@ -28,7 +28,7 @@ import {
 import { useSelect, dispatch } from '@wordpress/data';
 
 import { useState, useEffect, useRef } from '@wordpress/element';
-import { edit, plus, update } from '@wordpress/icons';
+import { edit, external, home, plus, update } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -48,6 +48,7 @@ export default function Edit(props) {
 	const [contextType, setContextType] = useState(
 		context['mailster-homepage-context/type']
 	);
+	const homepage = searchBlock('mailster/homepage');
 
 	const contextAlign = context['mailster-homepage-context/align'] || align;
 	const contextId = context['mailster-homepage-context/' + contextType];
@@ -55,6 +56,10 @@ export default function Edit(props) {
 
 	const [displayForm, setDisplayForm] = useState(false);
 	const [displayHeight, setDisplayHeight] = useState(undefined);
+
+	const postId = useSelect((select) => {
+		return select('core/editor').getCurrentPostId();
+	});
 
 	const blockRef = useRef();
 
@@ -69,9 +74,7 @@ export default function Edit(props) {
 
 	const selectForm = (id) => {
 		// if we are in context of the homepage block
-		if (contextType) {
-			const homepage = searchBlock('mailster/homepage');
-
+		if (contextType && homepage) {
 			dispatch('core/block-editor').updateBlockAttributes(homepage.clientId, {
 				[contextType]: id,
 			});
@@ -136,6 +139,7 @@ export default function Edit(props) {
 	};
 
 	const onSelect = (type, index) => {
+		if (!homepage) return;
 		location.hash = '#mailster-' + type;
 		setContextType(type);
 
@@ -149,6 +153,13 @@ export default function Edit(props) {
 		window.open(
 			'post.php?post=' + formId + '&action=edit',
 			'edit_form_' + formId
+		);
+	};
+
+	const editHomepage = () => {
+		window.open(
+			'post.php?post=' + postId + '&action=edit#mailster-' + contextType,
+			'mailster-newsletter-homepage'
 		);
 	};
 
@@ -190,18 +201,32 @@ export default function Edit(props) {
 				{formId ? (
 					<div className="mailster-block-form-editor-wrap" ref={blockRef}>
 						<Flex className="update-form-button" justify="center">
-							<Button
-								variant="primary"
-								icon={edit}
-								onClick={editForm}
-								text={__('Edit form', 'mailster')}
-							/>
-							<Button
-								variant="secondary"
-								icon={update}
-								onClick={reloadForm}
-								text={__('Reload Form', 'mailster')}
-							/>
+							{homepage ? (
+								<>
+									<Button
+										variant="primary"
+										icon={edit}
+										onClick={editForm}
+										text={__('Edit form', 'mailster')}
+									/>
+									<Button
+										variant="secondary"
+										icon={update}
+										onClick={reloadForm}
+										text={__('Reload Form', 'mailster')}
+									/>
+								</>
+							) : (
+								<Button
+									variant="primary"
+									icon={external}
+									onClick={editHomepage}
+									text={__(
+										'Update Forms on the Newsletter Homepage',
+										'mailster'
+									)}
+								/>
+							)}
 						</Flex>
 						<ServerSideRender
 							className="mailster-block-form-editor-wrap-inner"
@@ -239,7 +264,7 @@ export default function Edit(props) {
 			{contextType && (
 				<HomepageInspectorControls current={contextType} onSelect={onSelect} />
 			)}
-			{contextType !== 'subscribe' && (
+			{homepage && contextType !== 'subscribe' && (
 				<InspectorControls>
 					<Panel>
 						<PanelBody

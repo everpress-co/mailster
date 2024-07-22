@@ -399,7 +399,7 @@ export function whenEditorIsReady() {
 	});
 }
 
-export function useWindow(callback) {
+export function useWindow(callback, dependencies) {
 	const [win, setWindow] = useState();
 
 	useEffect(() => {
@@ -407,12 +407,12 @@ export function useWindow(callback) {
 			setWindow(w);
 			callback && callback(w);
 		});
-	}, []);
+	}, dependencies || []);
 
 	return win;
 }
 
-export function useDocument(callback) {
+export function useDocument(callback, dependencies) {
 	const [doc, setDocument] = useState();
 
 	useEffect(() => {
@@ -420,7 +420,7 @@ export function useDocument(callback) {
 			setDocument(w.document);
 			callback && callback(w.document);
 		});
-	}, []);
+	}, dependencies || []);
 
 	return doc;
 }

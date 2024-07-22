@@ -34,6 +34,8 @@ export default function Disabler(props) {
 	const { attributes, setAttributes, name } = props;
 	const { disabled = false } = attributes;
 
+	if (name === 'mailster-workflow/stop') return null;
+
 	const label =
 		name == 'mailster-workflow/trigger' ? TRIGGER_LABELS : STEP_LABELS;
 

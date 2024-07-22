@@ -48,7 +48,6 @@ export default function Edit(props) {
 	);
 
 	const label = __('Check if', 'mailster');
-	const info = '';
 
 	return (
 		<Step

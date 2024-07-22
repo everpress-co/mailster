@@ -138,7 +138,7 @@ function WorkflowPattern({ pattern, onInsertPattern }) {
 		.filter((block) => {
 			return block.name != 'mailster-workflow/comment';
 		})
-		//add exmaple attribute
+		//add example attribute
 		.map((block) => {
 			block.attributes.isExample = true;
 			return block;

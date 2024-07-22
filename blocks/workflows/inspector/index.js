@@ -38,6 +38,7 @@ import {
 	useFocus,
 	useWindow,
 } from '../../util';
+import { InnerBlocks } from '@wordpress/block-editor';
 
 whenEditorIsReady().then((w) => {
 	w.addEventListener('popstate', selectBlockFromHash);
@@ -99,7 +100,7 @@ function SettingsPanelPlugin() {
 
 	// TODO Make this better
 	// Toolbar
-	useEffect(() => {
+	useWindow((w) => {
 		const editorToolbar = document.querySelector(
 			'.edit-post-header__toolbar,.editor-header__toolbar'
 		);

@@ -22,6 +22,7 @@ import Disabler from '../inspector/Disabler';
 import Comment from '../inspector/Comment';
 import StepId from '../inspector/StepId';
 import { useDocument } from '../../util';
+import StepAppender from './StepAppender';
 
 export default function Step(props) {
 	const {
@@ -40,13 +41,11 @@ export default function Step(props) {
 	} = props;
 	const { id, disabled = false } = attributes;
 
-	const doc = useDocument();
-
-	useEffect(() => {
+	useDocument((doc) => {
 		if (!doc || !hasStepId) return;
 		if (!id || doc.querySelectorAll('.mailster-step-' + id).length > 1)
 			setAttributes({ id: clientId.substring(30) });
-	}, [doc]);
+	});
 
 	useEffect(() => {
 		if (!isSelected || !id) return;
@@ -87,6 +86,7 @@ export default function Step(props) {
 				{after}
 				<div className="end-stop canvas-handle"></div>
 			</div>
+			<StepAppender {...props} />
 		</>
 	);
 }

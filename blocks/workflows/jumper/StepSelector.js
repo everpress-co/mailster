@@ -16,6 +16,7 @@ import {
 	MenuItem,
 	BaseControl,
 	Button,
+	Tip,
 } from '@wordpress/components';
 
 import { useEffect, useState } from '@wordpress/element';
@@ -25,7 +26,7 @@ import { getBlockType } from '@wordpress/blocks';
 /**
  * Internal dependencies
  */
-import { searchBlocks, useSteps, useWindow } from '../../util';
+import { useSteps, useWindow } from '../../util';
 import StepIcon from './Icon.js';
 
 export default function StepId(props) {
@@ -102,12 +103,13 @@ export default function StepId(props) {
 	return (
 		<BaseControl>
 			<Panel>
-				{stepBlocks.length < 1 && (
+				{stepBlocks.length <= 1 ? (
 					<PanelRow>
-						<p>{__('No valid steps found', 'mailster!')}</p>
+						<Tip>
+							{__('Please add additional steps to your workflow.', 'mailster!')}
+						</Tip>
 					</PanelRow>
-				)}
-				{stepBlocks.length > 1 && (
+				) : (
 					<BaseControl label={__('Jump to Step', 'mailster')}>
 						<PanelRow>
 							<DropdownMenu text={label} icon={icon}>

@@ -21,6 +21,7 @@ import { useSelect, useDispatch, dispatch } from '@wordpress/data';
 
 import InspectorControls from './inspector';
 import { searchBlock, searchBlocks } from '../../util';
+import StepAppender from '../inspector/StepAppender';
 
 export default function Edit(props) {
 	const className = ['mailster-step-triggers', 'canvas-handle'];
@@ -94,6 +95,7 @@ export default function Edit(props) {
 				<div {...innerBlocksProps} />
 				<div className="wrap-line canvas-handle"></div>
 			</div>
+			<StepAppender {...props} className="trigger-appender" />
 		</>
 	);
 }
