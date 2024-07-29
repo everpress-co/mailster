@@ -109,7 +109,7 @@ export default function Edit(props) {
 
 	const displaySubject = subject || campaignObj?.subject;
 	const preview = preview_url ? (
-		<iframe src={preview_url} loading="lazy" />
+		<iframe src={preview_url} loading="lazy" tabIndex={-1} />
 	) : (
 		<ExampleEmail />
 	);
