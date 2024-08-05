@@ -1,3 +1,9 @@
+### Version 4.1.1 (2024-08-05)
+
+- fixed: PHP Error with PHP version 7.4
+- fixed: Jumper Step caused broken block in some cases
+- fixed: Step Appender not aligned correctly
+
 ### Version 4.1.0 (2024-08-05)
 
 - new: Jumper Step: Jump to a specific step in the workflow.

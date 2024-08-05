@@ -428,7 +428,7 @@ class MailsterTrigger {
 		}
 	}
 
-	public function get_workflows_by_trigger( string|array $triggers ) {
+	public function get_workflows_by_trigger( $triggers ) {
 
 		if ( ! is_array( $triggers ) ) {
 			$triggers = array( $triggers );
