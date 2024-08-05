@@ -17,7 +17,7 @@ import { useSelect } from '@wordpress/data';
 import { Tooltip } from '@wordpress/components';
 
 export default function StepAppender(props) {
-	const { attributes, clientId, name } = props;
+	const { attributes, clientId, name, isSelectionEnabled } = props;
 	const { isExample } = attributes;
 
 	const lastBlock = useSelect((select) => {
@@ -51,7 +51,7 @@ export default function StepAppender(props) {
 					{!isExample && label}
 				</span>
 			</Tooltip>
-			{!isExample && <ButtonBlockAppender />}
+			{isSelectionEnabled && <ButtonBlockAppender />}
 		</>
 	);
 }

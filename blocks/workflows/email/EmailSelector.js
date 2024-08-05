@@ -27,8 +27,7 @@ import { clearData } from '../../util';
  */
 
 export default function CampaignSelector(props) {
-	const { attributes, setAttributes, campaignObj, isSelected, clientId } =
-		props;
+	const { attributes, setAttributes, campaignObj } = props;
 
 	const { campaign } = attributes;
 
@@ -68,6 +67,7 @@ export default function CampaignSelector(props) {
 
 		setEditIframe(url.toString());
 	};
+
 	const newCampaign = () => {
 		const url = new URL(
 			location.origin + location.pathname.replace('post.php', 'post-new.php')
@@ -84,24 +84,24 @@ export default function CampaignSelector(props) {
 				<ToolbarButton
 					icon={'edit'}
 					disabled={!campaign || !campaignObj}
-					title={__('Edit Campaign', 'mailster')}
+					title={__('Edit Email', 'mailster')}
 					onClick={editCampaign}
 				/>
 				<ToolbarButton
 					icon={'welcome-add-page'}
-					title={__('New Campaign', 'mailster')}
+					title={__('New Email', 'mailster')}
 					onClick={newCampaign}
 				/>
 			</BlockControls>
 			{allCampaigns.length > 0 && (
 				<PanelRow>
 					<TreeSelect
-						label={__('Campaign', 'mailster')}
+						label={__('Email', 'mailster')}
 						help={__(
-							'Select a campaign you like to send in this step',
+							'Select an email you like to send in this step',
 							'mailster'
 						)}
-						noOptionLabel={__('Select a campaign', 'mailster')}
+						noOptionLabel={__('Select a email', 'mailster')}
 						value={campaign}
 						onChange={(val) => {
 							setAttributes({ campaign: val ? parseInt(val, 10) : undefined });
@@ -122,16 +122,16 @@ export default function CampaignSelector(props) {
 						onClick={editCampaign}
 						disabled={!campaign || !campaignObj}
 					>
-						{__('Edit Campaign', 'mailster')}
+						{__('Edit Email', 'mailster')}
 					</Button>{' '}
 					<Button variant="secondary" onClick={newCampaign}>
-						{__('New Campaign', 'mailster')}
+						{__('New Email', 'mailster')}
 					</Button>
 				</ButtonGroup>
 
 				{editIframe && (
 					<Modal
-						title={__('Campaign for this step', 'mailster')}
+						title={__('Email for this step', 'mailster')}
 						className="mailster-edit-campaign-modal"
 						onRequestClose={() => setEditIframe(false)}
 						shouldCloseOnClickOutside={false}

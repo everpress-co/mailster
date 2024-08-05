@@ -8,27 +8,20 @@
 import { __, sprintf } from '@wordpress/i18n';
 
 import {
-	useBlockProps,
-	InspectorControls,
-	BlockControls,
-} from '@wordpress/block-editor';
-import ServerSideRender from '@wordpress/server-side-render';
-import {
 	Spinner,
 	Button,
 	ButtonGroup,
-	SelectControl,
+	TreeSelect,
+	BaseControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-
-import { edit, plus, update } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
 
 export default function FormSelector(props) {
-	const { attributes, setAttributes, isSelected, selectForm, formId } = props;
+	const { selectForm, formId, label, help } = props;
 
 	const query = { status: 'publish,future,draft,pending,private' };
 
@@ -62,46 +55,52 @@ export default function FormSelector(props) {
 
 	if (forms && forms.length === 0) {
 		return (
-			<p>
-				{__(
-					'You currently have no forms. Please create a new form.',
-					'mailster'
-				)}
-			</p>
+			<>
+				<p>
+					{__(
+						'You currently have no forms. Please create a new form.',
+						'mailster'
+					)}
+				</p>
+				<Button
+					variant="primary"
+					onClick={createNewForm}
+					text={__('Create new form', 'mailster')}
+				/>
+			</>
 		);
 	}
 
 	return (
 		forms && (
-			<>
-				<SelectControl
-					value={formId}
+			<BaseControl>
+				<TreeSelect
+					selectedId={formId}
+					label={label}
+					help={help}
+					noOptionLabel={__('Choose a form', 'mailster')}
 					onChange={(val) => selectForm(val ? parseInt(val, 10) : undefined)}
-				>
-					<option value="">{__('Choose a form', 'mailster')}</option>
-					{forms.map((form) => (
-						<option key={form.id} value={form.id}>
-							{sprintf('#%d - %s', form.id, form.title.rendered)}
-						</option>
-					))}
-				</SelectControl>
+					tree={forms.map((form) => ({
+						name: sprintf('#%d - %s', form.id, form.title.rendered),
+						id: form.id,
+					}))}
+				/>
+
 				<ButtonGroup>
 					{formId && (
 						<Button
-							variant="secondary"
-							icon={edit}
+							variant="tertiary"
 							onClick={editForm}
 							text={__('Edit form', 'mailster')}
 						/>
 					)}{' '}
 					<Button
-						variant="secondary"
-						icon={plus}
+						variant="primary"
 						onClick={createNewForm}
 						text={__('Create new form', 'mailster')}
 					/>
 				</ButtonGroup>
-			</>
+			</BaseControl>
 		)
 	);
 }

@@ -1305,12 +1305,8 @@ class MailsterAutomations {
 		return array_merge(
 			array(
 				array(
-					'slug'  => 'mailster-automation-fields',
-					'title' => __( 'Newsletter Automation Fields', 'mailster' ),
-				),
-				array(
-					'slug'  => 'mailster-automation-actions',
-					'title' => __( 'Newsletter Action Fields', 'mailster' ),
+					'slug'  => 'mailster-workflow-steps',
+					'title' => __( 'Workflow Steps', 'mailster' ),
 				),
 			),
 			$categories
@@ -1382,7 +1378,6 @@ class MailsterAutomations {
 		}
 
 		register_block_pattern_category( 'mailster-automations', array( 'label' => __( 'Mailster Automations', 'mailster' ) ) );
-		register_block_pattern_category( 'mailster-custom-category', array( 'label' => __( 'Mailster Automations', 'mailster' ) ) );
 
 		include_once MAILSTER_DIR . 'patterns/workflows.php';
 	}

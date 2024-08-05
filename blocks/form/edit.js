@@ -201,32 +201,20 @@ export default function Edit(props) {
 				{formId ? (
 					<div className="mailster-block-form-editor-wrap" ref={blockRef}>
 						<Flex className="update-form-button" justify="center">
-							{homepage ? (
-								<>
-									<Button
-										variant="primary"
-										icon={edit}
-										onClick={editForm}
-										text={__('Edit form', 'mailster')}
-									/>
-									<Button
-										variant="secondary"
-										icon={update}
-										onClick={reloadForm}
-										text={__('Reload Form', 'mailster')}
-									/>
-								</>
-							) : (
+							<>
 								<Button
 									variant="primary"
-									icon={external}
-									onClick={editHomepage}
-									text={__(
-										'Update Forms on the Newsletter Homepage',
-										'mailster'
-									)}
+									icon={edit}
+									onClick={editForm}
+									text={__('Edit form', 'mailster')}
 								/>
-							)}
+								<Button
+									variant="secondary"
+									icon={update}
+									onClick={reloadForm}
+									text={__('Reload Form', 'mailster')}
+								/>
+							</>
 						</Flex>
 						<ServerSideRender
 							className="mailster-block-form-editor-wrap-inner"
@@ -264,22 +252,21 @@ export default function Edit(props) {
 			{contextType && (
 				<HomepageInspectorControls current={contextType} onSelect={onSelect} />
 			)}
-			{homepage && contextType !== 'subscribe' && (
-				<InspectorControls>
-					<Panel>
-						<PanelBody
-							title={__('Form Selector', 'mailster')}
-							initialOpen={true}
-						>
-							<FormSelector
-								{...props}
-								selectForm={selectForm}
-								formId={formId}
-							/>
-						</PanelBody>
-					</Panel>
-				</InspectorControls>
-			)}
+			<InspectorControls>
+				<Panel>
+					<PanelBody title={__('Form Selector', 'mailster')} initialOpen={true}>
+						<FormSelector
+							{...props}
+							selectForm={selectForm}
+							formId={formId}
+							help={__(
+								'Select a form you like to display on this page.',
+								'mailster'
+							)}
+						/>
+					</PanelBody>
+				</Panel>
+			</InspectorControls>
 			<InlineStyles />
 		</>
 	);

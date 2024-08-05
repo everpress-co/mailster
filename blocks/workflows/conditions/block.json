@@ -3,14 +3,14 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/conditions",
 	"title": "Condition",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"keywords": ["container", "wrapper", "row", "section"],
 	"parent": [
 		"core/post-content",
 		"mailster-workflow/condition-yes",
 		"mailster-workflow/condition-no"
 	],
-	"description": "Define a condition",
+	"description": "Define a condition and branch of your path.",
 	"example": {},
 	"supports": {
 		"html": false,

@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/condition-yes",
 	"title": "Condition fulfilled",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"parent": ["mailster-workflow/condition-yes"],
 	"example": {},
 	"supports": {

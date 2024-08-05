@@ -45,16 +45,16 @@ const soundPluginOptions = {
 };
 
 const customEntries = {
-	'subscriber-count/index': './blocks/subscriber-count/index.js',
+	//'subscriber-count/index': './blocks/subscriber-count/index.js',
 };
 
 module.exports = {
 	...defaultConfig,
-	performance: {
-		hints: false,
-		maxEntrypointSize: 512000,
-		maxAssetSize: 512000,
-	},
+	// performance: {
+	// 	hints: false,
+	// 	maxEntrypointSize: 512000,
+	// 	maxAssetSize: 512000,
+	// },
 	entry: {
 		...getWebpackEntryPoints(),
 		...customEntries,

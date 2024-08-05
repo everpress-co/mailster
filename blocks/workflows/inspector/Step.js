@@ -38,6 +38,7 @@ export default function Step(props) {
 		isIncomplete,
 		clientId,
 		blockAttributes = {},
+		isSelectionEnabled,
 	} = props;
 	const { id, disabled = false } = attributes;
 
@@ -63,7 +64,9 @@ export default function Step(props) {
 	const ref = useRef();
 
 	id && className.push('mailster-step-' + id);
-	isIncomplete && className.push('mailster-step-incomplete');
+	isIncomplete &&
+		isSelectionEnabled &&
+		className.push('mailster-step-incomplete');
 	disabled && className.push('mailster-step-disabled');
 
 	const blockProps = useBlockProps({

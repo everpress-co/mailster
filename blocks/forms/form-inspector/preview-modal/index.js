@@ -45,8 +45,6 @@ const ModalContent = (props) => {
 	const [device, setDevice] = useState('desktop');
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
 
-	const [currentPage, setCurrentPage] = useState(false);
-
 	const options = meta['placement_' + type] || {};
 
 	const isOther = type == 'other';
@@ -140,9 +138,11 @@ const ModalContent = (props) => {
 		if (!iframeRef.current) return;
 
 		const data = JSON.parse(e.data);
+
 		const form = iframeRef.current.contentWindow.document.querySelector(
 			'.wp-block-mailster-form-outside-wrapper-' + formId
 		);
+
 		setDisplayUrl(data.location);
 		setIsLoading(false);
 
@@ -257,10 +257,10 @@ const ModalContent = (props) => {
 							/>
 							<ToolbarButton
 								icon={update}
-								label="reload"
+								label={__('reload', 'mailster')}
 								isDisabled={!url}
 								onClick={reload}
-								isBusy={isLoading}
+								isBusy={isLoading && isDisplayed}
 							/>
 						</Toolbar>
 					</div>

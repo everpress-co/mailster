@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/action",
 	"title": "Action",
-	"category": "mailster-automation-actions",
+	"category": "mailster-workflow-steps",
 	"description": "Execute an action",
 	"parent": [
 		"core/post-content",

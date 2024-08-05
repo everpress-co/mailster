@@ -3,15 +3,19 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/jumper",
 	"title": "Jumper",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"keywords": ["jumper", "time"],
-	"description": "Jump to a certain Step in this workflow.",
+	"description": "Jump to a specific step in this workflow.",
 	"parent": [
 		"core/post-content",
 		"mailster-workflow/condition-yes",
 		"mailster-workflow/condition-no"
 	],
-	"example": {},
+	"example": {
+		"attributes": {
+			"step": "12345"
+		}
+	},
 	"supports": {
 		"html": false,
 		"className": false,

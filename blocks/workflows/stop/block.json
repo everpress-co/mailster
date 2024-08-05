@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/stop",
 	"title": "Stop",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"keywords": ["stop"],
 	"parent": [
 		"mailster-workflow/condition-yes",

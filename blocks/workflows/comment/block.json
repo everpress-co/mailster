@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/comment",
 	"title": "Comment",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"keywords": ["comment"],
 	"parent": [
 		"core/post-content",

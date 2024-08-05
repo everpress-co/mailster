@@ -303,8 +303,8 @@ class Mailster {
 		}
 
 		add_action( 'rest_api_init', array( &$this, 'rest_api_init' ) );
-		add_filter( 'render_block_core/paragraph', array( &$this, 'maybe_update_subscriber_count' ), 10, 2 );
-		add_filter( 'render_block_core/heading', array( &$this, 'maybe_update_subscriber_count' ), 10, 2 );
+		// add_filter( 'render_block_core/paragraph', array( &$this, 'maybe_update_subscriber_count' ), 10, 2 );
+		// add_filter( 'render_block_core/heading', array( &$this, 'maybe_update_subscriber_count' ), 10, 2 );
 
 		do_action( 'mailster', $this );
 	}
@@ -322,6 +322,7 @@ class Mailster {
 
 	public function enqueue_block_editor_assets() {
 
+		return; // TODO: elaborate a better way to do this
 		$asset_path = MAILSTER_DIR . 'build/subscriber-count/index.asset.php';
 		$scripts    = MAILSTER_URI . 'build/subscriber-count/index.js';
 
@@ -338,6 +339,8 @@ class Mailster {
 
 
 	public function enqueue_block_assets() {
+
+		return; // TODO: elaborate a better way to do this
 
 		$asset_path = MAILSTER_DIR . 'build/subscriber-count/index.asset.php';
 		$styles     = MAILSTER_URI . 'build/subscriber-count/index.css';

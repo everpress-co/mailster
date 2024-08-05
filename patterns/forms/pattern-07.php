@@ -14,7 +14,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Enter your email address to join our newsletter.</p>
+<p>Enter your email address to join [newsletter_subscribers round=100]+ others.</p>
 <!-- /wp:paragraph -->
 
 

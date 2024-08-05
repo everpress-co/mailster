@@ -36,6 +36,7 @@ import domReady from '@wordpress/dom-ready';
 	const setTimeout = windowObj.setTimeout;
 	const clearTimeout = windowObj.clearTimeout;
 	const html = document.documentElement;
+	let current = null;
 
 	const CLICK = 'click';
 	const SUBMIT = 'submit';
@@ -53,7 +54,9 @@ import domReady from '@wordpress/dom-ready';
 		const events = windowObj.mailsterBlockEvents || {};
 		const params = getParameters();
 
-		Array.prototype.forEach.call(forms, (formEl) => {
+		console.log(forms);
+
+		Array.prototype.forEach.call(forms, (formEl, i) => {
 			const form_el = querySelector(formEl, '.mailster-block-form-data');
 			const form = JSON.parse(form_el.textContent);
 			const wrap = formEl.closest('.wp-block-mailster-form-outside-wrapper');
@@ -61,6 +64,7 @@ import domReady from '@wordpress/dom-ready';
 				wrap,
 				'.mailster-block-form-close, .mailster-block-form-inner-close'
 			);
+
 			const closeButton = closeButtons[closeButtons.length - 1];
 			const firstFocusable = querySelector(
 				wrap,
@@ -73,6 +77,7 @@ import domReady from '@wordpress/dom-ready';
 			let delayTimeout = null;
 			let inactiveTimeout = null;
 			let isBusy = false;
+
 			const triggerMethods = {
 				delay: () => {
 					delayTimeout = setTimeout(() => {
@@ -104,7 +109,7 @@ import domReady from '@wordpress/dom-ready';
 
 			Array.prototype.forEach.call(
 				querySelectorAll(document, '.has-mailster-form-' + form.identifier),
-				(element, i) => {
+				(element, k) => {
 					addEvent(element, CLICK, openForm);
 				}
 			);
@@ -324,6 +329,8 @@ import domReady from '@wordpress/dom-ready';
 
 			function openForm(event) {
 				if (wrap && !wrap.classList.contains('active')) {
+					if (current) return;
+					current = form;
 					clearTimeout(delayTimeout);
 					clearTimeout(inactiveTimeout);
 					removeEventListeners();
@@ -346,7 +353,8 @@ import domReady from '@wordpress/dom-ready';
 
 					if (event && event.type === CLICK) {
 						event.preventDefault();
-						firstFocusable.focus();
+
+						setTimeout(() => firstFocusable.focus(), 500);
 					}
 					triggerEvent('open');
 					countImpression();
@@ -385,6 +393,8 @@ import domReady from '@wordpress/dom-ready';
 					wrap.classList.remove('active');
 					wrap.setAttribute('aria-hidden', 'true');
 				}, 500);
+
+				current = null;
 			}
 
 			function closeFormExplicit(event) {

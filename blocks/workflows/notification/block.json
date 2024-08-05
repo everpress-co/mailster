@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/notification",
 	"title": "Notification",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"keywords": ["notification", "message"],
 	"description": "Send a notification to an email address.",
 	"parent": [

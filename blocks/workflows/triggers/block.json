@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/triggers",
 	"title": "Triggers",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"description": "Define how this workflow gets triggered.",
 	"example": {},
 	"supports": {

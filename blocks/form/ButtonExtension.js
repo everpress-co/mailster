@@ -11,14 +11,11 @@ import { registerBlockExtension } from '@10up/block-components';
 
 import { InspectorControls } from '@wordpress/block-editor';
 import {
-	BaseControl,
-	Panel,
-	PanelBody,
-	PanelRow,
 	RangeControl,
 	SelectControl,
 	__experimentalBoxControl as BoxControl,
-	__experimentalItemGroup as ItemGroup,
+	__experimentalToolsPanelItem as ToolsPanelItem,
+	__experimentalToolsPanel as ToolsPanel,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 
@@ -30,7 +27,7 @@ import FormSelector from './FormSelector';
 
 const BlockEdit = (props) => {
 	const { attributes, setAttributes, clientId } = props;
-	const { mailster } = attributes;
+	const { id, identifier, width, padding, animation } = attributes.mailster;
 
 	const setOption = (options) => {
 		setAttributes({ mailster: { ...attributes.mailster, ...options } });
@@ -38,86 +35,106 @@ const BlockEdit = (props) => {
 
 	useEffect(() => {
 		setOption({
-			identifier: !mailster.id
-				? undefined
-				: mailster.identifier ?? clientId.substring(30),
+			identifier: !id ? undefined : identifier ?? clientId.substring(30),
 		});
-	}, [mailster.id]);
+		if (!id) resetAll();
+	}, [id]);
+
+	const resetAll = () => {
+		setAttributes({ mailster: {} });
+	};
 
 	return (
 		<InspectorControls>
-			<Panel>
-				<PanelBody title={__('Mailster Form', 'mailster')}>
-					<PanelRow>
-						<p>
-							{__(
-								'Open a Mailster form if someone clicks on this button.',
-								'mailster'
-							)}
-						</p>
-					</PanelRow>
+			<ToolsPanel
+				label={__('Mailster Form', 'mailster')}
+				resetAll={resetAll}
+				shouldRenderPlaceholderItems={true}
+			>
+				<ToolsPanelItem
+					hasValue={() => !!id}
+					label={__('Form', 'mailster')}
+					isShownByDefault
+					onDeselect={() => setOption({ id: undefined })}
+				>
+					<p>
+						{__(
+							'Open a Newsletter popup if someone clicks the button.',
+							'mailster'
+						)}
+					</p>
 					<FormSelector
 						{...props}
 						selectForm={(val) => setOption({ id: val ? val : undefined })}
-						formId={mailster.id}
+						label={__('Select a Form', 'mailster')}
+						help={__(
+							'Select the form you like to open as a popup if someone clicks on the button.',
+							'mailster'
+						)}
+						formId={id}
 					/>
-					{mailster.id && (
-						<>
-							<PanelRow>
-								<RangeControl
-									className="widefat"
-									label={__('Form Width', 'mailster')}
-									help={__('Set the with of your form in %', 'mailster')}
-									value={mailster.width}
-									allowReset={true}
-									onChange={(val) => setOption({ width: val })}
-									min={10}
-									max={100}
-								/>
-							</PanelRow>
-							<PanelRow>
-								<BoxControl
-									label={__('Form Padding', 'mailster')}
-									values={mailster.padding}
-									onChange={(val) => setOption({ padding: val })}
-								/>
-							</PanelRow>
-							<PanelRow>
-								<ItemGroup isBordered={false} size="small" className="widefat">
-									<SelectControl
-										label={__('Animation', 'mailster')}
-										value={mailster.animation}
-										help={__(
-											'Define how the popup should appear on the screen.',
-											'mailster'
-										)}
-										onChange={(val) => setOption({ animation: val })}
-									>
-										<option value="">{__('None', 'mailster')}</option>
-										<option value="fadein">{__('FadeIn', 'mailster')}</option>
-										<option value="shake">{__('Shake', 'mailster')}</option>
-										<option value="swing">{__('Swing', 'mailster')}</option>
-										<option value="heartbeat">
-											{__('Heart Beat', 'mailster')}
-										</option>
-										<option value="tada">{__('Tada', 'mailster')}</option>
-										<option value="wobble">{__('Wobble', 'mailster')}</option>
-									</SelectControl>
-								</ItemGroup>
-							</PanelRow>
-						</>
-					)}
-				</PanelBody>
-			</Panel>
+				</ToolsPanelItem>
+				<ToolsPanelItem
+					hasValue={() => !!width}
+					label={__('Width')}
+					onDeselect={() => setOption({ width: undefined })}
+				>
+					<RangeControl
+						className="widefat"
+						label={__('Form Width', 'mailster')}
+						help={__('Set the with of your form in %', 'mailster')}
+						value={width}
+						allowReset={true}
+						onChange={(val) => setOption({ width: val })}
+						min={10}
+						max={100}
+					/>
+				</ToolsPanelItem>
+				<ToolsPanelItem
+					hasValue={() => !!padding}
+					label={__('Padding')}
+					onDeselect={() => setOption({ padding: undefined })}
+				>
+					<BoxControl
+						label={__('Padding')}
+						onChange={(val) => setOption({ padding: val })}
+						values={padding}
+						allowReset={false}
+					/>
+				</ToolsPanelItem>
+				<ToolsPanelItem
+					hasValue={() => !!animation}
+					label={__('Animation')}
+					onDeselect={() => setOption({ animation: undefined })}
+				>
+					<SelectControl
+						label={__('Animation', 'mailster')}
+						value={animation}
+						help={__(
+							'Define how the popup should appear on the screen.',
+							'mailster'
+						)}
+						onChange={(val) => setOption({ animation: val })}
+					>
+						<option value="">{__('None', 'mailster')}</option>
+						<option value="fadein">{__('FadeIn', 'mailster')}</option>
+						<option value="shake">{__('Shake', 'mailster')}</option>
+						<option value="swing">{__('Swing', 'mailster')}</option>
+						<option value="heartbeat">{__('Heart Beat', 'mailster')}</option>
+						<option value="tada">{__('Tada', 'mailster')}</option>
+						<option value="wobble">{__('Wobble', 'mailster')}</option>
+					</SelectControl>
+				</ToolsPanelItem>
+			</ToolsPanel>
 		</InspectorControls>
 	);
 };
 
 const generateClassName = (attributes) => {
-	const { mailster } = attributes;
+	const { identifier } = attributes.mailster;
 	let string = '';
-	if (mailster.identifier) {
-		string += `has-mailster-form has-mailster-form-${mailster.identifier}`;
+	if (identifier) {
+		string += `has-mailster-form has-mailster-form-${identifier}`;
 	}
 	return string;
 };

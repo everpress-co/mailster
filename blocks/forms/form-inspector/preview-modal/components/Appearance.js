@@ -48,7 +48,6 @@ export default function PlacementSettings(props) {
 					<BoxControl
 						label={__('Form Padding', 'mailster')}
 						values={padding}
-						resetValues={null}
 						onChange={(val) => setOptions({ padding: val })}
 					/>
 				</ItemGroup>
