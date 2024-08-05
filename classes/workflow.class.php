@@ -935,6 +935,15 @@ class MailsterWorkflow {
 
 	private function email( $step ) {
 
+		// TODO invalid step can cause email to get stuck
+		if ( ! isset( $step['attr']['campaign'] ) ) {
+			return new WP_Error( 'error', 'Step is incomplete', $step );
+		}
+
+		if ( ! $campaign = mailster( 'campaigns' )->get( $step['attr']['campaign'] ) ) {
+			return new WP_Error( 'error', 'Step is incomplete', $step );
+		}
+
 		// skip that if it's the current step and a timestamp is defined
 		if ( $this->is_current_step( $step ) ) {
 
@@ -945,15 +954,6 @@ class MailsterWorkflow {
 
 			// step done => continue
 			return true;
-		}
-
-		// TODO invalid step can cause email to get stuck
-		if ( ! isset( $step['attr']['campaign'] ) ) {
-			return new WP_Error( 'error', 'Step is incomplete', $step );
-		}
-
-		if ( ! $campaign = mailster( 'campaigns' )->get( $step['attr']['campaign'] ) ) {
-			return new WP_Error( 'error', 'Step is incomplete', $step );
 		}
 
 		$this->args['step'] = $step['id'];
