@@ -17,6 +17,7 @@ import InspectorControls from './inspector.js';
 import StepIcon from './Icon.js';
 import Step from '../inspector/Step.js';
 import { useWindow } from '../../util/index.js';
+import { useEffect } from '@wordpress/element';
 
 export default function Edit(props) {
 	const { attributes, isSelected } = props;
