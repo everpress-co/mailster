@@ -192,7 +192,6 @@ Get professional development help from our expert support partner _Codeable_ for
 - new: Jumper Step: Jump to a specific step in the workflow.
 - new: Notifications Step: Send a notification to an email address.
 - new: Allow Prefills forms with URL parameters.
-- new: Add your Subscriber Count inside paragraphs.
 - new: Queued subscribers on workflows can now get inspected and removed/forwarded/finished.
 - new: Option to skip steps in workflows.
 - new: Option to allow pending Subscribers entering the workflow.

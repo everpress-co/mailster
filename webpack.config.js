@@ -50,11 +50,11 @@ const customEntries = {
 
 module.exports = {
 	...defaultConfig,
-	// performance: {
-	// 	hints: false,
-	// 	maxEntrypointSize: 512000,
-	// 	maxAssetSize: 512000,
-	// },
+	performance: {
+		hints: false,
+		maxEntrypointSize: 512000,
+		maxAssetSize: 512000,
+	},
 	entry: {
 		...getWebpackEntryPoints(),
 		...customEntries,
