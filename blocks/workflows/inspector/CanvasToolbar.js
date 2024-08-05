@@ -9,7 +9,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { select } from '@wordpress/data';
-import { Button, RangeControl } from '@wordpress/components';
+import { Button } from '@wordpress/components';
 import { plus, reset, home } from '@wordpress/icons';
 import { useEffect, useState } from '@wordpress/element';
 import { useDebounce } from '@wordpress/compose';

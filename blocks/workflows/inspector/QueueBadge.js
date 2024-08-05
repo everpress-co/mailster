@@ -32,7 +32,7 @@ import { dateI18n, humanTimeDiff } from '@wordpress/date';
  */
 
 import { TIME_FORMAT, DATE_FORMAT } from '../trigger/constants';
-import { clearData, useQueue } from '../../util';
+import { clearData, HelpBeacon, useQueue } from '../../util';
 
 export default function QueueBadge(props) {
 	const { attributes } = props;
@@ -77,6 +77,8 @@ export default function QueueBadge(props) {
 			)}
 			{modalOpen && (
 				<Modal title={title} onRequestClose={() => setModalOpen(false)}>
+					<HelpBeacon id="66b09cdba62a7505fcf33836" align="right" />
+
 					<div className="mailster-queue-table">
 						{!data && (
 							<Panel>
@@ -101,6 +103,7 @@ export default function QueueBadge(props) {
 				{queued > 0 && (
 					<Panel>
 						<PanelBody title={__('Queue', 'mailster')}>
+							<HelpBeacon id="66b09cdba62a7505fcf33836" align="right" />
 							<PanelRow>
 								<Button onClick={() => setModalOpen(true)} variant="secondary">
 									{title}

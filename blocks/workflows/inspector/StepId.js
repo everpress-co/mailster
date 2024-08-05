@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -17,7 +16,7 @@ import { Panel, PanelRow, PanelBody } from '@wordpress/components';
  */
 
 export default function StepId(props) {
-	const { attributes, setAttributes, clientId, isSelected } = props;
+	const { attributes } = props;
 	const { id } = attributes;
 
 	if (!id) return;

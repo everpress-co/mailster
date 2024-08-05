@@ -9,8 +9,6 @@
 import { __, _n } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
 import { CardBody, Icon, Spinner } from '@wordpress/components';
-import { select, dispatch } from '@wordpress/data';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies

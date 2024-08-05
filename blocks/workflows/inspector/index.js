@@ -38,7 +38,6 @@ import {
 	useFocus,
 	useWindow,
 } from '../../util';
-import { InnerBlocks } from '@wordpress/block-editor';
 
 whenEditorIsReady().then((w) => {
 	w.addEventListener('popstate', selectBlockFromHash);
