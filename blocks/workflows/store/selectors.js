@@ -6,6 +6,10 @@ export function getNumbers(state) {
 	const { numbers } = state;
 	return numbers;
 }
+export function getQueue(state) {
+	const { queue } = state;
+	return queue;
+}
 export function getActions(state) {
 	const { actions } = state;
 	return actions;

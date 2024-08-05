@@ -26,6 +26,7 @@ export default function save(props) {
 	const {
 		label,
 		errorMessage,
+		autocomplete,
 		name,
 		type,
 		inline,
@@ -81,25 +82,12 @@ export default function save(props) {
 		/>
 	);
 
-	function autocompleteValue() {
-		switch (name) {
-			case 'firstname':
-				return 'given-name';
-			case 'lastname':
-				return 'family-name';
-			case 'email':
-				return 'email';
-		}
-
-		return '';
-	}
-
 	return (
 		<div {...blockProps} style={styleSheets} data-error-message={errorMessage}>
 			{hasLabel && label && !inline && labelElement}
 			<FormElement
 				{...props}
-				autoComplete={autocompleteValue()}
+				autoComplete={autocomplete}
 				borderProps={borderProps}
 				colorProps={colorProps}
 				spacingProps={spacingProps}

@@ -1,69 +1,37 @@
 document.documentElement.setAttribute('hidden', true);
-jQuery(document).ready(function ($) {
+
+(function () {
 	'use strict';
 	var oldUrl,
 		lastanimation = '',
-		form = $('.wp-block-mailster-form-outside-wrapper-placeholder');
+		form = document.querySelector(
+			'.wp-block-mailster-form-outside-wrapper-placeholder'
+		);
 
 	document.documentElement.removeAttribute('hidden');
 
-	if (form.length && !form.is('.is-empty')) {
-		form[0].scrollIntoView({
+	if (form && form.classList.contains('is-empty')) {
+		form.scrollIntoView({
 			behavior: 'auto',
 			block: 'center',
 			inline: 'nearest',
 		});
 	}
 
-	$('a[href]')
-		.css({ cursor: 'not-allowed' })
-		.on('click', function (event) {
+	document.querySelectorAll('a[href]').forEach(function (el) {
+		el.style.cursor = 'not-allowed';
+		el.addEventListener('click', function (event) {
 			event.preventDefault();
 			return false;
 		});
-
-	let current;
-	false &&
-		document.addEventListener('mouseover', function (event) {
-			if (event.target) {
-				if (current) {
-					current.removeAttribute('mouseover-effect');
-				}
-				current = event.target;
-				current.setAttribute('mouseover-effect', '');
-			}
-		});
-
-	function findSelector(element) {
-		let id = element.getAttribute('id');
-		let tag = element.tagName.toLowerCase();
-		if (id) {
-			return '#' + id;
-		}
-		let classes = element.classList;
-		if (classes.length > 0) {
-			for (var i = classes.length - 1; i >= 0; i--) {
-				const el = document.querySelectorAll(tag + '.' + classes[i]);
-				if (el.length == 1) {
-					return tag + '.' + classes[i];
-				}
-			}
-		}
-		let tags = document.querySelectorAll(tag);
-		for (var i = tags.length - 1; i >= 0; i--) {
-			if (element === tags[i]) {
-				return tag + ':nth-of-type(' + i + ')';
-			}
-		}
-	}
+	});
 
 	window.addEventListener('message', function (event) {
-		var data,
-			source = event;
+		var data;
 
 		try {
 			data = JSON.parse(event.data);
-			if (!data.form_id) return;
+			if (!data.id) return;
 		} catch (e) {
 			return;
 		}
@@ -72,7 +40,7 @@ jQuery(document).ready(function ($) {
 
 		params.set('context', 'edit');
 		params.set('_locale', 'user');
-		params.set('attributes[id]', data.form_id);
+		params.set('attributes[id]', data.id);
 		data.options.align && params.set('attributes[align]', data.options.align);
 
 		var args = {
@@ -98,18 +66,21 @@ jQuery(document).ready(function ($) {
 				data: { block_form_content: data.post_content, args: args },
 			})
 				.then(function (post) {
-					$(
-						'.wp-block-mailster-form-outside-wrapper-' + data.form_id
-					).replaceWith(post.rendered);
+					document.querySelector(
+						'.wp-block-mailster-form-outside-wrapper-' + data.id
+					).outerHTML = post.rendered;
 
 					updateForm();
 
 					return post;
 				})
 				.catch(function (err) {
-					$('.wp-block-mailster-form-outside-wrapper-' + data.form_id)
-						.addClass('has-error')
-						.html(err.message);
+					var el = document.querySelector(
+						'.wp-block-mailster-form-outside-wrapper-' + data.id
+					);
+					el.classList.add('has-error');
+					el.innerHTML = err.message;
+
 					event.source.postMessage(
 						JSON.stringify({
 							success: false,
@@ -141,21 +112,32 @@ jQuery(document).ready(function ($) {
 		}
 
 		function reloadFormScript() {
-			var script = $('#mailster-form-view-script-js');
-			script.remove();
-			script.appendTo('head');
+			var script = document.getElementById('mailster-form-view-script-js');
+
+			var clone = document.createElement('script');
+			clone.id = 'mailster-form-view-script-js';
+			clone.src = script.src;
+
+			script.parentNode.removeChild(script);
+			document.head.appendChild(clone);
 		}
 
 		function updateForm() {
-			var form = $('.wp-block-mailster-form-outside-wrapper-' + data.form_id);
-			form.removeClass('has-animation animation-' + lastanimation);
+			var form = document.querySelector(
+				'.wp-block-mailster-form-outside-wrapper-' + data.id
+			);
+			form.classList.remove('has-animation', 'animation-' + lastanimation);
 
 			if (data.options.animation) {
-				form.addClass('has-animation animation-' + data.options.animation);
+				form.classList.add(
+					'has-animation',
+					'animation-' + data.options.animation
+				);
 				lastanimation = data.options.animation;
 			}
 
-			form.find('.mailster-block-form').css(getCSS());
+			var mailsterForm = form.querySelector('.mailster-block-form');
+			Object.assign(mailsterForm.style, getCSS());
 
 			oldUrl = url;
 			event.source.postMessage(
@@ -184,24 +166,36 @@ jQuery(document).ready(function ($) {
 	}
 
 	function info() {
-		var infoScreen = $('<div />')
-			.css({
-				position: 'fixed',
-				top: 0,
-				right: 0,
-			})
-			.html('0')
-			.appendTo('body');
+		var infoScreen = document.createElement('div');
+		Object.assign(infoScreen.style, {
+			position: 'fixed',
+			top: 0,
+			right: 0,
+		});
+		infoScreen.innerHTML = '0';
+		document.body.appendChild(infoScreen);
 
-		var form = $('.wp-block-mailster-form-outside-wrapper-placeholder');
+		var form = document.querySelector(
+			'.wp-block-mailster-form-outside-wrapper-placeholder'
+		);
 
-		var siblings = form.siblings('h2, p').css({ outline: '1px dotted red' });
+		var siblings = Array.from(form.parentNode.children).filter(function (
+			element
+		) {
+			return (
+				element !== form &&
+				(element.tagName === 'H2' || element.tagName === 'P')
+			);
+		});
+		siblings.forEach(function (sibling) {
+			sibling.style.outline = '1px dotted red';
+		});
 
 		['scroll', 'touchstart'].forEach(function (name) {
 			window.addEventListener(
 				name,
 				debounce(function () {
-					infoScreen.html(getScrollPercent());
+					infoScreen.innerHTML = getScrollPercent();
 				}, 5),
 				true
 			);
@@ -233,4 +227,4 @@ jQuery(document).ready(function ($) {
 			}
 		};
 	}
-});
+})();

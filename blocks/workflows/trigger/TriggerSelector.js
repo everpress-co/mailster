@@ -21,7 +21,6 @@ import {
 import { useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import * as Icons from '@wordpress/icons';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,11 +39,13 @@ import DateSelector from './DateSelector';
 import FieldSelector from './FieldSelector';
 import HookSelector from './HookSelector';
 import PublishSelector from './PublishSelector';
+import TriggerSlotFill from './TriggerSlotFill';
 import { HelpBeacon } from '../../util';
+import { getTrigger } from './functions';
 
 export default function Selector(props) {
 	const { attributes, setAttributes } = props;
-	const { trigger, hook = '', lists = [], forms = [] } = attributes;
+	const { trigger, lists = [], forms = [] } = attributes;
 
 	const [title, setTitle] = useEntityProp(
 		'postType',
@@ -64,38 +65,31 @@ export default function Selector(props) {
 		}
 	}
 
-	const getTrigger = (id) => {
-		if (!allTriggers) {
-			return null;
-		}
-		const trigger = allTriggers.filter((trigger) => {
-			return trigger.id == id;
-		});
-		return trigger.length ? trigger[0] : null;
-	};
-
-	// const filterTrigger =
-	// 	allTriggers &&
-	// 	allTriggers.filter((t) => {
-	// 		return !meta.trigger.includes(t.id) || t.id === trigger;
-	// 	});
-
-	const filterTrigger = allTriggers;
+	const triggerObj = getTrigger(trigger);
 
 	const label =
-		getTrigger(trigger)?.label ||
-		__('Define a trigger to start this workflow.', 'mailster');
+		triggerObj === false ? (
+			<div className="mailster-step-info">
+				{sprintf(__('Trigger %s not found!', 'mailster'), '"' + trigger + '"')}
+			</div>
+		) : (
+			triggerObj?.label || (
+				<>{__('Define a trigger to start this workflow.', 'mailster')}</>
+			)
+		);
 	const info =
-		getTrigger(trigger)?.info ||
+		triggerObj?.info ||
 		__('Define a trigger to start this workflow.', 'mailster');
-	const t_icon = getTrigger(trigger)?.icon;
+	const t_icon = triggerObj?.icon;
 
 	const TriggerButtons = ({ onClose }) => {
-		return filterTrigger.map((t, i) => {
+		return allTriggers.map((t, i) => {
+			const ico = Icons[t.icon] || t.icon;
+
 			return (
 				<MenuGroup key={i}>
 					<MenuItem
-						icon={Icons[t.icon]}
+						icon={ico || icon}
 						iconPosition={'left'}
 						info={t.disabled ? t.reason : t.info}
 						isSelected={t.id === trigger}
@@ -115,16 +109,15 @@ export default function Selector(props) {
 	return (
 		<>
 			<PanelRow>
-				{!filterTrigger && <Spinner />}
-				{trigger && (
+				{!allTriggers && <Spinner />}
+				{trigger && triggerObj !== false ? (
 					<BaseControl help={info}>
 						<HelpBeacon id="646232738783627a4ed4c596" align="right" />
-						<DropdownMenu icon={Icons[t_icon] || icon} text={label}>
+						<DropdownMenu icon={Icons[t_icon] || t_icon || icon} text={label}>
 							{(props) => <TriggerButtons {...props} />}
 						</DropdownMenu>
 					</BaseControl>
-				)}
-				{!trigger && (
+				) : (
 					<BaseControl>
 						<HelpBeacon id="646232738783627a4ed4c596" align="right" />
 						<h2>{label}</h2>
@@ -134,7 +127,7 @@ export default function Selector(props) {
 					</BaseControl>
 				)}
 			</PanelRow>
-			{trigger == 'list_add' && (
+			{(trigger == 'list_add' || trigger == 'list_removed') && (
 				<>
 					<ListSelector
 						{...props}
@@ -171,7 +164,7 @@ export default function Selector(props) {
 			{trigger == 'opened_campaign' && <CampaignSelector {...props} />}
 			{trigger == 'link_click' && <LinkSelector {...props} />}
 			{trigger == 'hook' && <HookSelector {...props} />}
-			{trigger == 'tag_added' && (
+			{(trigger == 'tag_added' || trigger == 'tag_removed') && (
 				<TagSelector
 					{...props}
 					help={__(
@@ -185,6 +178,9 @@ export default function Selector(props) {
 			{trigger == 'date' && <DateSelector {...props} />}
 			{trigger == 'anniversary' && <DateSelector {...props} isAnniversary />}
 			{trigger == 'published_post' && <PublishSelector {...props} />}
+			<TriggerSlotFill.Slot
+				fillProps={{ ...props, trigger: trigger, allTriggers: allTriggers }}
+			/>
 		</>
 	);
 }

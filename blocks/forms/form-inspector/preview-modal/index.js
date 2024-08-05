@@ -45,8 +45,6 @@ const ModalContent = (props) => {
 	const [device, setDevice] = useState('desktop');
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
 
-	const [currentPage, setCurrentPage] = useState(false);
-
 	const options = meta['placement_' + type] || {};
 
 	const isOther = type == 'other';
@@ -140,9 +138,11 @@ const ModalContent = (props) => {
 		if (!iframeRef.current) return;
 
 		const data = JSON.parse(e.data);
+
 		const form = iframeRef.current.contentWindow.document.querySelector(
 			'.wp-block-mailster-form-outside-wrapper-' + formId
 		);
+
 		setDisplayUrl(data.location);
 		setIsLoading(false);
 
@@ -170,7 +170,7 @@ const ModalContent = (props) => {
 			type: type,
 			user: urlLoggedIn,
 			options: options,
-			form_id: formId,
+			id: formId,
 		};
 
 		newUrl.searchParams.set('mailster-block-preview', JSON.stringify(obj));
@@ -179,6 +179,9 @@ const ModalContent = (props) => {
 	}
 
 	function setPreviewOptions() {
+		if (!iframeRef.current || !isDisplayed) {
+			return;
+		}
 		const obj = {
 			type: type,
 			user: urlLoggedIn,
@@ -188,17 +191,12 @@ const ModalContent = (props) => {
 				trigger_delay: 2,
 				trigger_inactive: 4,
 			},
-			form_id: formId,
+			id: formId,
 			post_content: postContent,
 		};
 
-		if (iframeRef.current && isDisplayed) {
-			setIsLoading(true);
-			iframeRef.current.contentWindow.postMessage(
-				JSON.stringify(obj),
-				siteUrl
-			);
-		}
+		setIsLoading(true);
+		iframeRef.current.contentWindow.postMessage(JSON.stringify(obj), siteUrl);
 	}
 
 	function reload() {
@@ -216,10 +214,7 @@ const ModalContent = (props) => {
 						role="region"
 						tabIndex="-1"
 					>
-						<Toolbar
-							label="Options"
-							className="preview-pane-toolbar widefat"
-						>
+						<Toolbar label="Options" className="preview-pane-toolbar widefat">
 							<ToolbarButton
 								icon={desktop}
 								label="Edit"
@@ -262,19 +257,16 @@ const ModalContent = (props) => {
 							/>
 							<ToolbarButton
 								icon={update}
-								label="reload"
+								label={__('reload', 'mailster')}
 								isDisabled={!url}
 								onClick={reload}
-								isBusy={isLoading}
+								isBusy={isLoading && isDisplayed}
 							/>
 						</Toolbar>
 					</div>
 					{typeActive && isDisplayed ? (
 						<div
-							className={
-								'preview-pane-iframe preview-pane-iframe-' +
-								device
-							}
+							className={'preview-pane-iframe preview-pane-iframe-' + device}
 						>
 							<iframe
 								ref={iframeRef}
@@ -285,11 +277,7 @@ const ModalContent = (props) => {
 							/>
 						</div>
 					) : (
-						<Flex
-							className="preview-pane-info"
-							justify="center"
-							align="center"
-						>
+						<Flex className="preview-pane-info" justify="center" align="center">
 							<FlexItem>
 								<h3>
 									{isDisplayed

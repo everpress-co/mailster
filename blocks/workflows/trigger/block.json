@@ -3,27 +3,26 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/trigger",
 	"title": "Trigger",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"parent": ["mailster-workflow/triggers"],
 	"description": "Define how this workflow gets triggered.",
 	"example": {},
 	"supports": {
 		"html": false,
-		"reusable": false,
 		"className": false,
 		"inserter": false,
 		"customClassName": false,
 		"lock": false
 	},
 	"attributes": {
-		"lock": {
-			"type": "object",
-			"default": {
-				"remove": true
-			}
+		"id": {
+			"type": "string"
 		},
 		"trigger": {
 			"type": "string"
+		},
+		"disabled": {
+			"type": "boolean"
 		},
 		"conditions": {
 			"type": "string"
@@ -31,6 +30,10 @@
 		"repeat": {
 			"type": "number",
 			"default": 1
+		},
+		"pending": {
+			"type": "boolean",
+			"default": false
 		},
 		"lists": {
 			"type": "array"

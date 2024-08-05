@@ -11,6 +11,7 @@ import { useSelect, select, dispatch } from '@wordpress/data';
  * Internal dependencies
  */
 import * as actions from './actions';
+import { clearData } from '../../util';
 
 export function* getTriggers() {
 	const data = yield actions.getTriggers('/mailster/v1/automations/triggers');
@@ -21,17 +22,14 @@ export function* getNumbers() {
 	const data = yield actions.getNumbers(
 		'/mailster/v1/automations/numbers/' + post_id
 	);
-	const post_status = select('core/editor').getCurrentPost().status;
-
-	const interval =
-		post_status == 'publish' &&
-		setInterval(() => {
-			if (document.hasFocus()) {
-				clearData('getNumbers');
-				clearInterval(interval);
-			}
-		}, 15000);
 	return actions.setNumbers(data);
+}
+export function* getQueue() {
+	const post_id = select('core/editor').getCurrentPostId();
+	const data = yield actions.getQueue(
+		'/mailster/v1/automations/queue/' + post_id
+	);
+	return actions.setQueue(data);
 }
 
 export function* getActions() {
@@ -62,17 +60,6 @@ export function* getCampaignStats(campaign) {
 		'/mailster/v1/automations/stats/' + campaign,
 		campaign
 	);
-
-	//const post_status = select('core/editor').getCurrentPost().status;
-
-	// const interval =
-	// 	post_status == 'publish' &&
-	// 	setInterval(() => {
-	// 		if (document.hasFocus()) {
-	// 			//clearData('getCampaignStats');
-	// 			clearInterval(interval);
-	// 		}
-	// 	}, 15000);
 	return actions.setCampaignStats(data, campaign);
 }
 export function* getForms() {
@@ -82,9 +69,4 @@ export function* getForms() {
 export function* getEmails() {
 	const data = yield actions.getEmails();
 	return actions.setEmails(data);
-}
-function clearData(selector) {
-	dispatch('mailster/automation').invalidateResolutionForStoreSelector(
-		selector
-	);
 }

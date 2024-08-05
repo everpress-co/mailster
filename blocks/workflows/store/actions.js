@@ -22,6 +22,18 @@ export function getNumbers(path) {
 		path,
 	};
 }
+export function setQueue(queue) {
+	return {
+		type: 'SET_QUEUE',
+		queue,
+	};
+}
+export function getQueue(path) {
+	return {
+		type: 'GET_QUEUE',
+		path,
+	};
+}
 export function clearNumbers() {
 	return {
 		type: 'CLEAR_NUMBERS',

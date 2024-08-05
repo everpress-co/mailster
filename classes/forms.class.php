@@ -348,30 +348,31 @@ class MailsterForms {
 
 	public function edit_hook() {
 
-		if ( isset( $_GET['page'] ) && 'mailster_forms' == $_GET['page'] ) {
+		if ( ! isset( $_GET['page'] ) || 'mailster_forms' !== $_GET['page'] ) {
+			return;
+		}
 
 			// duplicate form
-			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-				$id = (int) $_GET['duplicate'];
-				$id = $this->duplicate( $id );
+		if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
+			$id = (int) $_GET['duplicate'];
+			$id = $this->duplicate( $id );
 
-			}
+		}
 			// convert to block form
-			if ( isset( $_GET['convert'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_convert_nonce' ) ) {
-				$id = (int) $_GET['convert'];
-				$id = $this->convert( $id );
+		if ( isset( $_GET['convert'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_convert_nonce' ) ) {
+			$id = (int) $_GET['convert'];
+			$id = $this->convert( $id );
 
-				mailster_redirect( admin_url( 'post.php?post=' . $id . '&action=edit' ) );
-				exit;
+			mailster_redirect( admin_url( 'post.php?post=' . $id . '&action=edit' ) );
+			exit;
 
-			}
+		}
 
-			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
-				( isset( $_GET['ID'] ) )
-					? mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
-					: mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
-				exit;
-			}
+		if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
+			( isset( $_GET['ID'] ) )
+				? mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
+				: mailster_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+			exit;
 		}
 	}
 
@@ -806,10 +807,10 @@ class MailsterForms {
 
 		foreach ( $form->fields as $field_id => $form_field ) {
 
-			$custom_field = $custom_fields[ $field_id ];
+			$custom_field_type = isset( $custom_fields[ $field_id ] ) ? $custom_fields[ $field_id ]['type'] : 'text';
 
 			$block_attributes = array(
-				'inline' => $form->inline && ! in_array( $custom_field['type'], array( 'checkbox', 'radios' ) ),
+				'inline' => $form->inline && ! in_array( $custom_field_type, array( 'checkbox', 'radios' ) ),
 			);
 
 			$block_attributes = json_encode( $block_attributes );
@@ -860,7 +861,7 @@ class MailsterForms {
 		update_post_meta( $post_id, 'headline', $form->headline );
 		update_post_meta( $post_id, 'content', $form->content );
 		update_post_meta( $post_id, 'link', $form->link );
-		update_post_meta( $post_id, 'tags', $form->tags );
+		// update_post_meta( $post_id, 'tags', $form->tags );
 
 		return $post_id;
 	}

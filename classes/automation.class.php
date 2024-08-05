@@ -29,6 +29,7 @@ class MailsterAutomations {
 
 		add_filter( 'manage_mailster-workflow_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_mailster-workflow_posts_custom_column', array( &$this, 'columns_content' ), 10, 2 );
+		add_filter( 'quick_edit_enabled_for_post_type', array( &$this, 'quick_edit_enabled_for_post_type' ), 10, 3 );
 		add_filter( 'wp_list_table_class_name', array( &$this, 'wp_list_table_class_name' ), 10, 2 );
 
 		add_action( 'mailster_cron_workflow', array( &$this, 'wp_schedule' ) );
@@ -43,6 +44,13 @@ class MailsterAutomations {
 		add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
 		add_shortcode( 'newsletter_block_form', array( &$this, 'block_forms_shortcode' ) );
+
+		add_action( 'admin_init', array( &$this, 'edit_hook' ) );
+		add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
+
+		add_action( 'after_delete_post', array( &$this, 'after_delete_post' ), 10, 2 );
+
+		add_action( 'mailster_unsubscribe', array( &$this, 'on_unsubscribe' ), 10, 4 );
 	}
 
 
@@ -119,7 +127,7 @@ class MailsterAutomations {
 				'info'  => esc_html__( 'When a subscriber joins a list', 'mailster' ),
 			),
 			array(
-				'id'    => 'list_remove',
+				'id'    => 'list_removed',
 				'icon'  => 'formatListBullets',
 				'label' => esc_html__( 'Subscriber removed from a list', 'mailster' ),
 				'info'  => esc_html__( 'When a subscriber is removed from a list', 'mailster' ),
@@ -275,6 +283,11 @@ class MailsterAutomations {
 			return;
 		}
 
+		// not on autosave
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
 		mailster_remove_notice( 'workflow_error_' . $workflow_id );
 
 		// get all triggers
@@ -292,6 +305,12 @@ class MailsterAutomations {
 		}
 
 		$this->update_trigger_option();
+
+		// cleanup of deleted steps
+		$this->remove_missing_steps( $workflow_id );
+
+		// run it once
+		$this->wp_schedule( array( 'workflow_id' => $workflow_id ) );
 	}
 
 
@@ -299,6 +318,8 @@ class MailsterAutomations {
 
 		$workflow = get_post( $workflow );
 		$blocks   = parse_blocks( $workflow->post_content );
+
+		$options = array();
 
 		foreach ( $blocks as $block ) {
 			if ( $block['blockName'] !== 'mailster-workflow/triggers' ) {
@@ -309,19 +330,30 @@ class MailsterAutomations {
 				if ( empty( $innerBlock ) ) {
 					continue;
 				}
+				// not a trigger
 				if ( ! isset( $innerBlock['attrs']['trigger'] ) ) {
 					continue;
 				}
+				// not the right trigger
 				if ( $innerBlock['attrs']['trigger'] !== $trigger ) {
 					continue;
 				}
+				// it is disabled
+				if ( isset( $innerBlock['attrs']['disabled'] ) && $innerBlock['attrs']['disabled'] ) {
+					continue;
+				}
 
-				return $innerBlock['attrs'];
+				// add this since it's required since 4.1
+				if ( ! isset( $innerBlock['attrs']['id'] ) ) {
+					$innerBlock['attrs']['id'] = null;
+				}
+
+				$options[] = $innerBlock['attrs'];
 
 			}
 		}
 
-		return false;
+		return $options;
 	}
 
 
@@ -341,8 +373,11 @@ class MailsterAutomations {
 
 			$options = $this->get_trigger_option( $workflow_id, 'page_visit' );
 
-			if ( isset( $options['pages'] ) ) {
-				foreach ( $options['pages'] as $page ) {
+			foreach ( $options as $option ) {
+				if ( ! isset( $option['pages'] ) ) {
+					continue;
+				}
+				foreach ( $option['pages'] as $page ) {
 					$page = '/' . trim( $page, '/' );
 					if ( ! isset( $store[ $page ] ) ) {
 						$store[ $page ] = array();
@@ -358,15 +393,46 @@ class MailsterAutomations {
 	}
 
 	/**
+	 * Remove workflow entries where the step is no longer in the workflow
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function remove_missing_steps( $workflow_id ) {
+
+		$workflow = get_post( $workflow_id );
+
+		if ( ! $workflow ) {
+			return;
+		}
+
+		// get all step Ids from this workflow
+		if ( ! preg_match_all( '/"id":"(.*?)"/', $workflow->post_content, $matches ) ) {
+			return;
+		}
+
+		// ids are string so we need to escape them
+		$existing_ids = array_map( 'esc_sql', $matches[1] );
+
+		global $wpdb;
+
+		// only keep the ones which are in the workflow
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND step IS NOT NULL AND step NOT IN ('" . implode( "','", $existing_ids ) . "')";
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $workflow_id ) );
+	}
+
+	/**
 	 * Find all initialed workflows and starte them if they are due
 	 *
 	 * @access public
 	 * @return void
 	 */
-	public function wp_schedule( $queue_ids = array() ) {
+	public function wp_schedule( $where = array() ) {
+
 		global $wpdb;
 
-		// time to schedule upfront ins seconds
+		// time to schedule upfront in seconds
 		$queue_upfront = HOUR_IN_SECONDS;
 
 		// limit to not overload the WP cron
@@ -374,12 +440,14 @@ class MailsterAutomations {
 
 		$now = time();
 
-		$sql = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE (`timestamp` <= %d OR `timestamp` IS NULL)";
-		if ( ! empty( $queue_ids ) ) {
-			$queue_ids = array_map( 'absint', (array) $queue_ids );
-			$sql      .= ' AND ID IN (' . implode( ',', $queue_ids ) . ')';
+		$sql = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE `finished` = 0 AND (`timestamp` <= %d OR `timestamp` IS NULL)";
+
+		foreach ( $where as $key => $value ) {
+			$values = array_map( 'esc_sql', (array) $value );
+			$sql   .= ' AND `' . esc_sql( $key ) . "` IN ('" . implode( "','", $values ) . "')";
 		}
-		$sql .= ' AND finished = 0 AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` LIMIT %d';
+
+		$sql .= ' AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` ASC LIMIT %d';
 
 		$entries = $wpdb->get_results( $wpdb->prepare( $sql, $now, $now + $queue_upfront, $limit ) );
 
@@ -407,26 +475,88 @@ class MailsterAutomations {
 		return true;
 	}
 
+	public function get_queue( $workflow_id, $step = null ) {
+		global $wpdb;
+
+		$sql = "SELECT workflows.*, subscribers.email, subscribers.status FROM {$wpdb->prefix}mailster_workflows AS workflows LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = workflows.subscriber_id WHERE 1=1";
+
+		$sql .= $wpdb->prepare( ' AND workflows.workflow_id = %d', $workflow_id );
+		if ( $step ) {
+			$sql .= $wpdb->prepare( ' AND workflows.step = %s', $step );
+		}
+		$sql .= ' ORDER BY `timestamp`';
+
+		$entries = $wpdb->get_results( $sql );
+
+		return $entries;
+	}
+
+	public function get_queue_count( $workflow_id ) {
+		global $wpdb;
+
+		$sql = "SELECT COUNT(*) AS count, step FROM {$wpdb->prefix}mailster_workflows AS workflows WHERE 1=1 AND step IS NOT NULL";
+
+		$sql .= $wpdb->prepare( ' AND workflows.workflow_id = %d', $workflow_id );
+
+		$sql .= ' GROUP BY step';
+
+		$entries = $wpdb->get_results( $sql );
+
+		$result = array();
+
+		foreach ( $entries as $entry ) {
+			$result[ $entry->step ] = (int) $entry->count;
+		}
+
+		return $result;
+	}
+
+	public function remove_queue_item( $queue_id ) {
+		global $wpdb;
+
+		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'ID' => $queue_id ) );
+	}
+
+	public function finish_queue_item( $queue_id ) {
+		global $wpdb;
+
+		$data = array(
+			'finished'  => time(),
+			'error'     => '',
+			'step'      => null,
+			'timestamp' => null,
+		);
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $queue_id ) ) ) {
+			// process the queue for this item
+			$this->wp_schedule( array( 'id' => $queue_id ) );
+			return true;
+		}
+
+		return false;
+	}
+
+	public function forward_queue_item( $queue_id ) {
+		global $wpdb;
+
+		$data = array( 'timestamp' => time() );
+
+		if ( $wpdb->update( "{$wpdb->prefix}mailster_workflows", $data, array( 'ID' => $queue_id ) ) ) {
+			// process the queue for this item
+			$this->wp_schedule( array( 'id' => $queue_id ) );
+			return true;
+		}
+
+		return false;
+	}
+
 	// only used for mailster_workflow hook
 	public function _run_delayed_workflow( $workflow_id, $trigger, $step ) {
 		$this->run_all( $workflow_id, $trigger, $step );
 	}
 
 
-	private function run_async( $workflow, $trigger, $step = null ) {
 
-		foreach ( (array) $subscribers as $subscriber ) {
-			$args = array(
-				'id'      => $workflow,
-				'trigger' => $trigger,
-				'step'    => $step,
-			);
-
-			$this->jobs[] = $args;
-		}
-
-		add_action( 'shutdown', array( &$this, 'schedule_async_jobs' ) );
-	}
 
 	public function schedule_async_jobs() {
 
@@ -506,14 +636,13 @@ class MailsterAutomations {
 
 			global $wpdb;
 
-			$entries = $wpdb->get_results( $wpdb->prepare( "SELECT step, COUNT(*) AS count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND step IS NOT NULL GROUP BY step;", $workflow->ID ) );
+			// $entries = $wpdb->get_results( $wpdb->prepare( "SELECT step, COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and step IS NOT null GROUP BY step;", $workflow->ID ) );
 
-			$active = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) AS count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND timestamp IS NOT NULL AND finished = 0 AND step IS NOT NULL;", $workflow->ID ) );
+			$active = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and timestamp IS NOT null and finished = 0 and step IS NOT null;", $workflow->ID ) );
 
-			$finished = $wpdb->get_var( $wpdb->prepare( "SELECT  COUNT(*) AS count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = %d AND finished != 0;", $workflow->ID ) );
+			$finished = $wpdb->get_var( $wpdb->prepare( "SELECT  COUNT( * ) as count FROM {$wpdb->prefix}mailster_workflows WHERE workflow_id = % d and finished != 0;", $workflow->ID ) );
 
 			$numbers = array(
-				'steps'       => array(),
 				'active'      => (int) $active,
 				'finished'    => (int) $finished,
 				'total'       => (int) $finished + $active,
@@ -528,15 +657,15 @@ class MailsterAutomations {
 				'bounce_rate' => 0,
 			);
 
-			foreach ( $entries as $entry ) {
-				if ( ! isset( $numbers['steps'][ $entry->step ] ) ) {
-					$return['steps'][ $entry->step ] = array(
-						'count'  => 0,
-						'errors' => array(),
-					);
-				}
-				$numbers['steps'][ $entry->step ]['count'] = $entry->count;
-			}
+			// foreach ( $entries as $entry ) {
+			// if ( ! isset( $numbers['steps'][ $entry->step ] ) ) {
+			// $return['steps'][ $entry->step ] = array(
+			// 'count'  => 0,
+			// 'errors' => array(),
+			// );
+			// }
+			// $numbers['steps'][ $entry->step ]['count'] = (int) $entry->count;
+			// }
 
 			$workflow_campaigns = $this->get_workflow_campaigns( $workflow );
 
@@ -634,14 +763,6 @@ class MailsterAutomations {
 		$controller->register_routes();
 	}
 
-	public function beta_notice() {
-		$msg  = '<h2>Welcome to the new Automations page.</h2>';
-		$msg .= '<p>Creating forms for Mailster gets easier and more flexible. Utilize the WordPress Block Editor (Gutenberg) to create you custom, feature rich forms.</p>';
-		$msg .= '<p><strong>Automations are currently in beta version. Some features are subject to change before the stable release.</strong></p>';
-		$msg .= '<p><a href="' . admin_url( 'post-new.php?post_type=mailster-workflow' ) . '" class="button button-primary">' . esc_html__( 'Create Automation' ) . '</a> <a href="https://docs.mailster.co/#/automations-overview" class="button button-secondary external">Check out our guide</a> or <a href="https://github.com/everpress-co/mailster-automations/issues" class="button button-link external">Submit feedback on Github</a></p>';
-		mailster_notice( $msg, 'info', true, 'mailster-workflow_beta_notice', true, 'edit-mailster-workflow' );
-	}
-
 
 	public function display_post_states( $post_states, $post ) {
 
@@ -706,6 +827,15 @@ class MailsterAutomations {
 		ob_end_clean();
 
 		return $output;
+	}
+
+	public function quick_edit_enabled_for_post_type( $enabled, $post_type ) {
+
+		if ( get_post_type() !== 'mailster-workflow' ) {
+			return $enabled;
+		}
+
+		return false;
 	}
 
 
@@ -836,27 +966,98 @@ class MailsterAutomations {
 		error_reporting( $error );
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $actions
+	 * @param unknown $workflow
+	 * @return unknown
+	 */
+	public function quick_edit_btns( $actions, $workflow ) {
 
-	public function ___custom_column( $column, $post_id ) {
+		if ( $workflow->post_type != 'mailster-workflow' ) {
+			return $actions;
+		}
 
-		switch ( $column ) {
-			case 'active':
-				$numbers = $this->get_numbers( $post_id );
-				echo number_format_i18n( $numbers['active'] );
-				break;
-			case 'finished':
-				$numbers = $this->get_numbers( $post_id );
-				echo number_format_i18n( $numbers['finished'] );
-				break;
-			case 'total':
-				$numbers = $this->get_numbers( $post_id );
-				echo number_format_i18n( $numbers['total'] );
-				echo '<pre>' . print_r( $numbers, true ) . '</pre>';
-				break;
-			default:
-				break;
+		if ( ( current_user_can( 'duplicate_mailster-workflows' ) && get_current_user_id() == $workflow->post_author ) || current_user_can( 'duplicate_others_mailster-workflows' ) ) {
+			$actions['duplicate'] = '<a class="duplicate" href="' . add_query_arg(
+				array(
+					'post_type'   => 'mailster-workflow',
+					'duplicate'   => (int) $workflow->ID,
+					'post_status' => isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : null,
+					'_wpnonce'    => wp_create_nonce( 'mailster_duplicate_nonce' ),
+				),
+				admin_url( 'edit.php' )
+			) . '" title="' . sprintf( esc_html__( 'Duplicate Workflow %s', 'mailster' ), '&quot;' . esc_attr( $workflow->post_title ) . '&quot;' ) . '">' . esc_html__( 'Duplicate', 'mailster' ) . '</a>';
+		}
+		if ( $workflow->post_status == 'private' && ( current_user_can( 'publish_mailster-workflows' ) ) ) {
+			$actions['activate'] = '<a class="activate" href="' . add_query_arg(
+				array(
+					'post_type'   => 'mailster-workflow',
+					'activate'    => (int) $workflow->ID,
+					'post_status' => isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : null,
+					'_wpnonce'    => wp_create_nonce( 'mailster_activate_nonce' ),
+				),
+				admin_url( 'edit.php' )
+			) . '" title="' . sprintf( esc_html__( 'Activate Workflow %s', 'mailster' ), '&quot;' . esc_attr( $workflow->post_title ) . '&quot;' ) . '">' . esc_html__( 'Activate', 'mailster' ) . '</a>';
+		}
+		if ( $workflow->post_status == 'publish' && current_user_can( 'publish_mailster-workflows' ) ) {
+			$actions['deactivate'] = '<a class="deactivate" href="' . add_query_arg(
+				array(
+					'post_type'   => 'mailster-workflow',
+					'deactivate'  => (int) $workflow->ID,
+					'post_status' => isset( $_GET['post_status'] ) ? sanitize_key( $_GET['post_status'] ) : null,
+					'_wpnonce'    => wp_create_nonce( 'mailster_deactivate_nonce' ),
+				),
+				admin_url( 'edit.php' )
+			) . '" title="' . sprintf( esc_html__( 'Deactivate Workflow %s', 'mailster' ), '&quot;' . esc_attr( $workflow->post_title ) . '&quot;' ) . '">' . esc_html__( 'Deactivate', 'mailster' ) . '</a>';
+		}
+
+		return $actions;
+	}
+
+	public function edit_hook() {
+
+		if ( ! isset( $_GET['post_type'] ) || 'mailster-workflow' !== $_GET['post_type'] ) {
+			return;
+		}
+
+		// duplicate workflow
+		if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
+			$id = (int) $_GET['duplicate'];
+			if ( ( current_user_can( 'duplicate_mailster-workflows' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_mailster-workflows' ) ) {
+				wp_die( esc_html__( 'You are not allowed to duplicate this workflow.', 'mailster' ) );
+			} elseif ( $new_id = $this->duplicate( $id ) ) {
+				$id = $new_id;
+			}
+			// activate workflow
+		} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
+			$id = (int) $_GET['activate'];
+			if ( ( current_user_can( 'activate_mailster-workflows' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'activate_others_mailster-workflows' ) ) {
+				wp_die( esc_html__( 'You are not allowed to activate this workflow.', 'mailster' ) );
+			} else {
+				$this->activate( $id );
+			}
+			// deactivate workflow
+		} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
+			$id = (int) $_GET['deactivate'];
+			if ( ( current_user_can( 'deactivate_mailster-workflows' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'deactivate_others_mailster-workflows' ) ) {
+				wp_die( esc_html__( 'You are not allowed to deactivate this workflow.', 'mailster' ) );
+			} else {
+				$this->deactivate( $id );
+			}
+		}
+
+		if ( isset( $id ) && ! wp_doing_ajax() ) {
+			$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
+			( isset( $_GET['edit'] ) )
+			? mailster_redirect( 'post.php?post=' . $id . '&action=edit' )
+			: mailster_redirect( 'edit.php?post_type=mailster-workflow' . $status );
+			exit;
 		}
 	}
+
+
 
 	public function register_post_type() {
 
@@ -878,7 +1079,7 @@ class MailsterAutomations {
 			'not_found_in_trash'       => __( 'Not found in Trash', 'mailster' ),
 			'items_list'               => __( 'Workflows list', 'mailster' ),
 			'items_list_navigation'    => __( 'Workflows list navigation', 'mailster' ),
-			'filter_items_list'        => __( 'Filter forms list', 'mailster' ),
+			'filter_items_list'        => __( 'Filter workflow list', 'mailster' ),
 			'item_published'           => __( 'Workflow published', 'mailster' ),
 			'item_published_privately' => __( 'Workflow published privately.', 'mailster' ),
 			'item_reverted_to_draft'   => __( 'Workflow reverted to draft.', 'mailster' ),
@@ -886,16 +1087,8 @@ class MailsterAutomations {
 			'item_updated'             => __( 'Workflow updated.', 'mailster' ),
 
 		);
-		$capabilities = array(
-			'edit_post'          => 'mailster_edit_form',
-			'read_post'          => 'mailster_read_form',
-			'delete_post'        => 'mailster_delete_forms',
-			'edit_posts'         => 'mailster_edit_forms',
-			'edit_others_posts'  => 'mailster_edit_others_forms',
-			'publish_posts'      => 'mailster_publish_forms',
-			'read_private_posts' => 'mailster_read_private_forms',
-		);
-		$args         = array(
+
+		$args = array(
 			'label'               => __( 'Automation', 'mailster' ),
 			'description'         => __( 'Newsletter Automation', 'mailster' ),
 			'labels'              => $labels,
@@ -903,6 +1096,7 @@ class MailsterAutomations {
 			'hierarchical'        => false,
 			'public'              => false,
 			'show_ui'             => true,
+			'capability_type'     => 'mailster-workflow',
 			'show_in_menu'        => 'edit.php?post_type=newsletter',
 			'show_in_admin_bar'   => false,
 			'show_in_nav_menus'   => true,
@@ -1075,7 +1269,6 @@ class MailsterAutomations {
 		return $editor_settings;
 	}
 
-
 	public function force_block_editor( $bool, $post_type ) {
 
 		// just pass through
@@ -1098,8 +1291,9 @@ class MailsterAutomations {
 
 		// only mailster workflow blocks
 		$types = preg_grep( '/^(mailster-workflow)\//', $types );
+		$types = array_values( $types );
 
-		return apply_filters( 'mailster_automations_allowed_block_types', array_values( $types ) );
+		return apply_filters( 'mailster_automations_allowed_block_types', $types );
 	}
 
 	public function block_categories( $categories ) {
@@ -1111,18 +1305,13 @@ class MailsterAutomations {
 		return array_merge(
 			array(
 				array(
-					'slug'  => 'mailster-automation-fields',
-					'title' => __( 'Newsletter Automation Fields', 'mailster' ),
-				),
-				array(
-					'slug'  => 'mailster-automation-actions',
-					'title' => __( 'Newsletter Action Fields', 'mailster' ),
+					'slug'  => 'mailster-workflow-steps',
+					'title' => __( 'Workflow Steps', 'mailster' ),
 				),
 			),
 			$categories
 		);
 	}
-
 
 	public function register_conditions_variations( $args, $block_type ) {
 		if ( $block_type !== 'mailster-workflow/condition' ) {
@@ -1154,7 +1343,6 @@ class MailsterAutomations {
 		return $args;
 	}
 
-
 	public function register_variations( $args, $block_type ) {
 
 		if ( $block_type !== 'mailster-workflow/action' ) {
@@ -1181,7 +1369,6 @@ class MailsterAutomations {
 		return $args;
 	}
 
-
 	public function register_block_patterns() {
 
 		$query = wp_parse_url( wp_get_referer(), PHP_URL_QUERY );
@@ -1191,7 +1378,6 @@ class MailsterAutomations {
 		}
 
 		register_block_pattern_category( 'mailster-automations', array( 'label' => __( 'Mailster Automations', 'mailster' ) ) );
-		register_block_pattern_category( 'mailster-custom-category', array( 'label' => __( 'Mailster Automations', 'mailster' ) ) );
 
 		include_once MAILSTER_DIR . 'patterns/workflows.php';
 	}
@@ -1222,5 +1408,109 @@ class MailsterAutomations {
 	public function block_forms_shortcode( $atts, $content ) {
 
 		return $this->render_form_with_options( $atts['id'], array(), false );
+	}
+
+	public function on_unsubscribe( $subscriber_id, $campaign_id, $status, $index ) {
+
+		global $wpdb;
+
+		// delete workflows with subscribers
+		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'subscriber_id' => (int) $subscriber_id ) );
+	}
+
+	public function after_delete_post( $post_id, $post ) {
+
+		if ( get_post_type( $post ) !== 'mailster-workflow' ) {
+			return;
+		}
+
+		global $wpdb;
+
+		// delete workflow entries from this post (workflow)
+		return $wpdb->delete( "{$wpdb->prefix}mailster_workflows", array( 'workflow_id' => (int) $post_id ) );
+	}
+
+
+	public function activate( $id ) {
+
+		$workflow = get_post( $id );
+
+		if ( ! $workflow ) {
+			return new WP_Error( 'no_workflow', esc_html__( 'This workflow doesn\'t exists.', 'mailster' ) );
+		}
+
+		return wp_publish_post( $workflow );
+	}
+	public function deactivate( $id ) {
+
+		$workflow = get_post( $id );
+
+		if ( ! $workflow ) {
+			return new WP_Error( 'no_workflow', esc_html__( 'This workflow doesn\'t exists.', 'mailster' ) );
+		}
+
+		// make post private
+		$workflow->post_status = 'private';
+		return wp_update_post( $workflow );
+	}
+
+		/**
+		 *
+		 *
+		 * @param unknown $id
+		 * @param unknown $timestamp (optional)
+		 * @return unknown
+		 */
+	public function duplicate( $id, $workflow_args = array(), $workflow_meta = array(), $timestamp = null ) {
+
+		$workflow = get_post( $id );
+
+		if ( ! $workflow ) {
+			return new WP_Error( 'no_workflow', esc_html__( 'This workflow doesn\'t exists.', 'mailster' ) );
+		}
+
+		unset( $workflow->ID );
+		unset( $workflow->guid );
+		unset( $workflow->post_name );
+		unset( $workflow->post_author );
+		unset( $workflow->post_date );
+		unset( $workflow->post_date_gmt );
+		unset( $workflow->post_modified );
+		unset( $workflow->post_modified_gmt );
+
+		// save these as '&' otherwise the string will become'\u0026' => 'u0026'
+		$workflow->post_content = str_replace( '\u0026', '&', $workflow->post_content );
+
+		if ( preg_match( '# \((\d+)\)$#', $workflow->post_title, $hits ) ) {
+			$workflow->post_title = trim( preg_replace( '#(.*) \(\d+\)$#', '$1 (' . ( ++$hits[1] ) . ')', $workflow->post_title ) );
+		} elseif ( $workflow->post_title ) {
+			$workflow->post_title .= ' (2)';
+		}
+
+		$workflow->post_status = 'draft';
+
+		if ( ! empty( $workflow_args ) ) {
+			$workflow_data = (object) wp_parse_args( (array) $workflow_args, (array) $workflow );
+			$workflow      = new WP_Post( $workflow_data );
+		}
+
+		if ( ! empty( $workflow_meta ) ) {
+			$meta = wp_parse_args( $workflow_meta, $meta );
+		}
+
+		kses_remove_filters();
+		$new_id = wp_insert_post( (array) $workflow );
+		kses_init_filters();
+
+		$new = get_post( $new_id );
+
+		if ( $new_id ) {
+
+			do_action( 'mailster_workflow_duplicate', $id, $new_id );
+
+			return $new_id;
+		}
+
+		return false;
 	}
 }

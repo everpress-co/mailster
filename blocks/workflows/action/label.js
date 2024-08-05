@@ -6,19 +6,19 @@
  * WordPress dependencies
  */
 
-import { __, _n } from '@wordpress/i18n';
-
-import { getAction, getInfo } from './functions';
+import { __ } from '@wordpress/i18n';
+import { getAction } from './functions';
 
 /**
  * Internal dependencies
  */
 
 export default function Label(attributes, { context }) {
-	const { action, content } = attributes;
+	const { action, content, metadata } = attributes;
 
-	const actionObj = getAction(action);
-	const info = getInfo(attributes);
+	if (metadata?.name) return metadata.name;
 
-	return actionObj?.label || content;
+	if (!action) return content;
+
+	return getAction(action)?.label || content;
 }

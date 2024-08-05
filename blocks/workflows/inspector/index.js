@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-
 /**
  * WordPress dependencies
  */
@@ -10,13 +9,12 @@ import { __, _n } from '@wordpress/i18n';
 
 import {
 	PluginPrePublishPanel,
-	PluginPostPublishPanel,
 	PluginPostStatusInfo,
 } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
 import { useState, useEffect, createRoot } from '@wordpress/element';
 import { createBlock } from '@wordpress/blocks';
-import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
+import { useSelect, select, dispatch } from '@wordpress/data';
 import { BaseControl, Flex, FlexItem, PanelRow } from '@wordpress/components';
 
 /**
@@ -35,6 +33,10 @@ import {
 	searchBlocks,
 	searchBlock,
 	useBlockChange,
+	useInterval,
+	clearData,
+	useFocus,
+	useWindow,
 } from '../../util';
 
 whenEditorIsReady().then((w) => {
@@ -55,19 +57,6 @@ const selectBlockFromHash = () => {
 };
 
 function SettingsPanelPlugin() {
-	const {
-		selectBlock,
-		toggleBlockHighlight,
-		flashBlock,
-		moveBlockToPosition,
-		updateBlockAttributes,
-		removeBlock,
-	} = useDispatch('core/block-editor');
-	const { getBlockRootClientId, getBlockIndex, getBlocks } =
-		select('core/block-editor');
-	const { isAutosavingPost, isSavingPost, isCleanNewPost } =
-		select('core/editor');
-
 	// TODO check if cblock count change on removing blocks
 	const blocks = select('core/block-editor').getBlocks();
 	const [invalidBlocks, setinvalidBlocks] = useState([]);
@@ -82,9 +71,35 @@ function SettingsPanelPlugin() {
 	const active = allNumbers ? allNumbers['active'] : 0;
 	const total = allNumbers ? allNumbers['total'] : 0;
 
+	const [isDynmanic, setDynamic] = useState(true);
+
+	const [ref, isFocused] = useFocus(window);
+
+	const queueInterval = isFocused ? 2000 : 20000;
+
+	isDynmanic &&
+		useInterval(
+			() => {
+				clearData('getQueue', 'mailster/automation');
+			},
+			queueInterval,
+			isFocused
+		);
+	const numbersInterval = isFocused ? 15000 : 30000;
+
+	isDynmanic &&
+		useInterval(
+			() => {
+				clearData('getCampaignStats', 'mailster/automation');
+				clearData('getNumbers', 'mailster/automation');
+			},
+			numbersInterval,
+			isFocused
+		);
+
 	// TODO Make this better
 	// Toolbar
-	useEffect(() => {
+	useWindow((w) => {
 		const editorToolbar = document.querySelector(
 			'.edit-post-header__toolbar,.editor-header__toolbar'
 		);
@@ -94,23 +109,23 @@ function SettingsPanelPlugin() {
 			return;
 		}
 
-		const canvasWrap = document.createElement('div');
-		canvasWrap.className = 'edit-post-header-toolbar-extra';
+		const postEditor = document.querySelector('.edit-post-visual-editor');
+
+		const canvasToolbar = document.createElement('div');
+		canvasToolbar.className = 'interface-interface-canvas-toolbar';
+
+		const toolbarWrap = document.createElement('div');
+		toolbarWrap.className = 'edit-post-header-toolbar-extra';
 
 		if (document.querySelector('.edit-post-header-toolbar-extra')) {
 			return;
 		}
 
-		//canvasWrap.style.cssText = 'display:flex;';
-		editorToolbar.appendChild(canvasWrap);
+		editorToolbar.appendChild(toolbarWrap);
+		postEditor.prepend(canvasToolbar);
 
-		const canvas = createRoot(canvasWrap);
-		canvas.render(
-			<>
-				<CanvasToolbar />
-				<ActiveStatus />
-			</>
-		);
+		createRoot(canvasToolbar).render(<CanvasToolbar />);
+		createRoot(toolbarWrap).render(<ActiveStatus />);
 	}, []);
 
 	useBlockChange(() => {
@@ -182,15 +197,9 @@ function SettingsPanelPlugin() {
 					</BaseControl>
 				</PanelRow>
 			</PluginPrePublishPanel>
-			<PluginPostPublishPanel
-				className="my-plugin-publish-panel"
-				title="Panel title"
-				initialOpen={true}
-			>
-				PluginPostPublishPanel
-			</PluginPostPublishPanel>
 
 			<PublishInfo />
+
 			<PluginPostStatusInfo className="status-numbers">
 				<Flex align="center" justify="space-between">
 					<FlexItem>

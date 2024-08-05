@@ -7,10 +7,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-
 import { useState, useEffect } from '@wordpress/element';
 import { useSelect, dispatch } from '@wordpress/data';
-
 import { createBlock } from '@wordpress/blocks';
 
 /**
@@ -18,7 +16,7 @@ import { createBlock } from '@wordpress/blocks';
  */
 
 export default function BlockRecovery(props) {
-	const [hasBrokenBlocks, setHasBrokenBlocks] = useState(0);
+	const [brokenBlocks, setBrokenBlocks] = useState(0);
 
 	const getAllBlocks = (blocks) => {
 		let allBlocks = [];
@@ -51,18 +49,11 @@ export default function BlockRecovery(props) {
 			const b = createBlock(block.name, block.attributes, block.innerBlocks);
 			dispatch('core/block-editor').replaceBlock(block.clientId, b);
 		});
-		setHasBrokenBlocks(0);
-
-		return true;
+		setBrokenBlocks(0);
 	};
 
 	useEffect(() => {
-		const broken = getBrokenBlocks();
-		setHasBrokenBlocks(broken.length);
-	}, [hasBrokenBlocks]);
-
-	useEffect(() => {
-		hasBrokenBlocks &&
+		brokenBlocks &&
 			recoverAllBlocks() &&
 			dispatch('core/notices').createNotice(
 				'success',
@@ -72,7 +63,9 @@ export default function BlockRecovery(props) {
 					isDismissible: true,
 				}
 			);
-	}, [hasBrokenBlocks]);
+		const broken = getBrokenBlocks();
+		setBrokenBlocks(broken.length);
+	}, [brokenBlocks]);
 
 	return null;
 }

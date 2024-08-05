@@ -3,7 +3,7 @@
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
 Description: Send Beautiful Email Newsletters in WordPress.
-Version: 4.0.11
+Version: 4.1.0
 Author: EverPress
 Author URI: https://everpress.co
 Text Domain: mailster
@@ -13,7 +13,7 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '4.0.11' );
+define( 'MAILSTER_VERSION', '4.1.0' );
 define( 'MAILSTER_BUILT', 0000000000 );
 define( 'MAILSTER_ENVATO', false );
 define( 'MAILSTER_DBVERSION', 20230517 );
@@ -34,18 +34,13 @@ if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
 require_once MAILSTER_DIR . 'vendor/autoload.php';
 require_once MAILSTER_DIR . 'includes/check.php';
 require_once MAILSTER_DIR . 'includes/functions.php';
+require_once MAILSTER_DIR . 'includes/wp_mail.php';
 require_once MAILSTER_DIR . 'includes/freemius.php';
 require_once MAILSTER_DIR . 'includes/deprecated.php';
 require_once MAILSTER_DIR . 'includes/3rdparty.php';
 require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
-global $mailster;
+add_action( 'plugins_loaded', array( 'Mailster', 'get_instance' ), 1 );
 
-$mailster = new Mailster();
-
-if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
-
-	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
-		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments, $file, $template );
-	}
-}
+register_activation_hook( MAILSTER_FILE, 'mailster_on_activate' );
+register_deactivation_hook( MAILSTER_FILE, 'mailster_on_deactivate' );

@@ -1,0 +1,11 @@
+.mailster-subscriber-count {
+	//opacity: 0.5;
+	pointer-events: none;
+	-webkit-user-modify: read-only;
+	-moz-user-modify: read-only;
+	user-modify: read-only;
+}
+.wp-block:hover > .mailster-subscriber-count {
+	outline-offset: 2px;
+	outline: 1px dotted;
+}

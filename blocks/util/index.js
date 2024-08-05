@@ -7,16 +7,22 @@ import moment from 'moment';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 import {
+	createInterpolateElement,
 	useEffect,
 	useMemo,
 	useRef,
 	useState,
 	useCallback,
 } from '@wordpress/element';
-import { select, subscribe, useSelect, useDispatch } from '@wordpress/data';
-import { dateI18n, gmdateI18n, humanTimeDiff } from '@wordpress/date';
+import {
+	select,
+	subscribe,
+	useSelect,
+	useDispatch,
+	dispatch,
+} from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -69,32 +75,59 @@ export function useUpdateEffect(effect, deps) {
 	}, deps);
 }
 
-export function useCustomFields(callback, dependencies) {
-	const firstRenderRef = useRef(true);
+function getData(type) {
+	switch (type) {
+		case 'lists':
+			return select('mailster/automation').getLists();
+		case 'forms':
+			return select('mailster/automation').getForms();
+		case 'tags':
+			return select('mailster/automation').getTags();
+		case 'fields':
+			return select('mailster/automation').getFields();
+		case 'actions':
+			return select('mailster/automation').getActions();
+		case 'steps':
+			return select('mailster/automation').getSteps();
+	}
 
-	useEffect(() => {
-		if (firstRenderRef.current) {
-			firstRenderRef.current = false;
-			return;
-		}
-		return callback();
-	}, dependencies);
+	return null;
+
+	return useSelect(
+		(select) => {
+			switch (type) {
+				case 'lists':
+					return select('mailster/automation').getLists();
+				case 'forms':
+					return select('mailster/automation').getForms();
+				case 'tags':
+					return select('mailster/automation').getTags();
+				case 'fields':
+					return select('mailster/automation').getFields();
+				case 'actions':
+					return select('mailster/automation').getActions();
+				case 'steps':
+					return select('mailster/automation').getSteps();
+			}
+		},
+		[type]
+	);
 }
 
 export function formatLists(lists) {
-	if (!lists || !lists.length) {
-		return __('No list defined.', 'mailster');
-	}
-
-	const allLists = select('mailster/automation').getLists();
+	const allLists = getData('lists');
 
 	if (!allLists) {
-		return '';
+		return null;
+	}
+
+	if (!lists || !lists.length) {
+		return <>{__('No List defined.', 'mailster')}</>;
 	}
 
 	const getList = (id) => {
 		if (id == -1) {
-			return __('Any List', 'mailster');
+			return <>{__('Any List', 'mailster')}</>;
 		}
 		if (!allLists) {
 			return null;
@@ -105,30 +138,31 @@ export function formatLists(lists) {
 		return list.length ? list[0].name : null;
 	};
 
-	const listStr = lists.map((list) => {
+	return lists.map((list, i) => {
 		const name = getList(list);
-		return name
-			? ' <strong class="mailster-step-badge">' + name + '</strong>'
-			: '';
-	});
 
-	return listStr ? listStr : '';
+		return (
+			<strong key={i} className="mailster-step-badge">
+				{name || list}
+			</strong>
+		);
+	});
 }
 
 export function formatForms(forms) {
-	if (!forms || !forms.length) {
-		return __('No list defined.', 'mailster');
-	}
-
-	const allForms = select('mailster/automation').getForms();
+	const allForms = getData('forms');
 
 	if (!allForms) {
-		return '';
+		return null;
+	}
+
+	if (!forms || !forms.length) {
+		return <>{__('No Form defined.', 'mailster')}</>;
 	}
 
 	const getForm = (id) => {
 		if (id == -1) {
-			return __('Any Form', 'mailster');
+			return <>{__('Any Form', 'mailster')}</>;
 		}
 		if (!allForms) {
 			return null;
@@ -139,40 +173,48 @@ export function formatForms(forms) {
 		return form.length ? form[0].name : null;
 	};
 
-	const formStr = forms.map((form) => {
+	return forms.map((form, i) => {
 		const name = getForm(form);
-		return name
-			? ' <strong class="mailster-step-badge">' + name + '</strong>'
-			: '';
-	});
 
-	return formStr ? formStr : '';
+		return (
+			<strong key={i} className="mailster-step-badge">
+				{name || form}
+			</strong>
+		);
+	});
 }
 
 export function formatTags(tags) {
+	const allFields = getData('tags');
+
 	if (!tags || !tags.length) {
-		return __('No tags defined.', 'mailster');
+		return <>{__('No Tags defined.', 'mailster')}</>;
 	}
 
-	const tagStr = tags.map((tag) => {
-		return tag
-			? ' <strong class="mailster-step-badge">' + tag + '</strong>'
-			: '';
+	return tags.map((tag, i) => {
+		return (
+			<strong key={i} className="mailster-step-badge">
+				{tag}
+			</strong>
+		);
 	});
-
-	return tagStr ? tagStr : '';
 }
 
 export function formatField(field, value, string) {
-	if (!field) {
-		return __('No field defined.', 'mailster');
+	const allFields = getData('fields');
+
+	if (!allFields || !field) {
+		return <>{__('No Field defined.', 'mailster')}</>;
 	}
 
-	const allFields = select('mailster/automation').getFields();
-
-	if (!allFields) {
-		return __('No field defined.', 'mailster');
+	if (field == -1) {
+		return (
+			<strong className="mailster-step-badge">
+				{__('Any Field', 'mailster')}
+			</strong>
+		);
 	}
+
 	const getField = (id) => {
 		if (!allFields) {
 			return null;
@@ -183,33 +225,62 @@ export function formatField(field, value, string) {
 		return field.length ? field[0] : null;
 	};
 
-	const name =
-		field != -1 ? getField(field)?.name : __('Any field', 'mailster');
+	const name = getField(field)?.name;
 
-	if (!name) return '';
-
-	const nameStr =
-		'<strong class="mailster-step-badge">' + escape(name) + '</strong>';
+	const nameStr = (
+		<strong className="mailster-step-badge">{name ? name : field}</strong>
+	);
 
 	const currentField = allFields.filter((f) => f.id == field).pop();
 	if (currentField && currentField.type == 'date') {
 		if (!isNaN(parseFloat(value)) && isFinite(value)) {
+			let info = '';
+			let valueStr;
 			if (value < 0) {
-				return sprintf(
-					__('Decrease %s by %s days.', 'mailster'),
-					nameStr,
-					'<strong class="mailster-step-badge">' +
-						escape(value * -1) +
-						'</strong>'
+				info = sprintf(
+					_n(
+						'Decrease %s by %s day.',
+						'Decrease %s by %s days.',
+						parseFloat(value),
+						'mailster'
+					),
+					'<field />',
+					'<value />'
+				);
+				valueStr = (
+					<strong className="mailster-step-badge">{escape(value * -1)}</strong>
 				);
 			} else if (value > 0) {
-				return sprintf(
-					__('Increase %s by %s days.', 'mailster'),
-					nameStr,
-					'<strong class="mailster-step-badge">' + escape(value) + '</strong>'
+				info = sprintf(
+					_n(
+						'Increase %s by %s day.',
+						'Increase %s by %s days.',
+						parseFloat(value),
+						'mailster'
+					),
+					'<field />',
+					'<value />'
+				);
+				valueStr = (
+					<strong className="mailster-step-badge">{escape(value)}</strong>
+				);
+			} else {
+				info = sprintf(
+					__('Set %s to the %s.', 'mailster'),
+					'<field />',
+					'<value />'
+				);
+				valueStr = (
+					<strong className="mailster-step-badge">
+						{__('current date', 'mailster')}
+					</strong>
 				);
 			}
-			return sprintf(__('Set %s to the current date.', 'mailster'), nameStr);
+
+			return createInterpolateElement(info, {
+				field: nameStr,
+				value: valueStr,
+			});
 		}
 
 		const date = new Date(value || new Date()).toLocaleDateString();
@@ -217,77 +288,87 @@ export function formatField(field, value, string) {
 			value = date;
 		}
 	}
-	if (value !== false && currentField && currentField.type == 'checkbox') {
+	if (currentField?.type == 'checkbox') {
 		if (value) {
-			return sprintf(__('Check %s.', 'mailster'), nameStr);
+			string = sprintf(__('Check %s.', 'mailster'), '<field />');
 		} else {
-			return sprintf(__('Uncheck %s.', 'mailster'), nameStr);
+			string = sprintf(__('Uncheck %s.', 'mailster'), '<field />');
 		}
+
+		return createInterpolateElement(string, { field: nameStr });
 	}
 
-	const valueStr =
-		'<strong class="mailster-step-badge">' + escape(value) + '</strong>';
+	const valueStr = (
+		<strong className="mailster-step-badge">{escape(value)}</strong>
+	);
 
 	if (value === false) {
-		return sprintf(__('Field %s', 'mailster'), nameStr);
+		string = __('Field %s.', 'mailster');
 	} else if (!value) {
-		return sprintf(__('Remove field %s.', 'mailster'), nameStr);
-	} else {
-		return sprintf(
-			string || __('Update field %s with value %s.', 'mailster'),
-			nameStr,
-			valueStr
-		);
+		string = __('Remove field %s.', 'mailster');
 	}
+	const s = sprintf(
+		string || __('Update field %s with value %s.', 'mailster'),
+		'<field />',
+		'<value />'
+	);
+
+	return createInterpolateElement(s, {
+		field: nameStr,
+		value: valueStr,
+	});
 }
 
 export function formatOffset(offset) {
 	if (!offset) {
-		return '';
+		return <></>;
 	}
 
 	const now = +new Date();
 	const dateMoment = moment(now + offset * 1000);
 
-	const offsetStr =
-		'<strong class="mailster-step-badge">' +
-		escape(dateMoment.fromNow(true)) +
-		'</strong>';
-	if (offset < 0) {
-		return sprintf(__('but %s before the date.', 'mailster'), offsetStr);
-	} else if (offset > 0) {
-		return sprintf(__('but %s after the date.', 'mailster'), offsetStr);
-	}
+	const s = sprintf(
+		offset < 0
+			? __('but %s before the date.', 'mailster')
+			: __('but %s after the date.', 'mailster'),
+		'<offset />'
+	);
+
+	return createInterpolateElement(s, {
+		offset: (
+			<strong className="mailster-step-badge">
+				{dateMoment.fromNow(true)}
+			</strong>
+		),
+	});
 }
 
 export function formatPages(pages) {
 	if (!pages || !pages.length) {
-		return __('No pages defined.', 'mailster');
+		return <>{__('No Pages defined.', 'mailster')}</>;
 	}
 
-	const home_url = window.location.origin;
-
-	const pageStr = pages.map((page) => {
-		return page
-			? ' <strong class="mailster-step-badge">' + page + '</strong>'
-			: '';
+	return pages.map((page, i) => {
+		return (
+			<strong key={i} className="mailster-step-badge">
+				{page}
+			</strong>
+		);
 	});
-
-	return pageStr ? pageStr : '';
 }
 
 export function formatLinks(links) {
 	if (!links || !links.length) {
-		return __('No links defined.', 'mailster');
+		return <>{__('No Links defined.', 'mailster')}</>;
 	}
 
-	const linkStr = links.map((link) => {
-		return link
-			? ' <strong class="mailster-step-badge">' + link + '</strong>'
-			: '';
+	return links.map((link, i) => {
+		return (
+			<strong key={i} className="mailster-step-badge">
+				{link}
+			</strong>
+		);
 	});
-
-	return linkStr ? linkStr : '';
 }
 
 export function whenEditorIsReady() {
@@ -318,6 +399,32 @@ export function whenEditorIsReady() {
 	});
 }
 
+export function useWindow(callback, dependencies) {
+	const [win, setWindow] = useState();
+
+	useEffect(() => {
+		whenEditorIsReady().then((w) => {
+			setWindow(w);
+			callback && callback(w);
+		});
+	}, dependencies || []);
+
+	return win;
+}
+
+export function useDocument(callback, dependencies) {
+	const [doc, setDocument] = useState();
+
+	useEffect(() => {
+		whenEditorIsReady().then((w) => {
+			setDocument(w.document);
+			callback && callback(w.document);
+		});
+	}, dependencies || []);
+
+	return doc;
+}
+
 export function useBlockChange(callback) {
 	let useBlockChangeBlockCount = null;
 	whenEditorIsReady().then((w) => {
@@ -337,8 +444,6 @@ export function useBlockChange(callback) {
 			callback(useBlockChangeBlockCount);
 		});
 	});
-
-	useUpdateEffectCustom(() => {}, [useBlockChangeBlockCount]);
 }
 
 export function useLocalStorage(key, initialValue) {
@@ -544,6 +649,21 @@ export function useEmailSteps() {
 	return [attributes, setAttributes];
 }
 
+export function useQueue(id) {
+	const allQueue = useSelect((select) => {
+		return select('mailster/automation').getQueue();
+	}, []);
+
+	const [queued, setQueued] = useState(0);
+
+	useEffect(() => {
+		if (!allQueue) return;
+		setQueued(allQueue[id] || 0);
+	}, [id, allQueue]);
+
+	return queued;
+}
+
 export function searchBlock(blockName, clientId, innerBlocks = true) {
 	const blocks = searchBlocks(blockName, clientId, innerBlocks);
 
@@ -577,4 +697,68 @@ export function searchBlocks(pattern, clientId = null, innerBlocks = true) {
 
 	_s(allBlocks);
 	return matchingBlocks;
+}
+
+export function clearData(selector, store) {
+	dispatch(store).invalidateResolutionForStoreSelector(selector);
+}
+
+export function useInterval(callback, delay, instant = false) {
+	const interval = useRef(null);
+	const cb = useRef(callback);
+	useEffect(() => {
+		cb.current = callback;
+	}, [callback]);
+	useEffect(() => {
+		const tick = () => cb.current();
+		if (instant && cb.current) {
+			tick();
+		}
+		if (typeof delay === 'number') {
+			interval.current = window.setInterval(tick, delay);
+			return () => window.clearInterval(interval.current);
+		}
+	}, [delay]);
+	return interval;
+}
+
+export function useFocus(element) {
+	const ref = useRef(element);
+	// set to true if element is window
+	const [isFocused, setIsFocused] = useState(element === window);
+	const focus = useCallback(() => {
+		setIsFocused(true);
+	}, [isFocused]);
+	const blur = useCallback(() => {
+		setIsFocused(false);
+	}, [isFocused]);
+
+	useEffect(() => {
+		const el = ref.current;
+
+		el?.addEventListener('focus', focus);
+		el?.addEventListener('blur', blur);
+
+		return () => {
+			el?.removeEventListener('focus', focus);
+			el?.removeEventListener('blur', blur);
+		};
+	});
+
+	return [ref, isFocused];
+}
+
+export function useSteps(dependencies) {
+	const [stepBlocks, setStepBlocks] = useState([]);
+
+	useEffect(() => {
+		const blocks = searchBlocks(
+			'^mailster-workflow/(conditions|action|email|delay|stop|jumper|notification)$'
+		);
+		if (stepBlocks !== blocks) {
+			setStepBlocks(blocks);
+		}
+	}, [dependencies]);
+
+	return stepBlocks;
 }

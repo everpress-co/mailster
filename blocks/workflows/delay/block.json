@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/delay",
 	"title": "Delay",
-	"category": "mailster-automation-fields",
+	"category": "mailster-workflow-steps",
 	"keywords": ["delay", "time"],
 	"description": "Delay your workflow and continue at a later point.",
 	"parent": [
@@ -15,12 +15,14 @@
 	"supports": {
 		"html": false,
 		"className": false,
-		"customClassName": false,
-		"reusable": false
+		"customClassName": false
 	},
 	"attributes": {
 		"id": {
 			"type": "string"
+		},
+		"disabled": {
+			"type": "boolean"
 		},
 		"amount": {
 			"type": "integer"
