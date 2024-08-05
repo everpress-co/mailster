@@ -1898,6 +1898,14 @@ class Mailster {
 				if ( MAILSTER_ENVATO ) {
 					update_option( 'mailster_envato', time() );
 				}
+
+				if ( defined( 'MAILSTER_LICENSE' ) ) {
+					try {
+						$migrate = mailster_freemius()->activate_migrated_license( MAILSTER_LICENSE, false );
+					} catch ( Throwable $e ) {
+					}
+				}
+
 				if ( ! is_network_admin() ) {
 					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
 				}
