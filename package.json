@@ -1,6 +1,6 @@
 {
 	"name": "mailster",
-	"version": "4.0.12",
+	"version": "4.1.0",
 	"author": "Xaver <xaver@everpress.co>",
 	"license": "GPL-2.0",
 	"private": true,
@@ -13,6 +13,7 @@
 		"plugin-name": "Mailster"
 	},
 	"dependencies": {
+		"@10up/block-components": "^1.15.10",
 		"@wordpress/api-fetch": "^6.0.0",
 		"@wordpress/block-editor": "^8.1.0",
 		"@wordpress/blocks": "^11.1.5",

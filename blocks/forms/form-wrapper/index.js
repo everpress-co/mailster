@@ -7,6 +7,7 @@
  */
 
 import { registerBlockType } from '@wordpress/blocks';
+import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
@@ -48,7 +49,7 @@ registerBlockType(name, {
 });
 
 // only allow blocks inside the form wrapper
-function setParentToBlocks(settings, name) {
+function setParent(settings, name) {
 	if (!/^mailster\//.test(name)) {
 		// no parents => allowed in root
 		if (!settings['parent']) {
@@ -73,8 +74,4 @@ function setParentToBlocks(settings, name) {
 	return settings;
 }
 
-wp.hooks.addFilter(
-	'blocks.registerBlockType',
-	'mailster/forms/set-parent-to-blocks',
-	setParentToBlocks
-);
+addFilter('blocks.registerBlockType', 'mailster/forms/set-parent', setParent);

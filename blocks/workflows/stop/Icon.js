@@ -1,12 +1,5 @@
 export default (
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		xmlnsXlink="http://www.w3.org/1999/xlink"
-		viewBox="0 0 24 24"
-	>
-		<defs>
-			<path id="a" d="M0 0h24v24H0z"></path>
-		</defs>
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 		<g fill="none">
 			<path
 				stroke="#c3232d"

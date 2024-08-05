@@ -31,14 +31,13 @@ import TriggerSelector from './TriggerSelector';
 import Conditions from '../inspector/Conditions.js';
 
 import { searchBlock, searchBlocks } from '../../util';
-import { Flex } from '@wordpress/components';
 
 const MIN_TRIGGER_COUNT = 1;
 const MAX_TRIGGER_COUNT = 5;
 
 export default function TriggerInspectorControls(props) {
 	const { attributes, setAttributes, clientId } = props;
-	const { trigger, repeat, run } = attributes;
+	const { trigger, repeat, pending } = attributes;
 
 	const rootClientId = useSelect((select) =>
 		select('core/block-editor').getBlockRootClientId(clientId)
@@ -118,16 +117,12 @@ export default function TriggerInspectorControls(props) {
 							/>
 						</PanelBody>
 						<PanelBody>
-							<PanelRow>
-								<h3>{__('Repeats', 'mailster')}</h3>
-							</PanelRow>
 							<BaseControl
 								help={__(
-									'Define how often this workflow with this trigger can get triggered for each subscriber.',
+									'Define how often the workflow with this trigger can get triggered for each subscriber.',
 									'mailster'
 								)}
-							></BaseControl>
-							<BaseControl>
+							>
 								{repeat != 0 && (
 									<ToggleControl
 										onChange={(val) =>
@@ -151,16 +146,20 @@ export default function TriggerInspectorControls(props) {
 									/>
 								)}
 							</BaseControl>
-							{repeat != 1 && (
-								<BaseControl>
-									<Tip>
-										{__(
-											'Subscribers must finish a workflow before starting again',
-											'mailster'
-										)}
-									</Tip>
-								</BaseControl>
-							)}
+						</PanelBody>
+						<PanelBody>
+							<BaseControl
+								help={__(
+									'Allow unconfirmed subscribers to enter the workflow. This is useful if they need to confirm their subscription first. The trigger will be executed once they are confirmed.',
+									'mailster'
+								)}
+							>
+								<ToggleControl
+									onChange={(val) => setAttributes({ pending: val })}
+									checked={pending}
+									label={__('Enable for pending Subscribers', 'mailster')}
+								/>
+							</BaseControl>
 						</PanelBody>
 					</>
 				)}

@@ -9,7 +9,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { select } from '@wordpress/data';
-import { Button, RangeControl } from '@wordpress/components';
+import { Button } from '@wordpress/components';
 import { plus, reset, home } from '@wordpress/icons';
 import { useEffect, useState } from '@wordpress/element';
 import { useDebounce } from '@wordpress/compose';
@@ -18,7 +18,7 @@ import { useDebounce } from '@wordpress/compose';
  * Internal dependencies
  */
 
-import { useSessionStorage, whenEditorIsReady } from '../../util';
+import { useWindow, useSessionStorage } from '../../util';
 
 const MAX_ZOOM = 100;
 const MIN_ZOOM = 40;
@@ -40,22 +40,18 @@ export default function CanvasToolbar() {
 		setPositionVar(pos);
 	}, 400);
 
-	useEffect(() => {
-		whenEditorIsReady().then((w) => {
-			const sel = w.document.querySelector;
-			setFrame(
-				w.document.querySelector('.interface-interface-skeleton__content') || w
-			);
-			setPane(w.document.querySelector('.is-root-container'));
-			setPane(w.document.querySelector('.editor-styles-wrapper'));
-			isLoaded(true);
-		});
-	}, []);
+	useWindow((w) => {
+		const doc = w.document;
+		setFrame(doc.querySelector('.interface-interface-skeleton__content') || w);
+		//setPane(doc.querySelector('.is-root-container'));
+		setPane(doc.querySelector('.editor-styles-wrapper'));
+		isLoaded(true);
+	});
 
 	useEffect(() => {
 		if (!pane) return;
 
-		var offsetX, offsetY, posX, posY;
+		let offsetX, offsetY, posX, posY;
 
 		pane.addEventListener('mousedown', startDrag);
 		frame.addEventListener('scroll', onScroll);
@@ -89,7 +85,7 @@ export default function CanvasToolbar() {
 		function drag(e) {
 			e.preventDefault();
 
-			let pos = getPanePosition();
+			const pos = getPanePosition();
 
 			//let f = (100 - pos.z) * Math.exp(-4) + 1;
 
@@ -107,8 +103,6 @@ export default function CanvasToolbar() {
 		}
 
 		function stopDrag(e) {
-			//console.warn('STOP DRAG');
-
 			// stop moving when mouse button is released:
 			pane.classList.remove('dragging');
 			pane.removeEventListener('mouseup', stopDrag);
@@ -168,16 +162,16 @@ export default function CanvasToolbar() {
 		position && setZoom(position.z);
 	}, [pane]);
 
-	useEffect(() => {
-		const onResize = () => {
-			console.warn('RESIZE');
-		};
-		onResize();
-		window.addEventListener('resize', onResize);
-		return () => {
-			window.removeEventListener('resize', onResize);
-		};
-	}, []);
+	// useEffect(() => {
+	// 	const onResize = () => {
+	// 		console.warn('RESIZE');
+	// 	};
+	// 	onResize();
+	// 	window.addEventListener('resize', onResize);
+	// 	return () => {
+	// 		window.removeEventListener('resize', onResize);
+	// 	};
+	// }, []);
 
 	const resetPane = () => {
 		const triggers = pane.querySelector('.wp-block-mailster-workflow-triggers');
@@ -210,6 +204,17 @@ export default function CanvasToolbar() {
 
 	return (
 		<>
+			{/* <div>
+				<RangeControl
+					className="zoom-level"
+					withInputField={false}
+					value={zoom}
+					onChange={(value) => setZoom(value)}
+					min={MIN_ZOOM}
+					max={MAX_ZOOM}
+					showTooltip={false}
+				/>
+			</div> */}
 			<Button
 				variant="tertiary"
 				icon={home}
@@ -217,23 +222,14 @@ export default function CanvasToolbar() {
 				label={__('Reset View', 'mailster')}
 			/>
 			<Button
-				variant="link"
+				variant="tertiary"
 				icon={reset}
 				disabled={zoom === MIN_ZOOM}
 				onClick={zoomOut}
 				label={__('Zoom Out', 'mailster')}
 			/>
-			<RangeControl
-				className="zoom-level"
-				withInputField={false}
-				value={zoom}
-				onChange={(value) => setZoom(value)}
-				min={MIN_ZOOM}
-				max={MAX_ZOOM}
-				showTooltip={false}
-			/>
 			<Button
-				variant="link"
+				variant="tertiary"
 				icon={plus}
 				disabled={zoom === MAX_ZOOM}
 				onClick={zoomIn}

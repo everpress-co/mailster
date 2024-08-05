@@ -181,7 +181,6 @@ export default function Edit(props) {
 
 				<InnerBlocks template={BLOCK_TEMPLATE} templateLock="all" />
 			</div>
-			<InspectorControls></InspectorControls>
 			<HomepageInspectorControls
 				current={current || 'submission'}
 				onSelect={onSelect}

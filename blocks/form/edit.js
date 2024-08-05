@@ -28,7 +28,7 @@ import {
 import { useSelect, dispatch } from '@wordpress/data';
 
 import { useState, useEffect, useRef } from '@wordpress/element';
-import { edit, plus, update } from '@wordpress/icons';
+import { edit, external, home, plus, update } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -39,72 +39,7 @@ import HomepageInspectorControls from '../homepage/inspector';
 import { searchBlock } from '../util';
 import { TABS } from '../homepage/constants';
 import InlineStyles from '../util/InlineStyles';
-
-function MailsterFormSelector(props) {
-	const { attributes, setAttributes, isSelected, selectForm, formId } = props;
-
-	const query = { status: 'publish,future,draft,pending,private' };
-
-	const forms = useSelect((select) => {
-		return select('core').getEntityRecords('postType', 'mailster-form', query);
-	});
-
-	const isLoading = useSelect((select) => {
-		return select('core/data').isResolving('core', 'getEntityRecords', [
-			'postType',
-			'mailster-form',
-			query,
-		]);
-	});
-
-	if (isLoading)
-		return (
-			<p>
-				<Spinner />
-			</p>
-		);
-
-	if (forms && forms.length === 0) {
-		return (
-			<p>
-				{__(
-					'You currently have no forms. Please create a new form.',
-					'mailster'
-				)}
-			</p>
-		);
-	}
-	const editForm = () => {
-		window.open(
-			'post.php?post=' + formId + '&action=edit',
-			'edit_form_' + formId
-		);
-	};
-
-	return (
-		forms && (
-			<>
-				<SelectControl
-					value={formId}
-					onChange={(val) => selectForm(parseInt(val, 10))}
-				>
-					<option value="">{__('Choose an existing form', 'mailster')}</option>
-					{forms.map((form) => (
-						<option key={form.id} value={form.id}>
-							{sprintf('#%d - %s', form.id, form.title.rendered)}
-						</option>
-					))}
-				</SelectControl>
-				<Button
-					variant="secondary"
-					icon={edit}
-					onClick={editForm}
-					text={__('Edit form', 'mailster')}
-				/>
-			</>
-		)
-	);
-}
+import FormSelector from './FormSelector';
 
 export default function Edit(props) {
 	const { attributes, isSelected, setAttributes, context, clientId } = props;
@@ -113,6 +48,7 @@ export default function Edit(props) {
 	const [contextType, setContextType] = useState(
 		context['mailster-homepage-context/type']
 	);
+	const homepage = searchBlock('mailster/homepage');
 
 	const contextAlign = context['mailster-homepage-context/align'] || align;
 	const contextId = context['mailster-homepage-context/' + contextType];
@@ -120,6 +56,10 @@ export default function Edit(props) {
 
 	const [displayForm, setDisplayForm] = useState(false);
 	const [displayHeight, setDisplayHeight] = useState(undefined);
+
+	const postId = useSelect((select) => {
+		return select('core/editor').getCurrentPostId();
+	});
 
 	const blockRef = useRef();
 
@@ -134,9 +74,7 @@ export default function Edit(props) {
 
 	const selectForm = (id) => {
 		// if we are in context of the homepage block
-		if (contextType) {
-			const homepage = searchBlock('mailster/homepage');
-
+		if (contextType && homepage) {
 			dispatch('core/block-editor').updateBlockAttributes(homepage.clientId, {
 				[contextType]: id,
 			});
@@ -201,6 +139,7 @@ export default function Edit(props) {
 	};
 
 	const onSelect = (type, index) => {
+		if (!homepage) return;
 		location.hash = '#mailster-' + type;
 		setContextType(type);
 
@@ -217,8 +156,11 @@ export default function Edit(props) {
 		);
 	};
 
-	const createNewForm = () => {
-		window.open('post-new.php?post_type=mailster-form', 'new_form');
+	const editHomepage = () => {
+		window.open(
+			'post.php?post=' + postId + '&action=edit#mailster-' + contextType,
+			'mailster-newsletter-homepage'
+		);
 	};
 
 	const currentTab = TABS.find((tab) => tab.id === contextType);
@@ -259,18 +201,20 @@ export default function Edit(props) {
 				{formId ? (
 					<div className="mailster-block-form-editor-wrap" ref={blockRef}>
 						<Flex className="update-form-button" justify="center">
-							<Button
-								variant="primary"
-								icon={edit}
-								onClick={editForm}
-								text={__('Edit form', 'mailster')}
-							/>
-							<Button
-								variant="secondary"
-								icon={update}
-								onClick={reloadForm}
-								text={__('Reload Form', 'mailster')}
-							/>
+							<>
+								<Button
+									variant="primary"
+									icon={edit}
+									onClick={editForm}
+									text={__('Edit form', 'mailster')}
+								/>
+								<Button
+									variant="secondary"
+									icon={update}
+									onClick={reloadForm}
+									text={__('Reload Form', 'mailster')}
+								/>
+							</>
 						</Flex>
 						<ServerSideRender
 							className="mailster-block-form-editor-wrap-inner"
@@ -286,25 +230,7 @@ export default function Edit(props) {
 						label={getPlaceholderLabel()}
 						instructions={getPlaceholderInstructions()}
 					>
-						<MailsterFormSelector
-							{...props}
-							selectForm={selectForm}
-							formId={formId}
-						/>
-						<div className="placeholder-buttons-wrap">
-							<Button
-								variant="secondary"
-								icon={plus}
-								onClick={createNewForm}
-								text={__('Create new form', 'mailster')}
-							/>
-							<Button
-								variant="tertiary"
-								icon={update}
-								onClick={reloadForm}
-								text={__('Reload Forms', 'mailster')}
-							/>
-						</div>
+						<FormSelector {...props} selectForm={selectForm} formId={formId} />
 					</Placeholder>
 				)}
 			</div>
@@ -326,22 +252,21 @@ export default function Edit(props) {
 			{contextType && (
 				<HomepageInspectorControls current={contextType} onSelect={onSelect} />
 			)}
-			{contextType !== 'subscribe' && (
-				<InspectorControls>
-					<Panel>
-						<PanelBody
-							title={__('Form Selector', 'mailster')}
-							initialOpen={true}
-						>
-							<MailsterFormSelector
-								{...props}
-								selectForm={selectForm}
-								formId={formId}
-							/>
-						</PanelBody>
-					</Panel>
-				</InspectorControls>
-			)}
+			<InspectorControls>
+				<Panel>
+					<PanelBody title={__('Form Selector', 'mailster')} initialOpen={true}>
+						<FormSelector
+							{...props}
+							selectForm={selectForm}
+							formId={formId}
+							help={__(
+								'Select a form you like to display on this page.',
+								'mailster'
+							)}
+						/>
+					</PanelBody>
+				</Panel>
+			</InspectorControls>
 			<InlineStyles />
 		</>
 	);

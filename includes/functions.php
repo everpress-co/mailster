@@ -254,7 +254,7 @@ function mailster_get_current_user_id() {
 
 
 function mailster_trigger( string $hook, $subscriber_id, $workflow_id = null, $step = null ) {
-	return mailster( 'trigger' )->hook( $hook, $subscriber_id, $workflow_id, $step );
+	return mailster( 'triggers' )->hook( $hook, $subscriber_id, $workflow_id, $step );
 }
 
 
@@ -1545,3 +1545,12 @@ if ( ! function_exists( 'get_user_locale' ) ) :
 	}
 
 endif;
+
+
+function mailster_on_activate() {
+	Mailster::get_instance()->activate();
+}
+
+function mailster_on_deactivate() {
+	Mailster::get_instance()->deactivate();
+}

@@ -3,23 +3,29 @@
 	"apiVersion": 3,
 	"name": "mailster-workflow/email",
 	"title": "Email",
-	"category": "mailster-automation-fields",
-	"description": "Send out an campaign or email.",
+	"category": "mailster-workflow-steps",
+	"description": "Send an email.",
 	"parent": [
 		"core/post-content",
 		"mailster-workflow/condition-yes",
 		"mailster-workflow/condition-no"
 	],
-	"example": {},
+	"example": {
+		"attributes": {
+			"name": "Code is Poetry"
+		}
+	},
 	"supports": {
 		"html": false,
 		"className": false,
-		"customClassName": false,
-		"reusable": false
+		"customClassName": false
 	},
 	"attributes": {
 		"id": {
 			"type": "string"
+		},
+		"disabled": {
+			"type": "boolean"
 		},
 		"name": {
 			"type": "string"

@@ -6,55 +6,23 @@
  * WordPress dependencies
  */
 
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 import {
-	Button,
 	PanelRow,
-	DropdownMenu,
-	TextControl,
-	MenuGroup,
-	MenuItem,
-	Spinner,
-	PanelBody,
-	__experimentalItemGroup as ItemGroup,
 	BaseControl,
-	Card,
-	Flex,
-	FlexBlock,
-	FlexItem,
 	Tip,
-	DateTimePicker,
 	SelectControl,
-	Popover,
-	DatePicker,
-	TimePicker,
 } from '@wordpress/components';
 
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
-import { useEffect, useState } from '@wordpress/element';
-
-import * as Icons from '@wordpress/icons';
-import {
-	useBlockProps,
-	__experimentalLinkControl as LinkControl,
-} from '@wordpress/block-editor';
-import { dateI18n, gmdateI18n } from '@wordpress/date';
 
 /**
  * Internal dependencies
  */
-import {
-	DELAY_OPTIONS,
-	IS_12_HOUR,
-	TIME_FORMAT,
-	DATE_FORMAT,
-} from './constants';
 
 export default function Selector(props) {
-	const { attributes, setAttributes, isAnniversary = false } = props;
+	const { attributes, setAttributes } = props;
 	const { field } = attributes;
 
 	const allFields = useSelect((select) =>
@@ -86,15 +54,22 @@ export default function Selector(props) {
 					>
 						<option value="">{__('Choose', 'mailster')}</option>
 						<option value={-1}>{__('Any field', 'mailster')}</option>
-						<optgroup label={__('User fields', 'mailster')}>
-							{allFields.map((field, i) => {
-								return (
-									<option key={i} value={field.id}>
-										{field.name}
-									</option>
-								);
-							})}
-						</optgroup>
+						{allFields.length === 0 && (
+							<option value="loading" disabled>
+								{__('Loading...', 'mailster')}
+							</option>
+						)}
+						{allFields.length > 0 && (
+							<optgroup label={__('User fields', 'mailster')}>
+								{allFields.map((field, i) => {
+									return (
+										<option key={i} value={field.id}>
+											{field.name}
+										</option>
+									);
+								})}
+							</optgroup>
+						)}
 					</SelectControl>
 				</BaseControl>
 			</PanelRow>

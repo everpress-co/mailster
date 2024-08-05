@@ -13,7 +13,9 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 
 export default function Label(attributes, { context }) {
-	const { name, content } = attributes;
+	const { name, content, metadata } = attributes;
+
+	if (metadata?.name) return metadata.name;
 
 	return sprintf(__('Send Email %s', 'mailster'), '"' + name + '"') || content;
 }

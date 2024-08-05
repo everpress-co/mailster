@@ -20,10 +20,8 @@ import {
  * Internal dependencies
  */
 
-export default function CommentInspectorControls({
-	attributes,
-	setAttributes,
-}) {
+export default function CommentInspectorControls(props) {
+	const { attributes, setAttributes } = props;
 	const { comment = '' } = attributes;
 
 	return (

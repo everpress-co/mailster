@@ -17,6 +17,7 @@ import { RichText, useBlockProps } from '@wordpress/block-editor';
  */
 
 import InspectorControls from './inspector.js';
+import StepAppender from '../inspector/StepAppender.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
@@ -43,6 +44,7 @@ export default function Edit(props) {
 				</div>
 				<div className="end-stop canvas-handle"></div>
 			</div>
+			<StepAppender {...props} />
 			<InspectorControls {...props} />
 		</>
 	);

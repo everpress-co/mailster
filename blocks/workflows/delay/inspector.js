@@ -6,7 +6,7 @@
  * WordPress dependencies
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 
 import { InspectorControls } from '@wordpress/block-editor';
 import {
@@ -26,9 +26,9 @@ import {
 	__experimentalNumberControl as NumberControl,
 	Tip,
 } from '@wordpress/components';
-import { dateI18n, gmdateI18n } from '@wordpress/date';
-
-import { useEffect, useState } from '@wordpress/element';
+import { dateI18n } from '@wordpress/date';
+import { useSelect, select } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,10 +39,12 @@ import {
 	MONTH_OPTIONS,
 	WEEK_OPTIONS,
 	START_OF_WEEK,
+	DATE_FORMAT,
+	TIME_FORMAT,
 	IS_12_HOUR,
 } from './constants';
 
-import { HelpBeacon } from '../../util';
+import { HelpBeacon, useQueue } from '../../util';
 import { getLabel } from './functions';
 
 const ORDERERD_WEEK_OPTIONS = [
@@ -52,6 +54,7 @@ const ORDERERD_WEEK_OPTIONS = [
 
 export default function DelayInspectorControls({ attributes, setAttributes }) {
 	const {
+		id,
 		amount,
 		date,
 		unit,
@@ -66,7 +69,7 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 
 	const setDate = (newDate) => {
 		// store in UTC
-		setAttributes({ date: new Date(newDate).toISOString() });
+		setAttributes({ date: new Date(newDate || Date.now()).toISOString() });
 	};
 
 	function setWeek(index, add = true) {
@@ -94,13 +97,52 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 		setAttributes({ unit: val });
 	}
 
+	const NowButton = () => (
+		<Button
+			variant="tertiary"
+			size="small"
+			onClick={() => setDate()}
+			className="alignright"
+		>
+			{__('now', 'mailster')}
+		</Button>
+	);
+
+	const delayOptions = Object.keys(DELAY_OPTIONS).map((key, index) => {
+		return {
+			label:
+				(amount > 1 && DELAY_OPTIONS[key].plural) || DELAY_OPTIONS[key].single,
+			value: DELAY_OPTIONS[key].value,
+		};
+	});
+
+	const TimeZoneSending = () =>
+		['day', 'week', 'month', 'year'].includes(unit) ? (
+			<PanelBody>
+				<PanelRow>
+					<FlexItem>
+						<HelpBeacon id="63fb2e7c52af714471a1738a" align="right" />
+						<ToggleControl
+							onChange={() => setAttributes({ timezone: !timezone })}
+							checked={timezone}
+							label={__('Timezone based sending', 'mailster')}
+							help={__(
+								'Delay based on the subscribers timezone if known. This is usefull if you have global subscribers and like to get the email in their in box at the defined time.',
+								'mailster'
+							)}
+						/>
+					</FlexItem>
+				</PanelRow>
+			</PanelBody>
+		) : null;
+
 	return (
 		<InspectorControls>
 			<Panel>
 				<PanelBody>
 					<HelpBeacon id="64623a1035c39a6db5f441e4" align="right" />
 					<PanelRow>
-						<BaseControl label="Delay Workflow">
+						<BaseControl label={__('Delay Workflow', 'mailster')}>
 							<Flex gap={4} align="center" justify="space-between">
 								{['minutes', 'hours', 'days', 'weeks', 'months'].includes(
 									unit
@@ -121,14 +163,7 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 								<FlexItem>
 									<SelectControl
 										value={unit}
-										options={Object.keys(DELAY_OPTIONS).map((key, index) => {
-											return {
-												label:
-													(amount > 1 && DELAY_OPTIONS[key].plural) ||
-													DELAY_OPTIONS[key].single,
-												value: DELAY_OPTIONS[key].value,
-											};
-										})}
+										options={delayOptions}
 										onChange={(val) => setUnit(val)}
 									/>
 								</FlexItem>
@@ -164,6 +199,7 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 														onChange={(val) => setDate(val)}
 														is12Hour={IS_12_HOUR}
 													/>
+													<NowButton />
 												</Popover>
 											)}
 										</Button>
@@ -193,6 +229,7 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 													onChange={(val) => setDate(val)}
 													is12Hour={IS_12_HOUR}
 												/>
+												<NowButton />
 											</Popover>
 										)}
 									</Button>
@@ -248,6 +285,7 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 													onChange={(val) => setDate(val)}
 													is12Hour={IS_12_HOUR}
 												/>
+												<NowButton />
 											</Popover>
 										)}
 									</Button>
@@ -296,7 +334,9 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 										onClick={(e) => setPopover(true)}
 										isDestructive={isInPast}
 									>
-										{dateI18n('Y-m-d', date) + ' @ ' + dateI18n('H:i', date)}
+										{dateI18n(DATE_FORMAT, date) +
+											' @ ' +
+											dateI18n(TIME_FORMAT, date)}
 										{popover && (
 											<Popover
 												onClose={(e) => setPopover(false)}
@@ -306,9 +346,8 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 													currentDate={date}
 													onChange={(val) => setDate(val)}
 													is12Hour={IS_12_HOUR}
-													__nextRemoveHelpButton
-													__nextRemoveResetButton
 												/>
+												<NowButton />
 											</Popover>
 										)}
 									</Button>
@@ -328,24 +367,7 @@ export default function DelayInspectorControls({ attributes, setAttributes }) {
 						</>
 					)}
 				</PanelBody>
-				{['day', 'week', 'month', 'year'].includes(unit) && (
-					<PanelBody>
-						<PanelRow>
-							<FlexItem>
-								<HelpBeacon id="63fb2e7c52af714471a1738a" align="right" />
-								<ToggleControl
-									onChange={() => setAttributes({ timezone: !timezone })}
-									checked={timezone}
-									label={__('Timezone based sending', 'mailster')}
-									help={__(
-										'Delay based on the subscribers timezone if known. This is usefull if you have global subscribers and like to get the email in their in box at the defined time.',
-										'mailster'
-									)}
-								/>
-							</FlexItem>
-						</PanelRow>
-					</PanelBody>
-				)}
+				<TimeZoneSending />
 			</Panel>
 		</InspectorControls>
 	);

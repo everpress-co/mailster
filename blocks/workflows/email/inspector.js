@@ -17,15 +17,11 @@ import {
 	Tip,
 } from '@wordpress/components';
 
-import { useEffect, useState } from '@wordpress/element';
-import { useSelect, select, dispatch } from '@wordpress/data';
-import * as Icons from '@wordpress/icons';
-
 /**
  * Internal dependencies
  */
 
-import CampaignSelector from './CampaignSelector';
+import EmailSelector from './EmailSelector';
 import { HelpBeacon } from '../../util';
 
 export default function EmailInspectorControls(props) {
@@ -44,7 +40,7 @@ export default function EmailInspectorControls(props) {
 			<Panel>
 				<PanelBody>
 					<HelpBeacon id="64623ab58783627a4ed4c5ec" align="right" />
-					<CampaignSelector {...props} />
+					<EmailSelector {...props} />
 				</PanelBody>
 			</Panel>
 			<Panel>
@@ -52,7 +48,7 @@ export default function EmailInspectorControls(props) {
 					<PanelRow>
 						<TextControl
 							label={__('Name', 'mailster')}
-							help={__('Set a name of this campaign.', 'mailster')}
+							help={__('Set a name of this email.', 'mailster')}
 							value={name}
 							onChange={(val) => setAttributes({ name: val ? val : undefined })}
 						/>
@@ -64,7 +60,7 @@ export default function EmailInspectorControls(props) {
 							<TextControl
 								label={__('Subject', 'mailster')}
 								help={__(
-									'Overwrite the subject line of this campaign.',
+									'Overwrite the subject line of this email.',
 									'mailster'
 								)}
 								placeholder={campaignObj?.subject}
@@ -77,10 +73,7 @@ export default function EmailInspectorControls(props) {
 						<PanelRow>
 							<TextControl
 								label={__('Preheader', 'mailster')}
-								help={__(
-									'Overwrite the preheader of this campaign.',
-									'mailster'
-								)}
+								help={__('Overwrite the preheader of this email.', 'mailster')}
 								placeholder={campaignObj?.preheader}
 								value={preheader}
 								onChange={(val) =>
@@ -92,7 +85,7 @@ export default function EmailInspectorControls(props) {
 							<TextControl
 								label={__('From Email Address', 'mailster')}
 								help={__(
-									'Overwrite the email address of this campaign.',
+									'Overwrite the email address of this email.',
 									'mailster'
 								)}
 								placeholder={campaignObj?.from}
@@ -105,10 +98,7 @@ export default function EmailInspectorControls(props) {
 						<PanelRow>
 							<TextControl
 								label={__('From Name', 'mailster')}
-								help={__(
-									'Overwrite the from name of this campaign.',
-									'mailster'
-								)}
+								help={__('Overwrite the from name of this email.', 'mailster')}
 								placeholder={campaignObj?.from_name}
 								value={from_name}
 								onChange={(val) =>

@@ -10,7 +10,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"style":{"color":{"text":"#fdfdfd"}}} -->
-<p class="has-text-color" style="color:#fdfdfd">Enter your email address to join our newsletter.</p>
+<p class="has-text-color" style="color:#fdfdfd">Enter your email address to join [newsletter_subscribers round=100]+ others.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:spacer {"height":"22px"} -->

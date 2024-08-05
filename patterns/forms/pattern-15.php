@@ -5,7 +5,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"align":"center","style":{"color":{"text":"#f4f4f4"}}} -->
-<p class="has-text-align-center has-text-color" style="color:#f4f4f4">Join our email list and get a special 20% discount!</p>
+<p class="has-text-align-center has-text-color" style="color:#f4f4f4">Join [newsletter_subscribers round=100]+ others and get a special 20% discount!</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:spacer {"height":"40px"} -->

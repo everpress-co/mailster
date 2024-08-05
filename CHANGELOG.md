@@ -1,3 +1,28 @@
+### Version 4.1.0 (2024-08-05)
+
+- new: Jumper Step: Jump to a specific step in the workflow.
+- new: Notifications Step: Send a notification to an email address.
+- new: Allow Prefills forms with URL parameters.
+- new: Queued subscribers on workflows can now get inspected and removed/forwarded/finished.
+- new: Option to skip steps in workflows.
+- new: Option to allow pending Subscribers entering the workflow.
+- new: Option to activate/deactivate and duplicate the workflow from the overview page.
+- new: Capabilities to manage workflows and block forms.
+- new: Shortcode of forms is now quickly copyable from the forms overview page.
+- added: option to selected autocomplete type for input elements on forms.
+- improved: initiation Mailster. Now the main class is loaded when all plugins are available.
+- improved: Newsletter Homepage in the Site editor is not broken anymore.
+- improved: frontend script for forms is executed with domReady.
+- improved: BlockRecovery now uses less resources.
+- improved: refetching data is now less resource intensive.
+- improved: missing step appender in WP 6.6 is now back (and better).
+- improved: new icons for some steps to make them more distinguishable.
+- improved: time related input fields got a "now" button to quickly jump to the current time.
+- improved: more option buttons in editor toolbar for better accessibility.
+- improved: workflows can now run max 1024 steps in a single process to prevent infinite loops.
+- change: Canvas toolbar is now located in the canvas.
+- change: `wp_mail` setup: changed the way functions are loaded
+
 ### Version 4.0.11 (2024-07-17)
 
 - fixed: PHP error "attempt to assign a property to an array"

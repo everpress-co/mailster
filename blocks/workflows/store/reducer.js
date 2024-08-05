@@ -1,6 +1,7 @@
 const DEFAULT_STATE = {
 	triggers: null,
 	numbers: null,
+	queue: null,
 	actions: null,
 	lists: [],
 	tags: [],
@@ -28,6 +29,12 @@ const reducer = (state = DEFAULT_STATE, action) => {
 			return {
 				...state,
 				numbers: DEFAULT_STATE.numbers,
+			};
+
+		case 'SET_QUEUE':
+			return {
+				...state,
+				queue: action.queue,
 			};
 
 		case 'SET_ACTIONS':

@@ -25,7 +25,7 @@ import { useEffect, useState } from '@wordpress/element';
  */
 
 export default function ConditionsModal(props) {
-	const { attributes, setAttributes, help = '' } = props;
+	const { attributes, setAttributes, help = '', label, title } = props;
 	const { conditions } = attributes;
 
 	const [isLoaded, setLoaded] = useState(false);
@@ -58,10 +58,7 @@ export default function ConditionsModal(props) {
 
 	return (
 		<>
-			<BaseControl help={help}>
-				<PanelRow>
-					<h3>{__('Conditions', 'mailster')}</h3>
-				</PanelRow>
+			<BaseControl label={label || __('Conditions', 'mailster')} help={help}>
 				{conditions && (
 					<PanelRow>
 						<ServerSideRender
@@ -94,7 +91,9 @@ export default function ConditionsModal(props) {
 			</BaseControl>
 			{isOpen && (
 				<Modal
-					title={__('Define your conditions for this step', 'mailster')}
+					title={
+						title || __('Define your conditions for this step', 'mailster')
+					}
 					className="mailster-conditions-modal"
 					onRequestClose={() => setOpen(false)}
 					shouldCloseOnClickOutside={true}
@@ -113,7 +112,7 @@ export default function ConditionsModal(props) {
 								setAttributes({ conditions: mailster.conditions.serialize() });
 							}}
 						>
-							Save
+							{__('Save', 'mailster')}
 						</Button>
 						<Button
 							disabled={!isLoaded}
@@ -122,7 +121,7 @@ export default function ConditionsModal(props) {
 								setOpen(false);
 							}}
 						>
-							Cancel
+							{__('Cancel', 'mailster')}
 						</Button>
 					</div>
 				</Modal>
