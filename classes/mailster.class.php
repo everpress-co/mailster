@@ -1880,36 +1880,44 @@ class Mailster {
 
 		$this->check_compatibility( true, $new );
 
-		if ( $new ) {
+		if ( ! $new ) {
+			return;
+		}
 
-			if ( is_plugin_active( 'myMail/myMail.php' ) ) {
+		if ( is_plugin_active( 'myMail/myMail.php' ) ) {
 
-				if ( deactivate_plugins( 'myMail/myMail.php', true, is_network_admin() ) ) {
-					mailster_notice( 'MyMail is now Mailster! The old version has been deactivated and can get removed!', 'error', false, 'warnings' );
-					mailster_update_option( 'db_update_required', true );
-				}
-			} elseif ( get_option( 'mymail' ) ) {
-
+			if ( deactivate_plugins( 'myMail/myMail.php', true, is_network_admin() ) ) {
+				mailster_notice( 'MyMail is now Mailster! The old version has been deactivated and can get removed!', 'error', false, 'warnings' );
 				mailster_update_option( 'db_update_required', true );
-
-			} else {
-
-				update_option( 'mailster_freemius', time() );
-				if ( MAILSTER_ENVATO ) {
-					update_option( 'mailster_envato', time() );
-				}
-
-				if ( defined( 'MAILSTER_LICENSE' ) ) {
-					try {
-						$migrate = mailster_freemius()->activate_migrated_license( MAILSTER_LICENSE, false );
-					} catch ( Throwable $e ) {
-					}
-				}
-
-				if ( ! is_network_admin() ) {
-					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
-				}
 			}
+			return;
+		}
+		if ( get_option( 'mymail' ) ) {
+
+			mailster_update_option( 'db_update_required', true );
+
+		}
+
+		update_option( 'mailster_freemius', time() );
+		if ( MAILSTER_ENVATO ) {
+			update_option( 'mailster_envato', time() );
+		}
+
+		if ( defined( 'MAILSTER_LICENSE' ) ) {
+			$error_msg = __( "There was an error while activating your license key from '%1\$s': %2\$s", 'mailster' );
+			try {
+
+				$result = $this->activate_license( MAILSTER_LICENSE );
+				if ( is_wp_error( $result ) ) {
+					wp_die( sprintf( $error_msg, 'MAILSTER_LICENSE', $result->get_error_message() ) );
+				}
+			} catch ( Throwable $e ) {
+				wp_die( sprintf( $error_msg, 'MAILSTER_LICENSE', $e->getMessage() ) );
+			}
+		}
+
+		if ( ! is_network_admin() ) {
+			add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
 		}
 	}
 
@@ -2977,6 +2985,12 @@ class Mailster {
 		mailster_freemius()->_sync_cron();
 		mailster_freemius()->_sync_licenses();
 		mailster_freemius()->get_update();
+	}
+
+	public function activate_license( $license_key ) {
+		require_once MAILSTER_DIR . 'classes/license.class.php';
+		$license = new MailsterLicense();
+		return $license->activate_migrated_license( $license_key );
 	}
 
 	public function get_license( $fallback = '' ) {

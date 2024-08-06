@@ -74,7 +74,7 @@ class MailsterLicense {
 	}
 
 
-	public function activate_migrated_license( $secret_key, $is_marketing_allowed ) {
+	public function activate_migrated_license( $secret_key, $is_marketing_allowed = null ) {
 
 		$this->sdk();
 
