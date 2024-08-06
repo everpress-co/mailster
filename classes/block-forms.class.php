@@ -446,12 +446,14 @@ class MailsterBlockForms {
 
 	public function render_form_in_content( $content = '' ) {
 
+		$id = get_the_ID();
+
 		$options = array(
-			// 'id'      => get_the_ID(),
+			'id'      => $id,
 			'classes' => array( 'mailster-block-form-type-content' ),
 		);
 
-		return $this->render_form( get_the_ID(), $options, false );
+		return $this->render_form( $id, $options, false );
 	}
 
 	public function maybe_add_form_to_footer() {
