@@ -69,7 +69,7 @@ export default function PlacementSettings(props) {
 						</Item>
 						<Item>
 							<CheckboxControl
-								label={__('useThemeStyle', 'mailster')}
+								label={__('use Theme Style', 'mailster')}
 								checked={useThemeStyle}
 								onChange={(val) => setUseThemeStyle(!useThemeStyle)}
 							/>

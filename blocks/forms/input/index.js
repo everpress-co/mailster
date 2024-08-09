@@ -5,6 +5,7 @@
 /**
  * WordPress dependencies
  */
+import { __, sprintf } from '@wordpress/i18n';
 
 import { registerBlockType, createBlock } from '@wordpress/blocks';
 
@@ -26,7 +27,10 @@ window.mailster_fields &&
 		};
 
 		const id = field.id.replace(/_/g, '-');
-		const description = field.name + ' Description';
+		const description = sprintf(
+			__('Input field for %s', 'mailster'),
+			field.name
+		);
 
 		let selector = 'input';
 		let autoComplete = undefined;

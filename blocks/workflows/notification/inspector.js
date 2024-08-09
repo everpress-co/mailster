@@ -6,7 +6,7 @@
  * WordPress dependencies
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 import { InspectorControls } from '@wordpress/block-editor';
 import {
@@ -99,9 +99,13 @@ export default function JumperInspectorControls(props) {
 						placeholder={__('Add message', 'mailster')}
 					/>
 					<Tip>
-						{__(
-							'You can use placeholders like {firstname} or {lastname} to add subscriber data to your message.',
-							'mailster'
+						{sprintf(
+							__(
+								'You can use placeholders like %s or %s to add subscriber data to your message.',
+								'mailster'
+							),
+							'{firstname}',
+							'{lastname}'
 						)}
 					</Tip>
 				</PanelBody>

@@ -106,7 +106,7 @@ export default function StepId(props) {
 				{stepBlocks.length <= 1 ? (
 					<PanelRow>
 						<Tip>
-							{__('Please add additional steps to your workflow.', 'mailster!')}
+							{__('Please add additional steps to your workflow.', 'mailster')}
 						</Tip>
 					</PanelRow>
 				) : (

@@ -446,12 +446,14 @@ class MailsterBlockForms {
 
 	public function render_form_in_content( $content = '' ) {
 
+		$id = get_the_ID();
+
 		$options = array(
-			// 'id'      => get_the_ID(),
+			'id'      => $id,
 			'classes' => array( 'mailster-block-form-type-content' ),
 		);
 
-		return $this->render_form( get_the_ID(), $options, false );
+		return $this->render_form( $id, $options, false );
 	}
 
 	public function maybe_add_form_to_footer() {
@@ -1201,27 +1203,17 @@ class MailsterBlockForms {
 
 	public function register_block_patterns() {
 
+		$query = wp_parse_url( wp_get_referer(), PHP_URL_QUERY );
+
+		if ( ! $query || false === strpos( $query, 'post_type=mailster-form' ) ) {
+			return;
+		}
+
 		register_block_pattern_category( 'mailster-forms', array( 'label' => __( 'Mailster Forms', 'mailster' ) ) );
 
-		include MAILSTER_DIR . 'patterns/form-pattern.php';
-
-		foreach ( $patterns as $key => $pattern ) {
-
-			$args = wp_parse_args(
-				$pattern,
-				array(
-					'inserter'      => false,
-					'postTypes'     => array( 'mailster-form' ),
-					'keywords'      => array( 'mailster-form' ),
-					'viewportWidth' => 600,
-				)
-			);
-
-			$args['categories'] = array( 'featured', 'mailster-forms' );
-
-			register_block_pattern( 'mailster/pattern_' . $key, $args );
-		}
+		include_once MAILSTER_DIR . 'patterns/forms.php';
 	}
+
 
 	public function render_form( $form, $options = array(), $check_validity = true ) {
 
@@ -1989,7 +1981,7 @@ class MailsterBlockForms {
 
 		if ( $new ) {
 
-			$content = file_get_contents( MAILSTER_DIR . 'patterns/default-form.php' );
+			$content = require MAILSTER_DIR . 'patterns/default-form.php';
 
 			wp_insert_post(
 				array(

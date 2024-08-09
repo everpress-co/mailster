@@ -79,8 +79,8 @@ if ( mailster()->is_verified() ) {
 		<?php endif; ?>
 	<?php elseif ( mailster( 'translations' )->translation_available() ) : ?>
 	<dd><?php printf( esc_html__( 'Mailster is available in %s!', 'mailster' ), '<strong>' . esc_html( $set->name ) . '</strong>' ); ?></dd>
-	<dd><a href="" class="load-language"><strong><?php esc_html_e( 'Download Translation', 'mailster' ); ?></strong></a></dd>
 	<?php endif; ?>
-	<dd><span class="lighter"><?php printf( esc_html__( 'Currently %s translated.', 'mailster' ), '<strong>' . $set->percent_translated . '%</strong>' ); ?></span></dd>
+	<dd><a href="<?php echo mailster_url( 'https://kb.mailster.co/66b36534a62a7505fcf33f74' ); ?>" data-article="66b36534a62a7505fcf33f74"><strong><?php esc_html_e( 'Missing or wrong Translations?', 'mailster' ); ?></strong></a></dd>
+	<dd><span class="lighter"><?php printf( esc_html__( 'Currently %s translated.', 'mailster' ), '<strong>' . esc_html( $set->percent_translated ) . '%</strong>' ); ?></span></dd>
 </dl>
 <?php endif; ?>

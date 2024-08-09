@@ -120,9 +120,9 @@ export const FormStylesPanel = (props) => {
 									value: isNaN(size) ? 100 : size,
 									label: 'Scale',
 								},
-								{ value: 'auto', label: 'Auto' },
-								{ value: 'contain', label: 'Contain' },
-								{ value: 'cover', label: 'Cover' },
+								{ value: 'auto', label: __('Auto', 'mailster') },
+								{ value: 'contain', label: __('Contain', 'mailster') },
+								{ value: 'cover', label: __('Cover', 'mailster') },
 							]}
 						/>
 					</PanelRow>
@@ -142,7 +142,7 @@ export const FormStylesPanel = (props) => {
 					)}
 					<PanelRow>
 						<ToggleControl
-							label="Fixed background"
+							label={__('Fixed background', 'mailster')}
 							checked={fixed}
 							onChange={(value) => {
 								setBackground('fixed', value);
@@ -151,7 +151,7 @@ export const FormStylesPanel = (props) => {
 					</PanelRow>
 					<PanelRow>
 						<ToggleControl
-							label="Fullscreen Background"
+							label={__('Fullscreen Background', 'mailster')}
 							checked={fullscreen}
 							onChange={(value) => {
 								setBackground('fullscreen', value);
@@ -160,7 +160,7 @@ export const FormStylesPanel = (props) => {
 					</PanelRow>
 					<PanelRow>
 						<ToggleControl
-							label="Repeated Background"
+							label={__('Repeated Background', 'mailster')}
 							checked={repeat}
 							onChange={(value) => {
 								setBackground('repeat', value);

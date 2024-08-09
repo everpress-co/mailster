@@ -244,7 +244,7 @@ const Table = (props) => {
 						icon="trash"
 						disabled={disabled}
 						isDestructive
-						label={__('Remove item', 'mailster')}
+						label={__('Remove entry', 'mailster')}
 						onClick={() => deleteItem(item, index)}
 					/>
 				</td>
