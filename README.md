@@ -187,6 +187,15 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.1.2
+
+- fixed: PHP warning in automations class
+- fixed: missing ID when block forms are used on the frontend
+- fixed: missing campaign on email workflow
+- fixed: some strings weren't translate-able improved: translations
+- improved: form patterns are now translate-able
+- added: link to Translator Program on dashboard
+
 ### 4.1.1
 
 - fixed: PHP Error with PHP version 7.4
