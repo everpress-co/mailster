@@ -1085,7 +1085,7 @@ class MailsterSettings {
 							$interval      = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
 							$mails_per_sec = round( 1 / $throughput, 2 );
 							if ( $try_per_second > $mails_per_sec ) {
-								$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s within %3$s) but your current throughput rate is %4$s mails per second. ', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ), $mails_per_sec ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase your Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
+								$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s within %3$s) but your current throughput rate is %4$s mails per second.', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ), $mails_per_sec ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase your Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
 							}
 						} elseif ( $try_per_second > 3 ) {
 							$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s every %3$s).', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ) ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase the Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );

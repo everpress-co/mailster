@@ -172,7 +172,9 @@ class MailsterTranslations {
 		// merge with site language
 		$translations = array_unique( array_merge( array( $site_language ), $translations ) );
 
-		// get all availaable sets (via cache or API call)
+		$cache_time = DAY_IN_SECONDS;
+
+		// get all available sets (via cache or API call)
 		if ( $force || false === ( $translation_sets = get_transient( 'mailster_translation_data' ) ) ) {
 			$url      = $this->endpoint . '/api/projects/mailster';
 			$response = wp_remote_get( $url );
@@ -183,7 +185,7 @@ class MailsterTranslations {
 			$body             = wp_remote_retrieve_body( $response );
 			$body             = json_decode( $body );
 			$translation_sets = $body->translation_sets;
-			set_transient( 'mailster_translation_data', $translation_sets, DAY_IN_SECONDS );
+			set_transient( 'mailster_translation_data', $translation_sets, $cache_time );
 		}
 
 		$updates = array();
@@ -232,7 +234,7 @@ class MailsterTranslations {
 			$translations                 = wp_get_available_translations();
 			$translation_set->native_name = isset( $translations[ $translation_set->wp_locale ] ) ? $translations[ $translation_set->wp_locale ]['native_name'] : $translation_set->name;
 
-			set_transient( '_mailster_translation_set_' . $locale, $translation_set, DAY_IN_SECONDS );
+			set_transient( '_mailster_translation_set_' . $locale, $translation_set, $cache_time );
 
 			// only add if we have a newer version
 			if ( $lastmodified - $filemtime > 0 ) {

@@ -23,6 +23,7 @@ import {
 	Button,
 	SelectControl,
 	ExternalLink,
+	BaseControl,
 } from '@wordpress/components';
 
 import { useState } from '@wordpress/element';
@@ -102,13 +103,17 @@ export default function InputFieldInspectorControls(props) {
 						<InputStylesPanel {...props}>
 							{type !== 'submit' && (
 								<PanelRow>
-									<Button
-										onClick={applyStyle}
-										variant="primary"
-										icon={external}
+									<BaseControl
+										label={__('Apply to all input fields', 'mailster')}
+										help={__(
+											'Apply the stlye of this input field to all input fields of your form.',
+											'mailster'
+										)}
 									>
-										{__('Apply to all input fields', 'mailster')}
-									</Button>
+										<Button onClick={applyStyle} variant="primary">
+											{__('Apply styles', 'mailster')}
+										</Button>
+									</BaseControl>
 								</PanelRow>
 							)}
 						</InputStylesPanel>

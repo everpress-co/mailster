@@ -39,15 +39,15 @@ export default function DisplayOptionsExtra(props) {
 								selected={options.display || 'after'}
 								options={[
 									{
-										label: 'Start of content',
+										label: __('Start of content', 'mailster'),
 										value: 'start',
 									},
 									{
-										label: 'End of content',
+										label: __('End of content', 'mailster'),
 										value: 'end',
 									},
 									{
-										label: 'After',
+										label: __('After', 'mailster'),
 										value: 'after',
 									},
 								]}

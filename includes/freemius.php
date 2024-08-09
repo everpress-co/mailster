@@ -126,7 +126,7 @@ function mailster_update_permission( $permissions ) {
 		'id'         => 'helpscout',
 		'icon-class' => 'dashicons dashicons-sos',
 		'tooltip'    => esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ),
-		'label'      => esc_html__( 'Help Scout (optional)', 'mailster' ),
+		'label'      => 'Help Scout (' . esc_html__( 'optional', 'mailster' ) . ')',
 		'desc'       => esc_html__( 'Loading Help Scout\'s beacon for easy support access', 'mailster' ),
 		'optional'   => true,
 		'priority'   => 20,

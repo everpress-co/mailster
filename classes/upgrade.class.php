@@ -91,7 +91,7 @@ class MailsterUpgrade {
 			} else {
 				$update_msg  = '<h2>' . esc_html__( 'Mailster database update in progress', 'mailster' ) . '</h2>';
 				$update_msg .= '<p>' . esc_html__( 'Mailster is updating the database in the background. The database update process may take a little while, so please be patient.', 'mailster' ) . '</p>';
-				$update_msg .= '<p><a class="button" href="' . $redirectto . '" target="_top">' . esc_html__( 'View progress →', 'mailster' ) . '</a></p>';
+				$update_msg .= '<p><a class="button" href="' . esc_url( $redirectto ) . '" target="_top">' . esc_html__( 'View progress', 'mailster' ) . ' →</a></p>';
 				mailster_notice( $update_msg, 'info', false, 'background_update' );
 
 				if ( ! wp_next_scheduled( 'mailster_background_update' ) ) {

@@ -1,6 +1,5 @@
 <?php
 
-
 register_block_pattern(
 	'mailster-workflow/scratch',
 	array(
@@ -30,9 +29,9 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"list_add","lists":[-1]} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Send a welcome email whenever a user subscribes to your lists."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Send a welcome email whenever a user subscribes to your lists.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"6332d1","name":"Welcome Email"} /-->',
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Welcome Email', 'mailster' ) . '"} /-->',
 	)
 );
 
@@ -52,33 +51,33 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"list_add","lists":[-1]} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/email {"id":"bf5811","name":"Welcome Email"} /-->
+		<!-- wp:mailster-workflow/email {"id":"bf5811","name":"' . esc_attr__( 'Welcome Email', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"272e1c","amount":1,"unit":"days"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"days"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"71804e","name":"Preferences Email"} /-->
+		<!-- wp:mailster-workflow/email {"id":"71804e","name":"' . esc_attr__( 'Preferences Email', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"3dac13","amount":3,"unit":"days"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"days"} /-->
 		
-		<!-- wp:mailster-workflow/conditions {"id":"e2447d","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D%5B0%5D=bf5811\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D%5B1%5D=71804e"} -->
+		<!-- wp:mailster-workflow/conditions {"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D%5B0%5D=bf5811\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D%5B1%5D=71804e"} -->
 		<!-- wp:mailster-workflow/condition-yes -->
-		<!-- wp:mailster-workflow/action {"id":"21ad89","action":"add_tag"} /-->
+		<!-- wp:mailster-workflow/action {"action":"add_tag"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"3431f0","name":"Offer #1"} /-->
+		<!-- wp:mailster-workflow/email {"id":"3431f0","name":"' . esc_attr__( 'Offer #1', 'mailster' ) . '"} /-->
 		<!-- /wp:mailster-workflow/condition-yes -->
 		
 		<!-- wp:mailster-workflow/condition-no -->
-		<!-- wp:mailster-workflow/email {"id":"cf181c","name":"Welcome"} /-->
+		<!-- wp:mailster-workflow/email {"id":"cf181c","name":"' . esc_attr__( 'Welcome', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"b7b1fa","amount":3,"unit":"hours"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"hours"} /-->
 		
-		<!-- wp:mailster-workflow/conditions {"id":"e97c5f","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=cf181c"} -->
+		<!-- wp:mailster-workflow/conditions {"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=cf181c"} -->
 		<!-- wp:mailster-workflow/condition-yes -->
-		<!-- wp:mailster-workflow/action {"id":"b426fd","action":"add_tag"} /-->
+		<!-- wp:mailster-workflow/action {"action":"add_tag"} /-->
 		<!-- /wp:mailster-workflow/condition-yes -->
 		
 		<!-- wp:mailster-workflow/condition-no -->
-		<!-- wp:mailster-workflow/action {"id":"5b8177","action":"unsubscribe"} /-->
+		<!-- wp:mailster-workflow/action {"action":"unsubscribe"} /-->
 		<!-- /wp:mailster-workflow/condition-no -->
 		<!-- /wp:mailster-workflow/conditions -->
 		<!-- /wp:mailster-workflow/condition-no -->
@@ -102,7 +101,7 @@ register_block_pattern(
 		
 		<!-- wp:mailster-workflow/delay {"amount":10,"unit":"minutes"} /-->
 		
-		<!-- wp:mailster-workflow/email {"name":"Email #1"} /--><!-- wp:mailster-workflow/action {"action":"add_tag","tags":["Visited"]} /-->',
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Email #1', 'mailster' ) . '"} /--><!-- wp:mailster-workflow/action {"action":"add_tag","tags":["' . esc_attr__( 'Visited', 'mailster' ) . '"]}"}/-->',
 	)
 );
 
@@ -120,33 +119,33 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"updated_field","field":"-1"} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 
-		<!-- wp:mailster-workflow/comment {"comment":"Whenever a field is updated  - either by the user or the admin - send a special offer."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Whenever a field is updated - either by the user or the admin - send a special', 'mailster' ) . ' offer."} /-->
 
-		<!-- wp:mailster-workflow/email {"id":"9869d5","name":"Special Offer"} /-->
+		<!-- wp:mailster-workflow/email {"id":"9869d5","name":"' . esc_attr__( 'Special Offer', 'mailster' ) . '"} /-->
 
-		<!-- wp:mailster-workflow/delay {"id":"1e5fca","amount":3,"unit":"days"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"days"} /-->
 
-		<!-- wp:mailster-workflow/conditions {"id":"fc8a35","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=9869d5"} -->
+		<!-- wp:mailster-workflow/conditions {"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=9869d5"} -->
 		<!-- wp:mailster-workflow/condition-yes -->
-		<!-- wp:mailster-workflow/comment {"comment":"if the user clicked in our \u0022Special Offer Campaign you could add a tag."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'If the user clicked in our Special Offer Campaign you could add a tag.', 'mailster' ) . '"} /-->
 
-		<!-- wp:mailster-workflow/action {"id":"5eeabf","action":"add_tag"} /-->
+		<!-- wp:mailster-workflow/action {"action":"add_tag"} /-->
 		<!-- /wp:mailster-workflow/condition-yes -->
 
 		<!-- wp:mailster-workflow/condition-no -->
-		<!-- wp:mailster-workflow/comment {"comment":"Send another campaign if the user haven\'t clicked in our previous message."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Send another campaign if the user haven\'t clicked in our previous message.', 'mailster' ) . '"} /-->
 
-		<!-- wp:mailster-workflow/email {"id":"921df7","name":"Final Offer"} /-->
+		<!-- wp:mailster-workflow/email {"id":"921df7","name":"' . esc_attr__( 'Final Offer', 'mailster' ) . '"} /-->
 
-		<!-- wp:mailster-workflow/delay {"id":"590a14","amount":3,"unit":"days"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"days"} /-->
 
-		<!-- wp:mailster-workflow/conditions {"id":"c59f3d","conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=921df7"} -->
+		<!-- wp:mailster-workflow/conditions {"conditions":"conditions%5B0%5D%5B0%5D%5Bfield%5D=_click\u0026conditions%5B0%5D%5B0%5D%5Boperator%5D=is\u0026conditions%5B0%5D%5B0%5D%5Bvalue%5D=921df7"} -->
 		<!-- wp:mailster-workflow/condition-yes -->
-		<!-- wp:mailster-workflow/action {"id":"3330a6","action":"add_tag"} /-->
+		<!-- wp:mailster-workflow/action {"action":"add_tag"} /-->
 		<!-- /wp:mailster-workflow/condition-yes -->
 
 		<!-- wp:mailster-workflow/condition-no -->
-		<!-- wp:mailster-workflow/action {"id":"66caf9","action":"unsubscribe"} /-->
+		<!-- wp:mailster-workflow/action {"action":"unsubscribe"} /-->
 		<!-- /wp:mailster-workflow/condition-no -->
 		<!-- /wp:mailster-workflow/conditions -->
 		<!-- /wp:mailster-workflow/condition-no -->
@@ -167,29 +166,29 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"form_conversion","forms":[]} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Send an RSVP right after they sign up."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Send an RSVP right after they sign up.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"be676c","name":"RSVP Email"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'RSVP Email', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Assuming your Webinar starts on the 10th every month it\'s a good practice to remind them one day upfront with a dedicate email. "} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Assuming your Webinar starts on the 10th every month it\'s a good practice to remind them one day upfront with a dedicate email.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"6f7e6c","amount":1,"unit":"month","date":"2023-05-14T07:00:00.000Z","month":9} /-->
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"month","date":"2023-05-14T07:00:00.000Z","month":9} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"984580","name":"Webinar reminder"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Webinar reminder', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Send the actual link to the webinar in this step."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Send the actual link to the webinar in this step.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"50c293","amount":1,"unit":"days"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"days"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"2f62d1","name":"Email with CTA to Webinar"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Email with CTA to Webinar', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Wait some time after the webinar has finished and send a feedback request."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Wait some time after the webinar has finished and send a feedback request.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"d57ad9","amount":3,"unit":"hours"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"hours"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"56ee4f","name":"Feedback Survey"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Feedback Survey', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/action {"id":"a7d5f7","action":"add_tag","tags":["Webinar Complete"]} /-->',
+		<!-- wp:mailster-workflow/action {"action":"add_tag","tags":["' . esc_attr__( 'Webinar Complete', 'mailster' ) . '"]} /-->',
 	)
 );
 register_block_pattern(
@@ -206,35 +205,35 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"form_conversion","forms":[]} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Send a Welcome Email if user joins the list to your online course."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Send a Welcome Email if user joins the list to your online course.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"cb3c43","name":"Welcome Email"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Welcome Email', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Send the next email on the next Monday at 12:00"} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Send the next email on the next Monday at 12:00', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"91d94d","amount":1,"unit":"week","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"week","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"8c995f","name":"Lesson #1"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Lesson #1', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"After one week send the email for the next lesson."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'After one week send the email for the next lesson.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"ec85ae","amount":1,"unit":"weeks","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"weeks","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"bbdc54","name":"Lesson #2"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Lesson #2', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Final email after another week. You can of course add additional emails after that."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Final email after another week. You can of course add additional emails afte', 'mailster' ) . 'r that."} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"fa95d9","amount":1,"unit":"weeks","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
+		<!-- wp:mailster-workflow/delay {"amount":1,"unit":"weeks","date":"2023-05-14T10:00:00.000Z","weekdays":[0]} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"e761b1","name":"Final Lesson"} /-->
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Final Lesson', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Sometimes it\'s good to remove users from a list to keep your list clean."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Sometimes it\'s good to remove users from a list to keep your list clean.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/action {"id":"4bec1c","action":"remove_list"} /-->
+		<!-- wp:mailster-workflow/action {"action":"remove_list"} /-->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"You can also add tags to the subscriber once the workflow is finished."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'You can also add tags to the subscriber once the workflow is finished.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/action {"id":"2159da","action":"add_tag","tags":["Course #1 finished"]} /-->',
+		<!-- wp:mailster-workflow/action {"action":"add_tag","tags":["' . esc_attr__( 'Course #1 finished', 'mailster' ) . '"]} /-->',
 	)
 );
 
@@ -250,9 +249,9 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"anniversary","repeat":-1,"date":"2023-05-14T07:00:00.000Z","field":"birthday"} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"Send Birthday wishes to your subscribers. It\'s a common practice to offer a special discount which is only valid for a certain time frame."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'Send Birthday wishes to your subscribers. It\'s a common practice to offer a special discount which is only valid for a certain time frame.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"3e8c96","name":"Birthday Wishes"} /-->',
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Birthday Wishes', 'mailster' ) . '"} /-->',
 	)
 );
 
@@ -269,13 +268,13 @@ register_block_pattern(
 		<!-- wp:mailster-workflow/trigger {"trigger":"link_click","links":["' . home_url() . '"]} /-->
 		<!-- /wp:mailster-workflow/triggers -->
 		
-		<!-- wp:mailster-workflow/comment {"comment":"If the user clicks on one of the links defined in the trigger add a tag and send an email after 3 days."} /-->
+		<!-- wp:mailster-workflow/comment {"comment":"' . esc_attr__( 'If the user clicks on one of the links defined in the trigger add a tag and send an email after 3 days.', 'mailster' ) . '"} /-->
 		
-		<!-- wp:mailster-workflow/action {"id":"27dca8","action":"add_tag","tags":["Clicked link"]} /-->
+		<!-- wp:mailster-workflow/action {"action":"add_tag","tags":["' . esc_attr__( 'Clicked link', 'mailster' ) . '"]} /-->
 		
-		<!-- wp:mailster-workflow/delay {"id":"f67641","amount":3,"unit":"days"} /-->
+		<!-- wp:mailster-workflow/delay {"amount":3,"unit":"days"} /-->
 		
-		<!-- wp:mailster-workflow/email {"id":"04c449","name":"Discover more"} /-->',
+		<!-- wp:mailster-workflow/email {"name":"' . esc_attr__( 'Discover more', 'mailster' ) . '"} /-->',
 	)
 );
 

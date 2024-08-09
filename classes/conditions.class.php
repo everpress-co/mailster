@@ -372,7 +372,7 @@ class MailsterConditions {
 				'_tagname__in'     => esc_html__( 'has Tag', 'mailster' ),
 				'_tagname__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
 				'_tags__in'        => esc_html__( 'has Tag (deprecated)', 'mailster' ),
-				'_tags__not_in'    => esc_html__( 'doesn\'t have Tag  (deprecated)', 'mailster' ),
+				'_tags__not_in'    => esc_html__( 'doesn\'t have Tag (deprecated)', 'mailster' ),
 			);
 			$this->_tag_related = apply_filters( 'mailster_conditions_type_tag_related', $this->_tag_related );
 		}
@@ -427,7 +427,7 @@ class MailsterConditions {
 				'is_not'           => esc_html__( 'is not', 'mailster' ),
 				'contains'         => esc_html__( 'contains', 'mailster' ),
 				'contains_not'     => esc_html__( 'doesn\'t contain', 'mailster' ),
-				'begin_with'       => esc_html__( 'begins with', 'mailster' ),
+				'begin_with'       => esc_html__( 'starts with', 'mailster' ),
 				'end_with'         => esc_html__( 'ends with', 'mailster' ),
 				'is_greater'       => esc_html__( 'is greater', 'mailster' ),
 				'is_smaller'       => esc_html__( 'is smaller', 'mailster' ),
@@ -463,7 +463,7 @@ class MailsterConditions {
 				'is_not'       => esc_html__( 'is not', 'mailster' ),
 				'contains'     => esc_html__( 'contains', 'mailster' ),
 				'contains_not' => esc_html__( 'doesn\'t contain', 'mailster' ),
-				'begin_with'   => esc_html__( 'begins with', 'mailster' ),
+				'begin_with'   => esc_html__( 'starts with', 'mailster' ),
 				'end_with'     => esc_html__( 'ends with', 'mailster' ),
 				'pattern'      => esc_html__( 'match regex pattern', 'mailster' ),
 				'not_pattern'  => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),

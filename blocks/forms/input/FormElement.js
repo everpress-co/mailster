@@ -9,9 +9,7 @@ import classnames from 'classnames';
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-
 import { cleanForSlug } from '@wordpress/url';
-
 import { format } from '@wordpress/date';
 
 /**
@@ -176,7 +174,7 @@ export default function FormElement(props) {
 					rows={style.height}
 					value={
 						isSelected && !inline
-							? sprintf(__('Sample text for %s'), label)
+							? sprintf(__('Sample text for %s','mailster'), label)
 							: ''
 					}
 					onChange={() => {}}
@@ -190,7 +188,7 @@ export default function FormElement(props) {
 			const sample =
 				'date' == type
 					? format('Y-m-d', new Date())
-					: sprintf(__('Sample text for %s'), label);
+					: sprintf(__('Sample text for %s','mailster'), label);
 
 			return (
 				<input

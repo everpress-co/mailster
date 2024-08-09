@@ -29,7 +29,7 @@
 		<li><a class="external" href="edit.php?post_type=newsletter&page=mailster_templates"><?php esc_html_e( 'Check out the templates', 'mailster' ); ?></a></li>
 		<li><a class="external" href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Extend Mailster', 'mailster' ); ?></a></li>
 	</ol>
-	<h3><?php esc_html_e( 'External Resources', 'mailster' ); ?></h3>
+	<h3><?php esc_html_e( 'External Resources', 'mailster' ); ?> <small>(<?php esc_html_e( 'in English', 'mailster' ); ?>)</small></h3>
 	<ol>
 		<li><a data-mode="modal" data-article="6460f6909a2fac195e609002" href="<?php echo mailster_url( 'https://kb.mailster.co/6460f6909a2fac195e609002' ); ?>"><?php esc_html_e( 'Email Marketing Automation in Mailster', 'mailster' ); ?></a></li>
 		<li><a data-mode="modal" data-article="63f5f51ee6d6615225472ab9" href="<?php echo mailster_url( 'https://kb.mailster.co/63f5f51ee6d6615225472ab9' ); ?>"><?php esc_html_e( 'How do I import my subscribers?', 'mailster' ); ?></a></li>
