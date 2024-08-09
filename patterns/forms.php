@@ -14,11 +14,11 @@ register_block_pattern(
 <form method="post" novalidate class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner">
 	
 <!-- wp:mailster/field-email {"inline":true,"style":{"width":60}} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk" style="width:60%"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk" style="width:60%"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit {"style":{"width":40,"borderRadius":"0px","borderWidth":"0px"}} -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button" style="width:40%"><input name="submit" type="submit" style="border-width:0px;border-radius:0px" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button" style="width:40%"><input name="submit" type="submit" style="border-width:0px;border-radius:0px" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 	)
@@ -45,7 +45,7 @@ register_block_pattern(
 <!-- /wp:mailster/field-lastname -->
 
 <!-- wp:mailster/field-email {"inline":true} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit {"align":"center"} -->
@@ -168,7 +168,7 @@ register_block_pattern(
 <!-- /wp:paragraph -->
 
 <!-- wp:mailster/field-email {"style":{"width":100}} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-asterisk" style="width:100%"><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-asterisk" style="width:100%"><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-firstname {"style":{"width":49},"className":"mailster-wrapper-asterisk"} -->
@@ -180,7 +180,7 @@ register_block_pattern(
 <!-- /wp:mailster/field-lastname -->
 
 <!-- wp:mailster/field-submit {"style":{"width":100},"className":"mailster-wrapper-asterisk"} -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button mailster-wrapper-asterisk" style="width:100%"><input name="submit" type="submit" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button mailster-wrapper-asterisk" style="width:100%"><input name="submit" type="submit" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 	)
@@ -209,7 +209,7 @@ register_block_pattern(
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit {"style":{"width":33}} -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button" style="width:33%"><input name="submit" type="submit" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button" style="width:33%"><input name="submit" type="submit" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 	)
@@ -249,11 +249,11 @@ register_block_pattern(
 <!-- /wp:mailster/field-firstname -->
 
 <!-- wp:mailster/field-email {"inline":true} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit -->
 
 <!-- wp:mailster/close {"align":"center","style":{"typography":{"fontSize":"15px"}}} -->
@@ -298,11 +298,11 @@ register_block_pattern(
 <!-- /wp:mailster/field-lastname -->
 
 <!-- wp:mailster/field-email {"inline":true} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns --></div></form>
@@ -347,11 +347,11 @@ register_block_pattern(
 <!-- /wp:mailster/field-lastname -->
 
 <!-- wp:mailster/field-email {"inline":true} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit {"style":{"backgroundColor":"#ce19b3","inputColor":"#f8f8f8","borderWidth":"0px","borderRadius":"0px"}} -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" style="color:#f8f8f8;background-color:#ce19b3;border-width:0px;border-radius:0px" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" style="color:#f8f8f8;background-color:#ce19b3;border-width:0px;border-radius:0px" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns --></div></form>
@@ -398,11 +398,11 @@ register_block_pattern(
 <!-- /wp:mailster/field-firstname -->
 
 <!-- wp:mailster/field-email {"inline":true,"style":{"width":35}} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk" style="width:35%"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk" style="width:35%"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit {"style":{"width":28,"borderWidth":"0px"}} -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button" style="width:28%"><input name="submit" type="submit" style="border-width:0px" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button" style="width:28%"><input name="submit" type="submit" style="border-width:0px" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></footer>
 <!-- /wp:group --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
@@ -440,7 +440,7 @@ register_block_pattern(
 <!-- /wp:mailster/field-firstname -->
 
 <!-- wp:mailster/field-email -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-asterisk"><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-asterisk"><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit -->
@@ -499,7 +499,7 @@ register_block_pattern(
 <!-- /wp:mailster/field-firstname -->
 
 <!-- wp:mailster/field-email {"inline":true} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit {"style":{"typography":{"textTransform":"uppercase"},"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|small","bottom":"var:preset|spacing|40","left":"var:preset|spacing|small"}}},"className":"mailster-wrapper-asterisk","fontSize":"large"} -->
@@ -564,11 +564,11 @@ register_block_pattern(
 <!-- /wp:mailster/field-firstname -->
 
 <!-- wp:mailster/field-email {"inline":true} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit -->
-<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit wp-block-button"><input name="submit" type="submit" value="' . esc_attr__( 'Subscribe', 'mailster' ) . '" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit -->
 
 <!-- wp:spacer {"height":"50px"} -->
@@ -728,7 +728,7 @@ register_block_pattern(
 <!-- /wp:mailster/field-firstname -->
 
 <!-- wp:mailster/field-email {"inline":true} -->
-<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-type-email mailster-wrapper-inline mailster-wrapper-asterisk"><input name="email" type="email" aria-required="true" aria-label="' . esc_attr__( 'Email', 'mailster' ) . '" spellcheck="false" required value="" class="input" autocomplete="email" placeholder=" "/><label class="mailster-label">' . esc_html__( 'Email', 'mailster' ) . '</label></div>
 <!-- /wp:mailster/field-email -->
 
 <!-- wp:mailster/field-submit {"align":"center"} -->
