@@ -432,6 +432,11 @@ class MailsterAutomations {
 
 		global $wpdb;
 
+		// < 4.1.0 $where was the $order_id
+		if ( ! is_array( $where ) ) {
+			$where = array( 'id' => $where );
+		}
+
 		// time to schedule upfront in seconds
 		$queue_upfront = HOUR_IN_SECONDS;
 
@@ -1178,6 +1183,7 @@ class MailsterAutomations {
 
 			foreach ( $blocks as $block ) {
 				register_block_type( $block );
+				// TODO: load translations of the block.json
 			}
 		}
 	}
