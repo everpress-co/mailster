@@ -238,7 +238,10 @@ export function CssPanel(props) {
 				<PanelRow>
 					<SelectControl
 						label={__('Selectors', 'mailster')}
-						help="Helps you find the right selector for form elements"
+						help={__(
+							'Helps you find the right selector for form elements',
+							'mailster'
+						)}
 						onChange={addSelector}
 					>
 						<option value="">{__('Choose Selector', 'mailster')}</option>
