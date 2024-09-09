@@ -169,6 +169,11 @@ class MailsterTranslations {
 		// get all used translations on this site
 		$translations = $wpdb->get_col( "SELECT DISTINCT meta_value FROM $wpdb->usermeta WHERE meta_key = 'locale' AND meta_value != ''" );
 
+		// get the site language from the options
+		if ( $wplang = get_option( 'WPLANG' ) ) {
+			$translations[] = $wplang;
+		}
+
 		// merge with site language
 		$translations = array_unique( array_merge( array( $site_language ), $translations ) );
 
@@ -208,14 +213,17 @@ class MailsterTranslations {
 				if ( ! isset( $set->wp_locale ) ) {
 					$set->wp_locale = $set->locale;
 				}
+				// as a fallback we use the root locale
 				if ( $set->locale == $root_locale ) {
 					$translation_set = $set;
 					$lastmodified    = strtotime( $set->last_modified );
 				}
+				// another fallback
 				if ( $set->wp_locale == $base_locale ) {
 					$translation_set = $set;
 					$lastmodified    = strtotime( $set->last_modified );
 				}
+				// this is what we really need
 				if ( $set->wp_locale == $locale ) {
 					$translation_set = $set;
 					$lastmodified    = strtotime( $set->last_modified );
