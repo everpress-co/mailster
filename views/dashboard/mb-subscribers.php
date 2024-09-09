@@ -9,7 +9,7 @@ if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
 			<option value="3 month"><?php esc_html_e( '3 month', 'mailster' ); ?></option>
 			<option value="1 year"><?php esc_html_e( '1 year', 'mailster' ); ?></option>
 		</select>
-		<span class="alignright"><?php esc_html_e( 'Subscriber Grows', 'mailster' ); ?>:</span>
+		<span class="alignright"><?php esc_html_e( 'Subscriber Growth', 'mailster' ); ?>:</span>
 	<?php if ( ! $this->is_dashboard ) : ?>
 		<?php printf( esc_html__( 'You have %s', 'mailster' ), '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers&status=1">' . number_format_i18n( $subscribers ) . ' ' . esc_html__( _nx( 'Subscriber', 'Subscribers', $subscribers, 'number of', 'mailster' ) ) . '</a>' ); ?>
 	<?php endif; ?>
