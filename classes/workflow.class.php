@@ -159,7 +159,7 @@ class MailsterWorkflow {
 
 		// check if subscriber exists if it's not 0 ( 'date', 'anniversary', 'published_post' )
 		if ( $this->subscriber_id !== 0 ) {
-			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
+			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post', 'hook' ) ) ) {
 				if ( ! mailster( 'subscribers' )->get( $this->subscriber_id ) ) {
 					$this->log( 'SUBSCRIBER DOES NOT EXIST' );
 					return false;
@@ -900,6 +900,7 @@ class MailsterWorkflow {
 
 				break;
 			case 'published_post':
+			case 'hook':
 				// if this is not defined we get all based on the condtion
 				if ( ! $this->subscriber_id ) {
 

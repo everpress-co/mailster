@@ -65,6 +65,15 @@ class MailsterTrigger {
 
 			// TODO: check for problems
 			foreach ( $options as $option ) {
+
+				if ( ! isset( $option['hook'] ) ) {
+					continue;
+				}
+
+				if ( $option['hook'] !== $hook ) {
+					continue;
+				}
+
 				$this->add_job( $workflow, 'hook', $subscriber_id, $step );
 			}
 		}
@@ -387,11 +396,11 @@ class MailsterTrigger {
 		}
 	}
 
-	private function add_job( $workflow, $trigger, $subscriber_id, $step = null, $timestamp = null, $context = null ) {
+	private function add_job( $workflow, $trigger, $subscriber_ids, $step = null, $timestamp = null, $context = null ) {
 
 		// only some triggers allow all susbscribers
-		if ( ! $subscriber_id ) {
-			if ( ! in_array( $trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
+		if ( ! $subscriber_ids ) {
+			if ( ! in_array( $trigger, array( 'date', 'hook', 'anniversary', 'published_post' ) ) ) {
 				return false;
 			}
 		}
@@ -401,20 +410,26 @@ class MailsterTrigger {
 			$context = serialize( $context );
 		}
 
-		$job = array(
-			'subscriber_id' => (int) $subscriber_id,
-			'workflow_id'   => (int) $workflow,
-			'trigger'       => $trigger,
-			'step'          => $step,
-			'timestamp'     => $timestamp,
-			'context'       => $context,
-		);
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( $subscriber_ids );
+		}
 
 		require_once MAILSTER_DIR . 'classes/workflow.class.php';
 
-		$wf = new MailsterWorkflow( $workflow, $trigger, $subscriber_id, $step, $timestamp, $context );
+		foreach ( $subscriber_ids as $i => $subscriber_id ) {
+			$job = array(
+				'subscriber_id' => (int) $subscriber_id,
+				'workflow_id'   => (int) $workflow,
+				'trigger'       => $trigger,
+				'step'          => $step,
+				'timestamp'     => $timestamp,
+				'context'       => $context,
+			);
 
-		$wf->run();
+			$wf = new MailsterWorkflow( $workflow, $trigger, $subscriber_id, $step, $timestamp, $context );
+
+			$wf->run();
+		}
 
 		return true;
 	}
