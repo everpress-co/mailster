@@ -71,44 +71,44 @@ class MailsterAutomations {
 			array(
 				'id'    => 'update_field',
 				'icon'  => 'replace',
-				'label' => esc_html__( 'Update Custom Field', 'mailster' ),
-				'info'  => esc_html__( 'Update subscribers field with custom value.', 'mailster' ),
+				'label' => __( 'Update Custom Field', 'mailster' ),
+				'info'  => __( 'Update subscribers field with custom value.', 'mailster' ),
 			),
 			array(
 				'id'    => 'add_list',
 				'icon'  => 'list',
-				'label' => esc_html__( 'Add to List(s)', 'mailster' ),
-				'info'  => esc_html__( 'Adds subscribers to one or more lists.', 'mailster' ),
+				'label' => __( 'Add to List(s)', 'mailster' ),
+				'info'  => __( 'Adds subscribers to one or more lists.', 'mailster' ),
 			),
 			array(
 				'id'    => 'remove_list',
 				'icon'  => 'list',
-				'label' => esc_html__( 'Remove from List(s)', 'mailster' ),
-				'info'  => esc_html__( 'Removes subscribers from one or more lists.', 'mailster' ),
+				'label' => __( 'Remove from List(s)', 'mailster' ),
+				'info'  => __( 'Removes subscribers from one or more lists.', 'mailster' ),
 			),
 			array(
 				'id'    => 'add_tag',
 				'icon'  => 'tag',
-				'label' => esc_html__( 'Add Tag(s)', 'mailster' ),
-				'info'  => esc_html__( 'Adds one ore more tags to a subscriber.', 'mailster' ),
+				'label' => __( 'Add Tag(s)', 'mailster' ),
+				'info'  => __( 'Adds one ore more tags to a subscriber.', 'mailster' ),
 			),
 			array(
 				'id'    => 'remove_tag',
 				'icon'  => 'tag',
-				'label' => esc_html__( 'Remove Tag(s)', 'mailster' ),
-				'info'  => esc_html__( 'Removes one or more tags from a subscriber.', 'mailster' ),
+				'label' => __( 'Remove Tag(s)', 'mailster' ),
+				'info'  => __( 'Removes one or more tags from a subscriber.', 'mailster' ),
 			),
 			array(
 				'id'    => 'unsubscribe',
 				'icon'  => 'external',
-				'label' => esc_html__( 'Unsubscribe', 'mailster' ),
-				'info'  => esc_html__( 'Unsubscribes a subscriber.', 'mailster' ),
+				'label' => __( 'Unsubscribe', 'mailster' ),
+				'info'  => __( 'Unsubscribes a subscriber.', 'mailster' ),
 			),
 			array(
 				'id'    => 'webhook',
 				'icon'  => 'cog',
-				'label' => esc_html__( 'Webhook', 'mailster' ),
-				'info'  => esc_html__( 'Triggers a webhook.', 'mailster' ),
+				'label' => __( 'Webhook', 'mailster' ),
+				'info'  => __( 'Triggers a webhook.', 'mailster' ),
 			),
 		);
 
@@ -123,76 +123,76 @@ class MailsterAutomations {
 			array(
 				'id'    => 'list_add',
 				'icon'  => 'formatListBullets',
-				'label' => esc_html__( 'Subscriber added to list', 'mailster' ),
-				'info'  => esc_html__( 'When a subscriber joins a list', 'mailster' ),
+				'label' => __( 'Subscriber added to list', 'mailster' ),
+				'info'  => __( 'When a subscriber joins a list', 'mailster' ),
 			),
 			array(
 				'id'    => 'list_removed',
 				'icon'  => 'formatListBullets',
-				'label' => esc_html__( 'Subscriber removed from a list', 'mailster' ),
-				'info'  => esc_html__( 'When a subscriber is removed from a list', 'mailster' ),
+				'label' => __( 'Subscriber removed from a list', 'mailster' ),
+				'info'  => __( 'When a subscriber is removed from a list', 'mailster' ),
 			),
 			array(
 				'id'    => 'tag_added',
 				'icon'  => 'tag',
-				'label' => esc_html__( 'Tag added', 'mailster' ),
-				'info'  => esc_html__( 'When a Tag is added to a subscriber', 'mailster' ),
+				'label' => __( 'Tag added', 'mailster' ),
+				'info'  => __( 'When a Tag is added to a subscriber', 'mailster' ),
 			),
 			array(
 				'id'    => 'tag_removed',
 				'icon'  => 'tag',
-				'label' => esc_html__( 'Tag removed', 'mailster' ),
-				'info'  => esc_html__( 'When a Tag is removed from a subscriber', 'mailster' ),
+				'label' => __( 'Tag removed', 'mailster' ),
+				'info'  => __( 'When a Tag is removed from a subscriber', 'mailster' ),
 			),
 			array(
 				'id'    => 'updated_field',
 				'icon'  => 'update',
-				'label' => esc_html__( 'Field updated', 'mailster' ),
-				'info'  => esc_html__( 'When a Field is added or updated by a subscriber', 'mailster' ),
+				'label' => __( 'Field updated', 'mailster' ),
+				'info'  => __( 'When a Field is added or updated by a subscriber', 'mailster' ),
 			),
 			array(
 				'id'    => 'form_conversion',
 				'icon'  => 'commentEditLink',
-				'label' => esc_html__( 'Form Conversion', 'mailster' ),
-				'info'  => esc_html__( 'When someone fills out and submits a form', 'mailster' ),
+				'label' => __( 'Form Conversion', 'mailster' ),
+				'info'  => __( 'When someone fills out and submits a form', 'mailster' ),
 			),
 			array(
 				'id'    => 'date',
 				'icon'  => 'calendar',
-				'label' => esc_html__( 'Specific date', 'mailster' ),
-				'info'  => esc_html__( 'On a specific date', 'mailster' ),
+				'label' => __( 'Specific date', 'mailster' ),
+				'info'  => __( 'On a specific date', 'mailster' ),
 			),
 			array(
 				'id'    => 'anniversary',
 				'icon'  => 'calendar',
-				'label' => esc_html__( 'Anniversary', 'mailster' ),
-				'info'  => esc_html__( 'On an anniversary of a date', 'mailster' ),
+				'label' => __( 'Anniversary', 'mailster' ),
+				'info'  => __( 'On an anniversary of a date', 'mailster' ),
 			),
 			array(
 				'id'    => 'link_click',
 				'icon'  => 'link',
-				'label' => esc_html__( 'Click a link', 'mailster' ),
-				'info'  => esc_html__( 'When a subscriber clicks a link', 'mailster' ),
+				'label' => __( 'Click a link', 'mailster' ),
+				'info'  => __( 'When a subscriber clicks a link', 'mailster' ),
 			),
 			array(
 				'id'    => 'page_visit',
 				'icon'  => 'page',
-				'label' => esc_html__( 'Visits a page', 'mailster' ),
-				'info'  => esc_html__( 'When a user visits a given page', 'mailster' ),
+				'label' => __( 'Visits a page', 'mailster' ),
+				'info'  => __( 'When a user visits a given page', 'mailster' ),
 			),
 			array(
 				'id'    => 'hook',
 				'icon'  => 'shortcode',
-				'label' => esc_html__( 'Custom Hook', 'mailster' ),
-				'info'  => esc_html__( 'When a custom hook is called', 'mailster' ),
+				'label' => __( 'Custom Hook', 'mailster' ),
+				'info'  => __( 'When a custom hook is called', 'mailster' ),
 			),
 			array(
 				'id'       => 'opened_campaign',
 				'icon'     => 'key',
-				'label'    => esc_html__( 'Open a campaign', 'mailster' ),
-				'info'     => esc_html__( 'When a users opens a campaign', 'mailster' ),
+				'label'    => __( 'Open a campaign', 'mailster' ),
+				'info'     => __( 'When a users opens a campaign', 'mailster' ),
 				'disabled' => true,
-				'reason'   => esc_html__( 'Comming soon!', 'mailster' ),
+				'reason'   => __( 'Comming soon!', 'mailster' ),
 			),
 		);
 
@@ -448,8 +448,12 @@ class MailsterAutomations {
 		$sql = "SELECT workflow_id, `trigger`, step, IFNULL(`timestamp`, %d) AS timestamp FROM {$wpdb->prefix}mailster_workflows WHERE `finished` = 0 AND (`timestamp` <= %d OR `timestamp` IS NULL)";
 
 		foreach ( $where as $key => $value ) {
-			$values = array_map( 'esc_sql', (array) $value );
-			$sql   .= ' AND `' . esc_sql( $key ) . "` IN ('" . implode( "','", $values ) . "')";
+			$values = array_map( 'esc_sql', array_filter( (array) $value ) );
+			if ( empty( $values ) ) {
+				continue;
+			}
+			$sql .= ' AND `' . esc_sql( $key ) . "` IN ('" . implode( "','", $values ) . "')";
+
 		}
 
 		$sql .= ' AND subscriber_id IS NOT NULL GROUP BY workflow_id, `timestamp` ORDER BY `timestamp` ASC LIMIT %d';

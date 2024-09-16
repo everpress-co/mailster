@@ -1361,7 +1361,7 @@ class Mailster {
 	}
 
 	public function add_admin_header() {
-		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ) . "\n" . esc_html( 'If you cancel you will be redirected to our support page.', 'mailster' );
+		$consent = __( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . __( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ) . "\n" . __( 'If you click "cancel" you will be redirected to our support page.', 'mailster' );
 
 		mailster_localize_script( 'beacon', array( 'consent' => $consent ) );
 
