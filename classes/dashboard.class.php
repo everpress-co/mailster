@@ -129,7 +129,7 @@ class MailsterDashboard {
 		$this->register_meta_box( 'quick-links', esc_html__( 'Quick Links', 'mailster' ), array( &$this, 'quick_links' ) );
 		$this->register_meta_box( 'campaigns', esc_html__( 'My Campaigns', 'mailster' ), array( &$this, 'campaigns' ) );
 		if ( current_user_can( 'mailster_manage_licenses' ) ) {
-			$this->register_meta_box( 'mailster', esc_html__( 'My Mailster', 'mailster' ), array( &$this, 'mailster' ), 'side', 'high' );
+			$this->register_meta_box( 'mailster', sprintf( esc_html__( 'My %s', 'Mailster', 'mailster' ), 'Mailster' ), array( &$this, 'mailster' ), 'side', 'high' );
 		}
 		$this->register_meta_box( 'subscribers', esc_html__( 'My Subscribers', 'mailster' ), array( &$this, 'subscribers' ), 'side' );
 		$this->register_meta_box( 'lists', esc_html__( 'My Lists', 'mailster' ), array( &$this, 'lists' ), 'side' );

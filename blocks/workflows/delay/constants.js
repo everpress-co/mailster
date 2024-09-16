@@ -6,7 +6,7 @@
  * WordPress dependencies
  */
 
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { getSettings } from '@wordpress/date';
 
 /**
@@ -48,38 +48,131 @@ export const DELAY_OPTIONS = [
 ];
 
 export const MONTH_OPTIONS = {
-	1: sprintf(__('%s day of the month', 'mailster'), '1st'),
-	2: sprintf(__('%s day of the month', 'mailster'), '2nd'),
-	3: sprintf(__('%s day of the month', 'mailster'), '3rd'),
-	4: sprintf(__('%s day of the month', 'mailster'), '4th'),
-	5: sprintf(__('%s day of the month', 'mailster'), '5th'),
-	6: sprintf(__('%s day of the month', 'mailster'), '6th'),
-	7: sprintf(__('%s day of the month', 'mailster'), '7th'),
-	8: sprintf(__('%s day of the month', 'mailster'), '8th'),
-	9: sprintf(__('%s day of the month', 'mailster'), '9th'),
-	10: sprintf(__('%s day of the month', 'mailster'), '10th'),
-	11: sprintf(__('%s day of the month', 'mailster'), '11st'),
-	12: sprintf(__('%s day of the month', 'mailster'), '12nd'),
-	13: sprintf(__('%s day of the month', 'mailster'), '13rd'),
-	14: sprintf(__('%s day of the month', 'mailster'), '14th'),
-	15: sprintf(__('%s day of the month', 'mailster'), '15th'),
-	16: sprintf(__('%s day of the month', 'mailster'), '16th'),
-	17: sprintf(__('%s day of the month', 'mailster'), '17th'),
-	18: sprintf(__('%s day of the month', 'mailster'), '18th'),
-	19: sprintf(__('%s day of the month', 'mailster'), '19th'),
-	20: sprintf(__('%s day of the month', 'mailster'), '20th'),
-	21: sprintf(__('%s day of the month', 'mailster'), '21st'),
-	22: sprintf(__('%s day of the month', 'mailster'), '22nd'),
-	23: sprintf(__('%s day of the month', 'mailster'), '23rd'),
-	24: sprintf(__('%s day of the month', 'mailster'), '24th'),
-	25: sprintf(__('%s day of the month', 'mailster'), '25th'),
-	26: sprintf(__('%s day of the month', 'mailster'), '26th'),
-	27: sprintf(__('%s day of the month', 'mailster'), '27th'),
-	28: sprintf(__('%s day of the month', 'mailster'), '28th'),
-	29: sprintf(__('%s day of the month', 'mailster'), '29th'),
-	30: sprintf(__('%s day of the month', 'mailster'), '30th'),
-	31: sprintf(__('%s day of the month', 'mailster'), '31st'),
-	'-1': sprintf(__('%s day of the month', 'mailster'), 'Last'),
+	1: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('1st', '[x] day of the month', 'mailster')
+	),
+	2: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('2nd', '[x] day of the month', 'mailster')
+	),
+	3: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('3rd', '[x] day of the month', 'mailster')
+	),
+	4: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('4th', '[x] day of the month', 'mailster')
+	),
+	5: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('5th', '[x] day of the month', 'mailster')
+	),
+	6: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('6th', '[x] day of the month', 'mailster')
+	),
+	7: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('7th', '[x] day of the month', 'mailster')
+	),
+	8: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('8th', '[x] day of the month', 'mailster')
+	),
+	9: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('9th', '[x] day of the month', 'mailster')
+	),
+	10: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('10th', '[x] day of the month', 'mailster')
+	),
+	11: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('11st', '[x] day of the month', 'mailster')
+	),
+	12: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('12nd', '[x] day of the month', 'mailster')
+	),
+	13: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('13rd', '[x] day of the month', 'mailster')
+	),
+	14: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('14th', '[x] day of the month', 'mailster')
+	),
+	15: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('15th', '[x] day of the month', 'mailster')
+	),
+	16: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('16th', '[x] day of the month', 'mailster')
+	),
+	17: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('17th', '[x] day of the month', 'mailster')
+	),
+	18: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('18th', '[x] day of the month', 'mailster')
+	),
+	19: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('19th', '[x] day of the month', 'mailster')
+	),
+	20: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('20th', '[x] day of the month', 'mailster')
+	),
+	21: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('21st', '[x] day of the month', 'mailster')
+	),
+	22: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('22nd', '[x] day of the month', 'mailster')
+	),
+	23: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('23rd', '[x] day of the month', 'mailster')
+	),
+	24: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('24th', '[x] day of the month', 'mailster')
+	),
+	25: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('25th', '[x] day of the month', 'mailster')
+	),
+	26: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('26th', '[x] day of the month', 'mailster')
+	),
+	27: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('27th', '[x] day of the month', 'mailster')
+	),
+	28: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('28th', '[x] day of the month', 'mailster')
+	),
+	29: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('29th', '[x] day of the month', 'mailster')
+	),
+	30: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('30th', '[x] day of the month', 'mailster')
+	),
+	31: sprintf(
+		__('%s day of the month', 'mailster'),
+		_x('31st', '[x] day of the month', 'mailster')
+	),
+	'-1': __('Last day of the month', 'mailster'),
 };
 
 export const WEEK_OPTIONS = settings.l10n.weekdays;

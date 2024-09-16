@@ -9,16 +9,9 @@ import classnames from 'classnames';
  */
 import { __ } from '@wordpress/i18n';
 
-import {
-	useBlockProps,
-	InnerBlocks,
-	InspectorControls,
-} from '@wordpress/block-editor';
-import ServerSideRender from '@wordpress/server-side-render';
-import apiFetch from '@wordpress/api-fetch';
-import { TabPanel, Tooltip } from '@wordpress/components';
-import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
-import { useEffect, useState } from '@wordpress/element';
+import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
+import { Tooltip } from '@wordpress/components';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -74,7 +67,7 @@ export default function Edit(props) {
 				{currentTab && (
 					<Tooltip text={currentTab.label}>
 						<span className="section-info">
-							{sprintf(__('[Mailster]: %s', 'mailster'), currentTab.name)}
+							{sprintf('[Mailster]: %s', currentTab.name)}
 						</span>
 					</Tooltip>
 				)}

@@ -1,3 +1,12 @@
+### Version 4.1.3 (2024-09-16)
+
+- fixed: automation schedule generated invalid query if empty arguments were passed
+- fixed: missing translations
+- fixed: respect `WPLANG` property when fetching translations
+- fixed: typo on dashboard
+- improved: allow updating from the dashboard if translations have been loaded already
+- improved: hook based triggers now support multiple or all subscribers
+
 ### Version 4.1.2 (2024-08-09)
 
 - fixed: PHP warning in automations class

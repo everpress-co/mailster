@@ -6,9 +6,9 @@
 <div class="mailster-setup-col">
 
 	<?php if ( mailster()->is_trial() ) : ?>
-	<h2><?php esc_html_e( 'Thanks for Testing Mailster!', 'mailster' ); ?></h2>
+	<h2><?php printf( esc_html_x( 'Thanks for Testing %s!', 'Mailster', 'mailster' ), 'Mailster' ); ?></h2>
 	<?php else : ?>
-	<h2><?php esc_html_e( 'Welcome to Mailster', 'mailster' ); ?></h2>
+	<h2><?php printf( esc_html_x( 'Welcome to %s', 'Mailster', 'mailster' ), 'Mailster' ); ?></h2>
 	<?php endif; ?>
 
 	<p><?php esc_html_e( 'Before you can start sending your campaigns Mailster needs some info to get started.', 'mailster' ); ?></p>

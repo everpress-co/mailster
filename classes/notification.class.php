@@ -309,12 +309,12 @@ class MailsterNotification {
 
 			// test mail
 			case 'test_subject':
-				return esc_html__( 'Mailster Test Email', 'mailster' );
+				return sprintf( esc_html_x( '%s Test Email', 'Mailster', 'mailster' ), 'Mailster' );
 
 			case 'test_replace':
 				$message = sprintf( esc_html__( 'This is a test mail sent from %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '">' . esc_html__( 'from your settings page', 'mailster' ) . '</a>' );
 				return array(
-					'headline'     => esc_html__( 'Mailster Test Email', 'mailster' ),
+					'headline'     => sprintf( esc_html_x( '%s Test Email', 'Mailster', 'mailster' ), 'Mailster' ),
 					'notification' => $message,
 					'can-spam'     => $message,
 				);

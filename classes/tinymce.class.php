@@ -140,7 +140,7 @@ class MailsterTinymce {
 			array(
 				'l10n' => array(
 					'tags'   => array(
-						'title' => esc_html__( 'Mailster Tags', 'mailster' ),
+						'title' => sprintf( esc_html_x( '%s Tags', 'Mailster', 'mailster' ), 'Mailster' ),
 						'tag'   => esc_html__( 'Tag', 'mailster' ),
 						'tags'  => esc_html__( 'Tags', 'mailster' ),
 					),

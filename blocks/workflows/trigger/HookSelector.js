@@ -15,19 +15,13 @@ import {
 	ClipboardButton,
 	Card,
 	CardBody,
-	CardHeader,
-	CardFooter,
-	__experimentalConfirmDialog as ConfirmDialog,
 	__experimentalSpacer as Spacer,
 	Flex,
-	FlexBlock,
-	FlexItem,
+	Tip,
+	Modal,
 } from '@wordpress/components';
 
-import { useSelect } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
 import { useState, useEffect } from '@wordpress/element';
-import { Icon, aspectRatio } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
@@ -51,6 +45,11 @@ export default function Selector(props) {
 		"mailster_trigger( '%s', $subscriber_id );",
 		hook
 	);
+	const codesnippet2 = sprintf(
+		"mailster_trigger( '%s', array( $subscriber_id1, $subscriber_id2 ) );",
+		hook
+	);
+	const codesnippet3 = sprintf("mailster_trigger( '%s' );", hook);
 
 	const setHook = (value) => {
 		setAttributes({ hook: value ? value : undefined });
@@ -68,37 +67,95 @@ export default function Selector(props) {
 						{__('How to implement?', 'mailster')}
 					</Button>
 
-					<ConfirmDialog
-						isOpen={isVisible}
-						onConfirm={toggleVisible}
-						onCancel={toggleVisible}
-					>
-						<h3>
-							{__('Trigger this workflow by executing some code.', 'mailster')}
-						</h3>
-						<BaseControl
-							help={__(
-								'You can use it in your theme or in a plugin. Make sure you define the subscriber ID to trigger this workflow for the right subscriber.',
+					{isVisible && (
+						<Modal
+							title={__(
+								'Trigger this workflow by executing some code.',
 								'mailster'
 							)}
 						>
-							<Spacer paddingY={2}>
-								<Flex>
-									<pre>{codesnippet}</pre>
-									<ClipboardButton
-										icon={aspectRatio}
-										isSmall
-										variant="secondary"
-										text={codesnippet}
-										onCopy={() => setHasCopied(true)}
-										onFinishCopy={() => setHasCopied(false)}
+							<Card>
+								<CardBody>
+									<BaseControl
+										label={__('Trigger for a single subscriber', 'mailster')}
 									>
-										{hasCopied ? 'Copied!' : 'Copy Text'}
-									</ClipboardButton>
-								</Flex>
-							</Spacer>
-						</BaseControl>
-					</ConfirmDialog>
+										<Flex>
+											<pre>
+												<code>{codesnippet}</code>
+											</pre>
+											<ClipboardButton
+												isSmall
+												variant="secondary"
+												text={codesnippet}
+												onCopy={() => setHasCopied(codesnippet)}
+												onFinishCopy={() => setHasCopied(false)}
+											>
+												{hasCopied == codesnippet
+													? __('Copied!', 'mailster')
+													: __('Copy Snippet', 'mailster')}
+											</ClipboardButton>
+										</Flex>
+									</BaseControl>
+
+									<BaseControl
+										label={__('Trigger for multiple subscribers', 'mailster')}
+									>
+										<Flex>
+											<pre>
+												<code>{codesnippet2}</code>
+											</pre>
+											<ClipboardButton
+												isSmall
+												variant="secondary"
+												text={codesnippet2}
+												onCopy={() => setHasCopied(codesnippet2)}
+												onFinishCopy={() => setHasCopied(false)}
+											>
+												{hasCopied == codesnippet2
+													? __('Copied!', 'mailster')
+													: __('Copy Snippet', 'mailster')}
+											</ClipboardButton>
+										</Flex>
+									</BaseControl>
+									<BaseControl
+										label={__('Trigger for all subscribers', 'mailster')}
+									>
+										<Flex>
+											<pre>
+												<code>{codesnippet3}</code>
+											</pre>
+											<ClipboardButton
+												isSmall
+												variant="secondary"
+												text={codesnippet3}
+												onCopy={() => setHasCopied(codesnippet3)}
+												onFinishCopy={() => setHasCopied(false)}
+											>
+												{hasCopied == codesnippet3
+													? __('Copied!', 'mailster')
+													: __('Copy Snippet', 'mailster')}
+											</ClipboardButton>
+										</Flex>
+									</BaseControl>
+								</CardBody>
+							</Card>
+							<Spacer paddingY={1}></Spacer>
+							<Tip>
+								<p>
+									{__(
+										'You can use it in your theme or in a plugin. Make sure you define the subscriber ID to trigger this workflow for the right subscriber.',
+										'mailster'
+									)}
+								</p>
+								<p>
+									{__(
+										'Use conditions to further segment your selection.',
+										'mailster'
+									)}
+								</p>
+							</Tip>
+						</Modal>
+					)}
 				</Flex>
 			)}
 		</BaseControl>

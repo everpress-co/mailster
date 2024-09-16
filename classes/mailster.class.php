@@ -1340,7 +1340,7 @@ class Mailster {
 
 	public function special_pages() {
 
-		$page = add_submenu_page( true, esc_html__( 'Mailster Setup', 'mailster' ), esc_html__( 'Setup', 'mailster' ), 'activate_plugins', 'mailster_setup', array( &$this, 'setup_page' ) );
+		$page = add_submenu_page( true, sprintf( esc_html_x( '%s Setup', 'Mailster', 'mailster' ), 'Mailster' ), esc_html__( 'Setup', 'mailster' ), 'activate_plugins', 'mailster_setup', array( &$this, 'setup_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'remove_menu_entries' ) );
 
@@ -1361,7 +1361,7 @@ class Mailster {
 	}
 
 	public function add_admin_header() {
-		$consent = esc_html__( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . esc_html__( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ) . "\n" . esc_html( 'If you cancel you will be redirected to our support page.', 'mailster' );
+		$consent = __( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . __( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ) . "\n" . __( 'If you click "cancel" you will be redirected to our support page.', 'mailster' );
 
 		mailster_localize_script( 'beacon', array( 'consent' => $consent ) );
 
@@ -1450,7 +1450,7 @@ class Mailster {
 				esc_html__( 'Setup', 'mailster' ),
 				'activate_plugins',
 				'admin.php?page=mailster_setup',
-				esc_html__( 'Mailster Setup', 'mailster' ),
+				sprintf( esc_html_x( '%s Setup', 'Mailster', 'mailster' ), 'Mailster' ),
 			),
 		);
 	}

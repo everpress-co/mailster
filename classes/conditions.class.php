@@ -568,11 +568,14 @@ class MailsterConditions {
 		$operator = isset( $condition['operator'] ) ? $condition['operator'] : $condition[1];
 		$value    = stripslashes_deep( isset( $condition['value'] ) ? $condition['value'] : $condition[2] );
 
-		$return        = array(
+		$return = array(
 			'field'    => '<strong>' . $this->nice_name( $field, 'field', $field ) . '</strong>',
 			'operator' => '',
 			'value'    => '',
 		);
+		/* translators: opening and closing double quote in your language */
+		$quotes = _x( '“ ”', 'openquote, space, closing quote', 'mailster' );
+
 		$opening_quote = esc_html_x( '&#8220;', 'opening curly double quote', 'mailster' );
 		$closing_quote = esc_html_x( '&#8221;', 'closing curly double quote', 'mailster' );
 
