@@ -187,6 +187,15 @@ Get professional development help from our expert support partner _Codeable_ for
 
 ### Changelog
 
+### 4.1.3
+
+- fixed: automation schedule generated invalid query if empty arguments were passed
+- fixed: missing translations
+- fixed: respect `WPLANG` property when fetching translations
+- fixed: typo on dashboard
+- improved: allow updating from the dashboard if translations have been loaded already
+- improved: hook based triggers now support multiple or all subscribers
+
 ### 4.1.2
 
 - fixed: PHP warning in automations class
