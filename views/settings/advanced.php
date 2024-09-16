@@ -1,16 +1,16 @@
 <p class="description"><?php esc_html_e( 'Some of these settings may affect your website. In normal circumstance it is not required to change anything on this page.', 'mailster' ); ?></p>
 <table class="form-table">
 	<tr valign="top" class="settings-row settings-row-usage-mailster-logo">
-		<th scope="row"><?php esc_html_e( 'Mailster Branding', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Branding', 'mailster' ); ?></th>
 		<td>
-			<label><input type="hidden" name="mailster_options[mailster_branding]" value=""><input type="checkbox" name="mailster_options[mailster_branding]" value="1" <?php checked( mailster_option( 'mailster_branding' ) ); ?>> <?php esc_html_e( 'Show Mailster Branding in your campaigns.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you enable this option your campaigns contain a small logo of Mailster at the very bottom of the email.', 'mailster' ); ?>
+			<label><input type="hidden" name="mailster_options[mailster_branding]" value=""><input type="checkbox" name="mailster_options[mailster_branding]" value="1" <?php checked( mailster_option( 'mailster_branding' ) ); ?>> <?php printf( esc_html_x( 'Show %s Branding in your campaigns.', 'Mailster', 'mailster' ), 'Mailster' ); ?></label> <p class="description"><?php printf( esc_html_x( 'If you enable this option your campaigns contain a small logo of %s at the very bottom of the email.', 'Mailster', 'mailster' ), 'Mailster' ); ?>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-cache">
 		<th scope="row"><?php esc_html_e( 'Cache', 'mailster' ); ?></th>
 		<td>
 			<label><input type="hidden" name="mailster_options[disable_cache_frontpage]" value=""><input type="checkbox" name="mailster_options[disable_cache_frontpage]" value="1" <?php checked( mailster_option( 'disable_cache_frontpage' ) ); ?>> <?php esc_html_e( 'Disable Form Caching', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Enable this option if you have issue with the security nonce on Mailster forms.', 'mailster' ); ?></p>
-			<br><label><input type="hidden" name="mailster_options[disable_cache]" value=""><input type="checkbox" name="mailster_options[disable_cache]" value="1" <?php checked( mailster_option( 'disable_cache' ) ); ?>> <?php esc_html_e( 'Disable Object Cache for Mailster', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If enabled Mailster doesn\'t use cache anymore. This causes an increase in page load time! This option is not recommended!', 'mailster' ); ?></p>
+			<br><label><input type="hidden" name="mailster_options[disable_cache]" value=""><input type="checkbox" name="mailster_options[disable_cache]" value="1" <?php checked( mailster_option( 'disable_cache' ) ); ?>> <?php printf( esc_html_x( 'Disable Object Cache for %s', 'Mailster', 'mailster' ), 'Mailster' ); ?></label> <p class="description"><?php printf( esc_html_x( 'If enabled %s doesn\'t use cache anymore. This causes an increase in page load time! This option is not recommended!', 'Mailster', 'mailster' ), 'Mailster' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-short-codes">
@@ -20,12 +20,12 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-remove-data">
 		<th scope="row"><?php esc_html_e( 'Remove Data', 'mailster' ); ?></th>
-		<td><label><input type="hidden" name="mailster_options[remove_data]" value=""><input type="checkbox" name="mailster_options[remove_data]" value="1" <?php checked( mailster_option( 'remove_data' ) ); ?>> <?php esc_html_e( 'Remove all data on plugin deletion', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Mailster will remove all it\'s data if you delete the plugin via the plugin page.', 'mailster' ); ?></p>
+		<td><label><input type="hidden" name="mailster_options[remove_data]" value=""><input type="checkbox" name="mailster_options[remove_data]" value="1" <?php checked( mailster_option( 'remove_data' ) ); ?>> <?php esc_html_e( 'Remove all data on plugin deletion', 'mailster' ); ?></label> <p class="description"><?php printf( esc_html_x( '%s will remove all it\'s data if you delete the plugin via the plugin page.', 'Mailster', 'mailster' ), 'Mailster' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-url-rewrite">
 		<th scope="row"><?php esc_html_e( 'URL Rewrite', 'mailster' ); ?></th>
-		<td><label><input type="hidden" name="mailster_options[got_url_rewrite]" value=""><input type="checkbox" name="mailster_options[got_url_rewrite]" value="1" <?php checked( mailster_option( 'got_url_rewrite' ) ); ?>> <?php esc_html_e( 'Website supports URL rewrite', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Mailster detects this setting by default so change only if detection fails.', 'mailster' ); ?></p>
+		<td><label><input type="hidden" name="mailster_options[got_url_rewrite]" value=""><input type="checkbox" name="mailster_options[got_url_rewrite]" value="1" <?php checked( mailster_option( 'got_url_rewrite' ) ); ?>> <?php esc_html_e( 'Website supports URL rewrite', 'mailster' ); ?></label> <p class="description"><?php printf( esc_html_x( '%s detects this setting by default so change only if detection fails.', 'Mailster', 'mailster' ), 'Mailster' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-form-post-protection">

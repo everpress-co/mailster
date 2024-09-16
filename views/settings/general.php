@@ -36,11 +36,11 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-system-mails">
 		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ); ?><?php echo mailster()->beacon( '611bba6ff886c9486f8d9936' ); ?></a>
-		<p class="description"><?php esc_html_e( 'Decide how Mailster uses the wp_mail function.', 'mailster' ); ?></p>
+		<p class="description"><?php printf( esc_html_x( 'Decide how %s uses the wp_mail function.', 'Mailster', 'mailster' ), 'Mailster' ); ?></p>
 		</th>
 		<td>
-		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="0" <?php checked( ! mailster_option( 'system_mail' ) ); ?>> <?php esc_html_e( 'Do not use Mailster for outgoing WordPress mails', 'mailster' ); ?></label></p>
-		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="1" <?php checked( mailster_option( 'system_mail' ) == 1 ); ?>> <?php esc_html_e( 'Use Mailster for all outgoing WordPress mails', 'mailster' ); ?></label><br>
+		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="0" <?php checked( ! mailster_option( 'system_mail' ) ); ?>> <?php printf( esc_html_x( 'Do not use %s for outgoing WordPress mails', 'Mailster', 'mailster' ), 'Mailster' ); ?></label></p>
+		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="1" <?php checked( mailster_option( 'system_mail' ) == 1 ); ?>> <?php printf( esc_html_x( 'Use %s for all outgoing WordPress mails', 'Mailster', 'mailster' ), 'Mailster' ); ?></label><br>
 			<label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="template" <?php checked( mailster_option( 'system_mail' ) == 'template' ); ?>> <?php esc_html_e( 'Use only the template for all outgoing WordPress mails', 'mailster' ); ?></label></p>
 		<p>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' ); ?>
 		<?php

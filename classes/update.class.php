@@ -157,7 +157,7 @@ class MailsterUpdate {
 		if ( ( isset( $upgrader->skin->plugin ) && $upgrader->skin->plugin === MAILSTER_SLUG ) ||
 			( isset( $upgrader->skin->plugin_info ) && $upgrader->skin->plugin_info['Name'] === 'Mailster - Email Newsletter Plugin for WordPress' ) ) {
 
-			$upgrader->strings['mailster_download'] = esc_html__( 'Downloading the latest version of Mailster', 'mailster' ) . '...';
+			$upgrader->strings['mailster_download'] = sprintf( esc_html_x( 'Downloading the latest version of %s', 'Mailster', 'mailster' ), 'Mailster' ) . '...';
 			$upgrader->skin->feedback( 'mailster_download' );
 
 			$res = $upgrader->fs_connect( array( WP_CONTENT_DIR ) );

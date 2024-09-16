@@ -2,7 +2,7 @@
 	<tr valign="top" class="settings-row settings-row-export">
 		<th scope="row"><?php esc_html_e( 'Export', 'mailster' ); ?>
 		<p class="description">
-		<?php esc_html_e( 'Use this data to copy your settings between Mailster installations. This data contains sensitive information like passwords so don\'t share them. Capabilities are not included.', 'mailster' ); ?>
+		<?php printf( esc_html_x( 'Use this data to copy your settings between %s installations. This data contains sensitive information like passwords so don\'t share them. Capabilities are not included.', 'Mailster', 'mailster' ), 'Mailster' ); ?>
 		</p>
 		</th>
 		<td><textarea rows="10" cols="40" class="large-text code" id="settings-export-data"><?php echo $this->export_settings(); ?></textarea>
@@ -24,7 +24,7 @@
 		</th>
 		<td><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-settings=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-settings' ); ?>" class="button" id="mailster_reset_data"><?php esc_html_e( 'Reset all settings', 'mailster' ); ?></a>
 		<p class="description">
-		<?php esc_html_e( 'Use this options to reset the data to Mailster default values.', 'mailster' ); ?>
+		<?php printf( esc_html_x( 'Use this options to reset the data to %s default values.', 'Mailster', 'mailster' ), 'Mailster' ); ?>
 		</p>
 		</td>
 	</tr>

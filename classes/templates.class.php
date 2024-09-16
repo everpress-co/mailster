@@ -1691,7 +1691,7 @@ class MailsterTemplates {
 			'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
 			'filters'             => array(
 				array(
-					'title'      => esc_html__( 'Mailster Template ZIP file', 'mailster' ),
+					'title'      => sprintf( esc_html_x( '%s Template ZIP file', 'Mailster', 'mailster' ), 'Mailster' ),
 					'extensions' => 'zip',
 				),
 			),

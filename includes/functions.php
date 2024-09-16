@@ -1401,7 +1401,7 @@ function mailster_update_notice( $text ) {
 	wp_enqueue_style( 'thickbox' );
 	wp_enqueue_script( 'thickbox' );
 
-	return sprintf( esc_html__( 'Mailster has been updated to %s.', 'mailster' ), '<strong>' . MAILSTER_VERSION . '</strong>' ) . ' <a class="thickbox" href="' . network_admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=mailster&amp;section=changelog&amp;TB_iframe=true&amp;width=772&amp;height=745' ) . '">' . esc_html__( 'Changelog', 'mailster' ) . '</a>';
+	return sprintf( esc_html_x( '%1$s has been updated to %2$s.', '[Mailster] has been updated to [version]', 'mailster' ), 'Mailster', '<strong>' . MAILSTER_VERSION . '</strong>' ) . ' <a class="thickbox" href="' . network_admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=mailster&amp;section=changelog&amp;TB_iframe=true&amp;width=772&amp;height=745' ) . '">' . esc_html__( 'Changelog', 'mailster' ) . '</a>';
 }
 
 
