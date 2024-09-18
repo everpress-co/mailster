@@ -793,9 +793,9 @@ class MailsterWorkflow {
 			// stop if existing didn't finished
 		} elseif ( ! $this->entry->finished ) {
 			$this->log( 'ENTRY NOT FINISHED' );
-			// Stop if the entry is not finished but with these triggers
+			// Stop if the entry is not finished and not with these triggers
 			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
-				// return false;
+				return false;
 			}
 		}
 
