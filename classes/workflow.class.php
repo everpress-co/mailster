@@ -757,13 +757,13 @@ class MailsterWorkflow {
 				$this->log( 'LIMIT NOT REACHED' );
 			}
 		}
-		$pending = isset( $step['attr']['pending'] ) ? (bool) $step['attr']['pending'] : false;
+		$allow_pending = isset( $step['attr']['pending'] ) ? (bool) $step['attr']['pending'] : false;
 
 		// check if we should do pending subscribers
 		if ( $this->subscriber ) {
 			$is_pending = $this->subscriber->status === 0;
 			// we check for pending subscribers and we are not pending
-			if ( ! $pending && $is_pending ) {
+			if ( ! $allow_pending && $is_pending ) {
 				$this->log( 'NO PENDING SUBSCRIBER!' );
 				return false;
 			}
@@ -785,23 +785,28 @@ class MailsterWorkflow {
 		// load existing entry
 		$this->entry = $this->get_entry();
 
-			// add if missing
+		// add if missing
 		if ( ! $this->entry ) {
 			$this->log( 'ADD TO DATABASE' );
 			$this->entry = $this->add();
 
 			// stop if existing didn't finished
 		} elseif ( ! $this->entry->finished ) {
-			$this->log( 'ENTRY NOT FINISHED' );
-			// Stop if the entry is not finished and not with these triggers
-			if ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
+			$this->log( 'ENTRY FOUND!' );
+
+			// if found entry is at the trigger we can continue
+			if ( $this->entry->step == $step['id'] ) {
+				$this->log( 'CONTINUE' );
+
+				// Stop if the entry is not finished and not with these triggers
+			} elseif ( ! in_array( $this->trigger, array( 'date', 'anniversary', 'published_post' ) ) ) {
 				return false;
 			}
 		}
 
 		$this->log( 'use TRIGGER ' . $this->trigger );
 
-			// check if user is subscribed
+		// check if user is subscribed
 		if ( $this->subscriber && $is_pending ) {
 			$this->log( 'SUBSCRIBER NOT SUBSCRIBED ' . $this->subscriber->status );
 
