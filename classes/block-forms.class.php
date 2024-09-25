@@ -1785,7 +1785,7 @@ class MailsterBlockForms {
 
 			$content = preg_replace( '/(<!-- wp:(mailster\/(field\-email))(.*?)-->(.*?)<!-- \/wp:(\2) -->)/s', $dropdown . ' $1', $content );
 
-			$submit_button = mailster_text( 'unsubscribebutton' );
+			$submit_button = mailster_text( 'profilebutton' );
 
 		}
 

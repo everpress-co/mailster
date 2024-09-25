@@ -4,7 +4,7 @@ Contributors: everpress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing  
 Requires at least: 6.2  
 Tested up to: 6.6  
-Stable tag: 4.1.3  
+Stable tag: 4.1.4  
 License: GPLv2 or later  
 Requires PHP: 7.4
 
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner _Codeable_ for
 ## Changelog
 
 ### Changelog
+
+### 4.1.4
+
+- fixed: profile showed unsubscribe button
+- fixed: workflow can be triggered multiple times in some instances
+- improved: checks if Mailster methods are called before Mailster is initialized
+- improved: Support for WooCommerce Add-on
 
 ### 4.1.3
 

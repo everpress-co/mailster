@@ -1,3 +1,10 @@
+### Version 4.1.4 (2024-09-25)
+
+- fixed: profile showed unsubscribe button
+- fixed: workflow can be triggered multiple times in some instances
+- improved: checks if Mailster methods are called before Mailster is initialized
+- improved: Support for WooCommerce Add-on
+
 ### Version 4.1.3 (2024-09-16)
 
 - fixed: automation schedule generated invalid query if empty arguments were passed

@@ -9,6 +9,10 @@
 function mailster( $subclass = null ) {
 	global $mailster;
 
+	if ( empty( $mailster ) ) {
+		_doing_it_wrong( __FUNCTION__, sprintf( _x( '%s is not initialized yet', 'Mailster', 'mailster' ), 'Mailster' ), '4.1.4' );
+	}
+
 	$args     = func_get_args();
 	$subclass = array_shift( $args );
 
