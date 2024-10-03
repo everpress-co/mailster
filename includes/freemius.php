@@ -114,6 +114,9 @@ function mailster_add_link_for_envato() {
 	</div>
 	<div class="fs-license-key-container is-envato">
 		<a href="<?php echo mailster_url( 'https://kb.mailster.co/where-is-my-purchasecode/' ); ?>" target="_blank"><?php esc_html_e( "Can't find your license key?", 'mailster' ); ?></a>
+		<?php if ( get_option( 'mailster_setup' ) ) : ?>
+		<a class="alignright" href="<?php echo esc_url( add_query_arg( 'mailster_use_freemius', 0 ) ); ?>"><?php esc_html_e( 'Back to Migration', 'mailster' ); ?></a>
+		<?php endif; ?>
 	</div>
 	<?php
 }

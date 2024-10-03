@@ -4,6 +4,7 @@ class MailsterConvert {
 
 	public function __construct() {
 
+		add_action( 'admin_init', array( &$this, 'maybe_enable_fs' ) );
 		if ( get_option( 'mailster_freemius' ) ) {
 			return;
 		}
@@ -16,6 +17,27 @@ class MailsterConvert {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert License', 'mailster' ), esc_html__( 'Convert License', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
+	}
+
+	public function maybe_enable_fs() {
+
+		if ( ! isset( $_GET['mailster_use_freemius'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'mailster_manage_licenses' ) ) {
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'mailster' ) );
+		}
+
+		$current = get_option( 'mailster_freemius' );
+		if ( ! $current ) {
+			update_option( 'mailster_freemius', time() );
+		} else {
+			delete_option( 'mailster_freemius' );
+		}
+
+		mailster_redirect( admin_url( 'admin.php?page=mailster_convert' ) );
+		exit;
 	}
 
 	public function convert_page() {
