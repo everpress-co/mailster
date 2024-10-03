@@ -83,6 +83,10 @@ export default function Selector(props) {
 	const t_icon = triggerObj?.icon;
 
 	const TriggerButtons = ({ onClose }) => {
+		if (!allTriggers) {
+			return null;
+		}
+
 		return allTriggers.map((t, i) => {
 			const ico = Icons[t.icon] || t.icon;
 
