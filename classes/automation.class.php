@@ -882,9 +882,9 @@ class MailsterAutomations {
 			case 'status':
 				$numbers = $this->get_numbers( $post_id );
 
-				printf( '<div class="s-status"><span>%s</span> %s</div>', number_format_i18n( $numbers['active'] ), esc_html__( 'active', 'mailster' ) );
-				printf( '<div class="s-status"><span>%s</span> %s</div>', number_format_i18n( $numbers['finished'] ), esc_html__( 'finished', 'mailster' ) );
-				printf( '<div class="s-status"><span>%s</span> %s</div>', number_format_i18n( $numbers['total'] ), esc_html__( 'total', 'mailster' ) );
+				printf( '<div class="s-status"><span>%s</span> %s</div>', esc_html( number_format_i18n( $numbers['active'] ) ), esc_html__( 'active', 'mailster' ) );
+				printf( '<div class="s-status"><span>%s</span> %s</div>', esc_html( number_format_i18n( $numbers['finished'] ) ), esc_html__( 'finished', 'mailster' ) );
+				printf( '<div class="s-status"><span>%s</span> %s</div>', esc_html( number_format_i18n( $numbers['total'] ) ), esc_html__( 'total', 'mailster' ) );
 
 				break;
 
@@ -894,7 +894,7 @@ class MailsterAutomations {
 					return;
 				}
 				$total = $numbers['sent'];
-				echo number_format_i18n( $total );
+				echo esc_html( number_format_i18n( $total ) );
 
 				break;
 
@@ -904,10 +904,10 @@ class MailsterAutomations {
 					return;
 				}
 
-				echo '<span class="s-opens">' . number_format_i18n( $numbers['opens'] ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $numbers['sent'] ) . '</span>';
+				echo '<span class="s-opens">' . esc_html( number_format_i18n( $numbers['opens'] ) ) . '</span>/<span class="tiny s-sent">' . esc_html( number_format_i18n( $numbers['sent'] ) ) . '</span>';
 				$rate = round( $numbers['open_rate'] * 100, 2 );
-				echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-				echo ' (' . $rate . '%)';
+				echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+				echo ' (' . esc_html( $rate ) . '%)';
 				echo '</span>';
 				echo '<br>';
 
@@ -920,14 +920,14 @@ class MailsterAutomations {
 				}
 				$clicks = $numbers['clicks'];
 				$rate   = round( $numbers['click_rate'] * 100, 2 );
-				echo number_format_i18n( $clicks );
+				echo esc_html( number_format_i18n( $clicks ) );
 				if ( $rate ) {
-					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
-					echo '' . $rate . '%';
+					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "'>";
+					echo '' . esc_html( $rate ) . '%';
 					echo '</span>)</span>';
 				} else {
-					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-					echo ' (' . $rate . '%)';
+					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+					echo ' (' . esc_html( $rate ) . '%)';
 					echo '</span>';
 				}
 				echo '<br>';
@@ -942,14 +942,14 @@ class MailsterAutomations {
 				$unsubscribes = $numbers['unsubs'];
 				$rate         = round( $numbers['unsub_rate'] * 100, 2 );
 
-				echo number_format_i18n( $unsubscribes );
+				echo esc_html( number_format_i18n( $unsubscribes ) );
 				if ( $rate ) {
-					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
-					echo '' . $rate . '%';
+					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "'>";
+					echo '' . esc_html( $rate ) . '%';
 					echo '</span>)</span>';
 				} else {
-					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-					echo ' (' . $rate . '%)';
+					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+					echo ' (' . esc_html( $rate ) . '%)';
 					echo '</span>';
 				}
 				echo '<br>';
@@ -963,9 +963,9 @@ class MailsterAutomations {
 				}
 				$bounces = $numbers['bounces'];
 				$rate    = round( $numbers['bounce_rate'] * 100, 2 );
-				echo number_format_i18n( $bounces );
-				echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-				echo ' (' . $rate . '%)';
+				echo esc_html( number_format_i18n( $bounces ) );
+				echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+				echo ' (' . esc_html( $rate ) . '%)';
 				echo '</span>';
 				echo '<br>';
 

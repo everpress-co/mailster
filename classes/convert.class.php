@@ -26,7 +26,7 @@ class MailsterConvert {
 		}
 
 		if ( ! current_user_can( 'mailster_manage_licenses' ) ) {
-			wp_die( __( 'You do not have sufficient permissions to access this page.', 'mailster' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'mailster' ) );
 		}
 
 		$current = get_option( 'mailster_freemius' );

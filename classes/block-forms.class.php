@@ -1469,7 +1469,7 @@ class MailsterBlockForms {
 		$output = isset( $meta[ $cache_hash ] ) ? $meta[ $cache_hash ] : false;
 		$time   = isset( $meta_t[ $cache_hash ] ) ? $meta_t[ $cache_hash ] : false;
 
-		$cache_time_in_seconds = 10;
+		$cache_time_in_seconds = HOUR_IN_SECONDS;
 
 		if ( ! $use_cache || ! $output || ! $time || $time < time() - $cache_time_in_seconds ) {
 

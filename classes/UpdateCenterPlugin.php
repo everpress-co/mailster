@@ -28,7 +28,7 @@ class UpdateCenterPlugin {
 			$error  = sprintf( '[UpdateCenter] You have to define a "plugin" parameter for your plugin in %s on line %d', $caller['file'], $caller['line'] );
 
 			return ( is_admin() )
-				? wp_die( $error )
+				? wp_die( esc_html( $error ) )
 				: false;
 
 		}
@@ -332,8 +332,8 @@ class UpdateCenterPlugin {
 					$notice
 				);
 			}
-
-			echo '<div class="update-nag notice notice-warning inline update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
+			// phpcs:ignore
+			echo '<div class="update-nag notice notice-warning inline update-nag-' . esc_attr( $slug ) . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
 
 		}
 	}
