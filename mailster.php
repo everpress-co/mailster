@@ -7,6 +7,7 @@ Version: 4.1.5
 Author: EverPress
 Author URI: https://everpress.co
 Text Domain: mailster
+License: GPLv2 or later
 */
 
 if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
