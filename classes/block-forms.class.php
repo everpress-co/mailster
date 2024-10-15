@@ -1839,6 +1839,7 @@ class MailsterBlockForms {
 
 		update_post_meta( $post_id, '_cache', array() );
 		update_post_meta( $post_id, '_cache_time', array() );
+		delete_transient( 'mailster_forms' );
 	}
 
 	public function clear_inline_style() {
