@@ -914,75 +914,7 @@ function mailster_clear_cache( $part = '', $deprecated = false ) {
  */
 function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $screen = null, $append = false ) {
 
-	global $mailster_notices;
-
-	if ( true === $key ) {
-		$capability = true;
-		$key        = null;
-	}
-
-	if ( ! is_array( $args ) ) {
-		$args = array(
-			'text' => $args,
-			'type' => in_array( $type, array( 'success', 'error', 'info', 'warning' ) ) ? $type : 'success',
-			'once' => $once,
-			'key'  => $key ? $key : uniqid(),
-		);
-	}
-
-	if ( true === $capability ) {
-		$capability = get_current_user_id();
-		// no logged in user => only for admins
-		if ( ! $capability ) {
-			$capability = 'manage_options';
-		}
-	}
-
-	$args = wp_parse_args(
-		$args,
-		array(
-			'text'   => '',
-			'type'   => 'success',
-			'once'   => false,
-			'key'    => uniqid(),
-			'cb'     => null,
-			'cap'    => $capability,
-			'screen' => $screen,
-		)
-	);
-
-	if ( empty( $args['key'] ) ) {
-		$args['key'] = uniqid();
-	}
-
-	if ( is_numeric( $args['once'] ) && $args['once'] < 1600000000 ) {
-		$args['once'] = time() + $args['once'];
-	}
-
-	$mailster_notices = get_option( 'mailster_notices' );
-	if ( ! is_array( $mailster_notices ) ) {
-		$mailster_notices = array();
-	}
-
-	if ( $append && isset( $mailster_notices[ $args['key'] ] ) ) {
-		$args['text'] = $mailster_notices[ $args['key'] ]['text'] . '<br>' . $args['text'];
-	}
-
-	$mailster_notices[ $args['key'] ] = array(
-		'text'   => $args['text'],
-		'type'   => $args['type'],
-		'once'   => $args['once'],
-		'cb'     => $args['cb'],
-		'cap'    => $args['cap'],
-		'screen' => $args['screen'],
-	);
-
-	update_option( 'mailster_notices', $mailster_notices );
-	update_option( 'mailster_notices_count', count( $mailster_notices ) );
-
-	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
-
-	return $args['key'];
+	return mailster( 'notices' )->add( $args, $type, $once, $key, $capability, $screen, $append );
 }
 
 
@@ -995,23 +927,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
  */
 function mailster_remove_notice( $key ) {
 
-	global $mailster_notices;
-
-	$mailster_notices = get_option( 'mailster_notices', array() );
-
-	if ( isset( $mailster_notices[ $key ] ) ) {
-
-		unset( $mailster_notices[ $key ] );
-
-		update_option( 'mailster_notices', $mailster_notices );
-		update_option( 'mailster_notices_count', count( $mailster_notices ) );
-
-		do_action( 'mailster_remove_notice', $key );
-		do_action( 'mailster_remove_notice_' . $key );
-
-	}
-
-	return true;
+	return mailster( 'notices' )->remove( $key );
 }
 
 /**

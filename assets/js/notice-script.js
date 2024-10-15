@@ -12,28 +12,34 @@ mailster = (function (mailster, $, window, document) {
 			event.preventDefault();
 
 			var el = $(this).closest('.mailster-notice'),
-				id = el.data('id'),
-				type = !event.altKey ? 'notice_dismiss' : 'notice_dismiss_all';
+				ids = el.data('id');
 
-			if (event.altKey) el = mailster.notices.$;
-
-			if (id) {
-				el.addClass('idle');
-				mailster.util.ajax(type, { id: id }, function (response) {
-					if (response.success) {
-						el.fadeTo(100, 0, function () {
-							el.slideUp(100, function () {
-								el.remove();
-								if (!$('.mailster-notice').length) {
-									mailster.dom.body.classList.add('mailster-close-notices');
-								}
-							});
-						});
-					} else {
-						el.removeClass('idle');
-					}
-				});
+			if (event.altKey) {
+				el = mailster.notices.$;
+				ids = el
+					.map(function () {
+						return $(this).data('id');
+					})
+					.get();
 			}
+
+			if (!ids) return;
+
+			el.addClass('idle');
+			mailster.util.ajax('notice_dismiss', { ids: ids }, function (response) {
+				if (response.success) {
+					el.fadeTo(100, 0, function () {
+						el.slideUp(100, function () {
+							el.remove();
+							if (!$('.mailster-notice').length) {
+								mailster.dom.body.classList.add('mailster-close-notices');
+							}
+						});
+					});
+				} else {
+					el.removeClass('idle');
+				}
+			});
 		}
 	);
 
