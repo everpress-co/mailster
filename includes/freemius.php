@@ -165,6 +165,10 @@ function mailster_license_key_maxlength( $length ) {
 mailster_freemius()->add_filter( 'checkout_url', 'mailster_freemius_checkout_url' );
 function mailster_freemius_checkout_url( $url ) {
 
+	if ( empty( $url ) ) {
+		return $url;
+	}
+
 	if ( mailster_freemius()->is_whitelabeled() ) {
 		return mailster_url( 'https://mailster.co/go/buy' );
 	}
@@ -184,8 +188,20 @@ function mailster_freemius_checkout_url( $url ) {
 mailster_freemius()->add_filter( 'pricing_url', 'mailster_freemius_pricing_url' );
 function mailster_freemius_pricing_url( $url ) {
 
+	if ( empty( $url ) ) {
+		return $url;
+	}
+
 	if ( mailster_freemius()->is_whitelabeled() ) {
 		return mailster_url( 'https://mailster.co/go/buy' );
+	}
+
+	$url = add_query_arg( array( 'id' => 'mailster-plugin' ), $url );
+
+	$utms = preg_grep( '/^utm_/', array_keys( $_GET ) );
+	$utms = array_intersect_key( $_GET, array_flip( $utms ) );
+	if ( $utms ) {
+		$url = add_query_arg( $utms, $url );
 	}
 
 	return $url;

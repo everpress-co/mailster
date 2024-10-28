@@ -1711,6 +1711,12 @@ class Mailster {
 				update_option( 'mailster_freemius', time() );
 				if ( MAILSTER_ENVATO ) {
 					update_option( 'mailster_envato', time() );
+
+					// auto activate if constant is set
+				} elseif ( defined( 'MAILSTER_LICENSE' ) ) {
+					$secret_key           = MAILSTER_LICENSE;
+					$is_marketing_allowed = null;
+					// mailster_freemius()->activate_migrated_license( $secret_key, $is_marketing_allowed );
 				}
 				if ( ! is_network_admin() ) {
 					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );

@@ -248,8 +248,9 @@ class MailsterAutomations {
 			$agency_plan = mailster()->get_plan_by_name( 'agency' );
 
 			$args = array(
-				'utm_medium' => 'workflow_limit_reached',
-				'plan_id'    => $agency_plan ? $agency_plan->id : null,
+				'utm_campaign' => 'plugin upgrade',
+				'utm_medium'   => 'workflow_limit_reached',
+				'plan_id'      => $agency_plan ? $agency_plan->id : null,
 			);
 
 			$checkout_url = add_query_arg( $args, mailster_freemius()->checkout_url() );

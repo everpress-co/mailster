@@ -193,7 +193,7 @@ mailster = (function (mailster, $, window, document) {
 			if (!ask || !confirm(mailster.l10n.beacon.consent)) {
 				return false;
 			}
-			mailster.user.set('beacon', true);
+			mailster.user.set('beacon', Math.round(Date.now() / 1000));
 		}
 		loadBeaconData();
 		return true;

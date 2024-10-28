@@ -194,10 +194,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	private function searchmark( $string, $search = null ) {
 
-		if ( ! $string ) {
-			return '';
-		}
-
 		if ( is_null( $search ) && $this->search ) {
 			$search = stripslashes( $this->search );
 		}
