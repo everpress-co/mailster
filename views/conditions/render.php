@@ -5,6 +5,7 @@
 		if ( $i ) {
 			echo '<span class="mailster-condition-operators">' . esc_html__( 'and', 'mailster' ) . '</span>';
 		}
+		$condition_group = array_values( $condition_group );
 		foreach ( $condition_group as $j => $condition ) :
 			$field    = isset( $condition['field'] ) ? $condition['field'] : $condition[0];
 			$operator = isset( $condition['operator'] ) ? $condition['operator'] : $condition[1];
@@ -20,6 +21,13 @@
 		<span class="mailster-condition-type mailster-condition-field"><?php echo $nice['field']; ?></span>
 		<span class="mailster-condition-type mailster-condition-operator"><?php echo $nice['operator']; ?></span>
 		<span class="mailster-condition-type mailster-condition-value"><?php echo $nice['value']; ?></span>
+			<?php
+			// remove the current condition
+			$c = $conditions;
+			unset( $c[ $i ][ $j ] );
+			$newlink = add_query_arg( 'conditions', $c, remove_query_arg( 'conditions' ) );
+			?>
+		<a class="mailster-condition-remove" href="<?php echo esc_url( $newlink ); ?>" title="<?php esc_attr_e( 'remove condition', 'mailster' ); ?>">✕</a>
 		</div>
 		<?php endforeach; ?>
 	</div>
