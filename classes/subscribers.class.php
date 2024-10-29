@@ -1497,11 +1497,11 @@ class MailsterSubscribers {
 
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_subscriber_fields", $args ) ) {
 
-			do_action( 'mailster_add_custom_field', $subscriber_id, $key, $value );
-
 			$this->update_updated( $subscriber_id );
 
 			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+
+			do_action( 'mailster_add_custom_field', $subscriber_id, $key, $value );
 
 		} else {
 			$success = false;
@@ -1585,6 +1585,7 @@ class MailsterSubscribers {
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_subscriber_fields", $where ) ) {
 
 			$this->update_updated( $subscriber_id );
+
 			do_action( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value );
 
 		} else {
