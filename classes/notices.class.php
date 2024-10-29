@@ -6,7 +6,7 @@ class MailsterNotices {
 
 	public function __construct() {
 
-		add_action( 'mailster_admin_header', array( &$this, 'admin_notices' ) );
+		add_action( 'mailster_admin_notices', array( &$this, 'admin_notices' ) );
 		// add_action( 'admin_notices', array( &$this, 'admin_notices' ) ); // display it on every page
 		add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
 		add_action( 'mailster_cron_notice', array( &$this, 'cron_notice' ) );

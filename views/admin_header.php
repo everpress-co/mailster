@@ -106,3 +106,4 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 		</button>
 	</div>
 </div>
+<?php do_action( 'mailster_admin_notices' ); ?>
