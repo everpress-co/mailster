@@ -18,16 +18,18 @@
 				echo '<span class="mailster-condition-type mailster-condition-operators">' . esc_html__( 'or', 'mailster' ) . '</span>';
 			}
 			?>
-		<span class="mailster-condition-type mailster-condition-field"><?php echo $nice['field']; ?></span>
-		<span class="mailster-condition-type mailster-condition-operator"><?php echo $nice['operator']; ?></span>
-		<span class="mailster-condition-type mailster-condition-value"><?php echo $nice['value']; ?></span>
-			<?php
-			// remove the current condition
-			$c = $conditions;
-			unset( $c[ $i ][ $j ] );
-			$newlink = add_query_arg( 'conditions', $c, remove_query_arg( 'conditions' ) );
-			?>
-		<a class="mailster-condition-remove" href="<?php echo esc_url( $newlink ); ?>" title="<?php esc_attr_e( 'remove condition', 'mailster' ); ?>">✕</a>
+		<span class="mailster-condition-type mailster-condition-field"><strong><?php echo esc_html( $nice['field'] ); ?></strong></span>
+		<span class="mailster-condition-type mailster-condition-operator"><em><?php echo esc_html( $nice['operator'] ); ?></em></span>
+		<span class="mailster-condition-type mailster-condition-value"><strong><?php echo esc_html( $nice['value'] ); ?></strong></span>
+			<?php if ( ! $plain ) : ?>
+				<?php
+				// remove the current condition
+				$c = $conditions;
+				unset( $c[ $i ][ $j ] );
+				$newlink = add_query_arg( 'conditions', urldecode_deep( $c ), remove_query_arg( 'conditions' ) );
+				?>
+		<a class="mailster-condition-remove" href="<?php echo esc_url( $newlink ); ?>" title="<?php esc_attr_e( 'remove condition', 'mailster' ); ?>" hidden>✕</a>
+		<?php endif; ?>
 		</div>
 		<?php endforeach; ?>
 	</div>

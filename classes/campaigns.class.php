@@ -2263,12 +2263,13 @@ class MailsterCampaigns {
 					if ( ! isset( $postdata['conditions'][ $i ][ $j ]['field'] ) ) {
 						unset( $postdata['conditions'][ $i ][ $j ] );
 					} elseif ( is_array( $postdata['conditions'][ $i ][ $j ]['value'] ) ) {
-						$postdata['conditions'][ $i ][ $j ]['value'] = array_values( array_unique( $postdata['conditions'][ $i ][ $j ]['value'] ) );
+						$postdata['conditions'][ $i ][ $j ]['value'] = array_values( array_filter( array_unique( $postdata['conditions'][ $i ][ $j ]['value'] ), 'strlen' ) );
 					} else {
 
 					}
 				}
 			}
+
 			$meta['list_conditions'] = array_values( array_filter( $postdata['conditions'] ) );
 
 		} else {
