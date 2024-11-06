@@ -257,8 +257,30 @@ class MailsterAutomations {
 			$pricing_url  = add_query_arg( $args, mailster_freemius()->pricing_url() );
 
 			$msg  = '<h2>' . sprintf( esc_html__( 'Workflow limit reached!', 'mailster' ) ) . '</h2>';
-			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of %1$d active workflows! Please upgrade %2$s to enable more workflows.', 'mailster' ), $this->get_limit(), '<a href="' . esc_url( $checkout_url ) . '">' . esc_html__( 'your plan', 'mailster' ) . '</a>' ) . '</p>';
-			$msg .= '<p><a href="' . esc_url( $checkout_url ) . '" class="button button-primary">' . esc_html__( 'Upgrade now', 'mailster' ) . '</a> <a href="' . esc_url( $pricing_url ) . '" class="button button-secondary">' . esc_html__( 'Compare Plans', 'mailster' ) . '</a></p>';
+			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of %1$d active workflows! Please upgrade %2$s to enable more workflows.', 'mailster' ), $this->get_limit(), '<a href="' . esc_url( $pricing_url ) . '">' . esc_html__( 'your plan', 'mailster' ) . '</a>' ) . '</p>';
+			if ( mailster_freemius()->is_plan( 'legacy' ) || mailster_freemius()->is_plan( 'legacy_plus' ) ) {
+
+				$msg .= '<p><strong>Exclusive deal for Envato Buyers: Get the first year for free when you upgrade to a Professional or Agency Plan *</strong></p>';
+				$msg .= '<ul>';
+
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), '10' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22867', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Professional' ), '' ) . '</li>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), 'Unlimited' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), '' ) . '</li>';
+				$msg .= '</ul>';
+				$msg .= '<sub>* ' . esc_html__( 'Subscription fee will be charged 12 months after promo activation (cancel anytime before renewal date)', 'mailster' ) . '</sub>';
+
+			} elseif ( mailster_freemius()->is_plan( 'standard' ) || mailster_freemius()->is_plan( 'starter' ) ) {
+
+				$msg .= '<ul>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), '10' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&plan_id=22867', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Professional' ), '' ) . '</li>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), 'Unlimited' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), '' ) . '</li>';
+				$msg .= '</ul>';
+			} elseif ( mailster_freemius()->is_plan( 'professional' ) ) {
+
+				$msg .= '<ul>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), 'Unlimited' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), '' ) . '</li>';
+				$msg .= '</ul>';
+			}
+
 			mailster_notice( $msg, 'warning', false, 'mailster-workflow-limit-reached', true );
 
 		} else {

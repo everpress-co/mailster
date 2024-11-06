@@ -34,14 +34,13 @@ function mailster_freemius_install() {
 	mailster()->install();
 }
 
-mailster_freemius()->add_action( 'after_uninstall', 'mailster_freemius_uninstall_cleanup' );
-function mailster_freemius_uninstall_cleanup() {
-	mailster()->uninstall();
-}
+mailster_freemius()->add_action( 'after_uninstall', 'mailster_on_uninstall' );
 
 
 mailster_freemius()->add_action( 'hide_account_tabs', '__return_true' );
 mailster_freemius()->add_action( 'hide_freemius_powered_by', '__return_true' );
+
+
 
 
 mailster_freemius()->add_filter( 'license_key', 'mailster_legacy_license_key' );
@@ -215,6 +214,84 @@ function mailster_freemius_after_license_change_handler( $plan_change_desc, FS_P
 	}
 
 	mailster_remove_notice( 'mailster-workflow-limit-reached' );
+	mailster_remove_notice( 'mailster-notice-legacy_promo' );
 
 	return;
+}
+
+
+
+
+function mailster_freemius_upgrade_license( $args = array(), $label = null, $class = 'button button-primary' ) {
+
+	$license = mailster_freemius()->_get_license();
+
+	$args = wp_parse_args(
+		$args,
+		array( 'license_key' => $license->secret_key )
+	);
+	return mailster_freemius_checkout_button( $args, $label, $class );
+}
+
+
+
+
+function mailster_freemius_checkout_button( $args = array(), $label = null, $class = 'button button-primary' ) {
+
+	$public_key = mailster_freemius()->get_public_key();
+	$license    = mailster_freemius()->_get_license();
+
+	$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
+
+	// TODO: check if coupon code works
+	$popup = false;
+
+	if ( ! $label ) {
+		$label = __( 'Buy License', 'mailster' );
+	}
+
+	$default = array(
+		'plugin_id'  => $license->plugin_id,
+		'public_key' => $public_key,
+	);
+
+	$args = wp_parse_args( $args, $default );
+
+	$args = apply_filters( 'mailster_freemius_args', $args );
+
+	$button_id = 'FS-buy-button-' . uniqid();
+
+	$url_args = array_filter(
+		$args,
+		function ( $key ) {
+			return ! in_array( $key, array( 'public_key', 'plugin_id', 'sandbox', 'dl_endpoint', 'license_key' ) );
+		},
+		ARRAY_FILTER_USE_KEY
+	);
+
+	$return = ' <a href="' . add_query_arg( $url_args, mailster_freemius()->checkout_url() ) . '" class="' . esc_attr( $class ) . '" id="' . esc_attr( $button_id ) . '">' . esc_html( $label ) . '</a>';
+
+	if ( $popup ) {
+
+		wp_enqueue_script( 'freemius-button-checkout', 'https://checkout.freemius.com/js/v1/', array(), 'v1', true );
+		wp_add_inline_script(
+			'freemius-button-checkout',
+			'document.getElementById("' . esc_attr( $button_id ) . '").addEventListener("click", (e) => {
+		e.preventDefault(); new FS.Checkout(' . json_encode( $args ) . ').open({
+			track: function(event, data){console.warn(event, data);},
+			purchaseCompleted: function(data){console.warn("purchaseCompleted", data);},
+			cancel: function(data){console.warn("cancel", data);},
+			success: function(data){console.warn("success", data);window.location = location.href + (location.href.includes("?") ? "&refresh_license=1" : "?refresh_license=1")},
+		});});'
+		);
+		// append the script on ajax requests
+		if ( $is_ajax ) {
+			ob_start();
+			wp_print_scripts( 'freemius-button-checkout' );
+			$return .= ob_get_clean();
+
+		}
+	}
+
+	return $return;
 }

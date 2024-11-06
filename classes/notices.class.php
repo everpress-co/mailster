@@ -9,8 +9,18 @@ class MailsterNotices {
 		add_action( 'mailster_admin_notices', array( &$this, 'admin_notices' ) );
 		// add_action( 'admin_notices', array( &$this, 'admin_notices' ) ); // display it on every page
 		add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
-		add_action( 'mailster_cron_notice', array( &$this, 'cron_notice' ) );
+		add_action( 'mailster_cron_notice', array( &$this, 'cron_notice' ), 10, 2 );
 		add_action( 'mailster_cron', array( &$this, 'hourly_cron' ) );
+	}
+
+
+
+	public function __call( $method, $arguments ) {
+		if ( ! method_exists( $this, 'do_' . $method ) ) {
+			return;
+		}
+
+		return call_user_func_array( array( &$this, 'do_' . $method ), $arguments );
 	}
 
 	public function hourly_cron() {
@@ -20,7 +30,10 @@ class MailsterNotices {
 		}
 
 		// messages after setup ( exampe )
-		// $this->schedule( 'welcome', '4 minute', true );
+		$this->schedule( 'legacy_promo', '6 Month', false, 'info' );
+
+		// $this->schedule( 'legacy_promo', time() + 60, true, 'warning' );
+		// $this->schedule( 'legacy_promo', '4 days', true );
 	}
 
 	/**
@@ -31,11 +44,11 @@ class MailsterNotices {
 	 * @param string $relative
 	 * @return void
 	 */
-	public function schedule( $method, $delay, $relative = null ) {
+	public function schedule( $method, $delay, $relative = false, $type = 'info' ) {
 
 		$timestamp = is_numeric( $delay ) ? strtotime( '@' . $delay ) : strtotime( '' . $delay );
 
-		if ( ! is_null( $relative ) ) {
+		if ( ! $relative ) {
 			$delay     = $timestamp - time();
 			$timestamp = get_option( 'mailster_setup' ) + $delay;
 		}
@@ -50,11 +63,11 @@ class MailsterNotices {
 			return;
 		}
 
-		if ( ! method_exists( $this, $method ) ) {
+		if ( ! method_exists( $this, 'do_' . $method ) ) {
 			return;
 		}
 
-		wp_schedule_single_event( $timestamp, 'mailster_cron_notice', array( $method ) );
+		wp_schedule_single_event( $timestamp, 'mailster_cron_notice', array( $method, $type ) );
 	}
 
 	/**
@@ -63,12 +76,16 @@ class MailsterNotices {
 	 * @param mixed $method
 	 * @return void
 	 */
-	public function cron_notice( $method ) {
+	public function cron_notice( $method, $type = 'info' ) {
 
-		if ( ! method_exists( $this, $method ) ) {
+		if ( ! method_exists( $this, 'do_' . $method ) ) {
 			return;
 		}
-		call_user_func( array( &$this, $method ) );
+		$msg = call_user_func( array( &$this, 'do_' . $method ) );
+
+		if ( $msg ) {
+			mailster_notice( $msg, $type, false, 'mailster-notice-' . $method, true );
+		}
 	}
 
 	public function add( $args, $type = '', $once = false, $key = null, $capability = true, $screen = null, $append = false ) {
@@ -374,5 +391,29 @@ class MailsterNotices {
 			update_option( 'mailster_notices', '', false );
 			update_option( 'mailster_notices_count', 0 );
 		}
+	}
+
+
+
+	private function do_legacy_promo() {
+
+		if ( mailster_freemius()->is_whitelabeled() ) {
+			return;
+		}
+
+		if ( ! mailster_freemius()->is_plan( 'legacy' ) && ! mailster_freemius()->is_plan( 'legacy_plus' ) ) {
+			return;
+		}
+
+		$msg  = '<h2>' . sprintf( esc_html__( 'Get Professional 4 Free*', 'mailster' ) ) . '</h2>';
+		$msg .= '<p>' . esc_html__( 'Your Envato license is eglibable for a free update! Upgrade your license and get the first year for free.', 'mailster' ) . '</p>';
+		$msg .= '<p>';
+		$msg .= mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22867', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Professional' ), 'button button-primary button-hero' );
+		$msg .= mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), 'button button-secondary button-hero' );
+		$msg .= ' ' . esc_html__( 'or', 'mailster' ) . ' <a href="' . esc_url( mailster_freemius()->pricing_url() . '&hide_license_key=1&hide_coupon=1&coupon=LEGACYUPGRADE100' ) . '">' . esc_html__( 'compare plans', 'mailster' ) . '</a>';
+		$msg .= '</p>';
+		$msg .= '<sub> * ' . esc_html__( 'Subscription fee will be charged 12 months after promo activation (cancel anytime before renewal date)', 'mailster' ) . '</sub>';
+
+		return $msg;
 	}
 }

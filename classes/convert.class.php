@@ -119,7 +119,13 @@ class MailsterConvert {
 			return $migrate;
 		}
 
+		if ( isset( $response->data->texts ) ) {
+			$response->data->texts[] = '✅ Free upgrade in the first year.' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22867', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Professional' ), ' link ' ) . ' | ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), ' link ' );
+		}
+
 		$response->migrate = $migrate;
+
+		mailster( 'notices' )->schedule( 'legacy_promo', time() + 360, true, 'warning' );
 
 		return $response;
 	}
