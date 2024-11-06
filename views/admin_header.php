@@ -72,19 +72,26 @@ $tabs = apply_filters( 'mailster_admin_header_tabs', $tabs );
 	
 	<div role="tablist" aria-orientation="horizontal" class="panel-tabs">
 
-	<?php if ( mailster()->is_bf2023() && ! mailster_freemius()->is_whitelabeled() ) : ?>
+		<?php if ( false && mailster_freemius()->is_plan( 'legacy' ) && ! mailster_freemius()->is_whitelabeled() ) : ?>
+			
+			<div class="panel-tab action">
+			<?php echo mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22867', esc_html__( 'Upgrade To Professional', 'mailster' ), '' ); ?>
+			<?php echo mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22868', esc_html__( 'Upgrade To Agency', 'mailster' ), '' ); ?>
+			</div>
+
+		<?php elseif ( mailster()->is_bf2024() && ! mailster_freemius()->is_whitelabeled() ) : ?>
 			<?php
 				$discount      = '50%';
 				$checkout_args = array(
-					'id'     => 'bf2023dash',
-					'coupon' => 'BFD2023DASH',
+					'id'     => 'bf2024dash',
+					'coupon' => 'BFD2024DASH',
 				);
-				$expires       = strtotime( '2023-12-02 00:00:00' );
+				$expires       = strtotime( '2024-12-02 00:00:00' );
 				$offset        = $expires - time();
 				$format        = _x( 'only %s left!', 'time left', 'mailster' );
 				$display       = $offset > DAY_IN_SECONDS ? '' : sprintf( $format, date( 'H:i:s', strtotime( 'midnight' ) + $offset - 1 ) );
 				?>
-			<a class="panel-tab action" id="mailster-bf2023dash" href="<?php echo mailster()->checkout_url( $checkout_args ); ?>" data-offset=<?php echo absint( $offset ); ?> data-format="<?php echo esc_attr( $format ); ?>" title="<?php echo esc_attr( sprintf( __( 'Grab a new license for Mailster with %s off the first year!', 'mailster' ), $discount ) ); ?>"><?php printf( esc_html__( 'Get %s off for Black Friday!', 'mailster' ), $discount ); ?><?php echo '<span>' . esc_html( $display ) . '</span>'; ?></a>
+			<a class="panel-tab action" id="mailster-bf2024dash" href="<?php echo mailster()->checkout_url( $checkout_args ); ?>" data-offset=<?php echo absint( $offset ); ?> data-format="<?php echo esc_attr( $format ); ?>" title="<?php echo esc_attr( sprintf( __( 'Grab a new license for Mailster with %s off the first year!', 'mailster' ), $discount ) ); ?>"><?php printf( esc_html__( 'Get %s off for Black Friday!', 'mailster' ), $discount ); ?><?php echo '<span>' . esc_html( $display ) . '</span>'; ?></a>
 
 		<?php elseif ( mailster()->is_trial() && get_option( 'mailster_setup' ) ) : ?>
 

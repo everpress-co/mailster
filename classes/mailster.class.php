@@ -412,6 +412,7 @@ class Mailster {
 			mailster_redirect( mailster_freemius()->checkout_url() );
 			exit;
 		}
+
 		if ( $page === 'mailster-pricing' ) {
 			mailster_redirect( mailster_freemius()->pricing_url() );
 			exit;
@@ -1180,6 +1181,14 @@ class Mailster {
 	}
 
 	public function add_admin_header() {
+
+		if ( isset( $_GET['refresh_license'] ) ) {
+			mailster()->recheck_license();
+			$url = remove_query_arg( 'refresh_license' );
+			mailster_redirect( $url );
+			exit;
+		}
+
 		$consent = __( 'Do you like to use on-page help and documentation?', 'mailster' ) . "\n\n" . __( 'If you agree third-party scripts are loaded to provide you with help.', 'mailster' ) . "\n" . __( 'If you click "cancel" you will be redirected to our support page.', 'mailster' );
 
 		mailster_localize_script( 'beacon', array( 'consent' => $consent ) );
@@ -1600,6 +1609,22 @@ class Mailster {
 				$wp_filesystem->delete( trailingslashit( $upload_folder['basedir'] ) . 'mailster', true );
 			}
 		}
+
+		// remove all cronjobs
+		mailster( 'cron' )->unschedule();
+
+		$cron = get_option( 'cron' );
+		foreach ( $cron as $time => $jobs ) {
+			if ( ! is_array( $jobs ) ) {
+				continue;
+			}
+			foreach ( $jobs as $hook => $job ) {
+				if ( strpos( $hook, 'mailster_' ) === 0 ) {
+					unset( $cron[ $time ][ $hook ] );
+				}
+			}
+		}
+		update_option( 'cron', $cron );
 
 		return true;
 	}
@@ -2882,14 +2907,17 @@ class Mailster {
 		return mailster_freemius()->is_trial();
 	}
 
-	public function is_bf2023() {
+	public function is_bf2024() {
 		// check if install is older than three month
 		if ( get_option( 'mailster_freemius' ) + ( MONTH_IN_SECONDS * 3 ) > time() ) {
 			return false;
 		}
 
+		// no date yet
+		return false;
+
 		// official time in UTC
-		return strtotime( '2023-11-20 00:00:00' ) < time() && strtotime( '2023-12-02 00:00:00' ) > time();
+		return strtotime( '2024-10-20 00:00:00' ) < time() && strtotime( '2024-12-02 00:00:00' ) > time();
 	}
 
 	public function is_legacy_expired() {

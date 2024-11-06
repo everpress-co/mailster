@@ -29,7 +29,7 @@ class MailsterNotices {
 			return;
 		}
 
-		// messages after setup ( exampe )
+		// messages 6 momth after setup
 		$this->schedule( 'legacy_promo', '6 Month', false, 'info' );
 
 		// $this->schedule( 'legacy_promo', time() + 60, true, 'warning' );

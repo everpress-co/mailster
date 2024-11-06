@@ -740,7 +740,8 @@ if ( $old_version ) {
 		case '4.1.3':
 		case '4.1.4':
 		case '4.1.5':
-			mailster( 'notices' )->schedule( 'legacy_promo', time() + 3600, true, 'info' );
+			// not yet
+			// mailster( 'notices' )->schedule( 'legacy_promo', time() + 3600, true, 'info' );
 
 		default:
 			mailster( 'convert' )->notice();
