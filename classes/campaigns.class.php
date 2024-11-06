@@ -2941,7 +2941,7 @@ class MailsterCampaigns {
 		$autoresponder = $meta['autoresponder'];
 
 		$triggers        = array();
-		$lists           = $meta['ignore_lists'] ? array( -1 ) : array_map( 'absint', $meta['lists'] );
+		$lists           = $meta['ignore_lists'] ? array( -1 ) : array_map( 'absint', (array) $meta['lists'] );
 		$steps           = array();
 		$list_conditions = $meta['list_conditions'] ? (array) $meta['list_conditions'] : array();
 
@@ -5436,7 +5436,7 @@ class MailsterCampaigns {
 								break;
 							}
 
-							$pass = $pass && ! ! count( array_intersect( wp_list_pluck( $post_terms, 'term_id' ), $term_ids ) );
+							$pass = $pass && (bool) count( array_intersect( wp_list_pluck( $post_terms, 'term_id' ), $term_ids ) );
 
 						}
 
