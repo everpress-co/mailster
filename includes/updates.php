@@ -725,8 +725,26 @@ if ( $old_version ) {
 			mailster_notice( $msg, 'info', false, 'mailster_4_0', true );
 		case '4.0.1':
 		case '4.0.2':
+		case '4.0.3':
+		case '4.0.4':
+		case '4.0.5':
+		case '4.0.6':
+		case '4.0.7':
+		case '4.0.8':
+		case '4.0.9':
+		case '4.0.10':
+		case '4.0.11':
+		case '4.1.0':
+		case '4.1.1':
+		case '4.1.2':
+		case '4.1.3':
+		case '4.1.4':
+		case '4.1.5':
+			mailster( 'notices' )->schedule( 'legacy_promo', time() + 3600, true, 'info' );
+
 		default:
 			mailster( 'convert' )->notice();
+
 
 			// reset translations
 			mailster( 'translations' )->re_check();
@@ -737,6 +755,7 @@ if ( $old_version ) {
 			if ( get_option( 'mailster_setup' ) < strtotime( '-3 month' ) ) {
 				mailster_beacon_message( '295a58cf-4460-4b07-9ed4-0f6f1840699b', MONTH_IN_SECONDS * 3 );
 			}
+
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
@@ -756,14 +775,17 @@ update_option( 'mailster_options', $mailster_options );
 // update texts
 update_option( 'mailster_texts', $mailster_texts );
 
+
 // update caps
 mailster( 'settings' )->update_capabilities();
+
 
 // clear cache
 mailster_clear_cache();
 
 // delete plugin hash
 delete_transient( 'mailster_hash' );
+
 
 // maybe flush rewrite rules
 if ( $flush_rewrite_rules ) {

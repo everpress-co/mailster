@@ -12,7 +12,7 @@ if ( empty( $user_email ) ) {
 ?>
 
 	<div class="convert_form_wrap step-1 loading">
-		<div class="convert-form-info"><?php esc_html_e( 'Start converting your license<', 'mailster' ); ?></div>
+		<div class="convert-form-info"><?php esc_html_e( 'Start converting your license', 'mailster' ); ?></div>
 		<form class="convert_form" action="" method="POST">
 			<h1><?php printf( esc_html_x( '%s License Migration', 'Mailster', 'mailster' ), 'Mailster' ); ?> <?php echo mailster()->beacon( '63fe029de6d6615225474599' ); ?></h1>
 			<h2><?php printf( esc_html_x( 'You\'re about to convert your %s license to our new license provider.', 'Mailster', 'mailster' ), 'Mailster' ); ?></h2>

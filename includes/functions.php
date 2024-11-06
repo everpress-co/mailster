@@ -1474,3 +1474,7 @@ function mailster_on_activate() {
 function mailster_on_deactivate() {
 	Mailster::get_instance()->deactivate();
 }
+
+function mailster_on_uninstall() {
+	Mailster::get_instance()->uninstall();
+}

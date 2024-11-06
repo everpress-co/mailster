@@ -574,7 +574,7 @@ class MailsterConditions {
 			'value'    => '',
 		);
 		/* translators: opening and closing double quote in your language */
-		$quotes = _x( '“ ”', 'openquote, space, closing quote', 'mailster' );
+		$quotes = _x( '“ ”', 'open quote, space, closing quote', 'mailster' );
 
 		$opening_quote = esc_html_x( '&#8220;', 'opening curly double quote', 'mailster' );
 		$closing_quote = esc_html_x( '&#8221;', 'closing curly double quote', 'mailster' );
@@ -628,10 +628,7 @@ class MailsterConditions {
 			$half               = max( 0, min( 5, round( $stars - $full ) ) );
 			$empty              = max( 0, min( 5, 5 - $full - $half ) );
 			$return['operator'] = $this->nice_name( $operator, 'operator', $field );
-			$return['value']    = '<span class="screen-reader-text">' . sprintf( esc_html__( '%d stars', 'mailster' ), $full ) . '</span>'
-			. str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty );
+			$return['value']    = str_repeat( '★', $full ) . str_repeat( '☆', $half ) . str_repeat( '☆', $empty );
 
 		} else {
 			$return['operator'] = $this->nice_name( $operator, 'operator', $field );
