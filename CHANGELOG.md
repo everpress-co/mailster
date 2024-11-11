@@ -1,3 +1,22 @@
+### Version 4.1.5 (2024-11-11)
+
+- improved: admin notices improvements
+- improved: show "0" values on subscriber details page instead of nothing
+- improved: convert license screen
+- improved: option to quickly remove filter from subscriber overview
+- added: `{second}` tag to display the current second
+- fixed: minor CSS issues
+- fixed: PHP Notice while Autoresponder converting
+- fixed: Trigger selector break blocks if connection is to slow
+- fixed: cache wasn't cleared for block forms in some cases
+- fixed: conditions with quotes are rendered incorrectly
+- fixed: form patterns were missing on saved block forms
+- fixed: race condition when a workflow is triggered on manual user update
+- fixed: searchmark causes error if applied on non strings
+- removed: legacy usage tracking
+- rewritten notice methods
+- updated Freemius SDK to 2.9.0
+
 ### Version 4.1.4 (2024-09-25)
 
 - fixed: profile showed unsubscribe button
