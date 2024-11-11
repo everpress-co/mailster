@@ -6,6 +6,7 @@ const { getWebpackEntryPoints } = require('@wordpress/scripts/utils/config');
 const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 const SoundsPlugin = require('sounds-webpack-plugin');
 
+const glob = require('glob');
 const path = require('path');
 const cp = require('child_process');
 const { sprintf } = require('@wordpress/i18n');
@@ -46,7 +47,19 @@ const soundPluginOptions = {
 
 const customEntries = {
 	//'subscriber-count/index': './blocks/subscriber-count/index.js',
+	//'assets/css/*': './assets/css/**/.css',
 };
+
+// const css = glob.sync('./assets/css/*.css').reduce((acc, path) => {
+// 	const entry = path.replace('.css', '.min.css');
+// 	acc[entry] = path;
+// 	return acc;
+// }, {});
+// const js = glob.sync('./assets/js/*.js').reduce((acc, path) => {
+// 	const entry = path.replace('.js', '.min.js');
+// 	acc[entry] = path;
+// 	return acc;
+// }, {});
 
 module.exports = {
 	...defaultConfig,
@@ -58,6 +71,8 @@ module.exports = {
 	entry: {
 		...getWebpackEntryPoints(),
 		...customEntries,
+		//...css,
+		//...js,
 	},
 	module: {
 		...defaultConfig.module,

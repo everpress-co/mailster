@@ -56,7 +56,9 @@
 		"templates",
 		"vendor",
 		"views",
-		"assets"
+		"assets",
+		"CHANGELOG.md",
+		"SECURITY.md"
 	],
 	"scripts": {
 		"build": "wp-scripts build --webpack-src-dir=blocks",
