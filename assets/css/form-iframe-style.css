@@ -19,16 +19,6 @@ a {
 }
 .mailster-form-body {
 	background: rgba(0, 0, 0, 0.35);
-	background: -webkit-radial-gradient(
-		50% 50%,
-		rgba(0, 0, 0, 0.2),
-		rgba(0, 0, 0, 0.5) 100%
-	);
-	background: radial-gradient(
-		50% 50%,
-		rgba(0, 0, 0, 0.2),
-		rgba(0, 0, 0, 0.5) 100%
-	);
 	transition: opacity 0.15s ease-in-out;
 	opacity: 0;
 }

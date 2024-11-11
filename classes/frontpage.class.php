@@ -347,7 +347,7 @@ class MailsterFrontpage {
 		if ( $target ) {
 
 			if ( ! preg_match( '#^https?:#', $target ) ) {
-				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
+				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . esc_html( urldecode( $target ) ) . '&quot;</code>' ) );
 			}
 
 			// check if external URLS are actually in the campaign to prevent URL hijacking
@@ -391,7 +391,7 @@ class MailsterFrontpage {
 							header( 'Location: ' . $target, true, 307 );
 							exit;
 						}
-						wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
+						wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . esc_html( urldecode( $target ) ) . '&quot;</code>' ) );
 					}
 				}
 			}
@@ -419,8 +419,8 @@ class MailsterFrontpage {
 						esc_html__( 'You are being redirected...', 'mailster' ) . '<meta http-equiv="Refresh" content="5; URL=' . esc_url( $redirect_url ) . '">',
 						esc_html__( 'You are being redirected...', 'mailster' ),
 						array(
-							'link_url'  => $redirect_url,
-							'link_text' => $target,
+							'link_url'  => esc_url( $redirect_url ),
+							'link_text' => esc_html( $target ),
 							'response'  => 200,
 						)
 					);
@@ -459,6 +459,7 @@ class MailsterFrontpage {
 			nocache_headers();
 			header( 'Content-type: image/gif' );
 			// The transparent, beacon image
+			// phpcs:ignore
 			echo chr( 71 ) . chr( 73 ) . chr( 70 ) . chr( 56 ) . chr( 57 ) . chr( 97 ) . chr( 1 ) . chr( 0 ) . chr( 1 ) . chr( 0 ) . chr( 128 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 33 ) . chr( 249 ) . chr( 4 ) . chr( 1 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 44 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 0 ) . chr( 1 ) . chr( 0 ) . chr( 1 ) . chr( 0 ) . chr( 0 ) . chr( 2 ) . chr( 2 ) . chr( 68 ) . chr( 1 ) . chr( 0 ) . chr( 59 );
 
 		} else {
@@ -766,11 +767,11 @@ class MailsterFrontpage {
 					$content = get_the_content();
 
 					if ( post_password_required() ) {
-						wp_die( $content );
+						wp_die( esc_html( $content ) );
 					}
 
 					if ( ! $content ) {
-						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
+						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . esc_url( admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
 					$content = mailster( 'campaigns' )->render( get_the_ID(), mailster_option( 'tags_webversion' ) );
@@ -781,6 +782,7 @@ class MailsterFrontpage {
 
 					$content = links_add_target( $content, '_top' );
 
+					// phpcs:ignore
 					echo mailster()->sanitize_content( $content );
 
 					exit;
@@ -1303,9 +1305,9 @@ class MailsterFrontpage {
 	private function do_shortcode_wrong( $shorttcode, $atts, $content ) {
 
 		if ( ! is_mailster_newsletter_homepage() && is_user_logged_in() ) {
-			$msg = sprintf( esc_html__( 'You should use the shortcode %s only on the newsletter homepage!', 'mailster' ), "[$shorttcode]" );
-			_doing_it_wrong( "[$shorttcode]", $msg, '2.1.5' );
-			return '<p>' . $msg . '</p>';
+			$msg = sprintf( __( 'You should use the shortcode %s only on the newsletter homepage!', 'mailster' ), "[$shorttcode]" );
+			_doing_it_wrong( esc_html( "[$shorttcode]" ), esc_html( $msg ), '2.1.5' );
+			return '<p>' . esc_html( $msg ) . '</p>';
 		}
 		return;
 	}

@@ -1203,12 +1203,6 @@ class MailsterBlockForms {
 
 	public function register_block_patterns() {
 
-		$query = wp_parse_url( wp_get_referer(), PHP_URL_QUERY );
-
-		if ( ! $query || false === strpos( $query, 'post_type=mailster-form' ) ) {
-			return;
-		}
-
 		register_block_pattern_category( 'mailster-forms', array( 'label' => __( 'Mailster Forms', 'mailster' ) ) );
 
 		include_once MAILSTER_DIR . 'patterns/forms.php';
@@ -1469,7 +1463,7 @@ class MailsterBlockForms {
 		$output = isset( $meta[ $cache_hash ] ) ? $meta[ $cache_hash ] : false;
 		$time   = isset( $meta_t[ $cache_hash ] ) ? $meta_t[ $cache_hash ] : false;
 
-		$cache_time_in_seconds = 10;
+		$cache_time_in_seconds = HOUR_IN_SECONDS;
 
 		if ( ! $use_cache || ! $output || ! $time || $time < time() - $cache_time_in_seconds ) {
 
@@ -1839,6 +1833,7 @@ class MailsterBlockForms {
 
 		update_post_meta( $post_id, '_cache', array() );
 		update_post_meta( $post_id, '_cache_time', array() );
+		delete_transient( 'mailster_forms' );
 	}
 
 	public function clear_inline_style() {

@@ -837,6 +837,8 @@ class MailsterNotification {
 
 		<?php endif; ?>
 
+		<?php $this->legacy_promo(); ?>
+
 		<?php
 	}
 
@@ -1092,6 +1094,33 @@ class MailsterNotification {
 
 	<?php endif; ?>
 
+
+		<?php $this->legacy_promo(); ?>
+
+
+		<?php
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber
+	 * @param unknown $options
+	 */
+	private function legacy_promo() {
+
+		?>
+
+	<table style="width:100%;table-layout:fixed"><tr><td valign="top" align="center">&nbsp;</td></tr></table>
+
+	<table style="width:100%;table-layout:fixed">
+		<tr>
+			<td valign="bottom" align="left">
+			<?php echo mailster( 'notices' )->legacy_promo(); ?> 
+			</td>
+		</tr>
+	</table>
 		<?php
 	}
 

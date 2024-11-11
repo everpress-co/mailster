@@ -4,6 +4,7 @@ class MailsterConvert {
 
 	public function __construct() {
 
+		add_action( 'admin_init', array( &$this, 'maybe_enable_fs' ) );
 		if ( get_option( 'mailster_freemius' ) ) {
 			return;
 		}
@@ -16,6 +17,27 @@ class MailsterConvert {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Convert License', 'mailster' ), esc_html__( 'Convert License', 'mailster' ), 'manage_options', 'mailster_convert', array( &$this, 'convert_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
+	}
+
+	public function maybe_enable_fs() {
+
+		if ( ! isset( $_GET['mailster_use_freemius'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'mailster_manage_licenses' ) ) {
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'mailster' ) );
+		}
+
+		$current = get_option( 'mailster_freemius' );
+		if ( ! $current ) {
+			update_option( 'mailster_freemius', time() );
+		} else {
+			delete_option( 'mailster_freemius' );
+		}
+
+		mailster_redirect( admin_url( 'admin.php?page=mailster_convert' ) );
+		exit;
 	}
 
 	public function convert_page() {
@@ -97,7 +119,13 @@ class MailsterConvert {
 			return $migrate;
 		}
 
+		if ( isset( $response->data->texts ) ) {
+			$response->data->texts[] = '✅ Free upgrade in the first year.' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22867', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Professional' ), ' link ' ) . ' | ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), ' link ' );
+		}
+
 		$response->migrate = $migrate;
+
+		mailster( 'notices' )->schedule( 'legacy_promo', time() + 360, true, 'warning' );
 
 		return $response;
 	}

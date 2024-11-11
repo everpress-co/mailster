@@ -45,9 +45,7 @@ class MailsterAjax {
 		'set_template_html'           => 'mailster_save_template',
 		'remove_template'             => 'mailster_save_template',
 
-		'remove_notice'               => 'manage_options',
 		'notice_dismiss'              => 'read',
-		'notice_dismiss_all'          => 'read',
 
 		// settings
 		'load_geo_data'               => 'manage_options',
@@ -1797,27 +1795,6 @@ class MailsterAjax {
 	}
 
 
-	private function remove_notice() {
-
-		global $mailster_notices;
-
-		if ( $mailster_notices = get_option( 'mailster_notices' ) ) {
-
-			if ( isset( $_GET['id'] ) && isset( $mailster_notices[ $_GET['id'] ] ) ) {
-
-				unset( $mailster_notices[ $_GET['id'] ] );
-
-				update_option( 'mailster_notices', $mailster_notices );
-
-			}
-		}
-
-		wp_send_json_success( $return );
-	}
-
-
-
-
 	private function set_template_html() {
 
 		$this->ajax_nonce();
@@ -1936,20 +1913,22 @@ class MailsterAjax {
 
 	private function notice_dismiss() {
 
-		if ( isset( $_POST['id'] ) ) {
-			mailster_remove_notice( $_POST['id'] );
+		if ( ! isset( $_POST['ids'] ) ) {
+			wp_send_json_error();
 		}
 
-		wp_send_json_success();
+		$ids = (array) $_POST['ids'];
+
+		if ( mailster( 'notices' )->remove( $ids ) ) {
+			wp_send_json_success();
+			exit;
+		}
+
+		wp_send_json_error();
 	}
 
 
-	private function notice_dismiss_all() {
 
-		update_option( 'mailster_notices', array() );
-
-		wp_send_json_success();
-	}
 
 
 	private function ajax_filesystem() {
@@ -2861,6 +2840,9 @@ class MailsterAjax {
 				// maybe
 				mailster( 'geo' )->maybe_update();
 				update_option( 'mailster_setup', time() );
+				// run this once
+				do_action( 'mailster_cron' );
+
 				// check for updates
 				break;
 			case 'basics':

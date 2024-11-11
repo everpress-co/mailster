@@ -248,16 +248,41 @@ class MailsterAutomations {
 			$agency_plan = mailster()->get_plan_by_name( 'agency' );
 
 			$args = array(
-				'utm_medium' => 'workflow_limit_reached',
-				'plan_id'    => $agency_plan ? $agency_plan->id : null,
+				'utm_campaign' => 'plugin upgrade',
+				'utm_medium'   => 'workflow_limit_reached',
+				'plan_id'      => $agency_plan ? $agency_plan->id : null,
 			);
 
 			$checkout_url = add_query_arg( $args, mailster_freemius()->checkout_url() );
 			$pricing_url  = add_query_arg( $args, mailster_freemius()->pricing_url() );
 
 			$msg  = '<h2>' . sprintf( esc_html__( 'Workflow limit reached!', 'mailster' ) ) . '</h2>';
-			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of %1$d active workflows! Please upgrade %2$s to enable more workflows.', 'mailster' ), $this->get_limit(), '<a href="' . esc_url( $checkout_url ) . '">' . esc_html__( 'your plan', 'mailster' ) . '</a>' ) . '</p>';
-			$msg .= '<p><a href="' . esc_url( $checkout_url ) . '" class="button button-primary">' . esc_html__( 'Upgrade now', 'mailster' ) . '</a> <a href="' . esc_url( $pricing_url ) . '" class="button button-secondary">' . esc_html__( 'Compare Plans', 'mailster' ) . '</a></p>';
+			$msg .= '<p>' . sprintf( esc_html__( 'You have reached the maximum number of %1$d active workflows! Please upgrade %2$s to enable more workflows.', 'mailster' ), $this->get_limit(), esc_html__( 'your plan', 'mailster' ) ) . '</p>';
+			if ( mailster_freemius()->is_plan( 'legacy' ) || mailster_freemius()->is_plan( 'legacy_plus' ) ) {
+
+				$msg .= '<p><strong>' . sprintf( esc_html__( 'Exclusive deal for Envato Buyers: Get the first year for free when you upgrade to a %1$s or %2$s Plan', 'mailster' ), '"Professional"', '"Agency"' ) . '*</strong></p>';
+				$msg .= '<ul>';
+
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), '10' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22867', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Professional' ), '' ) . '</li>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), 'Unlimited' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&coupon=LEGACYUPGRADE100&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), '' ) . '</li>';
+				$msg .= '</ul>';
+				$msg .= '<sub>* ' . esc_html__( 'Subscription fee will be charged 12 months after promo activation (cancel anytime before renewal date)', 'mailster' ) . '</sub> ';
+
+			} elseif ( mailster_freemius()->is_plan( 'standard' ) || mailster_freemius()->is_plan( 'starter' ) ) {
+
+				$msg .= '<ul>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), '10' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&plan_id=22867', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Professional' ), '' ) . '</li>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), 'Unlimited' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), '' ) . '</li>';
+				$msg .= '</ul>';
+			} elseif ( mailster_freemius()->is_plan( 'professional' ) ) {
+
+				$msg .= '<ul>';
+				$msg .= '<li>' . sprintf( esc_html__( '%s active Workflows', 'mailster' ), 'Unlimited' ) . ' ➨ ' . mailster_freemius_upgrade_license( 'hide_license_key=1&hide_coupon=1&hide_licenses=1&plan_id=22868', sprintf( esc_html__( 'Upgrade to %s', 'mailster' ), 'Agency' ), '' ) . '</li>';
+				$msg .= '</ul>';
+
+			}
+			$msg .= '<sub><a href="' . esc_url( $pricing_url ) . '">' . esc_html__( 'Compare Plans', 'mailster' ) . '</a></sub>';
+
 			mailster_notice( $msg, 'warning', false, 'mailster-workflow-limit-reached', true );
 
 		} else {
@@ -882,9 +907,9 @@ class MailsterAutomations {
 			case 'status':
 				$numbers = $this->get_numbers( $post_id );
 
-				printf( '<div class="s-status"><span>%s</span> %s</div>', number_format_i18n( $numbers['active'] ), esc_html__( 'active', 'mailster' ) );
-				printf( '<div class="s-status"><span>%s</span> %s</div>', number_format_i18n( $numbers['finished'] ), esc_html__( 'finished', 'mailster' ) );
-				printf( '<div class="s-status"><span>%s</span> %s</div>', number_format_i18n( $numbers['total'] ), esc_html__( 'total', 'mailster' ) );
+				printf( '<div class="s-status"><span>%s</span> %s</div>', esc_html( number_format_i18n( $numbers['active'] ) ), esc_html__( 'active', 'mailster' ) );
+				printf( '<div class="s-status"><span>%s</span> %s</div>', esc_html( number_format_i18n( $numbers['finished'] ) ), esc_html__( 'finished', 'mailster' ) );
+				printf( '<div class="s-status"><span>%s</span> %s</div>', esc_html( number_format_i18n( $numbers['total'] ) ), esc_html__( 'total', 'mailster' ) );
 
 				break;
 
@@ -894,7 +919,7 @@ class MailsterAutomations {
 					return;
 				}
 				$total = $numbers['sent'];
-				echo number_format_i18n( $total );
+				echo esc_html( number_format_i18n( $total ) );
 
 				break;
 
@@ -904,10 +929,10 @@ class MailsterAutomations {
 					return;
 				}
 
-				echo '<span class="s-opens">' . number_format_i18n( $numbers['opens'] ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $numbers['sent'] ) . '</span>';
+				echo '<span class="s-opens">' . esc_html( number_format_i18n( $numbers['opens'] ) ) . '</span>/<span class="tiny s-sent">' . esc_html( number_format_i18n( $numbers['sent'] ) ) . '</span>';
 				$rate = round( $numbers['open_rate'] * 100, 2 );
-				echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-				echo ' (' . $rate . '%)';
+				echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+				echo ' (' . esc_html( $rate ) . '%)';
 				echo '</span>';
 				echo '<br>';
 
@@ -920,14 +945,14 @@ class MailsterAutomations {
 				}
 				$clicks = $numbers['clicks'];
 				$rate   = round( $numbers['click_rate'] * 100, 2 );
-				echo number_format_i18n( $clicks );
+				echo esc_html( number_format_i18n( $clicks ) );
 				if ( $rate ) {
-					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
-					echo '' . $rate . '%';
+					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "'>";
+					echo '' . esc_html( $rate ) . '%';
 					echo '</span>)</span>';
 				} else {
-					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-					echo ' (' . $rate . '%)';
+					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+					echo ' (' . esc_html( $rate ) . '%)';
 					echo '</span>';
 				}
 				echo '<br>';
@@ -942,14 +967,14 @@ class MailsterAutomations {
 				$unsubscribes = $numbers['unsubs'];
 				$rate         = round( $numbers['unsub_rate'] * 100, 2 );
 
-				echo number_format_i18n( $unsubscribes );
+				echo esc_html( number_format_i18n( $unsubscribes ) );
 				if ( $rate ) {
-					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
-					echo '' . $rate . '%';
+					echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "'>";
+					echo '' . esc_html( $rate ) . '%';
 					echo '</span>)</span>';
 				} else {
-					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-					echo ' (' . $rate . '%)';
+					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+					echo ' (' . esc_html( $rate ) . '%)';
 					echo '</span>';
 				}
 				echo '<br>';
@@ -963,9 +988,9 @@ class MailsterAutomations {
 				}
 				$bounces = $numbers['bounces'];
 				$rate    = round( $numbers['bounce_rate'] * 100, 2 );
-				echo number_format_i18n( $bounces );
-				echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
-				echo ' (' . $rate . '%)';
+				echo esc_html( number_format_i18n( $bounces ) );
+				echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), esc_html( $rate . '%' ) ) . "' class='nonessential'>";
+				echo ' (' . esc_html( $rate ) . '%)';
 				echo '</span>';
 				echo '<br>';
 

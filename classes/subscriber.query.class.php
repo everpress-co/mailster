@@ -1147,7 +1147,7 @@ class MailsterSubscriberQuery {
 
 		// sanitation
 		$field    = esc_sql( $field );
-		$value    = addslashes( stripslashes( $value ) );
+		$value    = stripslashes( $value );
 		$operator = $this->get_field_operator( $operator );
 
 		$is_empty = '' == $value;
@@ -1204,7 +1204,7 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->get_wp_user_meta() ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
-						$value = 's:' . strlen( $value ) . ':"' . strtolower( addcslashes( $value, '_%\\' ) ) . '";';
+						$value = 's:' . strlen( $value ) . ':"' . strtolower( addcslashes( $value, "_%\\'" ) ) . '";';
 						return "`meta_wp_$field`.meta_value " . ( in_array( $operator, array( 'is', '=' ) ) ? 'LIKE' : 'NOT LIKE' ) . " '%$value%'";
 						break;
 					}
@@ -1227,7 +1227,7 @@ class MailsterSubscriberQuery {
 					}
 				}
 
-				$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
+				$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '" . addcslashes( $value, "_\\'" ) . "'";
 				if ( $is_empty && $positive || ! $positive ) {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
@@ -1239,11 +1239,11 @@ class MailsterSubscriberQuery {
 				$positive = true;
 			case '!<>':
 			case 'contains_not':
-				$value = addcslashes( $value, '_%\\' );
+				$value = addcslashes( $value, "_%\\'" );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'a:%" . strtolower( $value ) . "%'";
 				} else {
-					$value = "'%$value%'";
+					$value = "'%" . addcslashes( $value, "_%\\'" ) . "%'";
 				}
 				if ( $f ) {
 				} elseif ( in_array( $field, $this->get_custom_fields() ) ) {
@@ -1260,7 +1260,7 @@ class MailsterSubscriberQuery {
 					break;
 				}
 
-				$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . " $value";
+				$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . ' ' . $value;
 				if ( $is_empty && $positive || ! $positive ) {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
@@ -1269,11 +1269,11 @@ class MailsterSubscriberQuery {
 
 			case '^':
 			case 'begin_with':
-				$value = addcslashes( $value, '_%\\' );
+				$value = addcslashes( $value, "_%\\'" );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'%\"" . strtolower( $value ) . "%'";
 				} else {
-					$value = "'$value%'";
+					$value = "'" . addcslashes( $value, "_%\\'" ) . "%'";
 				}
 				if ( $f ) {
 				} elseif ( in_array( $field, $this->get_custom_fields() ) ) {
@@ -1296,11 +1296,11 @@ class MailsterSubscriberQuery {
 
 			case '$':
 			case 'end_with':
-				$value = addcslashes( $value, '_%\\' );
+				$value = addcslashes( $value, "_%\\'" );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'%" . strtolower( $value ) . "\"%'";
 				} else {
-					$value = "'%$value'";
+					$value = "'%" . addcslashes( $value, "_%\\'" ) . "'";
 				}
 
 				if ( $f ) {

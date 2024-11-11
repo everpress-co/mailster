@@ -317,6 +317,20 @@ _.mailster-conditions .mailster-conditions-wrap:empty:before {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+.mailster-condition-render-group a.mailster-condition-remove {
+	display: none;
+	text-decoration: none;
+	border-radius: 100%;
+	color: #999;
+	font-weight: 700;
+	line-height: 1;
+	padding: 0.4em;
+	font-size: 0.8em;
+	margin: 0;
+}
+.mailster-condition-render-group a.mailster-condition-remove:hover {
+	color: #191f25;
+}
 .mailster-condition-render .mailster-condition-operators {
 	font-size: 10px;
 }

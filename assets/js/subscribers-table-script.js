@@ -13,7 +13,9 @@ mailster = (function (mailster, $, window, document) {
 				'#TB_inline?x=1&width=720&height=520&inlineId=mailster-subscriber-conditions',
 				null
 			);
-			return false;
+		})
+		.on('click', '#filter, .mailster-condition-remove', function (event) {
+			event.stopPropagation();
 		})
 		.on('click', '#apply-filter', function () {
 			var query = mailster.conditions.serialize();

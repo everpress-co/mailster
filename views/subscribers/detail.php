@@ -193,7 +193,7 @@ if ( $is_new ) {
 			<?php if ( $customfields ) : ?>
 				<?php foreach ( $customfields as $field => $data ) : ?>
 
-					<?php $value = isset( $subscriber->{$field} ) && $subscriber->{$field} ? $subscriber->{$field} : ''; ?>
+					<?php $value = isset( $subscriber->{$field} ) ? $subscriber->{$field} : ''; ?>
 
 				<div class="detail">
 					<label for="mailster_data_<?php echo esc_attr( $field ); ?>" class="label-type-<?php echo $data['type']; ?>"><?php echo strip_tags( $data['name'] ); ?>:</label>

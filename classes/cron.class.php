@@ -181,6 +181,7 @@ class MailsterCron {
 		wp_clear_scheduled_hook( 'mailster_cron_workflow' );
 		wp_clear_scheduled_hook( 'mailster_cron_worker' );
 		wp_clear_scheduled_hook( 'mailster_cron_cleanup' );
+		wp_clear_scheduled_hook( 'mailster_cron' );
 	}
 
 

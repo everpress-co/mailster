@@ -1189,6 +1189,12 @@ class MailsterSubscribers {
 						$this->subscriber_notification( $subscriber_id );
 					}
 				}
+
+				// delete all cache
+				mailster_cache_delete( 'subscriber_' . $subscriber_id );
+				mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+				mailster_cache_delete( 'subscriber_meta_' . $subscriber_id . '0' );
+
 			}
 
 			do_action( 'mailster_update_subscriber', $subscriber_id );
@@ -1491,9 +1497,11 @@ class MailsterSubscribers {
 
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_subscriber_fields", $args ) ) {
 
-			do_action( 'mailster_add_custom_field', $subscriber_id, $key, $value );
-
 			$this->update_updated( $subscriber_id );
+
+			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+
+			do_action( 'mailster_add_custom_field', $subscriber_id, $key, $value );
 
 		} else {
 			$success = false;
@@ -1539,14 +1547,17 @@ class MailsterSubscribers {
 
 		if ( $wpdb->update( "{$wpdb->prefix}mailster_subscriber_fields", $args, $where ) ) {
 
-			do_action( 'mailster_update_custom_field', $subscriber_id, $key, $value, $old_value );
-
 			// remove custom field if value is empty
 			if ( '' === $value ) {
 				$success = $this->remove_custom_field( $subscriber_id, $key );
 			} else {
 				$this->update_updated( $subscriber_id );
 			}
+
+			mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
+
+			do_action( 'mailster_update_custom_field', $subscriber_id, $key, $value, $old_value );
+
 		} else {
 			$success = false;
 		}
@@ -1573,9 +1584,9 @@ class MailsterSubscribers {
 
 		if ( $wpdb->delete( "{$wpdb->prefix}mailster_subscriber_fields", $where ) ) {
 
-			do_action( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value );
-
 			$this->update_updated( $subscriber_id );
+
+			do_action( 'mailster_remove_custom_field', $subscriber_id, $key, $old_value );
 
 		} else {
 			$success = false;
@@ -3003,7 +3014,9 @@ class MailsterSubscribers {
 				if ( $status ) {
 					$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
 				}
+
 				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists, $status, $index );
+
 				$this->subscriber_unsubscribe_notification( $subscriber->ID, null, $lists );
 				return true;
 			}
@@ -3021,6 +3034,7 @@ class MailsterSubscribers {
 			if ( $status ) {
 				$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
 			}
+
 			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status, $index );
 
 			$this->subscriber_unsubscribe_notification( $subscriber->ID );

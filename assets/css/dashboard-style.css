@@ -8,29 +8,6 @@
 .mailster-dashboard .postbox .inside {
 	position: relative;
 }
-.mailster-dashboard .postbox .inside .locked {
-	display: flex;
-	background: #f26b6b;
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 2;
-	background: rgba(0, 0, 0, 0.35);
-	background: -webkit-radial-gradient(
-		50% 50%,
-		rgba(255, 255, 255, 0.5),
-		rgba(255, 255, 255, 0.9) 100%
-	);
-	background: radial-gradient(
-		50% 50%,
-		rgba(255, 255, 255, 0.5),
-		rgba(255, 255, 255, 0.9) 100%
-	);
-	transition: opacity 1.15s ease-in;
-	align-items: center;
-}
 .mailster-dashboard .postbox a {
 	text-decoration: none;
 }

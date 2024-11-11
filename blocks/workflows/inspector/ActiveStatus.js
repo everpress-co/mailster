@@ -73,7 +73,7 @@ export default function ActiveStatus(props) {
 				window.open(
 					window.location.origin +
 						window.location.pathname.replace('post.php', 'edit.php') +
-						'?page=mailster-pricing'
+						'?page=mailster-pricing&utm_campaign=plugin-upgrade&utm_medium=editor+notice'
 				),
 		};
 

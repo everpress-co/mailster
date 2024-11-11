@@ -569,12 +569,12 @@ class MailsterConditions {
 		$value    = stripslashes_deep( isset( $condition['value'] ) ? $condition['value'] : $condition[2] );
 
 		$return = array(
-			'field'    => '<strong>' . $this->nice_name( $field, 'field', $field ) . '</strong>',
+			'field'    => $this->nice_name( $field, 'field', $field ),
 			'operator' => '',
 			'value'    => '',
 		);
 		/* translators: opening and closing double quote in your language */
-		$quotes = _x( '“ ”', 'openquote, space, closing quote', 'mailster' );
+		$quotes = _x( '“ ”', 'open quote, space, closing quote', 'mailster' );
 
 		$opening_quote = esc_html_x( '&#8220;', 'opening curly double quote', 'mailster' );
 		$closing_quote = esc_html_x( '&#8221;', 'closing curly double quote', 'mailster' );
@@ -599,7 +599,7 @@ class MailsterConditions {
 				}
 				$return['value'] = implode( ' ' . esc_html__( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $urls ) );
 				if ( ! empty( $campagins ) ) {
-					$return['value'] .= '<br> ' . esc_html__( 'in', 'mailster' ) . ' ' . $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $campagins ) ) . $closing_quote;
+					$return['value'] .= ' ' . esc_html__( 'in', 'mailster' ) . ' ' . $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $campagins ) ) . $closing_quote;
 				}
 			} else {
 
@@ -620,22 +620,19 @@ class MailsterConditions {
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
 			}
-			$return['operator'] = '<em>' . $this->nice_name( $operator, 'operator', $field ) . '</em>';
+			$return['operator'] = $this->nice_name( $operator, 'operator', $field );
 			$return['value']    = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_country_name' ), $value ) ) . $closing_quote;
 		} elseif ( 'rating' == $field ) {
 			$stars              = ( round( $this->sanitize_rating( $value ) / 10, 2 ) * 50 );
 			$full               = max( 0, min( 5, floor( $stars ) ) );
 			$half               = max( 0, min( 5, round( $stars - $full ) ) );
 			$empty              = max( 0, min( 5, 5 - $full - $half ) );
-			$return['operator'] = '<em>' . $this->nice_name( $operator, 'operator', $field ) . '</em>';
-			$return['value']    = '<span class="screen-reader-text">' . sprintf( esc_html__( '%d stars', 'mailster' ), $full ) . '</span>'
-			. str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty );
+			$return['operator'] = $this->nice_name( $operator, 'operator', $field );
+			$return['value']    = str_repeat( '★', $full ) . str_repeat( '☆', $half ) . str_repeat( '☆', $empty );
 
 		} else {
-			$return['operator'] = '<em>' . $this->nice_name( $operator, 'operator', $field ) . '</em>';
-			$return['value']    = $opening_quote . '<strong>' . $this->nice_name( $value, 'value', $field ) . '</strong>' . $closing_quote;
+			$return['operator'] = $this->nice_name( $operator, 'operator', $field );
+			$return['value']    = $opening_quote . stripslashes( $this->nice_name( $value, 'value', $field ) ) . $closing_quote;
 		}
 
 		return $formated ? $return : strip_tags( $return );
@@ -790,7 +787,7 @@ class MailsterConditions {
 	}
 
 	private function value_field_text( $value, $inputname ) {
-		$value = is_array( $value ) ? $value[0] : $value;
+		$value = stripslashes( is_array( $value ) ? $value[0] : $value );
 		?>
 		<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $inputname ); ?>">	
 		<?php
@@ -801,7 +798,7 @@ class MailsterConditions {
 	}
 
 	private function value_field_rating( $value, $inputname ) {
-		$value = is_array( $value ) ? $value[0] : $value;
+		$value = stripslashes( is_array( $value ) ? $value[0] : $value );
 
 		$stars = ( round( $this->sanitize_rating( (float) $value ) / 10, 2 ) * 50 );
 		$full  = max( 0, min( 5, floor( $stars ) ) );
@@ -822,7 +819,7 @@ class MailsterConditions {
 
 
 	private function value_field_timestamp( $value, $inputname ) {
-		$value = is_array( $value ) ? $value[0] : $value;
+		$value = stripslashes( is_array( $value ) ? $value[0] : $value );
 
 		// determine the type by checking the value
 		$type = ( empty( $value ) || date( 'Y-m-d', strtotime( $value ) ) == $value ) ? 'date' : 'text';
@@ -843,7 +840,7 @@ class MailsterConditions {
 
 
 	private function value_field_wp_capabilities( $value, $inputname ) {
-		$value = is_array( $value ) ? $value[0] : $value;
+		$value = stripslashes( is_array( $value ) ? $value[0] : $value );
 
 		if ( ! function_exists( 'wp_dropdown_roles' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/template.php';
@@ -859,7 +856,7 @@ class MailsterConditions {
 
 
 	private function value_field_status( $value, $inputname ) {
-		$value    = is_array( $value ) ? $value[0] : $value;
+		$value    = stripslashes( is_array( $value ) ? $value[0] : $value );
 		$statuses = mailster( 'subscribers' )->get_status( null, true );
 		?>
 		<select name="<?php echo esc_attr( $inputname ); ?>" class="condition-value" disabled>
@@ -872,7 +869,7 @@ class MailsterConditions {
 
 
 	private function value_field_form( $value, $inputname ) {
-		$value = is_array( $value ) ? $value[0] : $value;
+		$value = stripslashes( is_array( $value ) ? $value[0] : $value );
 		$forms = mailster( 'forms' )->get_all();
 		?>
 		<?php if ( $forms ) : ?>
@@ -890,7 +887,7 @@ class MailsterConditions {
 
 
 	private function value_field_clienttype( $value, $inputname ) {
-		$value = is_array( $value ) ? $value[0] : $value;
+		$value = stripslashes( is_array( $value ) ? $value[0] : $value );
 		?>
 		<select name="<?php echo esc_attr( $inputname ); ?>" class="condition-value" disabled>
 			<option value="desktop"<?php selected( $value, 'desktop' ); ?>><?php esc_html_e( 'Desktop', 'mailster' ); ?></option>
@@ -1066,6 +1063,7 @@ class MailsterConditions {
 		$value_arr = array_map( 'trim', $value_arr );
 		$value_arr = array_filter( $value_arr );
 		$value_arr = array_unique( $value_arr );
+
 		?>
 		<input type="hidden" name="<?php echo esc_attr( $inputname ); ?>[]" class="condition-value skip-value" disabled value="">
 		<input type="text" class="regular-text token-helper" data-token="true" value="<?php echo esc_attr( implode( ', ', $value_arr ) ); ?>">

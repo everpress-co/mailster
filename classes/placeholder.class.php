@@ -197,7 +197,7 @@ class MailsterPlaceholder {
 	 */
 	public function add_defaults( $campaign_id = null, $args = array() ) {
 
-		$time = explode( '|', date( 'Y|m|d|H|i', current_time( 'timestamp' ) ) );
+		$time = explode( '|', date( 'Y|m|d|H|i|s', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
 			'email'   => '<a href="mailto:{emailaddress}">{emailaddress}</a>',
@@ -206,6 +206,7 @@ class MailsterPlaceholder {
 			'day'     => $time[2],
 			'hour'    => $time[3],
 			'minute'  => $time[4],
+			'second'  => $time[5],
 			'unsub'   => '<a href="{unsublink}">{unsublinktext}</a>',
 			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
 			'lang'    => substr( get_bloginfo( 'language' ), 0, 2 ),

@@ -153,20 +153,18 @@ a.email {
 		text-align: left;
 	}
 }
-#searchform {
-	_overflow: hidden;
-}
 #mailster-filter-wrap {
 	display: flex;
 	justify-content: flex-start;
 	align-items: flex-start;
 	margin: 0.6em 0;
 }
-#mailster-filter-wrap a {
-	margin-top: 0.6em;
-	margin-right: 0.3em;
-}
 
+#mailster-filter-wrap
+	.mailster-condition-render-group
+	a.mailster-condition-remove {
+	display: inline-block;
+}
 #mailster-conditions-render {
 	overflow: hidden;
 	display: inline-block;

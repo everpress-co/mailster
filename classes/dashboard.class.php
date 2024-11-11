@@ -29,6 +29,8 @@ class MailsterDashboard {
 
 			if ( ! get_option( 'mailster_setup' ) ) {
 				update_option( 'mailster_setup', time() );
+				// run this once
+				do_action( 'mailster_cron' );
 			}
 			mailster_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
 			exit;

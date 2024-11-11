@@ -54,8 +54,6 @@ import domReady from '@wordpress/dom-ready';
 		const events = windowObj.mailsterBlockEvents || {};
 		const params = getParameters();
 
-		console.log(forms);
-
 		Array.prototype.forEach.call(forms, (formEl, i) => {
 			const form_el = querySelector(formEl, '.mailster-block-form-data');
 			const form = JSON.parse(form_el.textContent);

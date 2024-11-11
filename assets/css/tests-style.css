@@ -141,23 +141,9 @@
 }
 .progress span.bar {
 	background: #2bb3e7;
-	_background: -webkit-linear-gradient(to right, #084067, #2bb3e7);
-	_background: linear-gradient(to right, #084067, #2bb3e7);
 }
 .progress.finished span.bar {
 	background: #c7e9c4;
-	_background: -moz-linear-gradient(top, #c7e9c4 0%, #aacca7 100%);
-	_background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0%, #c7e9c4),
-		color-stop(100%, #aacca7)
-	);
-	_background: -webkit-linear-gradient(top, #c7e9c4 0%, #aacca7 100%);
-	_background: -o-linear-gradient(top, #c7e9c4 0%, #aacca7 100%);
-	_background: -ms-linear-gradient(top, #c7e9c4 0%, #aacca7 100%);
-	_background: linear-gradient(top, #c7e9c4 0%, #aacca7 100%);
 }
 a.clipboard {
 	cursor: pointer;

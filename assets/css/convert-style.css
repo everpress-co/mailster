@@ -46,9 +46,11 @@
 	text-align: center;
 }
 .convert_form_wrap .howto {
-	width: 80%;
 	margin: 0.6em auto 0 0;
 	line-height: 1.4em;
+}
+.convert_form_wrap p.howto {
+	width: 80%;
 }
 .convert_form_wrap .convert-plan {
 	font-weight: bold;

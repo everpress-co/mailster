@@ -12,21 +12,27 @@ if ( mailster()->is_verified() ) {
 
 
 ?>
-<div class="locked">
-	<h2><span class="not-valid"><?php esc_html_e( 'Please Activate your License', 'mailster' ); ?></span><span class="valid"><?php esc_html_e( 'Validated!', 'mailster' ); ?></span>
-	</h2>
-</div>
 <dl class="mailster-icon mailster-is-valid valid">
 	<dt><?php esc_html_e( 'Verified License', 'mailster' ); ?></dt>
 	<dd><?php printf( esc_html__( 'User: %1$s - %2$s', 'mailster' ), '<span class="mailster-username">' . esc_html( $license_user ) . '</span>', '<span class="mailster-email lighter">' . esc_html( $license_email ) . '</span>' ); ?></dd>
 	<?php if ( ! mailster()->is_email_verified() ) : ?>
 		<dd style="color:#D54E21"><?php esc_html_e( 'Please verify your Mailster account!', 'mailster' ); ?></dd>
 	<?php endif; ?>
+	<?php if ( $plan = mailster_freemius()->get_plan() ) : ?>
+	<dd><?php printf( esc_html__( 'License: %1$s', 'mailster' ), '<span>' . esc_html( $plan->title ) . '</span>' ); ?>
+	<?php endif; ?>
+		
+	</dd>
 	<dd>
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
-		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ); ?>"><?php esc_html_e( 'Account', 'mailster' ); ?></a> |
+		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster-account' ); ?>"><?php esc_html_e( 'Account', 'mailster' ); ?></a>
+			<?php if ( $plan && in_array( $plan->name, array( 'legacy', 'legacy_plus' ) ) ) : ?>
+			| <a href="<?php echo mailster_freemius()->get_upgrade_url(); ?>"><strong><?php esc_html_e( 'Upgrade your License', 'mailster' ); ?></strong></a>
+			<?php else : ?>
+			| <a href="<?php echo mailster_freemius()->checkout_url(); ?>" ><strong><?php esc_html_e( 'Buy new License', 'mailster' ); ?></strong></a>
+
+			<?php endif; ?>
 		<?php endif; ?>
-		<a href="<?php echo mailster_freemius()->checkout_url(); ?>" ><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>
 	</dd>
 </dl>
 <dl class="mailster-icon mailster-not-valid not-valid">

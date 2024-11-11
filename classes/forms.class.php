@@ -106,7 +106,7 @@ class MailsterForms {
 			do_action( 'mailster_form_head_iframe' );
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-iframe-style' );
 			$width = preg_match( '#\d+%#', $width ) ? (int) $width . '%' : (int) $width . 'px';
-			echo '<style type="text/css">.mailster-form-wrap{width:' . $width . '}</style>';
+			echo '<style type="text/css">.mailster-form-wrap{width:' . esc_attr( $width ) . '}</style>';
 
 		}
 	}
@@ -1468,7 +1468,7 @@ class MailsterForms {
 	 */
 	private function _get_style( $style, $selector, $property ) {
 
-		echo ( isset( $style->{$selector} ) && isset( $style->{$selector}->{$property} ) ) ? $style->{$selector}->{$property} : '';
+		echo esc_attr( ( isset( $style->{$selector} ) && isset( $style->{$selector}->{$property} ) ) ? $style->{$selector}->{$property} : '' );
 	}
 
 	/**
@@ -1479,6 +1479,7 @@ class MailsterForms {
 	 */
 	public function subscribe_button( $form_id = 1, $args = array() ) {
 
+		//phpcs:ignore
 		echo $this->get_subscribe_button( $form_id, $args );
 	}
 
@@ -1632,8 +1633,8 @@ class MailsterForms {
 			<?php foreach ( $styles as $i => $style ) { ?>
 				<li><label>
 				<input type="radio" name="subscriber-button-style" value="<?php echo esc_attr( $style ); ?>" <?php checked( ! $i ); ?>>
-				<div class="btn-widget design-<?php echo $style; ?> count">
-					<div class="btn-count"><i></i><u></u><a><?php echo $subscribercount; ?></a></div>
+				<div class="btn-widget design-<?php echo esc_attr( $style ); ?> count">
+					<div class="btn-count"><i></i><u></u><a><?php echo esc_html( $subscribercount ); ?></a></div>
 					<a class="btn"><?php echo esc_html( $form->submit ); ?></a>
 				</div>
 				</label></li>
@@ -1671,7 +1672,7 @@ class MailsterForms {
 
 				<p><?php esc_html_e( 'Test your button', 'mailster' ); ?> &hellip;</p>
 					<div class="button-preview">
-						<?php echo $embeddedcode; ?>
+						<?php echo esc_html( $embeddedcode ); ?>
 					</div>
 
 				<p>&hellip; <?php esc_html_e( 'embed it somewhere', 'mailster' ); ?> &hellip;
