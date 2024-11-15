@@ -850,9 +850,9 @@ class MailsterForms {
 			)
 		);
 
-		update_post_meta( $post_id, 'doubleoptin', ! ! $form->doubleoptin );
+		update_post_meta( $post_id, 'doubleoptin', (bool) $form->doubleoptin );
 		update_post_meta( $post_id, 'gdpr', $gdpr );
-		update_post_meta( $post_id, 'userschoice', ! ! $form->userschoice );
+		update_post_meta( $post_id, 'userschoice', (bool) $form->userschoice );
 		update_post_meta( $post_id, 'redirect', $form->redirect );
 		update_post_meta( $post_id, 'confirmredirect', $form->confirmredirect );
 		update_post_meta( $post_id, 'overwrite', $form->overwrite );

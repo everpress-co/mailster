@@ -779,8 +779,8 @@ class MailsterPlaceholder {
 						$factor    = isset( $query['f'] ) && $is_img_tag ? (int) $query['f'] : 1;
 						$width     = isset( $query['w'] ) ? (int) $query['w'] * $factor : null;
 						$height    = isset( $query['h'] ) ? (int) $query['h'] * $factor : null;
-						$crop      = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
-						$original  = isset( $query['o'] ) ? ! ! ( $query['o'] ) : false;
+						$crop      = isset( $query['c'] ) && $height ? (bool) ( $query['c'] ) : false;
+						$original  = isset( $query['o'] ) ? (bool) ( $query['o'] ) : false;
 						$post_type = str_replace( '_image', '', $parts[0] );
 						$is_post   = $post_type != $parts[0];
 						$is_random = null;

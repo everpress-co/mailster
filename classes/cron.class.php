@@ -371,7 +371,7 @@ class MailsterCron {
 			$sql = "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE %s AND option_value != ''";
 			$res = $wpdb->get_var( $wpdb->prepare( $sql, 'mailster_cron_lock_' . $key . '%' ) );
 
-			return ! ! $res;
+			return (bool) $res;
 
 		} else {
 

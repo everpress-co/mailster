@@ -939,7 +939,7 @@ class MailsterNotification {
 				</tr>
 			</table>
 			<?php
-			if ( ! ! ( $i % 2 ) ) {
+			if ( (bool) ( $i % 2 ) ) {
 				echo '</td></tr></table><table cellpadding="0" cellspacing="0" class="o-fix"><tr><td width="552" valign="top" align="center" style="border-top:1px solid #ccc;">'; }
 			?>
 
@@ -1057,7 +1057,7 @@ class MailsterNotification {
 				</table>
 
 				<?php
-				if ( ! ! ( $i % 2 ) ) :
+				if ( (bool) ( $i % 2 ) ) :
 					echo '</td></tr></table><table cellpadding="0" cellspacing="0" class="o-fix"><tr><td width="100%" valign="top" align="center" style="border-top:1px solid #ccc;">';
 				endif;
 				++$i;
@@ -1354,7 +1354,7 @@ class MailsterNotification {
 		</table>
 
 			<?php
-			if ( ! ! ( $i % 2 ) ) {
+			if ( (bool) ( $i % 2 ) ) {
 				echo '</td></tr></table><table cellpadding="0" cellspacing="0" class="o-fix"><tr><td width="552" valign="top" align="center" style="border-top:1px solid #ccc;">'; }
 			?>
 
