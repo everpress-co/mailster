@@ -403,7 +403,6 @@ class MailsterUpgrade {
 		<div id="mailster-update-info" style="display: none;">
 			<div class="notice-error error inline"><p>Make sure to create a backup before run the Mailster Batch Update. If you experience any issues upgrading please reach out to us via our member area <a href="<?php echo mailster_url( 'https://mailster.co/go/register' ); ?>" class="external">here</a>.<br>
 			<strong>Important: No data can get lost thanks to our smart upgrade process.</strong></p></div>
-			<p>Built: <?php echo date_i18n( 'Y-m-d H:i:s', MAILSTER_BUILT ); ?></p>
 			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers" ) ) : ?>
 			<p>Subscribers Table: <?php echo number_format( $count ); ?> entries</p>
 			<?php endif; ?>

@@ -26,7 +26,7 @@ function mailster_freemius_custom_icon() {
 add_action( 'load-toplevel_page_mailster', 'mailster_freemius_load_page' );
 function mailster_freemius_load_page() {
 	$suffix = SCRIPT_DEBUG ? '' : '.min';
-	wp_enqueue_style( 'freemius-style', MAILSTER_URI . 'assets/css/freemius-style' . $suffix . '.css', array(), MAILSTER_BUILT );
+	wp_enqueue_style( 'freemius-style', MAILSTER_URI . 'assets/css/freemius-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 }
 
 mailster_freemius()->add_action( 'after_account_connection', 'mailster_freemius_install' );
